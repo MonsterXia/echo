@@ -3,6 +3,7 @@ import each from 'licia/each'
 import * as window from 'share/main/lib/window'
 import {
   IpcDumpWindowHierarchy,
+  IpcGetDisplaySize,
   IpcInputText,
   IpcStartCaptureScreen,
   IpcStopCaptureScreen,
@@ -56,6 +57,11 @@ function toHierarchyXml(json: any) {
   return xml + `</${tagName || 'Layout'}>`
 }
 
+const getDisplaySize: IpcGetDisplaySize = async function (connectKey) {
+  const uiDriver = await getUiDriver(connectKey)
+  return uiDriver.getDisplaySize()
+}
+
 const startCaptureScreen: IpcStartCaptureScreen = async function (
   connectKey,
   scale
@@ -101,6 +107,7 @@ export function init(c: Client) {
   client = c
 
   handleEvent('dumpWindowHierarchy', dumpWindowHierarchy)
+  handleEvent('getDisplaySize', getDisplaySize)
   handleEvent('startCaptureScreen', startCaptureScreen)
   handleEvent('stopCaptureScreen', stopCaptureScreen)
   handleEvent('touchDown', touchDown)
