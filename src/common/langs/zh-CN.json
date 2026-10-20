@@ -85,7 +85,7 @@
   "back": "返回",
   "alwaysOnTop": "置顶",
   "fullscreen": "全屏",
-  "scale": "缩放",
+  "scale": "投屏分辨率比例",
   "inputText": "输入文本",
   "hdcCli": "HDC 命令行接口",
   "hilog": "日志",
