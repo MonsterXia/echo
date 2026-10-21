@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtemp, readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -11,9 +11,11 @@ assert.ok(process.argv[2], 'Pass the installed ECHO.exe path')
 const executablePath = path.resolve(process.argv[2])
 const installDir = path.dirname(executablePath)
 const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)))
-const profile = await mkdtemp(path.join(os.tmpdir(), 'echo-startup-'))
+const temporaryRoot = path.resolve(os.tmpdir())
+const profile = await mkdtemp(path.join(temporaryRoot, 'echo-startup-'))
 let application
 let child
+let runtime
 let output = ''
 
 function killApp() {
@@ -56,7 +58,7 @@ try {
   page.on('crash', () => failures.push('Renderer crashed'))
   page.on('pageerror', (error) => failures.push(error.message))
 
-  const runtime = await application.evaluate(({ app }) => ({
+  runtime = await application.evaluate(({ app }) => ({
     packaged: app.isPackaged,
     appPath: app.getAppPath(),
     executable: app.getPath('exe'),
@@ -112,7 +114,6 @@ try {
   assert.equal(child.exitCode, null, 'Application exited during the smoke check')
   await application.close()
   assert.equal(child.exitCode, 0, 'Application did not exit cleanly')
-  console.log('Installed Windows application smoke check passed:', JSON.stringify(runtime))
 } catch (error) {
   console.error(output)
   throw error
@@ -122,7 +123,16 @@ try {
       await application.close()
     }
   } finally {
-    killApp()
-    clearTimeout(deadline)
+    try {
+      killApp()
+      // Only remove the unique profile created by this run, directly under TEMP.
+      assert.equal(path.dirname(profile), temporaryRoot)
+      await rm(profile, {
+        recursive: true, force: true, maxRetries: 5, retryDelay: 100,
+      })
+    } finally {
+      clearTimeout(deadline)
+    }
   }
 }
+console.log('Installed Windows application smoke check passed:', JSON.stringify(runtime))
