@@ -15,7 +15,7 @@ const dmg = path.resolve('release', pkg.version,
   `${pkg.productName}-${pkg.version}-mac-${process.arch}.dmg`)
 assert.ok((await stat(dmg)).size > 0, 'DMG is empty')
 const temporaryRoot = await realpath(process.env.RUNNER_TEMP)
-const root = await mkdtemp(path.join(temporaryRoot, 'echo-dmg-'))
+const root = await mkdtemp(path.join(temporaryRoot, 'scrcpy-harmony-dmg-'))
 const mountPoint = path.join(root, 'volume')
 const application = path.join(root, 'Installed Apps', `${pkg.productName}.app`)
 const resources = path.join(application, 'Contents/Resources')

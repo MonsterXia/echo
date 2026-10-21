@@ -1,7 +1,7 @@
 {
-  "name": "echo",
-  "productName": "ECHO",
-  "appId": "io.liriliri.echo",
+  "name": "scrcpy-harmony",
+  "productName": "Scrcpy Harmony",
+  "appId": "io.github.monsterxia.scrcpyharmony",
   "version": "1.0.1",
   "description": "Harmony hdc desktop app",
   "main": "dist/main/index.js",
@@ -24,23 +24,24 @@
     "init": "npm run resources",
     "resources": "zx script/resources.mjs",
     "format": "lsla prettier \"src/**/*.{ts,tsx,scss,css,json}\" \"*.{js,ts,json}\" \"script/*.mjs\" --write",
-    "gen:icon": "lsla genIcon --input src/renderer/ --output src/renderer/icon.css --name echo-icon --source src/renderer/icon/",
+    "gen:icon": "lsla genIcon --input src/renderer/ --output src/renderer/icon.css --name scrcpy-harmony-icon --source src/renderer/icon/",
     "gen:theme": "lsla genTheme --input src/common/theme.json --output src/renderer/theme.scss && lsla genTheme --input src/common/theme.json --output src/common/theme.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liriliri/echo.git"
+    "url": "git+https://github.com/MonsterXia/scrcpy-harmony.git"
   },
   "keywords": [
     "hdc",
     "harmony"
   ],
   "author": "surunzi",
+  "contributors": ["MonsterXia"],
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/liriliri/echo/issues"
+    "url": "https://github.com/MonsterXia/scrcpy-harmony/issues"
   },
-  "homepage": "https://github.com/liriliri/echo#readme",
+  "homepage": "https://github.com/MonsterXia/scrcpy-harmony#readme",
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.779.0",
     "@types/react": "^19.1.8",

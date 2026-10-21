@@ -5,9 +5,9 @@ cd('dist')
 
 const pkg = await fs.readJson('package.json')
 
-let publishChannel = '${productName}-latest'
+let publishChannel = 'latest'
 if (isMac && process.arch !== 'arm64') {
-  publishChannel = '${productName}-latest-${arch}'
+  publishChannel = 'latest-${arch}'
 }
 
 const config = {
@@ -42,8 +42,9 @@ const config = {
     ],
   },
   publish: {
-    provider: 'generic',
-    url: 'https://release.liriliri.io/',
+    provider: 'github',
+    owner: 'MonsterXia',
+    repo: 'scrcpy-harmony',
     channel: publishChannel,
   },
 }

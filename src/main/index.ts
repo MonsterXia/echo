@@ -3,6 +3,7 @@ import * as menu from './lib/menu'
 import * as main from './window/main'
 import * as terminal from 'share/main/window/terminal'
 import * as hdc from './lib/hdc'
+import * as updater from './lib/updater'
 import log from 'share/common/log'
 import 'share/main'
 
@@ -12,6 +13,7 @@ logger.info('start')
 app.on('ready', () => {
   logger.info('app ready')
 
+  updater.init()
   terminal.init()
   hdc.init()
   main.showWin()

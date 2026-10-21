@@ -1,4 +1,4 @@
 interface:
-  display_name: "ECHO 项目基础"
-  short_description: "理解 ECHO 鸿蒙桌面工具的架构、投屏链路、开发构建与验证边界"
-  default_prompt: "使用 $scrcpy-harmony-project 理解当前任务涉及的 ECHO 模块，按需读取源码并完成修改与验证。"
+  display_name: "Scrcpy Harmony 项目基础"
+  short_description: "理解 Scrcpy Harmony 鸿蒙桌面工具的架构、投屏链路、开发构建与验证边界"
+  default_prompt: "使用 $scrcpy-harmony-project 理解当前任务涉及的 Scrcpy Harmony 模块，按需读取源码并完成修改与验证。"

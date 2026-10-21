@@ -1,10 +1,10 @@
 <div align="center">
-  <a href="https://echo.liriliri.io/" target="_blank">
+  <a href="https://github.com/MonsterXia/scrcpy-harmony" target="_blank">
     <img src="https://echo.liriliri.io/icon.png" width="400">
   </a>
 </div>
 
-<h1 align="center">ECHO</h1>
+<h1 align="center">Scrcpy Harmony</h1>
 
 <div align="center">
 
@@ -19,17 +19,23 @@
 
 [windows-image]: https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows
 [mac-image]: https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple
-[download-image]: https://img.shields.io/github/downloads/liriliri/echo/total?style=flat-square
-[release-url]: https://github.com/liriliri/echo/releases
-[license-image]: https://img.shields.io/github/license/liriliri/echo?style=flat-square
+[download-image]: https://img.shields.io/github/downloads/MonsterXia/scrcpy-harmony/total?style=flat-square
+[release-url]: https://github.com/MonsterXia/scrcpy-harmony/releases
+[license-image]: https://img.shields.io/github/license/MonsterXia/scrcpy-harmony?style=flat-square
 
 <img src="https://echo.liriliri.io/screencast.png" style="width:100%">
 
-[ECHO](https://echo.liriliri.io/) 是一个用于简化对鸿蒙设备操作控制的桌面应用程序，可以看作是 HDC 的图形用户界面。
+[Scrcpy Harmony](https://github.com/MonsterXia/scrcpy-harmony) 是一个用于简化对鸿蒙设备操作控制的桌面应用程序，可以看作是 HDC 的图形用户界面。
+
+## 项目来源与维护
+
+本项目基于 [liriliri/echo](https://github.com/liriliri/echo)，由 MonsterXia 独立维护。原作者为 surunzi，保留上游提交历史、署名及 AGPL-3.0 许可证。仓库名为 `scrcpy-harmony`，应用名为 Scrcpy Harmony，npm 包名为 `scrcpy-harmony`；本项目是基于 HDC 的 Electron 应用。
+
+问题反馈、下载和后续版本以本仓库为准。应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装并使用新的用户配置目录。旧配置保留原处，不会自动迁移。下方界面图片来自上游，仅供功能参考。
 
 ## 安装
 
-点击[这里](https://github.com/liriliri/echo/releases/)下载并安装 ECHO，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。
+点击[这里](https://github.com/MonsterXia/scrcpy-harmony/releases/)下载并安装 Scrcpy Harmony，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。如果本仓库尚无发行版，请按开发指南从源码构建；上游安装包不包含本项目的改动。
 
 当前源码使用 Electron 45，macOS 需要 13 或更新版本。开发环境需要 Node.js 22.12.0 或更新版本；初始化子模块后执行 `npm ci` 安装锁定的依赖。开发与验证步骤见 [项目开发指南](.agents/skills/scrcpy-harmony-project/references/development.md)。
 
@@ -44,7 +50,7 @@
 
 ## 相关项目
 
-* [licia](https://github.com/liriliri/licia): ECHO 使用的工具库。
-* [luna](https://github.com/liriliri/luna): ECHO 使用的 UI 库。
+* [licia](https://github.com/liriliri/licia): Scrcpy Harmony 使用的工具库。
+* [luna](https://github.com/liriliri/luna): Scrcpy Harmony 使用的 UI 库。
 * [vivy](https://github.com/liriliri/vivy): 图标生成工具。
 * [hdckit](https://github.com/liriliri/hdckit)：基于 Node.js 实现的鸿蒙 HDC 客户端。

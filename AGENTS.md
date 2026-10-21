@@ -1,6 +1,6 @@
 # 项目上下文入口
 
-本仓库目录名为 `scrcpy-harmony`，实际应用为 **ECHO**：Electron + React + TypeScript 的鸿蒙 HDC 桌面工具。
+本仓库目录名为 `scrcpy-harmony`，实际应用为 **Scrcpy Harmony**：Electron + React + TypeScript 的鸿蒙 HDC 桌面工具。
 
 处理本仓库的分析、开发、排错或构建任务时，先读项目 skill：
 

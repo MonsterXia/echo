@@ -8,7 +8,7 @@ if ($env:GITHUB_ACTIONS -ne 'true' -or $env:RUNNER_ENVIRONMENT -ne 'github-hoste
 
 $pkg = Get-Content package.json -Raw | ConvertFrom-Json
 $installer = (Resolve-Path "release/$($pkg.version)/$($pkg.productName)-$($pkg.version)-win-x64.exe").Path
-$installDir = Join-Path $env:RUNNER_TEMP ('ECHO Installed ' + [guid]::NewGuid())
+$installDir = Join-Path $env:RUNNER_TEMP ('Scrcpy Harmony Installed ' + [guid]::NewGuid())
 $executable = Join-Path $installDir "$($pkg.productName).exe"
 $installerProcess = Start-Process -FilePath $installer -ArgumentList "/S /currentuser /D=$installDir" -WindowStyle Hidden -PassThru
 if (!$installerProcess.WaitForExit(120000)) {
