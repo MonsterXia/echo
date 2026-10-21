@@ -29,9 +29,16 @@
 
 ## 项目来源与维护
 
-本项目基于 [liriliri/echo](https://github.com/liriliri/echo)，由 MonsterXia 独立维护。原作者为 surunzi，保留上游提交历史、署名及 AGPL-3.0 许可证。仓库名为 `scrcpy-harmony`，应用名为 Scrcpy Harmony，npm 包名为 `scrcpy-harmony`；本项目是基于 HDC 的 Electron 应用。
+本项目基于 [liriliri/echo](https://github.com/liriliri/echo)，由 MonsterXia 独立维护。2026-10-21 已解除 GitHub fork 关系，保留代码来源与历史。原作者为 surunzi，保留上游提交历史、署名及 AGPL-3.0 许可证。仓库名为 `scrcpy-harmony`，应用名为 Scrcpy Harmony，npm 包名为 `scrcpy-harmony`；本项目是基于 HDC 的 Electron 应用。
 
-问题反馈、下载和后续版本以本仓库为准。应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装并使用新的用户配置目录。旧配置保留原处，不会自动迁移。下方界面图片来自上游，仅供功能参考。
+问题反馈、下载和后续版本以本仓库为准。应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装并使用新的用户配置目录。旧配置保留原处，不会自动迁移。本页界面图片来自上游，仅供功能参考，可能与当前名称和界面不同。
+
+## 维护与开发入口
+
+- [分阶段维护 RUNBOOK](RUNBOOK.md)：待办、优先顺序、验收条件及交接记录。
+- [维护来源记录](docs/maintenance/SOURCES.md)：上游 Issue/PR、本仓库已完成 PR 和归档说明。
+- [开发与验证](.agents/skills/scrcpy-harmony-project/references/development.md)：环境、启动、构建、打包和 CI。
+- [变更记录](CHANGELOG.md)：独立维护后的未发布改动与上游历史版本。
 
 ## 安装
 
@@ -43,10 +50,11 @@
 
 <img src="https://echo.liriliri.io/screenshot.png" style="width:100%">
 
-* 应用管理
-* 进程监控
-* 布局查看
-* 交互终端
+* 设备概览、截图与按键操作
+* 投屏、触控与文本输入
+* 应用安装、管理和信息查看
+* 进程监控、HiLog 与交互终端
+* 布局查看、端口转发与 WebView 调试
 
 ## 相关项目
 

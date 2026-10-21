@@ -4,9 +4,9 @@
 
 ## 项目身份与目录
 
-`package.json` 的包名为 `scrcpy-harmony`、产品名为 `Scrcpy Harmony`，仓库目录名为 `scrcpy-harmony`。项目基于上游 `liriliri/echo`，由 MonsterXia 独立维护；仓库、反馈和发布入口指向 `MonsterXia/scrcpy-harmony`。保留原作者和许可证；应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装，用户数据采用新的产品名目录，旧配置保留且不自动迁移。操作当前 Git 远端时仍使用 `git remote -v` 核对。
+`package.json` 的包名为 `scrcpy-harmony`、产品名为 `Scrcpy Harmony`，仓库目录名为 `scrcpy-harmony`。项目基于上游 `liriliri/echo`，由 MonsterXia 独立维护，2026-10-21 已解除 GitHub fork 关系；仓库、反馈和发布入口指向 `MonsterXia/scrcpy-harmony`。保留原作者和许可证；应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装，用户数据采用新的产品名目录，旧配置保留且不自动迁移。操作当前 Git 远端时仍使用 `git remote -v` 核对。
 
-共享子模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。不要直接修改子模块内的更新器。
+共享子模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。不要直接修改子模块内的更新器。检查更新仍由共享模块发起；发现更新后 renderer 提示并打开本仓库 Releases 页面，不自动下载或安装。
 
 | 路径 | 职责 |
 | --- | --- |
@@ -20,12 +20,13 @@
 | `src/renderer/icon/` | `icon-share` 子模块：图标生成源 |
 | `script/` | 下载运行资源、构建发行目录和打安装包 |
 | `build/` | 已跟踪的应用图标资源；不是可随意删除的构建产物 |
-| `test/` | Node 内置测试，目前为投屏坐标回归测试 |
+| `test/` | Node 内置测试：投屏坐标、构建编排、更新源及通道覆盖 |
+| `RUNBOOK.md`、`docs/maintenance/` | 分阶段维护、验收与来源索引 |
 | `dist/`、`release/`、`resources/` | 被忽略的编译输出、安装包和下载资源 |
 
 ## 启动和页面
 
-1. `src/main/index.ts` 在 Electron ready 时初始化共享 terminal、HDC，显示主窗口并初始化菜单。
+1. `share/main` 先注册 ready 处理并初始化共享语言、主题、IPC 和更新监听；`src/main/index.ts` 的 ready 处理随后覆盖本项目更新源，再初始化共享 terminal、HDC，显示主窗口并初始化菜单。
 2. `src/main/window/main.ts` 创建名为 `main` 的窗口，注册主/设置 store IPC 和投屏窗口入口。
 3. `src/preload/index.ts` 暴露全局 `main`、`preload`、`node`，并声明其 TypeScript 类型。其中 `main` 合并共享模块与本项目接口。
 4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享子模块。这里没有 React Router。
