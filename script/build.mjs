@@ -1,4 +1,15 @@
-import isWindows from 'licia/isWindows.js'
+import fs from 'fs-extra'
+import { execFileSync } from 'node:child_process'
+
+const npmCli = process.env.npm_execpath
+if (!npmCli) {
+  throw new Error('Run this script with npm run build')
+}
+
+function runNpm(...args) {
+  // Invoke npm's JS entry point directly: no Bash, cmd.exe or path quoting.
+  execFileSync(process.execPath, [npmCli, ...args], { stdio: 'inherit' })
+}
 
 const pkg = await fs.readJson('package.json')
 const electron = pkg.devDependencies.electron
@@ -12,17 +23,17 @@ pkg.scripts = {
 }
 pkg.main = 'main/index.js'
 
-await $`npm run build:main`
-await $`npm run build:preload`
-await $`npm run build:renderer`
+runNpm('run', 'build:main')
+runNpm('run', 'build:preload')
+runNpm('run', 'build:renderer')
 
 await fs.copy('build', 'dist/build')
 await fs.copy('resources/hdc', 'dist/resources/hdc')
 await fs.copy('resources/uitestkit_sdk', 'dist/resources/uitestkit_sdk')
-cd('dist')
+process.chdir('dist')
 
 await fs.writeJson('package.json', pkg, {
   spaces: 2,
 })
 
-await $`npm i --production`
+runNpm('install', '--omit=dev', '--no-audit', '--no-fund')
