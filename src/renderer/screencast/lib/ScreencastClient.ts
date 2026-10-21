@@ -13,6 +13,8 @@ export default class ScreencastClient {
   private offCaptureScreen: types.AnyFn = noop
   private readiness = new Readiness()
   private isTouching = false
+  private isDrawing = false
+  private displaySize: { width: number; height: number } | null = null
   constructor(connectKey: string) {
     this.connectKey = connectKey
     this.ready = this.readiness.ready('captureScreen')
@@ -42,6 +44,25 @@ export default class ScreencastClient {
     URL.revokeObjectURL(url)
     const width = img.naturalWidth
     const height = img.naturalHeight
+    if (
+      !this.displaySize ||
+      canvas.width !== width ||
+      canvas.height !== height
+    ) {
+      // Capture dimensions may be reduced by the device even at scale=1.
+      // Read the touch coordinate space again when the frame size changes
+      // (for example, after rotating the device).
+      const size = await main.getDisplaySize(this.connectKey)
+      if (
+        !Number.isInteger(size.width) ||
+        !Number.isInteger(size.height) ||
+        size.width <= 0 ||
+        size.height <= 0
+      ) {
+        return
+      }
+      this.displaySize = size
+    }
     if (canvas.width !== width) {
       canvas.width = width
     }
@@ -50,15 +71,22 @@ export default class ScreencastClient {
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.drawImage(img, 0, 0)
+    this.readiness.signal('captureScreen')
   }
   private getPointer(e: PointerEvent) {
-    const { canvas } = this
+    const { canvas, displaySize } = this
+    if (!displaySize) {
+      return null
+    }
     const { clientX, clientY } = e
 
     const screenWidth = canvas.width
     const screenHeight = canvas.height
 
     const rect = canvas.getBoundingClientRect()
+    if (rect.width <= 0 || rect.height <= 0) {
+      return null
+    }
 
     const canvasRect = {
       width: 0,
@@ -85,8 +113,14 @@ export default class ScreencastClient {
       1
     )
 
-    const pointerX = Math.round((percentageX * screenWidth) / store.scale)
-    const pointerY = Math.round((percentageY * screenHeight) / store.scale)
+    const pointerX = Math.min(
+      Math.round(percentageX * displaySize.width),
+      displaySize.width - 1
+    )
+    const pointerY = Math.min(
+      Math.round(percentageY * displaySize.height),
+      displaySize.height - 1
+    )
 
     return { pointerX, pointerY }
   }
@@ -94,15 +128,22 @@ export default class ScreencastClient {
     const { canvas } = this
 
     this.offCaptureScreen = main.on('captureScreen', (connectKey, image) => {
-      if (connectKey === this.connectKey) {
-        this.readiness.signal('captureScreen')
+      if (connectKey === this.connectKey && !this.isDrawing) {
+        // Do not let a later frame overtake a pending display-size lookup.
+        this.isDrawing = true
         this.draw(image)
+          .catch(console.error)
+          .finally(() => (this.isDrawing = false))
       }
     })
 
     canvas.addEventListener('pointerdown', (e) => {
       canvas.focus()
-      const { pointerX, pointerY } = this.getPointer(e)
+      const pointer = this.getPointer(e)
+      if (!pointer) {
+        return
+      }
+      const { pointerX, pointerY } = pointer
       main.touchDown(this.connectKey, pointerX, pointerY)
       this.isTouching = true
     })
@@ -110,13 +151,24 @@ export default class ScreencastClient {
       if (!this.isTouching) {
         return
       }
-      const { pointerX, pointerY } = this.getPointer(e)
+      const pointer = this.getPointer(e)
+      if (!pointer) {
+        return
+      }
+      const { pointerX, pointerY } = pointer
       main.touchMove(this.connectKey, pointerX, pointerY)
     })
     const onTouchEnd = (e: PointerEvent) => {
-      const { pointerX, pointerY } = this.getPointer(e)
-      main.touchUp(this.connectKey, pointerX, pointerY)
+      if (!this.isTouching) {
+        return
+      }
       this.isTouching = false
+      const pointer = this.getPointer(e)
+      if (!pointer) {
+        return
+      }
+      const { pointerX, pointerY } = pointer
+      main.touchUp(this.connectKey, pointerX, pointerY)
     }
     canvas.addEventListener('pointerup', onTouchEnd)
     canvas.addEventListener('pointerleave', onTouchEnd)

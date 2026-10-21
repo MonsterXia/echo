@@ -6,6 +6,7 @@
   "description": "Harmony hdc desktop app",
   "main": "dist/main/index.js",
   "scripts": {
+    "test": "node --test test/*.test.cjs",
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\"",
     "dev:main": "vite build --watch --config vite.main.ts --mode=development",
     "dev:preload": "vite build --watch --config vite.preload.ts --mode=development",
@@ -54,6 +55,7 @@
     "electron": "30.5.1",
     "electron-builder": "^26.0.12",
     "electron-updater": "^6.6.2",
+    "esbuild": "^0.21.5",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.2",
     "fs-extra": "^11.3.0",

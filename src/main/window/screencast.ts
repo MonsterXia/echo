@@ -20,9 +20,9 @@ export function showWin() {
 
   win = window.create({
     name: 'screencast',
-    minWidth: 430,
+    minWidth: 500,
     minHeight: 640,
-    width: 430,
+    width: 500,
     height: 640,
   })
 
