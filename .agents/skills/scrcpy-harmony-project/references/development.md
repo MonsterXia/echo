@@ -63,6 +63,8 @@ npm start
 
 完整 `build` 会在生成的 dist 内执行安装命令，不能当作纯离线编译。三个 `build:*` 不负责下载或复制设备资源。Electron 45 的 npm 包在首次调用运行时按需下载二进制，单测和 lint 不触发下载；需要预先下载时运行 `node node_modules/electron/install.js`。
 
+`build` 通过 Node 直接调用 npm 的 JavaScript 入口，不依赖 Bash；需通过 `npm run build` 启动以提供 `npm_execpath`。Windows 重建前应退出之前启动的应用，并检查其内置 HDC 服务是否仍占用 dist 中的可执行文件；必要时使用对应的 `hdc.exe kill` 停止该服务，避免复制资源时报 EPERM。
+
 `npm run format` 会广泛改写文件，只在确实需要整体格式化时使用。`format` / `gen:*` 调用 `lsla`，当前 `package.json` 没有直接声明该工具；使用前检查工具来源和可用性，不假设 `npm install` 后一定具备。
 
 没有独立的 `typecheck` script；Vite 构建也不能替代完整 TypeScript 类型检查。需要类型验证时先检查 TypeScript 工具是否可用及现有 tsconfig，再选择检查命令，报告具体结果，不将转译成功称为类型检查通过。
@@ -72,6 +74,8 @@ npm start
 `test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
 
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。
+
+`test/build.test.cjs` 在带空格及 `&` 的临时路径中运行真实构建脚本，以 npm 替身验证发行目录、资源复制、元数据和子构建失败时立即停止；它不替代实际 Vite 构建、安装包生成及安装启动检查。
 
 | 修改类别 | 有意义的验证 |
 | --- | --- |
