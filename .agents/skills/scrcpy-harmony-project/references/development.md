@@ -98,7 +98,7 @@ npm start
 
 本机已有安装时可单独运行 `node script/smoke-app.mjs "C:/path/to/ECHO.exe"`，它使用临时用户配置并关闭自己启动的进程，不执行安装。macOS 可传入已安装应用的 `ECHO.app/Contents/MacOS/ECHO` 路径。启动自动化依赖 Electron 的调试接口，不修改发行程序或模拟 IPC；它不替代真实设备投屏、签名/SmartScreen 和人工视觉验收。
 
-`macos-package-arm64` 和 `macos-package-x64` 使用标准 `macos-latest` 与 `macos-15-intel` runner，分别在原生架构上完成依赖安装、资源下载、build 和 DMG 打包。`script/check-macos-install.mjs` 挂载 DMG，将 `.app` 复制到临时目录后卸载镜像，验证包内资源和可执行权限，再运行共享的启动检查。此检查校验实际架构，使用隔离用户配置并在退出后清理配置及 HDC 服务；只读仓库权限、不发布、不上传 artifact、不使用签名或公证 secrets。它不验证 Developer ID 签名、公证或从互联网下载后的 Gatekeeper 放行。
+`macos-package-arm64` 和 `macos-package-x64` 使用标准 `macos-15` 与 `macos-15-intel` runner，分别在原生架构上完成依赖安装、资源下载、build 和 DMG 打包。两个任务固定相同系统版本，避免 latest 标签自动切换系统。`script/check-macos-install.mjs` 挂载 DMG，将 `.app` 复制到临时目录后卸载镜像，验证包内资源和可执行权限，再运行共享的启动检查。此检查校验实际架构，使用隔离用户配置并在退出后清理配置及 HDC 服务；只读仓库权限、不发布、不上传 artifact、不使用签名或公证 secrets。它不验证 Developer ID 签名、公证或从互联网下载后的 Gatekeeper 放行。
 
 `script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 仍为手动发行构建，矩阵含 Windows、macOS arm64 与 macOS 15 Intel runner，顺序为 checkout（含子模块）→ npm ci → init → build → pack → 上传产物。
 
