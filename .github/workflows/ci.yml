@@ -84,3 +84,6 @@ jobs:
               throw "Empty package output: $file"
             }
           }
+      - name: Install and smoke test Windows application
+        timeout-minutes: 5
+        run: ./script/check-windows-install.ps1
