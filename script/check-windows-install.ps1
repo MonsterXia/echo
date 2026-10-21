@@ -23,7 +23,7 @@ if (!(Test-Path -LiteralPath $executable -PathType Leaf)) {
 }
 
 try {
-  node script/smoke-windows.mjs $executable
+  node script/smoke-app.mjs $executable
   if ($LASTEXITCODE -ne 0) { throw 'Installed application startup check failed' }
 } finally {
   # HDC can outlive the UI; the runner is isolated and has no user's devices.
