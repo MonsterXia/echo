@@ -50,4 +50,5 @@ const config = {
 
 await builder.build({
   config,
+  publish: process.argv.includes('--no-publish') ? 'never' : undefined,
 })
