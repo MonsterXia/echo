@@ -6,14 +6,14 @@ const os = require('node:os')
 const path = require('node:path')
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'echo build & package '))
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-harmony build & package '))
   t.after(() => fs.rmSync(root, { recursive: true, force: true }))
   for (const dir of ['build', 'resources/hdc', 'resources/uitestkit_sdk']) {
     fs.mkdirSync(path.join(root, dir), { recursive: true })
     fs.writeFileSync(path.join(root, dir, 'fixture.txt'), dir)
   }
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({
-    name: 'echo', version: '1.0.1', main: 'dist/main/index.js',
+    name: 'scrcpy-harmony', version: '1.0.1', main: 'dist/main/index.js',
     scripts: { build: 'unused' },
     devDependencies: { electron: '45.0.0', vite: '5.4.21' },
   }))

@@ -1,9 +1,9 @@
 ---
 name: scrcpy-harmony-project
-description: Use when analyzing, developing, debugging, reviewing, or building this scrcpy-harmony repository, the ECHO Electron desktop app for HarmonyOS HDC, including screencast, touch input, device tools, IPC, and packaging.
+description: Use when analyzing, developing, debugging, reviewing, or building this scrcpy-harmony repository, the Scrcpy Harmony Electron desktop app for HarmonyOS HDC, including screencast, touch input, device tools, IPC, and packaging.
 ---
 
-# ECHO 项目基础
+# Scrcpy Harmony 项目基础
 
 用于本仓库的持久项目上下文。代码路径均相对仓库根目录，参考文档链接相对本 skill。内容依据 2026-10-21 的源码整理；源码与文档不一致时，以当前源码为准并修正文档。
 

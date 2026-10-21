@@ -34,7 +34,7 @@ function renderApp() {
   const container: HTMLElement = document.getElementById('app') as HTMLElement
 
   let App = lazy(() => import('./main/App.js') as Promise<any>)
-  let title = 'ECHO'
+  let title = PRODUCT_NAME
 
   switch (getUrlParam('page')) {
     case 'terminal':
@@ -51,7 +51,7 @@ function renderApp() {
       break
     case 'about':
       App = lazy(() => import('share/renderer/about/App.js') as Promise<any>)
-      title = t('aboutEcho')
+      title = t('aboutApp')
       break
   }
 

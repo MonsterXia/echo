@@ -25,7 +25,7 @@ export default observer(function App() {
     const offUpdateAvailable = main.on('updateAvailable', async () => {
       const result = await Modal.confirm(t('updateAvailable'))
       if (result) {
-        main.openExternal('https://echo.liriliri.io')
+        main.openExternal('https://github.com/MonsterXia/scrcpy-harmony/releases')
       }
     })
     return () => {

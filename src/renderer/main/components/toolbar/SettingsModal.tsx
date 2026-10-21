@@ -63,7 +63,7 @@ export default observer(function SettingsModal(props: IModalProps) {
           description={t('killHdcWhenExit')}
         />
         <LunaSettingButton
-          description={t('restartEcho')}
+          description={t('restartApp')}
           onClick={() => main.relaunch()}
         />
       </LunaSetting>

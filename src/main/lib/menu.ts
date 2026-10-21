@@ -5,7 +5,6 @@ import * as process from 'share/main/window/process'
 import * as about from 'share/main/window/about'
 import isMac from 'licia/isMac'
 import { t } from 'common/util'
-import upperCase from 'licia/upperCase'
 import isWindows from 'licia/isWindows'
 import { getUserDataPath, handleEvent } from 'share/main/lib/util'
 import * as updater from 'share/main/lib/updater'
@@ -18,7 +17,7 @@ function getTemplate(): MenuItemConstructorOptions[] {
           type: 'separator',
         },
         {
-          label: t('hideEcho'),
+          label: t('hideApp'),
           role: 'hide',
         },
         {
@@ -32,11 +31,11 @@ function getTemplate(): MenuItemConstructorOptions[] {
       ]
     : []
 
-  const echo = {
-    label: upperCase(app.name),
+  const application = {
+    label: app.name,
     submenu: [
       {
-        label: t('aboutEcho'),
+        label: t('aboutApp'),
         click() {
           about.showWin()
         },
@@ -52,7 +51,7 @@ function getTemplate(): MenuItemConstructorOptions[] {
         type: 'separator',
       },
       {
-        label: t('quitEcho'),
+        label: t('quitApp'),
         accelerator: isMac ? 'Command+Q' : 'Ctrl+Q',
         click() {
           app.quit()
@@ -110,15 +109,9 @@ function getTemplate(): MenuItemConstructorOptions[] {
     label: t('help'),
     submenu: [
       {
-        label: t('donate'),
-        click() {
-          shell.openExternal('http://surunzi.com/wechatpay.html')
-        },
-      },
-      {
         label: t('reportIssue'),
         click() {
-          shell.openExternal('https://github.com/liriliri/echo/issues')
+          shell.openExternal('https://github.com/MonsterXia/scrcpy-harmony/issues')
         },
       },
       {
@@ -149,9 +142,9 @@ function getTemplate(): MenuItemConstructorOptions[] {
 
   const template = [tools, help]
   if (isMac) {
-    template.unshift(echo, edit)
+    template.unshift(application, edit)
   } else {
-    template.unshift(echo)
+    template.unshift(application)
   }
 
   return template

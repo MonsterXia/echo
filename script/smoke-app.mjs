@@ -15,7 +15,7 @@ const resourcesDir = path.resolve(installDir, isWindows ? 'resources' : '../Reso
 const hdcResource = isWindows ? 'hdc/hdc.exe' : 'hdc/hdc'
 const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)))
 const temporaryRoot = await realpath(os.tmpdir())
-const profile = await mkdtemp(path.join(temporaryRoot, 'echo-startup-'))
+const profile = await mkdtemp(path.join(temporaryRoot, 'scrcpy-harmony-startup-'))
 let application
 let child
 let runtime

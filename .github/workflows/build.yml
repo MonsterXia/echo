@@ -23,7 +23,7 @@ jobs:
         npm ci
         npm run init 
         npm run build
-        npm run pack
+        npm run pack -- --no-publish
       env:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -36,5 +36,6 @@ jobs:
         path: |
           release/**/*.dmg
           release/**/*.exe
-          release/**/*-lates*.yml
+          release/**/*.yml
+          release/**/*.blockmap
           !release/**/win-unpacked/
