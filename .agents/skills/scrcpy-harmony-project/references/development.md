@@ -1,6 +1,6 @@
 # 开发、构建与验证
 
-路径相对仓库根目录。命令依据 `package.json`、`vite*.ts`、`script/*.mjs` 与 `.github/workflows/build.yml`；运行前以这些文件的当前内容为准。
+路径相对仓库根目录。命令依据 `package.json`、`vite*.ts`、`script/*.mjs` 与 `.github/workflows/`；运行前以这些文件的当前内容为准。
 
 ## 先检查环境
 
@@ -16,7 +16,7 @@ Test-Path resources/uitestkit_sdk
 
 两个子模块由 `.gitmodules` 声明：`src/share`（electron-share）、`src/renderer/icon`（icon-share）。`git submodule status` 行首 `-` 表示未初始化；目录存在也可能是空目录。完整应用构建需要共享代码，重新生成图标需要图标源。
 
-仓库没有 `engines` 字段，也没有跟踪 lockfile；`package-lock.json` 在 `.gitignore` 中。CI 配置使用 Node 18.x，这是既有配置，不等于已验证的最低版本或当前推荐版本。依赖版本与本机支持情况需现场确认。
+仓库要求 Node >=22.12.0，CI 使用 Node 22。`package-lock.json` 随仓库跟踪，日常安装使用 `npm ci`；更改依赖时使用 `npm install` 并同时提交锁文件。Electron 固定为 45.0.0，标题栏依赖使用兼容它的 4.4.1 系列。
 
 ## 首次准备与启动
 
@@ -24,11 +24,13 @@ Test-Path resources/uitestkit_sdk
 
 ```powershell
 git submodule update --init --recursive
-npm install
+npm ci
 npm run init
 ```
 
 `init` 是 `resources` 的别名，会下载 HDC 和 uitestkit；只读分析或文档修改无需为此安装依赖。`script/resources.mjs` 使用外部 `curl`、`unzip`，Windows 环境需确认这些命令可用（如 Git Bash 工具链）；不能假设只有 PowerShell 和 Node 就够。资源脚本按 Windows/非 Windows 分支选取 win/mac 包，没有 Linux 资源分支。
+
+Windows 上若 zx 误选了不可用的 WSL Bash，可显式使用 Git Bash，例如 `npx zx --shell "C:/Program Files/Git/bin/bash.exe" script/resources.mjs`。
 
 开发需要两个终端：
 
@@ -59,7 +61,7 @@ npm start
 | `npm run pack` | 使用已经准备好的 dist，经 electron-builder 输出安装包到 `release/<version>/` |
 | `npm run gen:theme` / `npm run gen:icon` | 重新生成主题或图标；详见架构参考的生成文件说明 |
 
-不要用 `npm ci` 作为本仓库的默认安装步骤：当前未跟踪 lockfile。完整 `build` 会执行安装命令，不能当作纯离线编译。三个 `build:*` 不负责下载或复制设备资源。
+完整 `build` 会在生成的 dist 内执行安装命令，不能当作纯离线编译。三个 `build:*` 不负责下载或复制设备资源。Electron 45 的 npm 包在首次调用运行时按需下载二进制，单测和 lint 不触发下载；需要预先下载时运行 `node node_modules/electron/install.js`。
 
 `npm run format` 会广泛改写文件，只在确实需要整体格式化时使用。`format` / `gen:*` 调用 `lsla`，当前 `package.json` 没有直接声明该工具；使用前检查工具来源和可用性，不假设 `npm install` 后一定具备。
 
@@ -84,6 +86,10 @@ npm start
 
 ## 打包与 CI
 
-`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。当前工作流为手动 `workflow_dispatch`，矩阵含 Windows 与两个 macOS runner，顺序为 checkout（含子模块）→ npm install → init → build → pack → 上传产物；工作流没有单独运行 test/lint。
+`.github/workflows/ci.yml` 对目标为 `master` 的所有 PR、master push 和手动触发运行独立的 `test`、`lint` 检查。使用 Ubuntu、Node 22 和 `npm ci`，不下载 Electron 二进制或设备资源，也不需要初始化子模块。没有路径过滤，文档 PR 同样会产生检查结果；检查名用于 master 分支保护，重命名前需同步更新 GitHub 设置。
+
+`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 仍为手动发行构建，矩阵含 Windows、macOS arm64 与 macOS 15 Intel runner，顺序为 checkout（含子模块）→ npm ci → init → build → pack → 上传产物。
+
+Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平台验证安装包及设备功能，单测和 lint 不代表完整运行兼容性。
 
 签名环境变量来自 CI secrets。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。

@@ -31,6 +31,8 @@
 
 点击[这里](https://github.com/liriliri/echo/releases/)下载并安装 ECHO，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。
 
+当前源码使用 Electron 45，macOS 需要 13 或更新版本。开发环境需要 Node.js 22.12.0 或更新版本；初始化子模块后执行 `npm ci` 安装锁定的依赖。开发与验证步骤见 [项目开发指南](.agents/skills/scrcpy-harmony-project/references/development.md)。
+
 ## 功能
 
 <img src="https://echo.liriliri.io/screenshot.png" style="width:100%">

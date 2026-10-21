@@ -5,6 +5,9 @@
   "version": "1.0.1",
   "description": "Harmony hdc desktop app",
   "main": "dist/main/index.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "test": "node --test test/*.test.cjs",
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\"",
@@ -51,8 +54,8 @@
     "@xterm/xterm": "^5.5.0",
     "axios": "^1.8.4",
     "concurrently": "^9.1.2",
-    "custom-electron-titlebar": "^4.2.8",
-    "electron": "30.5.1",
+    "custom-electron-titlebar": "^4.4.1",
+    "electron": "45.0.0",
     "electron-builder": "^26.0.12",
     "electron-updater": "^6.6.2",
     "esbuild": "^0.21.5",

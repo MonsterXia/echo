@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, macos-13]
+        os: [windows-latest, macos-latest, macos-15-intel]
 
     steps:
     - uses: actions/checkout@v4
@@ -18,9 +18,9 @@ jobs:
         submodules: true
     - uses: actions/setup-node@v4
       with:
-        node-version: '18.x'
+        node-version: '22'
     - run: |
-        npm i
+        npm ci
         npm run init 
         npm run build
         npm run pack
