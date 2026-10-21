@@ -1,0 +1,120 @@
+# 架构与代码导航
+
+本文路径均相对仓库根目录。范围：应用结构、IPC、功能路由、状态、投屏、UI 约定。构建与测试见 [开发与验证](development.md)。
+
+## 项目身份与目录
+
+`package.json` 的包名为 `echo`、产品名为 `ECHO`，仓库目录名为 `scrcpy-harmony`。README 和包元数据保留上游 `liriliri/echo` 信息；操作当前 Git 远端时使用 `git remote -v`，不要由上游链接推断当前远端。
+
+| 路径 | 职责 |
+| --- | --- |
+| `src/main/` | Electron 主进程：启动、窗口、设备操作、持久化 |
+| `src/preload/` | `contextBridge`、类型化 IPC 调用封装 |
+| `src/renderer/main/` | 主窗口的设备管理面板 |
+| `src/renderer/screencast/` | 独立投屏窗口、Canvas 和输入控制 |
+| `src/renderer/lib/` | 跨业务窗口辅助方法，如 HAP 安装、store 序列化 |
+| `src/common/` | 应用类型、国际化和主题 |
+| `src/share/` | `electron-share` 子模块：窗口、IPC、日志、公共页面及组件 |
+| `src/renderer/icon/` | `icon-share` 子模块：图标生成源 |
+| `script/` | 下载运行资源、构建发行目录和打安装包 |
+| `build/` | 已跟踪的应用图标资源；不是可随意删除的构建产物 |
+| `test/` | Node 内置测试，目前为投屏坐标回归测试 |
+| `dist/`、`release/`、`resources/` | 被忽略的编译输出、安装包和下载资源 |
+
+## 启动和页面
+
+1. `src/main/index.ts` 在 Electron ready 时初始化共享 terminal、HDC，显示主窗口并初始化菜单。
+2. `src/main/window/main.ts` 创建名为 `main` 的窗口，注册主/设置 store IPC 和投屏窗口入口。
+3. `src/preload/index.ts` 暴露全局 `main`、`preload`、`node`，并声明其 TypeScript 类型。其中 `main` 合并共享模块与本项目接口。
+4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享子模块。这里没有 React Router。
+
+主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口关闭会销毁自身并重新显示主窗口；相关代码在 `src/main/window/screencast.ts`。
+
+## IPC 边界
+
+```text
+React 组件 / MobX store
+  → 全局 main.someMethod(...)
+  → src/preload/main.ts 的 invoke('channel')
+  → 主进程 handleEvent('channel', handler)
+  → hdckit Client / Target / UiDriver
+  → 鸿蒙设备
+```
+
+请求类型集中在 `src/common/types.ts`。主进程设备处理器集中在 `src/main/lib/hdc/`，注册由 `src/main/lib/hdc.ts` 的 `init()` 串起；窗口类处理器在 `src/main/window/`。
+
+注意 API 名不一定等于 channel 名：renderer 的 `main.dumpLayout()` 使用 `dumpWindowHierarchy` channel。排错时核对桥接字符串，而不只搜方法名。
+
+推送使用共享 `window.sendTo()` / `sendAll()`，renderer 通过 `main.on()` 订阅。常用事件：
+
+| 事件 | 数据或用途 |
+| --- | --- |
+| `changeTarget` | HDC 设备增删后通知主窗口刷新设备列表 |
+| `changeMainStore` | 主 store 的 name/value 变更，投屏用它同步当前设备 |
+| `captureScreen` | 发给投屏窗口的 connectKey 与图像字节 |
+| `shellData` | 发给主窗口的 sessionId 与终端文本 |
+| `hilogEntry` | 发给主窗口的 hilogId 与日志条目 |
+
+增加事件时检查订阅者按设备或会话 ID 过滤，以及退出/切换时的取消订阅。`share` 的 IPC 和窗口内部机制需在子模块初始化后查看，不能仅凭调用点推断。
+
+## 功能定位
+
+下表 UI 路径均以 `src/renderer/main/components/` 为前缀，设备路径均以 `src/main/lib/` 为前缀。
+
+| 功能 | UI 入口 | 设备实现 |
+| --- | --- | --- |
+| 设备选择、概览、按键、截图 | `toolbar/Target.tsx`、`overview/`、`screenshot/` | `hdc.ts` |
+| 应用安装、启停、卸载、信息 | `application/`，安装公共方法在 `src/renderer/lib/util.ts` | `hdc/bundle.ts` |
+| 进程列表 | `process/Process.tsx` | `hdc/base.ts` 的 `getProcesses` |
+| 交互 shell | `shell/Shell.tsx`、`shell/Term.tsx` | `hdc/shell.ts` 的 HdcPty/sessionId |
+| 布局树、属性与截图 | `layout/`，XML 工具在 `src/renderer/main/lib/util.ts` | `hdc/uitest.ts` 的 `captureLayout` 与 XML 转换 |
+| 端口转发 | `overview/PortMappingModal.tsx` | `hdc/port.ts`，通用 `forwardTcp` 在 `hdc/base.ts` |
+| WebView 调试 | `webview/Webview.tsx` | `hdc/webview.ts` 查 unix socket、建立转发并取 `/json` |
+| HiLog | `hilog/Hilog.tsx` | `hdc/hilog.ts`，pid 名称缓存依赖 `hdc/base.ts` |
+| 设置 | `toolbar/SettingsModal.tsx`、`src/renderer/main/store/settings.ts` | `src/main/lib/store.ts` 和 `src/main/window/main.ts` |
+
+设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
+
+## 状态与面板生命周期
+
+- `src/renderer/main/store/index.ts` 是主窗口 MobX store，持有 targets、target、panel，以及 settings/application/process/layout 子 store。
+- `src/main/lib/store.ts` 通过 Licia `FileStore` 存储用户数据目录下的 `data/main.json`、`settings.json`、`screencast.json`；目录路径由共享 `getUserDataPath()` 决定。
+- `src/renderer/lib/util.ts` 的 `setMainStore()` 将 MobX observable 转为普通 JS 值后传过 IPC。
+- `src/renderer/main/App.tsx` 的 `Panel` 第一次访问后一直保留子组件，通过透明度和 pointer-events 控制显示。隐藏不等于卸载；轮询等需检查是否在隐藏状态继续运行。
+- 主面板容器和投屏组件都使用设备 key 参与重建。投屏 store 监听 `changeMainStore`：target 为 null 时关窗，换设备时销毁旧客户端并创建新客户端。
+- 新增主面板通常需要同时修改 `App.tsx`、`components/toolbar/Tabs.tsx`、语言字典，状态逻辑按需要放入 `store/`。
+
+## 投屏与输入链路
+
+```text
+src/renderer/screencast/store.ts 创建 ScreencastClient(connectKey)
+  → main.startCaptureScreen(connectKey, scale)
+  → src/main/lib/hdc/uitest.ts 获取并按设备缓存 UiDriver
+  → UiDriver.startCaptureScreen 回调
+  → sendTo('screencast', 'captureScreen', connectKey, image)
+  → ScreencastClient.draw() 将 JPEG 解码绘制到 Canvas
+
+Canvas pointer 事件
+  → getPointer() 计算设备坐标
+  → main.touchDown / touchMove / touchUp
+  → src/main/lib/hdc/uitest.ts → UiDriver
+```
+
+`getUiDriver()` 加载资源 `uitestkit_sdk/uitest_agent_v1.1.0.so`，传给 `target.createUiDriver(..., '1.1.0')`。资源版本与调用参数需要保持匹配。
+
+定位投屏问题时：
+
+- 帧解码入口：`src/renderer/screencast/lib/ScreencastClient.ts` 的 `draw()`；图像加载辅助在同目录 `util.ts`。实现使用 JPEG Blob 和 Canvas，不是 H.264/WebCodecs 管线。
+- 触摸映射：`getPointer()` 先按帧宽高比算 CSS 容器内的实际图像区域，再按百分比映射到 `getDisplaySize()` 返回的设备尺寸。请求 `scale` 与实际流缩放可能不同。
+- 首帧或帧尺寸变化时重新查询设备尺寸；尺寸必须是正整数。坐标上限为 width/height 减一。没有有效尺寸时不发送触摸。
+- `isDrawing` 让绘制和尺寸查询串行进行，期间新帧会跳过；它不是帧队列。改动时注意异步旧帧覆盖新状态。
+- 启动包含 5 秒未就绪重试，`destroy()` 停止捕获并退订帧事件。若修改重启/销毁逻辑，实际核对定时器和异步回调生命周期，不假设已有完整取消机制。
+- `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
+
+## UI 和生成文件
+
+- 使用 React 函数组件、`mobx-react-lite` 的 `observer`、Luna React 封装和局部 `.module.scss`；CSS Modules 配置为 `camelCaseOnly`。
+- `src/common/util.ts` 初始化国际化；目前 `en-US` 与 `zh-CN` 都指向同一中文字典，不应假设已有独立英文翻译文件。
+- 主题源是 `src/common/theme.json`，`npm run gen:theme` 生成 `src/renderer/theme.scss` 与 `src/common/theme.ts`。
+- 图标配置是 `src/renderer/icon.json`，图标源在 icon 子模块，`npm run gen:icon` 生成 `src/renderer/icon.css`。
+- Prettier 配置为无分号、单引号、80 列；避免为局部任务运行全仓库重写格式。
