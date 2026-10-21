@@ -24,6 +24,7 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 
 - 修改功能、追踪 IPC、理解状态或投屏：读 [架构与代码导航](references/architecture.md) 的相关章节。
 - 配置环境、运行验证、启动或打包：读 [开发与验证](references/development.md)。
+- 分阶段修复与交接：读仓库根目录 [RUNBOOK](../../../RUNBOOK.md)；上游报告与 PR 的历史状态见 [来源记录](../../../docs/maintenance/SOURCES.md)。
 - 普通小改只读对应入口及其直接依赖；以上导航不足时再扩大搜索。
 
 ## 关键约束

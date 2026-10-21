@@ -58,7 +58,7 @@ npm start
 | `npm run build:preload` | Vite 将 preload 打为 `dist/preload/index.js`，需要共享子模块 |
 | `npm run build:renderer` | Vite 编译 UI 到 `dist/renderer`，需要共享子模块 |
 | `npm run build` | 顺序执行以上三项，再复制图标及设备资源，生成发行目录内的 package.json，并在 dist 内执行 npm 安装 |
-| `npm run pack` | 使用已经准备好的 dist，经 electron-builder 输出安装包到 `release/<version>/` |
+| `npm run pack -- --no-publish` | 使用已经准备好的 dist，经 electron-builder 输出安装包到 `release/<version>/`，用于本地和 CI 验证并禁止发布 |
 | `npm run gen:theme` / `npm run gen:icon` | 重新生成主题或图标；详见架构参考的生成文件说明 |
 
 完整 `build` 会在生成的 dist 内执行安装命令，不能当作纯离线编译。三个 `build:*` 不负责下载或复制设备资源。Electron 45 的 npm 包在首次调用运行时按需下载二进制，单测和 lint 不触发下载；需要预先下载时运行 `node node_modules/electron/install.js`。
@@ -76,6 +76,8 @@ npm start
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。
 
 `test/build.test.cjs` 在带空格及 `&` 的临时路径中运行真实构建脚本，以 npm 替身验证发行目录、资源复制、元数据和子构建失败时立即停止；它不替代实际 Vite 构建、安装包生成及安装启动检查。
+
+`test/updater.test.cjs` 验证 Windows、macOS arm64/x64 的 GitHub 源和通道覆盖，包括清除共享更新器遗留通道的影响。它使用替身，不访问 GitHub、不验证线上 Release 元数据或下载。2026-10-21 基线共有 13 项测试（投屏 8、构建 2、更新配置 3）；此后数量以实际运行结果为准。
 
 | 修改类别 | 有意义的验证 |
 | --- | --- |
@@ -100,10 +102,14 @@ npm start
 
 `macos-package-arm64` 和 `macos-package-x64` 使用标准 `macos-15` 与 `macos-15-intel` runner，分别在原生架构上完成依赖安装、资源下载、build 和 DMG 打包。两个任务固定相同系统版本，避免 latest 标签自动切换系统。`script/check-macos-install.mjs` 挂载 DMG，将 `.app` 复制到临时目录后卸载镜像，验证包内资源和可执行权限，再运行共享的启动检查。此检查校验实际架构，使用隔离用户配置并在退出后清理配置及 HDC 服务；只读仓库权限、不发布、不上传 artifact、不使用签名或公证 secrets。它不验证 Developer ID 签名、公证或从互联网下载后的 Gatekeeper 放行。
 
-`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 仍为手动发行构建，矩阵含 Windows、macOS arm64 与 macOS 15 Intel runner，顺序为 checkout（含子模块）→ npm ci → init → build → pack → 上传产物。
+`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 是手动产物构建（workflow_dispatch），矩阵使用 `windows-latest`、`macos-latest`、`macos-15-intel`；它与 CI 固定的 macOS runner 标签不同。顺序为 checkout（含子模块）→ npm ci → init → build → pack --no-publish → 上传 artifact。它不会创建 GitHub Release，也不能以 workflow 成功代替用户下载后的签名与设备验收。
 
 Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平台验证安装包及设备功能，单测和 lint 不代表完整运行兼容性。
 
 打包更新元数据使用 `MonsterXia/scrcpy-harmony` 的 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`；手动构建 workflow 显式 `--no-publish`，仅上传安装包、YAML 更新元数据和 blockmap 为 artifact，不创建 Release。正式发布时需将各平台安装包及配套更新文件放入本仓库相应版本的 Release；无 Release 时检查更新可能报错，不能回退到上游。
+
+## 当前验证基线与后续维护
+
+2026-10-21 的 [PR #8 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39611929271) 已通过 test、lint 及 Windows/macOS arm64/macOS x64 的安装包、安装和启动检查；这是该提交的历史结果，后续改动仍需自己的检查。真实设备、签名/公证、线上更新检查及普通用户操作文档的待办见 [RUNBOOK](../../../../RUNBOOK.md)。
 
 签名环境变量来自 CI secrets。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。
