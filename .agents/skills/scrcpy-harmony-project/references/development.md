@@ -1,0 +1,89 @@
+# 开发、构建与验证
+
+路径相对仓库根目录。命令依据 `package.json`、`vite*.ts`、`script/*.mjs` 与 `.github/workflows/build.yml`；运行前以这些文件的当前内容为准。
+
+## 先检查环境
+
+```powershell
+git status --short
+git submodule status
+node --version
+npm --version
+Test-Path node_modules
+Test-Path resources/hdc
+Test-Path resources/uitestkit_sdk
+```
+
+两个子模块由 `.gitmodules` 声明：`src/share`（electron-share）、`src/renderer/icon`（icon-share）。`git submodule status` 行首 `-` 表示未初始化；目录存在也可能是空目录。完整应用构建需要共享代码，重新生成图标需要图标源。
+
+仓库没有 `engines` 字段，也没有跟踪 lockfile；`package-lock.json` 在 `.gitignore` 中。CI 配置使用 Node 18.x，这是既有配置，不等于已验证的最低版本或当前推荐版本。依赖版本与本机支持情况需现场确认。
+
+## 首次准备与启动
+
+需要实际启动/构建时，在仓库根目录执行：
+
+```powershell
+git submodule update --init --recursive
+npm install
+npm run init
+```
+
+`init` 是 `resources` 的别名，会下载 HDC 和 uitestkit；只读分析或文档修改无需为此安装依赖。`script/resources.mjs` 使用外部 `curl`、`unzip`，Windows 环境需确认这些命令可用（如 Git Bash 工具链）；不能假设只有 PowerShell 和 Node 就够。资源脚本按 Windows/非 Windows 分支选取 win/mac 包，没有 Linux 资源分支。
+
+开发需要两个终端：
+
+```powershell
+# 终端 1：同时监听 main/preload 并启动 renderer Vite 服务
+npm run dev
+```
+
+```powershell
+# 终端 2：等 main/preload 首次编译完成后启动 Electron
+npm start
+```
+
+`dev` 不负责启动 Electron；renderer 服务端口为 8080，Vite 配置关闭 HMR。`start` 加载 `dist/main/index.js` 并打开 9229 inspector。主进程或 preload 改动后需要重启 Electron 才能载入新的构建。
+
+实际设备操作需要可用 HDC、已允许调试且可连接的鸿蒙设备；投屏/布局额外依赖匹配的 uitestkit 资源。HDC 默认使用内置资源；设置中的 `hdcPath` 可指定存在的可执行文件路径或字面值 `hdc`，后者依赖 PATH。选择逻辑在 `src/main/lib/hdc.ts`。
+
+## 命令与作用
+
+| 命令 | 作用 / 前提 |
+| --- | --- |
+| `npm test` | Node test runner 执行 `test/*.test.cjs`，需要已安装 npm 依赖 |
+| `npm run lint` | ESLint 检查 `src` 下 ts/tsx；可能包含已初始化的共享子模块 |
+| `npm run build:main` | Vite 将主进程打为 `dist/main/index.js`，需要共享子模块 |
+| `npm run build:preload` | Vite 将 preload 打为 `dist/preload/index.js`，需要共享子模块 |
+| `npm run build:renderer` | Vite 编译 UI 到 `dist/renderer`，需要共享子模块 |
+| `npm run build` | 顺序执行以上三项，再复制图标及设备资源，生成发行目录内的 package.json，并在 dist 内执行 npm 安装 |
+| `npm run pack` | 使用已经准备好的 dist，经 electron-builder 输出安装包到 `release/<version>/` |
+| `npm run gen:theme` / `npm run gen:icon` | 重新生成主题或图标；详见架构参考的生成文件说明 |
+
+不要用 `npm ci` 作为本仓库的默认安装步骤：当前未跟踪 lockfile。完整 `build` 会执行安装命令，不能当作纯离线编译。三个 `build:*` 不负责下载或复制设备资源。
+
+`npm run format` 会广泛改写文件，只在确实需要整体格式化时使用。`format` / `gen:*` 调用 `lsla`，当前 `package.json` 没有直接声明该工具；使用前检查工具来源和可用性，不假设 `npm install` 后一定具备。
+
+没有独立的 `typecheck` script；Vite 构建也不能替代完整 TypeScript 类型检查。需要类型验证时先检查 TypeScript 工具是否可用及现有 tsconfig，再选择检查命令，报告具体结果，不将转译成功称为类型检查通过。
+
+## 测试范围与验收
+
+`test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
+
+当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。
+
+| 修改类别 | 有意义的验证 |
+| --- | --- |
+| 仅项目文档/skill | 检查 YAML、引用路径、源码事实和按任务检索是否充分；无需启动设备 |
+| 投屏坐标或事件逻辑 | `npm test`；涉及显示与设备行为时再做 Electron/真机验证 |
+| renderer / preload / main 修改 | 有关单测、lint、对应 `build:*`；跨进程改动检查两端并在 Electron 中走通 |
+| 资源或打包修改 | 确认资源存在，完整 build、pack，并在目标平台检查安装包 |
+
+单测没有验证真实 JPEG 解码、Canvas 渲染、IPC 传输、HDC 连接或 UiDriver 的设备兼容性。真机投屏验收可覆盖：首次出图、点击/拖动/边缘释放、缩放和旋转、切换/断开设备、关闭重开窗口。仅改其中一项时按影响范围选择验收。
+
+依赖、子模块或设备不齐时，明确记录未能执行的检查及原因，避免把环境缺失归为业务代码失败，也不声称未运行的检查已通过。
+
+## 打包与 CI
+
+`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。当前工作流为手动 `workflow_dispatch`，矩阵含 Windows 与两个 macOS runner，顺序为 checkout（含子模块）→ npm install → init → build → pack → 上传产物；工作流没有单独运行 test/lint。
+
+签名环境变量来自 CI secrets。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。
