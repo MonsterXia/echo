@@ -33,6 +33,13 @@
 
 问题反馈、下载和后续版本以本仓库为准。应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装并使用新的用户配置目录。旧配置保留原处，不会自动迁移。本页界面图片来自上游，仅供功能参考，可能与当前名称和界面不同。
 
+## 主页与问题反馈
+
+- [项目主页](https://github.com/MonsterXia/scrcpy-harmony#readme)：本仓库 README，包含安装、功能与维护说明。
+- [问题反馈](https://github.com/MonsterXia/scrcpy-harmony/issues)：先搜索已有报告，再通过 New issue 提交。应用内也可从“帮助 → 报告问题”（Help → Report Issue）打开此入口。
+
+反馈时请提供 Scrcpy Harmony 版本、桌面系统、设备型号与 HarmonyOS/HDC 版本、复现步骤、预期与实际结果；附上相关日志或截图前，请移除设备标识及其他个人信息。
+
 ## 维护与开发入口
 
 - [分阶段维护 RUNBOOK](RUNBOOK.md)：待办、优先顺序、验收条件及交接记录。
