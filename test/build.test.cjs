@@ -58,7 +58,11 @@ test('build prepares a runnable distribution without requiring a shell', (t) => 
   }
   assert.equal(fs.readFileSync(path.join(f.root, 'dist/resources/hdc/fixture.txt'), 'utf8'), 'resources/hdc')
   assert.equal(fs.readFileSync(path.join(f.root, 'dist/resources/uitestkit_sdk/fixture.txt'), 'utf8'), 'resources/uitestkit_sdk')
-  assert.equal(f.commands().at(-1).cwd, path.join(f.root, 'dist'))
+  assert.equal(fs.readFileSync(path.join(f.root, 'dist/build/fixture.txt'), 'utf8'), 'build')
+  assert.deepEqual(f.commands().at(-1), {
+    args: ['install', '--omit=dev', '--no-audit', '--no-fund'],
+    cwd: path.join(f.root, 'dist'),
+  })
 })
 
 test('a failed build stops before packaging incomplete output', (t) => {
