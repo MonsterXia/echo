@@ -2,4 +2,3 @@ node_modules/
 dist/
 release/
 resources/
-package-lock.json
