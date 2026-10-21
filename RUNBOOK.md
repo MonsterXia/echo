@@ -22,11 +22,11 @@
 
 ## 阶段 0：维护入口与首次独立发布
 
-目标：确保反馈入口可用，并建立可验证的独立发行流程。当前阶段状态：**待开始**。
+目标：确保反馈入口可用，并建立可验证的独立发行流程。当前阶段状态：**进行中**。
 
 | ID | 状态 | 工作项 | 验收条件 |
 | --- | --- | --- | --- |
-| M0-1 | 待开始 | 启用本仓库 Issues，核对 About、主页和反馈入口 | 仓库 Issues 可访问；应用内反馈能进入本仓库；About 不再将用户引向上游下载页。基线时 Issues 关闭，本次文档更新未修改 GitHub 设置。 |
+| M0-1 | 已完成 | 启用本仓库 Issues，核对 About、主页和反馈入口 | Issues 和新建反馈页面可访问；应用反馈菜单指向本仓库；GitHub About 的主页已改为本仓库 README。见 [验收记录](#m0-1-验收记录)。 |
 | M0-2 | 待开始 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
 | M0-3 | 待开始 | 验证实际更新检查与下载入口 | 使用两个明确版本的已打包应用和本仓库 Release，验证“有更新 / 无更新 / 网络或元数据错误”；Windows、macOS arm64、macOS x64 读取各自元数据并跳转本仓库 Releases。记录具体文件名和日志，不能只凭单测通过勾选。 |
 
@@ -118,3 +118,14 @@
 | 日期 | 任务 | 结果与证据 | 下一步 |
 | --- | --- | --- | --- |
 | 2026-10-21 | 维护基线 | PR #1–#8 已合并；PR #8 五项 CI 通过；fork 已解除；来源归档已核验 | 从 M0-1 或 M1-1 开始，更新此文件记录执行结果 |
+| 2026-10-21 | M0-1：已完成 | Issues 已启用，About/主页已修正，Windows 应用反馈与关于窗口已核验；见下方记录 | M0-2：确定版本号并准备首次独立 Release |
+
+### M0-1 验收记录
+
+- 日期 / 执行者：2026-10-21 / Codex（按 MonsterXia 指令）。基线为 PR #9 合并提交 `be4b7d08f03c2e473f0949ab3222c578315e2b53`，工作分支为 `codex/m0-1-maintenance-entry`。
+- 根因：应用反馈 URL 和包元数据已在 PR #8 切换到本仓库，但 GitHub Issues 仍关闭，About 的 Website 仍为上游站点。
+- GitHub 设置已实际保存：[仓库 API](https://api.github.com/repos/MonsterXia/scrcpy-harmony) 核验 `has_issues: true`；About 描述为“Scrcpy Harmony：独立维护的鸿蒙 HDC 桌面工具，支持投屏、设备与应用管理。”；Website 为 `https://github.com/MonsterXia/scrcpy-harmony#readme`，与 `package.json` 的 homepage 一致。
+- 浏览器验收：[Issues](https://github.com/MonsterXia/scrcpy-harmony/issues) 正常显示，新建反馈入口可访问。未为验证创建测试 Issue。
+- 应用验收：Windows x64 本地打包的 Scrcpy Harmony 1.0.1（PR #8 应用代码，PR #9 仅改文档），使用隔离临时配置，通过 Playwright Electron 调用实际菜单回调。在 `shell.openExternal` 边界捕获到 `https://github.com/MonsterXia/scrcpy-harmony/issues`，并单独在浏览器验证目标可访问。“关于”窗口显示 `Scrcpy Harmony / Version 1.0.1`，无外链。临时配置已清理。
+- 仓库改动：README 增加主页、反馈链接及反馈所需信息；来源记录保留历史快照并标明当前状态。本项无需修改已正确的应用 URL，也不涉及设备调用或共享子模块。
+- 验证边界：菜单验证未调用操作系统默认浏览器；macOS 未在本次重新运行。此项不代表首次 Release、线上更新或设备功能已验收，M0-2、M0-3 仍待开始。
