@@ -38,5 +38,5 @@
 ## 验证与交接
 
 - Node 22.21.1 / Windows x64：初轮专项 14/14、全量 199/199；端口修订专项 **23/23**、全量 **208/208**；合入 #31 后组合全量 **221/221**，无跳过/取消/TODO。`npm run lint`、`npm run build:main` 再次通过。主进程构建现在实际包含 finiteShell，但 Vite 转译不等于全仓库 TypeScript 检查。最终独立 review 增量复核由主对话完成。
-- 交付 [PR #32](https://github.com/MonsterXia/scrcpy-harmony/pull/32)；主对话对 `2e7cd3e` 的[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)确认端口 P2 已修复，独立 45/45 通过，无剩余阻断。最终组合 SHA 与[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/32/checks)由最终交付核验，主对话统一合并，本分支不自行合并。
+- 交付 [PR #32](https://github.com/MonsterXia/scrcpy-harmony/pull/32)；主对话对 `2e7cd3e` 的[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)确认端口 P2 已修复，独立 45/45 通过，无剩余阻断。最终组合审查、SHA 和合并状态见 PR 页面，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/32/checks)按最终提交核验；仅在最终提交独立审查无阻断且五项 CI 通过后合并。
 - 下一步：在授权设备上校准 10 秒预算，核对内存字段和 HDC 协议兼容、断连恢复，再选择后续有限只读调用逐项接入。前后未限时调用、长期空闲原时长及 CPU/内存/监听释放仍待验证；M2-2 不标完成。
