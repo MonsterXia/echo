@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: a failed device does not hide healthy devices or change their order
+ok 1 - a failed device does not hide healthy devices or change their order
+  ---
+  duration_ms: 76.146375
+  type: 'test'
+  ...
+# Subtest: a synchronous target lookup failure is isolated too
+ok 2 - a synchronous target lookup failure is isolated too
+  ---
+  duration_ms: 2.937625
+  type: 'test'
+  ...
+# Subtest: version compatibility: device prefix and build suffix
+ok 3 - version compatibility: device prefix and build suffix
+  ---
+  duration_ms: 1.689958
+  type: 'test'
+  ...
+# Subtest: version compatibility: prefix without parentheses
+ok 4 - version compatibility: prefix without parentheses
+  ---
+  duration_ms: 1.852834
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version
+ok 5 - version compatibility: bare version
+  ---
+  duration_ms: 1.605041
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version and spaced suffix
+ok 6 - version compatibility: bare version and spaced suffix
+  ---
+  duration_ms: 2.309542
+  type: 'test'
+  ...
+# Subtest: version compatibility: repeated whitespace
+ok 7 - version compatibility: repeated whitespace
+  ---
+  duration_ms: 1.408208
+  type: 'test'
+  ...
+# Subtest: version compatibility: multiword product prefix
+ok 8 - version compatibility: multiword product prefix
+  ---
+  duration_ms: 1.812709
+  type: 'test'
+  ...
+# Subtest: version compatibility: missing value
+ok 9 - version compatibility: missing value
+  ---
+  duration_ms: 1.985916
+  type: 'test'
+  ...
+# Subtest: version compatibility: null value
+ok 10 - version compatibility: null value
+  ---
+  duration_ms: 1.636833
+  type: 'test'
+  ...
+# Subtest: version compatibility: non-string value
+ok 11 - version compatibility: non-string value
+  ---
+  duration_ms: 1.916209
+  type: 'test'
+  ...
+# Subtest: version compatibility: blank value
+ok 12 - version compatibility: blank value
+  ---
+  duration_ms: 1.457375
+  type: 'test'
+  ...
+# Subtest: version compatibility: unrecognized text
+ok 13 - version compatibility: unrecognized text
+  ---
+  duration_ms: 1.757292
+  type: 'test'
+  ...
+# Subtest: missing optional metadata preserves a selectable key and string IPC fields
+ok 14 - missing optional metadata preserves a selectable key and string IPC fields
+  ---
+  duration_ms: 2.287791
+  type: 'test'
+  ...
+# Subtest: parameter whitespace is removed from the display name and API version
+ok 15 - parameter whitespace is removed from the display name and API version
+  ---
+  duration_ms: 2.039334
+  type: 'test'
+  ...
+# Subtest: no connected devices has an informational diagnostic, not a read failure
+ok 16 - no connected devices has an informational diagnostic, not a read failure
+  ---
+  duration_ms: 1.564417
+  type: 'test'
+  ...
+# Subtest: all failed devices retain per-device causes and an aggregate diagnostic
+ok 17 - all failed devices retain per-device causes and an aggregate diagnostic
+  ---
+  duration_ms: 2.347917
+  type: 'test'
+  ...
+# Subtest: list failure returns a diagnosed empty result and can recover on the next refresh
+ok 18 - list failure returns a diagnosed empty result and can recover on the next refresh
+  ---
+  duration_ms: 1.707084
+  type: 'test'
+  ...
+# Subtest: disconnect and reconnect do not retain a failed target or stale parameters
+ok 19 - disconnect and reconnect do not retain a failed target or stale parameters
+  ---
+  duration_ms: 1.898541
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 162.144

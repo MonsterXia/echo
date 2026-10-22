@@ -1,0 +1,29 @@
+[49755:1022/164553.804447:INFO:CONSOLE:50] "16:45:53.803 I renderer: start", source: file://<repository>/dist/renderer/assets/app-BK7K8d-v.js (50)
+[49755:1022/164553.804815:INFO:CONSOLE:0] "Electron Security Warning (Disabled webSecurity) This renderer process has "webSecurity" disabled. This
+  exposes users of this app to severe security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+[49755:1022/164553.804842:INFO:CONSOLE:0] "Electron Security Warning (allowRunningInsecureContent) This renderer process has "allowRunningInsecureContent"
+  enabled. This exposes users of this app to severe security risks.
+
+  
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+[49755:1022/164553.804862:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+[49755:1022/164553.804962:INFO:CONSOLE:50] "16:45:53.804 I renderer: render app", source: file://<repository>/dist/renderer/assets/app-BK7K8d-v.js (50)
+16:45:53.813 I window: main on ready-to-show
+16:45:53.814 I window: main ready and show
+Debugger ending on ws://127.0.0.1:62700/0cf55eaf-bd01-4a38-b476-8044d5bcdc21
+For help, see: https://nodejs.org/learn/getting-started/debugging
