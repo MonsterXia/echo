@@ -58,9 +58,9 @@
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
 | M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[有限命令等待调查](docs/maintenance/M2-2-command-timeout.md)已建立受控缺口用例；尚未实现生产超时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
-| M2-3 | 待开始 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。 |
+| M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 待开始 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 以 Pura 70 Pro / 5.1.0.150（API 17）原报告为线索，核对 socket、端口转发和 `/json`；官方调试方法能发现的目标在应用中也可见，空目标及断连可恢复。 |
-| M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。失败回归修复与真机证据按 docs/maintenance/ 下的 M2-5 专项报告归档；网络真机断连重连仍待验收。 |
+| M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；无线真机、物理断连重连及授权失败仍待验收。 |
 
 入口：`src/renderer/screencast/lib/ScreencastClient.ts`、`src/main/lib/hdc/uitest.ts`、`src/renderer/main/App.tsx`、`src/main/lib/hdc/webview.ts`、`src/main/lib/hdc.ts`。M2-4/5 应在 M1-1 后复验，避免把设备枚举失败误判为调试协议问题。
 
@@ -72,8 +72,8 @@
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
-| M3-1 | 待开始 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
-| M3-2 | 待开始 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
+| M3-1 | 待验收 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
+| M3-2 | 进行中 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
 | M3-3 | 待验收 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 已补[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)，区分 1.0.2 与 master、HiLog 保存与桌面诊断；Windows 干净构建及边界见 [M3-3 报告](docs/maintenance/M3-3.md)。Electron 主进程必需；真机用户流程与本轮 macOS 人工走读未验收，保留待验收。 |
 
 入口：`src/main/window/screencast.ts`、`src/renderer/screencast/components/`、`src/renderer/main.tsx`、`README.md` 与开发指南。开发指南已经存在，但不能据此将普通用户操作文档标为完成。
@@ -101,6 +101,27 @@
 ## 进度与交接记录
 
 每次推进先更新阶段表中的状态，再在这里追加一条记录；证据优先链接到本仓库 PR、CI、可访问日志或仓库文件，避免只有个人电脑绝对路径。
+
+### 2026-10-22 并行任务合入复核
+
+以下为本轮最新交接；后文初轮测试数量和待审查说明保留为过程记录，当前集成结果以本节及各 PR 最终提交检查为准。
+
+| 交付 | 独立审查与合入情况 | 剩余任务 |
+| --- | --- | --- |
+| [#19 用户与构建指南](https://github.com/MonsterXia/scrcpy-harmony/pull/19) | 独立复核与五项必需 CI 通过，已合并 | M3-3 待验收：真机用户流程与 macOS 人工走读；资源下载校验、HiLog 停止后的迟到日志属于后续生产改进。 |
+| [#20 有限命令等待调查](https://github.com/MonsterXia/scrcpy-harmony/pull/20) | 独立复核与五项必需 CI 通过，已合并 | M2-2 进行中：先设计可取消 transport，再推进有限命令截止；生产超时及长期空闲真机验证未完成。 |
+| [#21 应用并发刷新](https://github.com/MonsterXia/scrcpy-harmony/pull/21) | 独立复核与五项必需 CI 通过，已合并 | M1-2 待验收：缺可用于授权验证的 bilibili HAP，安装/卸载后的真机刷新未完成。 |
+| [#22 投屏生命周期](https://github.com/MonsterXia/scrcpy-harmony/pull/22) | 独立复核与五项必需 CI 通过，已合并；补齐真实 UiDriver 异步 start/stop 等待及跨层回归 | M2-3 进行中：原报告场景、真实捕获异常与窗口关闭行为待验收。 |
+| [#23 网络调试证据](https://github.com/MonsterXia/scrcpy-harmony/pull/23) | 独立复核与五项必需 CI 通过，已合并 | 两项失败 TODO 由 #26/#27 修复并转为正式断言；无线连接验收仍待办。 |
+| [#24 音频评估](https://github.com/MonsterXia/scrcpy-harmony/pull/24) | 独立复核与五项必需 CI 通过，已合并 | M4-1 暂缓：产品范围、部署授权、SDK/设备能力与普通签名可分发性待确定。 |
+| [#25 窗口与显示](https://github.com/MonsterXia/scrcpy-harmony/pull/25) | 独立复核与五项必需 CI 通过，已合并；104 个合成显示样本复核通过 | M3-1 待验收、M3-2 进行中：实际 DPI、多显示器、标题栏与设备字体仍需实测。 |
+| [#26 刷新失败提示](https://github.com/MonsterXia/scrcpy-harmony/pull/26) | 集成代码独立复核通过；合并与最终五项 CI 见 PR 页面 | M2-5 进行中：受控 USB 故障注入不代替物理断连、无线连接或授权失败验收。 |
+| [#27 参数错误识别](https://github.com/MonsterXia/scrcpy-harmony/pull/27) | 本次集成交付；按最终提交独立复核并通过五项必需 CI 后合并，状态见 PR 页面 | 与 #26 组合时保留部分成功、正常空列表和失败清理语义；概览共用读取器。 |
+
+- 本地完整组合回归 **139/139 通过、0 TODO**，lint 通过。网络回归实际经过 hdckit、共享参数读取器及处理器，保留实际参数命令请求断言；没有用替身绕过新增读取器。参数修复及设备证据见 [专项报告](docs/maintenance/M2-5-parameter-errors.md)。
+- 审查还修复了 TCP 测试夹具清理时的迟到连接竞态；持久回归、旧实现反向验证及初始化故障注入均已复核。显示验证补齐水平方向可见性断言。上述修订均在最终 CI 范围内。
+- M1-3 仍进行中：bilibili 离线图标仍是默认图标，资源不可读且无本地 HAP。后续应用验证仅使用 bilibili，不记录内部应用信息。本轮整合未新增设备操作，也未发布新版本。
+- 下一步优先补 M1-3 的授权资源读取路径；可并行推进 M2-2 可取消 transport 设计和剩余设备/显示验收。M2-4 及 M4 的其他条目维持原状态，不因本轮合并自动完成。
 
 ```text
 日期 / 负责人：
@@ -226,6 +247,31 @@
 - Node HTTP(S) 与 Chromium 均经不转发流量的拒绝代理，分别确认探针失败和代理收到请求；离线图片哈希与默认资源一致。`verificationPassed=true` 仅代表验证完成，`offlineIconAcceptancePassed=false` 明确表示离线应用图标未通过。
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
+
+### M3-1 / M3-2 合并显示工作线
+
+- 2026-10-22 / Codex；基线 `9e944ae`，独立分支 `codex/m3-display`。来源 #28/#32 正文及评论已读取。M3-1 待验收、M3-2 进行中；见 [显示专项报告](docs/maintenance/M3-display.md)。
+- 复现固定 500×640 最小窗口高于小工作区；限制创建/恢复后的边界，并允许 320×320，窄窗口使用两行工具栏。合成 Electron 最终 104 样本通过；窗口单测先失败后通过，完整 69 项测试及 lint、main/renderer 构建通过。原坐标测试和投屏客户端未修改。
+- UI 字体与 JPEG 缩放链已区分，保留同条件前后截图，未开启未经证实的抗锯齿开关。没有真机、物理分辨率/DPI 修改或 HDC 操作。真实显示器、标题栏、原机型画面仍待验收；不把合成测试记作字体问题修复。见 [PR #25](https://github.com/MonsterXia/scrcpy-harmony/pull/25) 及[必需 CI 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/25/checks)；不自动合并或发布。
+- 统一终审补验：fetch/merge 最新 master 仍为 `9e944ae`。增加 Canvas 左右边界（1px 容差），左右平移注入的 104 样本全部被拒绝；正常矩阵通过。280×400/100% 实测现有工具栏纵向 overflow 为 auto，滚轮至 scrollTop=28 后第三行缩放控件完整可达，10 控件逐个命中检查通过；因此未额外修改生产样式。跨显示器动态约束仍待验收，详见专项报告及更新后的脚本/证据哈希。
+- 随后同步已推进的 master `92a0725`（合并提交 `e3fcac7`），保留并行任务全部状态与交接。按新锁文件安装后，完整 84 项测试、lint、main/renderer 构建、104 样本显示矩阵重新通过；最终显示证据更新为合并版本。
+- #22 集成复验：按协调顺序固定同步 master `78f6057`（合并提交 `2ca4a0b`），完整保留 M2-3/M2-2 交接和架构记录。原显示脚本/fixture 无需修改，新客户端 104 样本全部通过；完整测试 117/117、lint、main/renderer 构建通过。最终显示归档替换为本次真实结果，客户端源码哈希更新；不以合成 transport 代表真实 IPC 或真机通过，未操作设备，不自行合并。
+
+### M2-5 网络调试证据与验证准备
+
+- 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`；分支 `codex/m2-5-network-evidence`。M2-5 保持**进行中，真机待验收**。
+- 已读取上游 #13、当前华为/OpenHarmony 官方文档和锁定 hdckit 0.12.1；具体来源、版本边界、应用链路和验收步骤见 [独立报告](docs/maintenance/M2-5.md)。
+- 独立回环 fixture 使用实际 hdckit、getTargets、store 与工具栏代码：专项 3 通过、2 个执行失败的 TODO；全量 69 通过、2 TODO，lint 通过。严格模式复现两项失败：枚举失败仍提示成功、参数错误文本被视为空参数。生产代码未修改，修复方案留待协调独立任务。
+- 无 HDC 可执行文件/真机操作；USB、网络授权/连接、自动恢复和投屏均未验收。[PR #23](https://github.com/MonsterXia/scrcpy-harmony/pull/23) 已进入合并审查；补充本次参数查询断言、初始化和晚到连接清理回归后，专项为 4 通过、2 TODO。[必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/23/checks) 按最终提交核验；两项生产缺陷由独立 PR #26/#27 修复后再将对应 TODO 转为普通断言。
+
+### M2-3 无设备恢复子任务
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`，分支 `codex/m2-3-recovery`，独立检出；M2-3 保持进行中。
+- 读取上游 #12 正文/评论（均空）后核对源码；通过真实客户端事件路径复现销毁后重试、迟到启动/绘制、拒绝未处理和 URL 泄漏。范围及后续依赖见 [专项报告](docs/maintenance/M2-3-recovery.md)。
+- 初始生命周期回归 10 失败/1 通过；修订及独立审查补充后 17 项生命周期、8 项坐标回归通过，全套 83/83、lint、renderer 构建通过。额外 TypeScript 检查与基线同为 28 条诊断，无新增；不得记为类型检查通过。
+- 独立复审未发现新的范围内阻断问题。[PR #22](https://github.com/MonsterXia/scrcpy-harmony/pull/22) 保留待审查，五项必需 CI 的最终提交结果见 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/22/checks)及 PR 验证说明。未连接真机、未操作应用，未验证原报告特定应用或受保护内容，不修改 M2-2 的 HDC 等待实现。
+- 下一步：核对 PR 最终提交的必需 CI 后人工审查；后续按报告补真机捕获层/客户端层区分及窗口关闭验证，不能将本次受控测试作为 M2-3 整体验收。
+- 合并前复审增量：确认 `uitest.ts` 未等待 hdckit 0.12.1 的异步 start/stop，原 bridge 替身没有覆盖此契约。获准后仅补两处 await；新增七项穿过真实 handler/UiDriver 方法的回归先全部失败、修复后通过，详见专项报告补充。此次增量等待重新 CI 和安排的独立复审；M2-3 仍进行中，未操作真机。
 
 ### M2-2 有限命令等待调查
 

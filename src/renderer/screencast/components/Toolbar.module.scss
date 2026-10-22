@@ -1,7 +1,23 @@
-.container {
+.container:global(.luna-toolbar) {
   position: absolute;
   left: 0;
   top: 0;
   right: 0;
   border-bottom: none;
+
+  @media (max-width: 480px) {
+    height: 62px;
+    flex-wrap: wrap;
+    align-content: flex-start;
+
+    :global(.luna-toolbar-item) {
+      flex-shrink: 0;
+    }
+
+    :global(.luna-toolbar-item-space) {
+      flex-basis: 100%;
+      height: 0;
+      margin: 0;
+    }
+  }
 }

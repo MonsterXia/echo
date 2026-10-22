@@ -129,18 +129,18 @@ test('no connected devices has an informational diagnostic, not a read failure',
   assert.ok(!logs.some(({ level }) => level === 'warn' || level === 'error'))
 })
 
-test('all failed devices retain per-device causes and an aggregate diagnostic', async () => {
+test('all failed devices reject with per-device causes and an aggregate diagnostic', async () => {
   const first = new Error('unauthorized')
   const second = new Error('transport closed')
   const { getTargets, logs } = await loadTargets(clientFor({ first, second }))
-  assert.deepEqual(await getTargets(), [])
+  await assert.rejects(getTargets(), /No HDC target parameters could be read/)
   for (const [key, error] of [['first', first], ['second', second]]) {
     assert.ok(logs.some(({ level, args }) => level === 'warn' && args.includes(key) && args.includes(error)))
   }
   assert.ok(logs.some(({ level, args }) => level === 'warn' && args.includes(2)))
 })
 
-test('list failure returns a diagnosed empty result and can recover on the next refresh', async () => {
+test('list failure rejects with a diagnostic and can recover on the next refresh', async () => {
   const error = new Error('HDC server unavailable')
   let connected = false
   const client = { ...clientFor({ device: parameters() }), listTargets: async () => {
@@ -148,7 +148,7 @@ test('list failure returns a diagnosed empty result and can recover on the next 
     return ['device']
   } }
   const { getTargets, logs } = await loadTargets(client)
-  assert.deepEqual(await getTargets(), [])
+  await assert.rejects(getTargets(), /Failed to list HDC targets/)
   assert.ok(logs.some(({ level, args }) => level === 'error' && args.includes(error)))
   connected = true
   assert.deepEqual((await getTargets()).map(({ key }) => key), ['device'])
@@ -159,7 +159,7 @@ test('disconnect and reconnect do not retain a failed target or stale parameters
   const { getTargets } = await loadTargets(clientFor(entries))
   assert.equal((await getTargets()).length, 1)
   entries.device = new Error('disconnected')
-  assert.deepEqual(await getTargets(), [])
+  await assert.rejects(getTargets(), /No HDC target parameters could be read/)
   delete entries.device
   assert.deepEqual(await getTargets(), [])
   entries.device = parameters('PSN-AL00 7.0.0.110(SP7)')

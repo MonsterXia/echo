@@ -22,6 +22,8 @@ export interface IProcess {
   name: string
 }
 
+// Rejects on enumeration failure or when every listed target fails to read.
+// A successful enumeration with no connected targets resolves to [].
 export type IpcGetTargets = () => Promise<ITarget[]>
 export type IpcGetOverview = (connectKey: string) => Promise<{
   name: string

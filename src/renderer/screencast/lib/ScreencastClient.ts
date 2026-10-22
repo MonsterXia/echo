@@ -6,11 +6,20 @@ import clamp from 'licia/clamp'
 import store from '../store'
 
 export default class ScreencastClient {
+  private static captureTasks = new Map<string, Promise<void>>()
   canvas = document.createElement('canvas')
   ctx = this.canvas.getContext('2d')!
   ready: Promise<void>
   private connectKey: string
   private offCaptureScreen: types.AnyFn = noop
+  private offPointerEvents: types.AnyFn = noop
+  private destroyed = false
+  private generation = 0
+  private captureTask: Promise<void> = Promise.resolve()
+  private retryTimer?: ReturnType<typeof setTimeout>
+  private frameReceived = false
+  private acceptingFrames = false
+  private imageAbort = new AbortController()
   private readiness = new Readiness()
   private isTouching = false
   private isDrawing = false
@@ -19,29 +28,94 @@ export default class ScreencastClient {
     this.connectKey = connectKey
     this.ready = this.readiness.ready('captureScreen')
 
-    this.start()
     this.bindEvent()
+    this.start()
   }
-  async start() {
-    const { connectKey } = this
-    await main.stopCaptureScreen(connectKey)
-    await main.startCaptureScreen(connectKey, store.scale)
-    setTimeout(() => {
-      if (!this.readiness.isReady('captureScreen')) {
-        this.start()
+  start() {
+    if (this.destroyed) {
+      return this.captureTask
+    }
+    const generation = ++this.generation
+    this.clearRetry()
+    this.imageAbort.abort()
+    this.imageAbort = new AbortController()
+    this.frameReceived = false
+    this.acceptingFrames = false
+    // Scale changes and retries share a queue: a late start must finish before
+    // the next stop/start (or final stop) can run.
+    return this.queueCapture(async () => {
+      if (!this.isCurrent(generation)) return
+      try {
+        await main.stopCaptureScreen(this.connectKey)
+        if (!this.isCurrent(generation)) return
+        this.acceptingFrames = true
+        await main.startCaptureScreen(this.connectKey, store.scale)
+      } catch (error) {
+        console.error(error)
+        if (this.isCurrent(generation)) {
+          this.acceptingFrames = false
+          this.frameReceived = false
+          this.imageAbort.abort()
+        }
       }
-    }, 5000)
+      if (this.isCurrent(generation) && !this.frameReceived) {
+        this.retryTimer = setTimeout(() => {
+          this.retryTimer = undefined
+          if (this.isCurrent(generation)) this.start()
+        }, 5000)
+      }
+    })
   }
-  destroy() {
-    main.stopCaptureScreen(this.connectKey)
+  destroy(): void {
+    if (this.destroyed) return
+    this.destroyed = true
+    this.clearRetry()
+    this.imageAbort.abort()
     this.offCaptureScreen()
+    this.offPointerEvents()
+    this.isTouching = false
+    this.displaySize = null
+    this.queueCapture(() => main.stopCaptureScreen(this.connectKey))
+  }
+  private queueCapture(operation: () => Promise<void>) {
+    // A replacement client for the same target must wait for the old final
+    // stop. Different targets remain independent; completed queues are removed.
+    const tasks = ScreencastClient.captureTasks
+    const previous = tasks.get(this.connectKey) || Promise.resolve()
+    const task = previous.then(operation).catch(console.error)
+    tasks.set(this.connectKey, task)
+    task.then(() => {
+      if (tasks.get(this.connectKey) === task) tasks.delete(this.connectKey)
+    })
+    this.captureTask = task
+    return task
+  }
+  private isCurrent(generation: number) {
+    return !this.destroyed && generation === this.generation
+  }
+  private clearRetry() {
+    if (this.retryTimer !== undefined) {
+      clearTimeout(this.retryTimer)
+      this.retryTimer = undefined
+    }
   }
   private async draw(image: Uint8Array) {
+    const generation = this.generation
+    if (!this.isCurrent(generation)) return
     const { canvas, ctx } = this
     const blob = new Blob([image], { type: 'image/jpeg' })
     const url = URL.createObjectURL(blob)
-    const img = await loadImage(url)
-    URL.revokeObjectURL(url)
+    const signal = this.imageAbort.signal
+    let img: HTMLImageElement
+    try {
+      img = await loadImage(url, signal)
+    } catch (error) {
+      if (!signal.aborted) throw error
+      return
+    } finally {
+      URL.revokeObjectURL(url)
+    }
+    if (!this.isCurrent(generation) || !this.acceptingFrames) return
     const width = img.naturalWidth
     const height = img.naturalHeight
     if (
@@ -53,6 +127,7 @@ export default class ScreencastClient {
       // Read the touch coordinate space again when the frame size changes
       // (for example, after rotating the device).
       const size = await main.getDisplaySize(this.connectKey)
+      if (!this.isCurrent(generation) || !this.acceptingFrames) return
       if (
         !Number.isInteger(size.width) ||
         !Number.isInteger(size.height) ||
@@ -71,6 +146,8 @@ export default class ScreencastClient {
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.drawImage(img, 0, 0)
+    this.frameReceived = true
+    this.clearRetry()
     this.readiness.signal('captureScreen')
   }
   private getPointer(e: PointerEvent) {
@@ -128,7 +205,12 @@ export default class ScreencastClient {
     const { canvas } = this
 
     this.offCaptureScreen = main.on('captureScreen', (connectKey, image) => {
-      if (connectKey === this.connectKey && !this.isDrawing) {
+      if (
+        !this.destroyed &&
+        this.acceptingFrames &&
+        connectKey === this.connectKey &&
+        !this.isDrawing
+      ) {
         // Do not let a later frame overtake a pending display-size lookup.
         this.isDrawing = true
         this.draw(image)
@@ -137,7 +219,8 @@ export default class ScreencastClient {
       }
     })
 
-    canvas.addEventListener('pointerdown', (e) => {
+    const onTouchStart = (e: PointerEvent) => {
+      if (this.destroyed) return
       canvas.focus()
       const pointer = this.getPointer(e)
       if (!pointer) {
@@ -146,8 +229,8 @@ export default class ScreencastClient {
       const { pointerX, pointerY } = pointer
       main.touchDown(this.connectKey, pointerX, pointerY)
       this.isTouching = true
-    })
-    canvas.addEventListener('pointermove', (e) => {
+    }
+    const onTouchMove = (e: PointerEvent) => {
       if (!this.isTouching) {
         return
       }
@@ -157,7 +240,7 @@ export default class ScreencastClient {
       }
       const { pointerX, pointerY } = pointer
       main.touchMove(this.connectKey, pointerX, pointerY)
-    })
+    }
     const onTouchEnd = (e: PointerEvent) => {
       if (!this.isTouching) {
         return
@@ -170,7 +253,15 @@ export default class ScreencastClient {
       const { pointerX, pointerY } = pointer
       main.touchUp(this.connectKey, pointerX, pointerY)
     }
+    canvas.addEventListener('pointerdown', onTouchStart)
+    canvas.addEventListener('pointermove', onTouchMove)
     canvas.addEventListener('pointerup', onTouchEnd)
     canvas.addEventListener('pointerleave', onTouchEnd)
+    this.offPointerEvents = () => {
+      canvas.removeEventListener('pointerdown', onTouchStart)
+      canvas.removeEventListener('pointermove', onTouchMove)
+      canvas.removeEventListener('pointerup', onTouchEnd)
+      canvas.removeEventListener('pointerleave', onTouchEnd)
+    }
   }
 }

@@ -18,7 +18,8 @@ export default observer(function Target() {
       targetOptions[`${target.name} (${target.key})`] = target.key
     })
   } else {
-    targetOptions[t('targetNotConnected')] = ''
+    const status = store.targetsError ? 'targetRefreshFailed' : 'targetNotConnected'
+    targetOptions[t(status)] = ''
     targetDisabled = true
   }
 
@@ -42,8 +43,10 @@ export default observer(function Target() {
           icon="refresh"
           title={t('refresh')}
           onClick={async () => {
-            await store.refreshTargets()
-            notify(t('targetRefreshed'), { icon: 'success' })
+            const success = await store.refreshTargets()
+            notify(t(success ? 'targetRefreshed' : 'targetRefreshFailed'), {
+              icon: success ? 'success' : 'error',
+            })
           }}
         />
         <ToolbarIcon

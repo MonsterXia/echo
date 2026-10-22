@@ -1,0 +1,25 @@
+{
+  "fault": "enumeration",
+  "platform": "win32",
+  "arch": "x64",
+  "sourceSha256": "58eb5e60e3f5e71801b44d4d03f0c6675fafb3a08df2538584973c040910b697",
+  "realDevice": {
+    "count": 1,
+    "transport": "USB",
+    "softwareVersion": "7.0.0.109",
+    "apiVersion": "26",
+    "selectedMatches": true,
+    "optionMatches": true
+  },
+  "syntheticFault": true,
+  "recovered": true,
+  "passed": true,
+  "pageErrorCount": 0,
+  "commands": {
+    "alive": 1,
+    "list targets": 8,
+    "shell echo ready": 5,
+    "shell param get": 5
+  },
+  "blockedCommandCount": 0
+}
