@@ -41,12 +41,12 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M1-1 | 已完成 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。见 [验收报告](docs/maintenance/M1-1.md)及 [PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。 |
-| M1-2 | 待开始 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。 |
+| M1-2 | 待验收 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。代码与只读验证见 [M1-2 报告](docs/maintenance/M1-2.md)；缺测试 HAP，安装/卸载验收待办。 |
 | M1-3 | 待开始 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | 验证本地 label/iconPath 的实际格式与可读性；侧载应用可显示名称和图标；本地资源缺失、不可读或离线时有合理回退；商店应用仍正常。 |
 
 代码入口：M1-1 为 `src/main/lib/hdc.ts` 的 `getTargets`；M1-2/3 为 `src/main/lib/hdc/bundle.ts` 的 `getBundleInfos`，UI 为 `src/renderer/main/components/application/`。
 
-初始基线的 `getTargets` 使用整体 `Promise.all(...).catch(() => [])`；M1-1 的修订与验证见下方记录。`getBundleInfos` 仍在集中解析时直接 `JSON.parse`，名称/图标主要依赖线上信息。先完成 M1-2 再适配 M1-3，避免同时改动相同解析流程。
+初始基线的 `getTargets` 使用整体 `Promise.all(...).catch(() => [])`；M1-1 的修订与验证见下方记录。M1-2 已将 `getBundleInfos` 改为逐应用命令和解析边界，安装/卸载验收仍待补；名称/图标主要依赖线上信息。先完成 M1-2 再适配 M1-3，避免同时改动相同解析流程。
 
 退出条件：每项有真实代码路径的无设备回归测试、对应设备验收、通过的 CI 和合并 PR；若设备暂缺，停留在“待验收”。
 
@@ -191,3 +191,13 @@
 - 真机：macOS arm64 / Electron 45 / HDC 3.1.0b / nova 15（PSN-AL00，7.0.0.109，API 26）。实际 USB 断开后 getTargets IPC、renderer 列表和选择清空，选择器禁用；重连自动恢复设备和选择，真实 changeTarget 计数递增，页面无异常，进程正常退出。见 [完整报告及证据](docs/maintenance/M1-1.md)。
 - 验收脚本的异步等待与 Luna 禁用状态断言曾误判，已修正并保留失败记录；最终三阶段在同一应用运行中通过。设备标识已脱敏。
 - 边界 / 下一步：真实异常设备混合、缺失和损坏字段由受控 HDC 回归覆盖；未宣称多台异常真机、Windows 真机或长期稳定性已验证。本次为未发布源码构建，公开 v1.0.2 未变。下一项 M1-2，先复现逐应用 bm dump 失败与结果错位问题，再做最小修复。
+
+### M1-2 推进记录
+
+- 2026-10-22 / Codex；基线 `b5759677bddcb812d9720bc452ead891c3dc0959`，分支 `codex/m1-2-bundle-isolation`。上游 PR #31 仍开放，候选提交 `9b7451d708257de1405033b9d9be0ef52d913ce5`，无评论或 review。
+- 当前问题：整批 shell 和集中 JSON.parse 使单条失败阻断其他应用；批量输出分隔符也可能出现在合法字段中。采用逐应用命令与解析边界，结果始终绑定原包名；缺失主模块保留可展示数据并诊断。
+- 先建立 19 项真实 bundle.ts + base.ts 路径的回归，旧实现 16 失败、3 通过；正在修复与验证。现场真机型号以最终运行报告为准；用户确认无现成测试 HAP，安装/卸载刷新验收保留待办。
+
+- 最终验证：新增 21 项回归在固定旧实现为 18 失败、3 通过，修复后 21/21；完整 53 项测试、lint、完整 build 和最终主进程构建通过。
+- 真机只读验收：实际 HUAWEI Mate 80 / VYG-AL30 / 7.0.0.109 / API 26、macOS arm64、Electron 45、HDC 3.1.0b。两个系统包与不存在包混合查询保留正确结果，后续查询恢复；应用面板加载与刷新均为 229 个应用，无页面异常、正常退出。见 [M1-2 报告](docs/maintenance/M1-2.md)及脱敏证据。
+- 状态 / 下一步：M1-2 **待验收**；缺专用测试 HAP，尚未执行真实安装/卸载后的自动刷新。取得可移除测试包后按报告补测，再标记完成；本次只读刷新与模拟状态变化不能代替该项。公开 v1.0.2 未修改。

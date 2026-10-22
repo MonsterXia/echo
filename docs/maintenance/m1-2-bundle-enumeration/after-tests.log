@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 1 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 35.90075
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+ok 2 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 3.550375
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+ok 3 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 2.578
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+ok 4 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 2.913875
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+ok 5 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 3.010292
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+ok 6 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 2.683667
+  type: 'test'
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 7 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 2.586667
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 8 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 2.59375
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+ok 9 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 2.593625
+  type: 'test'
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+ok 10 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 2.4225
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+ok 11 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 2.809333
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+ok 12 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 2.945209
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+ok 13 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 2.54225
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+ok 14 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 2.663709
+  type: 'test'
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+ok 15 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 2.875833
+  type: 'test'
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+ok 16 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 2.672166
+  type: 'test'
+  ...
+# Subtest: empty input performs no shell or online request
+ok 17 - empty input performs no shell or online request
+  ---
+  duration_ms: 2.5825
+  type: 'test'
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+ok 18 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 2.492792
+  type: 'test'
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+ok 19 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 2.356625
+  type: 'test'
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+ok 20 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 2.804791
+  type: 'test'
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+ok 21 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 2.578375
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 141.0345

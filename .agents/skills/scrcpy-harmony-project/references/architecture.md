@@ -80,6 +80,8 @@ React 组件 / MobX store
 
 `hdc.ts` 的 `getTargets` 对每个设备单独读取参数并隔离失败，保留可读取设备的原始顺序。版本从可识别的点分数字字段提取；缺失或未知版本返回空字符串并记警告，名称缺失回退到 connectKey，API 字段缺失返回空字符串。`listTargets` 失败记录 error 并返回空列表；正常无设备记录 info；逐设备读取失败记录 key/原因，全部失败另记数量，便于区分列表为空的原因。IPC 仍返回 `ITarget[]`，不增加新事件或返回类型。
 
+`hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批；安装/卸载后的刷新由 Application.tsx 原有调用链负责。
+
 ## 状态与面板生命周期
 
 - `src/renderer/main/store/index.ts` 是主窗口 MobX store，持有 targets、target、panel，以及 settings/application/process/layout 子 store。

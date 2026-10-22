@@ -67,60 +67,95 @@ function isSystemBundle(bundle: string) {
 const getBundleInfos: IpcGetBundleInfos = async (connectKey, bundleNames) => {
   const result: IBundleInfo[] = []
 
-  const dumpInfos = await shell(
-    connectKey,
-    map(bundleNames, (name) => `bm dump -n ${name}`)
-  )
-  const infos = map(dumpInfos, (dump) => {
-    const lines = dump.split('\n')
-    return JSON.parse(lines.slice(1).join('\n'))
-  })
-
-  for (let i = 0, len = bundleNames.length; i < len; i++) {
-    const bundleName = bundleNames[i]
-    const bundleInfo: IBundleInfo = {
-      bundleName,
-      label: bundleName,
-      icon: '',
-      system: false,
-      versionName: '',
-      apiTargetVersion: 0,
-      vendor: '',
-      installTime: 0,
-      releaseType: '',
-    }
-
-    const info = infos[i]
-    const applicationInfo = info.applicationInfo
-    bundleInfo.system = applicationInfo.isSystemApp
-    bundleInfo.versionName = applicationInfo.versionName
-    bundleInfo.apiTargetVersion = applicationInfo.apiTargetVersion
-    bundleInfo.vendor = applicationInfo.vendor
-    bundleInfo.installTime = info.installTime
-    bundleInfo.releaseType = info.releaseType
-
-    const mainEntry = info.mainEntry
-    if (mainEntry) {
-      const mainModuleInfo =
-        info.hapModuleInfos[info.hapModuleNames.indexOf(mainEntry)]
-      bundleInfo.mainAbility =
-        mainModuleInfo.mainAbility || mainModuleInfo.abilityInfos[0].name
-    }
-
-    if (!bundleInfo.system && !startWith(bundleName, 'com.huawei')) {
-      try {
-        const onlineInfo = await getOnlineBundleInfo(bundleName)
-        if (onlineInfo.name) {
-          bundleInfo.label = onlineInfo.name
+  for (const bundleName of bundleNames) {
+    try {
+      // Keep transport, parsing and metadata tied to this bundle. The shared
+      // batch shell framing cannot isolate transport failures or delimiter text.
+      const dump = (await shell(connectKey, `bm dump -n ${bundleName}`)).trim()
+      let json = dump
+      if (!dump.startsWith('{')) {
+        const newline = dump.indexOf('\n')
+        if (newline === -1 || dump.slice(0, newline).trim() !== `${bundleName}:`) {
+          throw new Error(
+            `Unexpected bm dump header or command error: ${dump.slice(0, 160)}`
+          )
         }
-        if (onlineInfo.icon) {
-          bundleInfo.icon = onlineInfo.icon
-        }
-      } catch (e) {
-        logger.error(e)
+        json = dump.slice(newline + 1)
       }
+      const info = JSON.parse(json)
+      const applicationInfo = info?.applicationInfo
+      if (
+        !applicationInfo ||
+        typeof applicationInfo !== 'object' ||
+        Array.isArray(applicationInfo)
+      ) {
+        throw new Error('Missing or invalid applicationInfo')
+      }
+      if (
+        (info.name !== undefined && info.name !== bundleName) ||
+        (applicationInfo.bundleName !== undefined &&
+          applicationInfo.bundleName !== bundleName)
+      ) {
+        throw new Error('bm dump bundle name does not match the requested bundle')
+      }
+
+      const bundleInfo: IBundleInfo = {
+        bundleName,
+        label: bundleName,
+        icon: '',
+        system: applicationInfo.isSystemApp === true,
+        versionName:
+          typeof applicationInfo.versionName === 'string'
+            ? applicationInfo.versionName
+            : '',
+        apiTargetVersion:
+          typeof applicationInfo.apiTargetVersion === 'number'
+            ? applicationInfo.apiTargetVersion
+            : 0,
+        vendor:
+          typeof applicationInfo.vendor === 'string' ? applicationInfo.vendor : '',
+        installTime: typeof info.installTime === 'number' ? info.installTime : 0,
+        releaseType: typeof info.releaseType === 'string' ? info.releaseType : '',
+      }
+
+      if (info.mainEntry) {
+        const index = Array.isArray(info.hapModuleNames)
+          ? info.hapModuleNames.indexOf(info.mainEntry)
+          : -1
+        const mainModuleInfo = Array.isArray(info.hapModuleInfos)
+          ? info.hapModuleInfos[index]
+          : undefined
+        const ability =
+          mainModuleInfo?.mainAbility || mainModuleInfo?.abilityInfos?.[0]?.name
+        if (typeof ability === 'string' && ability) {
+          bundleInfo.mainAbility = ability
+        } else {
+          logger.warn('Missing main ability for bundle', connectKey, bundleName)
+        }
+      }
+
+      if (!bundleInfo.system && !startWith(bundleName, 'com.huawei')) {
+        try {
+          const onlineInfo = await getOnlineBundleInfo(bundleName)
+          if (onlineInfo.name) {
+            bundleInfo.label = onlineInfo.name
+          }
+          if (onlineInfo.icon) {
+            bundleInfo.icon = onlineInfo.icon
+          }
+        } catch (error) {
+          logger.warn(
+            'Failed to read online bundle info',
+            connectKey,
+            bundleName,
+            error
+          )
+        }
+      }
+      result.push(bundleInfo)
+    } catch (error) {
+      logger.warn('Failed to read bundle info', connectKey, bundleName, error)
     }
-    result.push(bundleInfo)
   }
 
   return result
