@@ -115,7 +115,7 @@
 | [#23 网络调试证据](https://github.com/MonsterXia/scrcpy-harmony/pull/23) | 独立复核与五项必需 CI 通过，已合并 | 两项失败 TODO 由 #26/#27 修复并转为正式断言；无线连接验收仍待办。 |
 | [#24 音频评估](https://github.com/MonsterXia/scrcpy-harmony/pull/24) | 独立复核与五项必需 CI 通过，已合并 | M4-1 暂缓：产品范围、部署授权、SDK/设备能力与普通签名可分发性待确定。 |
 | [#25 窗口与显示](https://github.com/MonsterXia/scrcpy-harmony/pull/25) | 独立复核与五项必需 CI 通过，已合并；104 个合成显示样本复核通过 | M3-1 待验收、M3-2 进行中：实际 DPI、多显示器、标题栏与设备字体仍需实测。 |
-| [#26 刷新失败提示](https://github.com/MonsterXia/scrcpy-harmony/pull/26) | 集成代码独立复核通过；合并与最终五项 CI 见 PR 页面 | M2-5 进行中：受控 USB 故障注入不代替物理断连、无线连接或授权失败验收。 |
+| [#26 刷新失败提示](https://github.com/MonsterXia/scrcpy-harmony/pull/26) | 独立复核与五项必需 CI 通过，已合并 | M2-5 进行中：受控 USB 故障注入不代替物理断连、无线连接或授权失败验收。 |
 | [#27 参数错误识别](https://github.com/MonsterXia/scrcpy-harmony/pull/27) | 本次集成交付；按最终提交独立复核并通过五项必需 CI 后合并，状态见 PR 页面 | 与 #26 组合时保留部分成功、正常空列表和失败清理语义；概览共用读取器。 |
 
 - 本地完整组合回归 **139/139 通过、0 TODO**，lint 通过。网络回归实际经过 hdckit、共享参数读取器及处理器，保留实际参数命令请求断言；没有用替身绕过新增读取器。参数修复及设备证据见 [专项报告](docs/maintenance/M2-5-parameter-errors.md)。
