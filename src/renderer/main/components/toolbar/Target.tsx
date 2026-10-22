@@ -44,6 +44,9 @@ export default observer(function Target() {
           title={t('refresh')}
           onClick={async () => {
             const success = await store.refreshTargets()
+            if (success === undefined) {
+              return
+            }
             notify(t(success ? 'targetRefreshed' : 'targetRefreshFailed'), {
               icon: success ? 'success' : 'error',
             })
