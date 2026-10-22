@@ -6,7 +6,8 @@ const os = require('node:os')
 const path = require('node:path')
 
 function fixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-harmony build & package '))
+  // Child process.cwd() resolves symlinks such as macOS /var -> /private/var.
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-harmony build & package ')))
   t.after(() => fs.rmSync(root, { recursive: true, force: true }))
   for (const dir of ['build', 'resources/hdc', 'resources/uitestkit_sdk']) {
     fs.mkdirSync(path.join(root, dir), { recursive: true })
