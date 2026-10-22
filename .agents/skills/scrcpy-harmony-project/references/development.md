@@ -75,6 +75,10 @@ npm start
 
 真机设备枚举可在完整 `npm run build` 后运行 `node script/check-targets-live.mjs <证据目录>`；加 `--reconnect` 后按输出提示拔出 USB，等待确认断开再接回。脚本使用隔离用户配置，观察真实 HDC → IPC → renderer 设备列表、当前选择、select 控件和 `changeTarget` 事件；不模拟连接事件，不停止开发机已有 HDC 服务。此脚本运行本地 dist，属于未发布源码构建验证；打包安装启动仍由 CI 验证。输出将已发现设备 key 替换为 `DEVICE_n`，公开归档前仍需检查日志。
 
+`test/bundles.test.cjs` 同时加载真实 `hdc/bundle.ts` 与 `hdc/base.ts`，调用已注册的 getBundleInfos 处理器，仅替换 HDC transport、在线元数据与 Electron 注册边界。覆盖混合命令失败/错误文本/坏 JSON、缺失主模块、分隔符碰撞、包名对应关系、在线失败回退及下一次刷新。模拟删除/重装不等于真机安装/卸载验收。
+
+完整 build 后可运行 `node script/check-bundles-live.mjs <证据目录>`：需要一台已授权鸿蒙设备，使用隔离配置验证真实正常包与不存在包混合查询、应用面板加载与手动刷新。脚本只读设备，不安装/卸载；保存运行与页面错误记录，并脱敏设备标识及非抽样包名。主模块源码 SHA-256 随报告保存，公开归档前仍需检查日志。
+
 `test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
 
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。

@@ -1,0 +1,107 @@
+{
+  "startedAt": "2026-10-22T09:20:54.681Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "os": "27.0.0",
+  "sourceSha256": "7d9872c346bb40ecccd4358cad0bebedd86d710150911d0f29e5035562079d7b",
+  "passed": true,
+  "scope": "Read-only real HDC/IPC and application panel refresh; installation/uninstallation not exercised",
+  "runtime": {
+    "packaged": false,
+    "version": "1.0.2",
+    "electron": "45.0.0"
+  },
+  "device": {
+    "name": "HUAWEI Mate 80",
+    "version": "7.0.0.109",
+    "api": "26",
+    "model": "VYG-AL30",
+    "software": "VYG-AL30 7.0.0.109(SP6C00E105R6P4)"
+  },
+  "ipc": {
+    "installedCount": 229,
+    "missing": "io.github.monsterxia.scrcpyharmony.missing.m1_2",
+    "before": [
+      {
+        "bundleName": "com.huawei.hmos.AutoRegService",
+        "label": "com.huawei.hmos.AutoRegService",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.115",
+        "apiTargetVersion": 260000026,
+        "vendor": "huawei",
+        "installTime": 1770750075459,
+        "releaseType": "Canary",
+        "mainAbility": "AutoRegServiceAbilities"
+      },
+      {
+        "bundleName": "com.huawei.hmos.accessorymanager",
+        "label": "com.huawei.hmos.accessorymanager",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.7",
+        "apiTargetVersion": 260000026,
+        "vendor": "ohos",
+        "installTime": 1770750076077,
+        "releaseType": "Canary"
+      }
+    ],
+    "mixed": [
+      {
+        "bundleName": "com.huawei.hmos.AutoRegService",
+        "label": "com.huawei.hmos.AutoRegService",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.115",
+        "apiTargetVersion": 260000026,
+        "vendor": "huawei",
+        "installTime": 1770750075459,
+        "releaseType": "Canary",
+        "mainAbility": "AutoRegServiceAbilities"
+      },
+      {
+        "bundleName": "com.huawei.hmos.accessorymanager",
+        "label": "com.huawei.hmos.accessorymanager",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.7",
+        "apiTargetVersion": 260000026,
+        "vendor": "ohos",
+        "installTime": 1770750076077,
+        "releaseType": "Canary"
+      }
+    ],
+    "after": [
+      {
+        "bundleName": "com.huawei.hmos.AutoRegService",
+        "label": "com.huawei.hmos.AutoRegService",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.115",
+        "apiTargetVersion": 260000026,
+        "vendor": "huawei",
+        "installTime": 1770750075459,
+        "releaseType": "Canary",
+        "mainAbility": "AutoRegServiceAbilities"
+      },
+      {
+        "bundleName": "com.huawei.hmos.accessorymanager",
+        "label": "com.huawei.hmos.accessorymanager",
+        "icon": "",
+        "system": true,
+        "versionName": "7.0.0.7",
+        "apiTargetVersion": 260000026,
+        "vendor": "ohos",
+        "installTime": 1770750076077,
+        "releaseType": "Canary"
+      }
+    ]
+  },
+  "ui": {
+    "before": "共 229 个应用",
+    "refreshBusyObserved": true,
+    "after": "共 229 个应用"
+  },
+  "pageErrors": [],
+  "exitCode": 0
+}

@@ -1,0 +1,409 @@
+TAP version 13
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 1 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 65.460792
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+not ok 2 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 4.106917
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:60:1'
+  failureType: 'testCodeFailure'
+  error: 'transport closed'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:62:17)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+not ok 3 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 3.239
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:83:4'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'indexOf')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:108:70)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:86:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+not ok 4 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 2.559458
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:83:4'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'mainAbility')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:109:47)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:86:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+not ok 5 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 4.079417
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:83:4'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading '0')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:109:89)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:86:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+not ok 6 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 2.498917
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:83:4'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'name')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:109:93)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:86:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 7 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 2.6255
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 8 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 2.469292
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+not ok 9 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 2.646375
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:104:1'
+  failureType: 'testCodeFailure'
+  error: 'Unterminated string in JSON at position 307 (line 1 column 308)'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    evalmachine.<anonymous>:83:17
+    exports (<repository>/node_modules/licia/map.js:11:22)
+    getBundleInfos (evalmachine.<anonymous>:81:40)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:107:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+not ok 10 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 2.588833
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:111:1'
+  failureType: 'testCodeFailure'
+  error: 'Unexpected end of JSON input'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    evalmachine.<anonymous>:83:17
+    exports (<repository>/node_modules/licia/map.js:11:22)
+    getBundleInfos (evalmachine.<anonymous>:81:40)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:113:21)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+not ok 11 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 2.301125
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:117:3'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of null (reading 'applicationInfo')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:99:34)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:119:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+not ok 12 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 2.266
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:117:3'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'isSystemApp')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:100:41)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:119:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+not ok 13 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 2.526708
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:117:3'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'isSystemApp')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:100:41)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:119:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+not ok 14 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 2.566084
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:117:3'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of null (reading 'isSystemApp')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    getBundleInfos (evalmachine.<anonymous>:100:41)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:119:23)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+not ok 15 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 2.9685
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'wrong',
+        'good'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'good'
+  actual:
+    0: 'wrong'
+    1: 'good'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:126:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+not ok 16 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 6.662458
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:130:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(diagnostic(logs, 'first'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:137:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: empty input performs no shell or online request
+not ok 17 - empty input performs no shell or online request
+  ---
+  duration_ms: 2.422208
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:140:1'
+  failureType: 'testCodeFailure'
+  error: 'Unexpected end of JSON input'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    evalmachine.<anonymous>:83:17
+    exports (<repository>/node_modules/licia/map.js:11:22)
+    getBundleInfos (evalmachine.<anonymous>:81:40)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:142:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+not ok 18 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 2.731542
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:146:1'
+  failureType: 'testCodeFailure'
+  error: 'transport failed'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:147:81)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+not ok 19 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 2.738083
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:152:1'
+  failureType: 'testCodeFailure'
+  error: 'Unexpected end of JSON input'
+  code: 'ERR_TEST_FAILURE'
+  name: 'SyntaxError'
+  stack: |-
+    JSON.parse (<anonymous>)
+    evalmachine.<anonymous>:83:17
+    exports (<repository>/node_modules/licia/map.js:11:22)
+    getBundleInfos (evalmachine.<anonymous>:81:40)
+    async getInfos (<repository>/test/bundles.test.cjs:42:65)
+    async TestContext.<anonymous> (<repository>/test/bundles.test.cjs:157:20)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+not ok 20 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 3.079917
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:162:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+    +   'wrong',
+        'good'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'good'
+  actual:
+    0: 'wrong'
+    1: 'good'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:165:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+not ok 21 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 2.88325
+  type: 'test'
+  location: '<repository>/test/bundles.test.cjs:169:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        {
+    -     apiTargetVersion: 0,
+          bundleName: 'minimal',
+          icon: 'icon:minimal',
+    -     installTime: 0,
+          label: 'Label minimal',
+    -     releaseType: '',
+    -     system: false,
+    -     vendor: '',
+    -     versionName: ''
+        }
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      bundleName: 'minimal'
+      label: 'Label minimal'
+      icon: 'icon:minimal'
+      system: false
+      versionName: ''
+      apiTargetVersion: 0
+      vendor: ''
+      installTime: 0
+      releaseType: ''
+  actual:
+    0:
+      bundleName: 'minimal'
+      label: 'Label minimal'
+      icon: 'icon:minimal'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/bundles.test.cjs:171:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 3
+# fail 18
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 179.336791
