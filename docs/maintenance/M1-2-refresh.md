@@ -36,7 +36,7 @@ jsdom 仅为开发测试依赖，选用 26.x 以兼容项目 Node >=22.12.0；�
 | 完整构建 | `npm run build` 通过；保留既有 Vite CJS、Sass 弃用、Licia eval 与 chunk 大小警告，不将构建转译称为完整 TypeScript 检查 |
 | 本地环境 | Windows x64，Node 22.21.1、npm 10.9.4；本 worktree 独立安装依赖、初始化固定子模块、下载资源和构建 |
 | 独立审查 | 只读 reviewer 未发现阻止合入的正确性或回归问题，独立复跑首批 12/12；其三项非阻塞测试建议均已补充，本地完整 81/81 |
-| PR / CI | 待创建独立 PR 并核对本 PR 的五项必需检查；尚不据本地检查宣称 CI 已通过 |
+| PR / CI | [PR #21](https://github.com/MonsterXia/scrcpy-harmony/pull/21)；本 PR 五项必需检查为 test、lint、windows-package、macos-package-arm64、macos-package-x64，最终提交结果见[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/21/checks)。本地验证与 CI 分开记录，不能引用其他 PR 的通过结果代替 |
 
 复跑命令（已按锁文件安装依赖）：
 
@@ -53,4 +53,4 @@ npm run build
 
 用户没有本地专用 bilibili HAP；取得适用且获准使用的测试 HAP 后，仍需通过应用实际入口完成安装/卸载，核对自动刷新的包名、版本、名称和移除结果，并按用户授权范围保存必要证据。不得用其他个人或内部应用代替，不采集完整应用列表或设备标识。该条件满足前，M1-2 保持待验收。
 
-本 PR 留待维护者审查，等待自身五项必需 CI，不自行合并或发布。
+本 PR 留待维护者审查，以自身最终提交的五项必需 CI 为审查依据，不自行合并或发布。
