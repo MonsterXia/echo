@@ -20,7 +20,7 @@
 | `src/renderer/icon/` | `icon-share` 子模块：图标生成源 |
 | `script/` | 下载运行资源、构建发行目录和打安装包 |
 | `build/` | 已跟踪的应用图标资源；不是可随意删除的构建产物 |
-| `test/` | Node 内置测试：投屏坐标、构建编排、更新源及通道覆盖 |
+| `test/` | Node 内置测试：投屏坐标、构建编排、更新源与设备枚举隔离/字段兼容 |
 | `RUNBOOK.md`、`docs/maintenance/` | 分阶段维护、验收与来源索引 |
 | `dist/`、`release/`、`resources/` | 被忽略的编译输出、安装包和下载资源 |
 
@@ -77,6 +77,8 @@ React 组件 / MobX store
 | 设置 | `toolbar/SettingsModal.tsx`、`src/renderer/main/store/settings.ts` | `src/main/lib/store.ts` 和 `src/main/window/main.ts` |
 
 设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
+
+`hdc.ts` 的 `getTargets` 对每个设备单独读取参数并隔离失败，保留可读取设备的原始顺序。版本从可识别的点分数字字段提取；缺失或未知版本返回空字符串并记警告，名称缺失回退到 connectKey，API 字段缺失返回空字符串。`listTargets` 失败记录 error 并返回空列表；正常无设备记录 info；逐设备读取失败记录 key/原因，全部失败另记数量，便于区分列表为空的原因。IPC 仍返回 `ITarget[]`，不增加新事件或返回类型。
 
 ## 状态与面板生命周期
 

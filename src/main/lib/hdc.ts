@@ -3,11 +3,11 @@ import {
   IpcGetTargets,
   IpcInputKey,
   IpcScreencap,
+  ITarget,
 } from 'common/types'
 import { handleEvent, resolveResources } from 'share/main/lib/util'
 import Hdc, { Client } from 'hdckit'
 import log from 'share/common/log'
-import map from 'licia/map'
 import startWith from 'licia/startWith'
 import trim from 'licia/trim'
 import os from 'node:os'
@@ -36,25 +36,58 @@ const settingsStore = getSettingsStore()
 let client: Client
 
 const getTargets: IpcGetTargets = async function () {
-  const targets = await client.listTargets()
+  let connectKeys: string[]
+  try {
+    connectKeys = await client.listTargets()
+  } catch (error) {
+    logger.error('Failed to list HDC targets', error)
+    return []
+  }
 
-  return Promise.all(
-    map(targets, async (connectKey: string) => {
-      const parameters = await client.getTarget(connectKey).getParameters()
-      let ohosVersion =
-        parameters['const.product.software.version'].split(/\s/)[1]
-      ohosVersion = ohosVersion.slice(0, ohosVersion.indexOf('('))
+  if (connectKeys.length === 0) {
+    logger.info('No HDC targets connected')
+    return []
+  }
 
-      const sdkVersion = parameters['const.ohos.apiversion']
+  const results = await Promise.all(
+    connectKeys.map(async (connectKey) => {
+      try {
+        const parameters = await client.getTarget(connectKey).getParameters()
+        const softwareVersion = parameters['const.product.software.version']
+        // Accept bare versions and product prefixes; a build suffix is optional.
+        const ohosVersion =
+          parameterString(softwareVersion).match(
+            /(?:^|\s)(\d+(?:\.\d+)+)(?=\s|\(|$)/
+          )?.[1] || ''
+        if (!ohosVersion) {
+          logger.warn(
+            'Missing or unrecognized software version',
+            connectKey,
+            softwareVersion
+          )
+        }
 
-      return {
-        name: parameters['const.product.name'],
-        key: connectKey,
-        ohosVersion,
-        sdkVersion,
+        return {
+          name: parameterString(parameters['const.product.name']) || connectKey,
+          key: connectKey,
+          ohosVersion,
+          sdkVersion: parameterString(parameters['const.ohos.apiversion']),
+        }
+      } catch (error) {
+        logger.warn('Failed to read HDC target parameters', connectKey, error)
+        return null
       }
     })
-  ).catch(() => [])
+  )
+  const targets = results.filter((target): target is ITarget => target !== null)
+  if (targets.length === 0) {
+    logger.warn('No HDC target parameters could be read', connectKeys.length)
+  }
+  return targets
+}
+
+function parameterString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
 }
 
 const getOverview: IpcGetOverview = async function (connectKey) {

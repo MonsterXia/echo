@@ -36,17 +36,17 @@
 
 ## 阶段 1：设备与应用数据读取健壮性
 
-目标：单个异常设备或应用不会使整个列表消失。当前阶段状态：**待开始**。
+目标：单个异常设备或应用不会使整个列表消失。当前阶段状态：**进行中**。
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
-| M1-1 | 待开始 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。 |
+| M1-1 | 进行中 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。 |
 | M1-2 | 待开始 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。 |
 | M1-3 | 待开始 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | 验证本地 label/iconPath 的实际格式与可读性；侧载应用可显示名称和图标；本地资源缺失、不可读或离线时有合理回退；商店应用仍正常。 |
 
 代码入口：M1-1 为 `src/main/lib/hdc.ts` 的 `getTargets`；M1-2/3 为 `src/main/lib/hdc/bundle.ts` 的 `getBundleInfos`，UI 为 `src/renderer/main/components/application/`。
 
-基线检查发现 `getTargets` 使用整体 `Promise.all(...).catch(() => [])`，`getBundleInfos` 在集中解析时直接 `JSON.parse`，名称/图标主要依赖线上信息。先完成 M1-2 再适配 M1-3，避免同时改动相同解析流程。
+初始基线的 `getTargets` 使用整体 `Promise.all(...).catch(() => [])`；M1-1 的修订与验证见下方记录。`getBundleInfos` 仍在集中解析时直接 `JSON.parse`，名称/图标主要依赖线上信息。先完成 M1-2 再适配 M1-3，避免同时改动相同解析流程。
 
 退出条件：每项有真实代码路径的无设备回归测试、对应设备验收、通过的 CI 和合并 PR；若设备暂缺，停留在“待验收”。
 
@@ -172,3 +172,13 @@
 - 验证：同提交 [五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39746252396) 全通过；本地 13 项单测、lint 和脚本语法检查通过。首轮 macOS x64 在卸载第二个 DMG 时失败，修订验收安装脚本后完整重跑；失败记录未被记为通过。
 - 证据：[M0-3 报告](docs/maintenance/M0-3.md) 记录具体文件名、完整哈希、runner 环境、网络重定向、六份运行 JSON/应用日志及截图；原始 artifact ZIP digest 已复核。PR 最终提交检查结果见 PR 页面。
 - 边界 / 下一步：系统外链调用成功，未检查默认浏览器页面内容；错误验收选择网络失败，未另测损坏 YAML。更新仍是提示用户手动下载；未扩大签名、公证、真机或长时间运行结论。下一项为 M1-1，按规则先核对上游报告和当前设备枚举路径。
+
+### M1-1 推进记录
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `e79de6e98c6cb81e9c1dba59578b63013ce34852`，分支 `codex/m1-1-target-isolation`。
+- 来源核对：上游 Issue #21 与 PR #30 均仍开放，正文/讨论已读取（无评论）；PR 候选提交 `f8084bbb65eb63a0d759187882de155005936e36`。采用逐设备隔离方向，另补诊断和本仓库现有测试链，不直接合入上游测试脚本。
+- 现场：macOS arm64，内置 HDC 3.1.0b；可枚举 nova 15 / PSN-AL00，软件版本 `PSN-AL00 7.0.0.109(SP6C00E105R3P3)`、API 26。设备标识不写入公开报告。
+- 待执行：真实 getTargets 处理器失败回归 → 最小修复 → 单测/lint/build → Electron 与真机连接变化验证 → 五项必需 CI 和独立 PR。未验证前不标完成。
+
+- 2026-10-22 初轮验证：新增 19 项真实 getTargets 处理器回归，修复前 16 失败、3 通过，确认异常设备会清空列表且 `OpenHarmony 4.1.0` 被截为 `4.1.`。逐设备隔离、字段防御解析与诊断加入后，完整 32 项测试、lint 和 build 通过。
+- 真机已验证：本地 dist 在 Electron 45 启动，nova 15 的真实 HDC 参数、getTargets IPC、renderer 列表和当前选择一致，显示 `7.0.0.109 / API 26`；无页面异常并正常退出。USB 断开/重连仍待用户协助，不能用单测中的模拟状态替代该项。

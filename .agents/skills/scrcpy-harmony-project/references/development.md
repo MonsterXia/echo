@@ -71,6 +71,10 @@ npm start
 
 ## 测试范围与验收
 
+`test/targets.test.cjs` 通过现有 esbuild/VM 测试方式加载真实 `hdc.ts` 并调用其注册的 `getTargets` 处理器，只替换 HDC、Electron 和初始化副作用边界。覆盖逐设备失败、同步目标查找失败、版本格式/缺失值、显示字段归一化、空列表/全失败/枚举失败诊断及下一次刷新恢复。测试无需真机或共享子模块，不替代实际连接变化验证。
+
+真机设备枚举可在完整 `npm run build` 后运行 `node script/check-targets-live.mjs <证据目录>`；加 `--reconnect` 后按输出提示拔出 USB，等待确认断开再接回。脚本使用隔离用户配置，观察真实 HDC → IPC → renderer 设备列表、当前选择、select 控件和 `changeTarget` 事件；不模拟连接事件，不停止开发机已有 HDC 服务。此脚本运行本地 dist，属于未发布源码构建验证；打包安装启动仍由 CI 验证。输出将已发现设备 key 替换为 `DEVICE_n`，公开归档前仍需检查日志。
+
 `test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
 
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。
