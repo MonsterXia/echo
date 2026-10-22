@@ -60,7 +60,7 @@
 | M2-2 | 待开始 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。 |
 | M2-3 | 待开始 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。 |
 | M2-4 | 待开始 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 以 Pura 70 Pro / 5.1.0.150（API 17）原报告为线索，核对 socket、端口转发和 `/json`；官方调试方法能发现的目标在应用中也可见，空目标及断连可恢复。 |
-| M2-5 | 待开始 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。 |
+| M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。无设备验证证据与后续步骤见 [M2-5 报告](docs/maintenance/M2-5.md)；生产代码只读，真机待验收。 |
 
 入口：`src/renderer/screencast/lib/ScreencastClient.ts`、`src/main/lib/hdc/uitest.ts`、`src/renderer/main/App.tsx`、`src/main/lib/hdc/webview.ts`、`src/main/lib/hdc.ts`。M2-4/5 应在 M1-1 后复验，避免把设备枚举失败误判为调试协议问题。
 
@@ -220,3 +220,10 @@
 - Node HTTP(S) 与 Chromium 均经不转发流量的拒绝代理，分别确认探针失败和代理收到请求；离线图片哈希与默认资源一致。`verificationPassed=true` 仅代表验证完成，`offlineIconAcceptancePassed=false` 明确表示离线应用图标未通过。
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
+
+### M2-5 网络调试证据与验证准备
+
+- 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`；分支 `codex/m2-5-network-evidence`。M2-5 保持**进行中，真机待验收**。
+- 已读取上游 #13、当前华为/OpenHarmony 官方文档和锁定 hdckit 0.12.1；具体来源、版本边界、应用链路和验收步骤见 [独立报告](docs/maintenance/M2-5.md)。
+- 独立回环 fixture 使用实际 hdckit、getTargets、store 与工具栏代码：专项 3 通过、2 个执行失败的 TODO；全量 69 通过、2 TODO，lint 通过。严格模式复现两项失败：枚举失败仍提示成功、参数错误文本被视为空参数。生产代码未修改，修复方案留待协调独立任务。
+- 无 HDC 可执行文件/真机操作；USB、网络授权/连接、自动恢复和投屏均未验收。本轮 PR 保留待审查，不自动合并或发布。
