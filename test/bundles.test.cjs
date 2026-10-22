@@ -257,5 +257,7 @@ test('malformed literal label still allows device label resolution', async () =>
 test('a local label equal to the bundle name still takes priority over the store', async () => {
   const d = info('app'); d.applicationInfo.label = 'app'
   const { getInfos } = await loadBundles({ app: dump('app', d) })
-  assert.equal((await getInfos(['app']))[0].label, 'app')
+  const [result] = await getInfos(['app'])
+  assert.equal(result.label, 'app')
+  assert.equal(result.icon, 'icon:app')
 })

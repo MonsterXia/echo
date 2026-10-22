@@ -20,9 +20,11 @@ try {
   await app.evaluate(({ ipcMain }, label) => {
     const responses = {
       getTargets: [{ key: 'LABEL_FIXTURE', name: 'Label fixture', ohosVersion: '', sdkVersion: '' }],
-      getBundles: ['test.label'],
+      getBundles: ['test.label', 'test.other'],
       getBundleInfos: [{ bundleName: 'test.label', label, icon: '', system: false,
-        versionName: '1', apiTargetVersion: 26, vendor: '', installTime: 0, releaseType: '', mainAbility: 'EntryAbility' }],
+        versionName: '1', apiTargetVersion: 26, vendor: '', installTime: 0, releaseType: '', mainAbility: 'EntryAbility' },
+      { bundleName: 'test.other', label: 'Other fixture', icon: '', system: false,
+        versionName: '1', apiTargetVersion: 26, vendor: '', installTime: 0, releaseType: '' }],
     }
     for (const [channel, value] of Object.entries(responses)) {
       ipcMain.removeHandler(channel)
@@ -38,17 +40,21 @@ try {
     })
   }, label)
   await page.reload()
-  const panel = page.locator('.panel-with-toolbar').filter({ hasText: '共 1 个应用' })
+  const panel = page.locator('.panel-with-toolbar').filter({ hasText: '共 2 个应用' })
   await panel.waitFor()
-  const icon = panel.locator('.luna-icon-list-name-wrapper')
+  const icons = panel.locator('.luna-icon-list-name-wrapper')
+  const icon = icons.filter({ hasText: label })
   await icon.waitFor()
   assert.equal(await icon.textContent(), label, 'Icon view must display literal label text')
   assert.equal(await page.locator('[data-label-injection]').count(), 0)
   await icon.hover()
   assert.equal(await icon.locator('..').getAttribute('title'), label)
   await panel.locator('input[type="text"]').fill('A&B')
+  await page.waitForFunction(() => document.querySelectorAll('.luna-icon-list-name-wrapper').length === 1)
+  assert.equal(await icons.count(), 1, 'Nonmatching labels must be excluded')
   assert.equal(await icon.count(), 1, 'Search must use raw label text')
   await panel.locator('input[type="text"]').fill('')
+  await page.waitForFunction(() => document.querySelectorAll('.luna-icon-list-name-wrapper').length === 2)
   await panel.locator('.icon-list').click()
   const row = panel.locator('.luna-data-grid-data-container tr').filter({ hasText: 'test.label' })
   await row.waitFor()

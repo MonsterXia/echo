@@ -212,3 +212,4 @@
 - 验证：12 项新增回归在旧实现全部失败，修复后完整 66 项测试、lint、build 通过。Windows x64 / Electron 45 / HDC 3.1.0e / PSN-AL00 / 7.0.0.109 API 26，bilibili 在线与受控离线的真实 IPC、列表和刷新通过，页面无异常，正常退出。详见 [报告与证据](docs/maintenance/M1-3.md)。
 - 独立提交与 CI：[PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18)；应用代码 `b62b9a5` 的独立检出已重复完成上述本地与真机验证，最终五项必需 CI 见 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
 - 边界 / 下一步：M1-3 保持进行中；线上商店本来就能识别本次样本，新增改善为离线设备名称。离线图标仍回退默认图标；设备返回发行属性 `app_gallery / release`，不能将本次样本当成 debug 签名侧载样本。继续研究无需提权的图标资源读取，另补非商店样本与旧系统真机验证；M1-2 仍需专用测试 HAP。
+- 审查后续：共享 shell 的 `readAll` 无期限等待（包含新增名称命令）纳入 M2-2；安装完成但已有刷新未结束时，原 `refresh()` 会忽略新请求，纳入 M1-2 的并发安装/刷新回归。两项均未在本轮修复，不宣称覆盖。能力探测本批失败后回退、下批重试为刻意策略；搜索排除非匹配应用和在线图标仍被补全的断言已加强。
