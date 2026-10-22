@@ -319,4 +319,5 @@
 - 2026-10-22 / Codex；用户授权仅删除 Sourcery 的超额度提示、保留正常审查，并明确使用 GitHub Actions 评论事件。独立分支 `codex/sourcery-quota-comments`；未创建定时任务。
 - 新增 `issue_comment.created/edited` 工作流，按 Bot 作者、所属 PR 和完整额度通知模板筛选，删除前重新获取核对；无 checkout、无 PR 代码执行，仅任务级 `issues: write`。未知/混合正文保留，404 幂等，其他 API 错误可见失败。
 - 本地专项 29/29 通过，直接执行实际 workflow 脚本，包含正常审查/指南/人类/其他机器人保留、正文追加意见、事件过期、错误传播。已核对 GitHub 官方事件和评论删除 API 文档；文档入口同步。
-- 状态 / 下一步：待 PR 五项必需 CI 通过并合入 master 后生效。真实 Sourcery 评论事件删除尚未验收，后续以 Actions 运行日志和评论不存在为证据；不发布或伪造机器人测试评论。
+- 复核：对仓库实际 17 条 Sourcery 顶层评论只读执行相同脚本，仅匹配 PR #33 的 1 条新额度通知，16 条正常评论保留。提交 `804140a` 已获独立审查，无阻断；审查者复跑 29/29 并补验重复事件的 DELETE 成功/404 幂等。
+- 状态 / 下一步：配置实现与本地验证已完成；默认分支上线及最终五项 CI 状态以 [PR #33](https://github.com/MonsterXia/scrcpy-harmony/pull/33) 为准。真实 Sourcery 评论事件删除尚未验收，后续以 [工作流运行记录](https://github.com/MonsterXia/scrcpy-harmony/actions/workflows/sourcery-quota-comments.yml) 和评论不存在为证据；不发布或伪造机器人测试评论。
