@@ -80,7 +80,7 @@ React 组件 / MobX store
 
 `hdc.ts` 的 `getTargets` 对每个设备单独读取参数并隔离失败，保留可读取设备的原始顺序。版本从可识别的点分数字字段提取；缺失或未知版本返回空字符串并记警告，名称缺失回退到 connectKey，API 字段缺失返回空字符串。`listTargets` 失败记录 error 并返回空列表；正常无设备记录 info；逐设备读取失败记录 key/原因，全部失败另记数量，便于区分列表为空的原因。IPC 仍返回 `ITarget[]`，不增加新事件或返回类型。
 
-`hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批；安装/卸载后的刷新由 Application.tsx 原有调用链负责。
+`hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批。Application.tsx 用面板生命周期内的同步引用串行处理刷新，将在途期间的安装/卸载刷新请求合并为后续一轮，重新读取系统应用选项；卸载或设备切换后忽略旧结果并停止后续批次，查询失败释放加载状态。此处不取消已发送 IPC，也不设置 HDC 命令超时。
 
 应用名称优先取本地有效明文 label；否则在设备 `bm dump -h` 声明 `-l, --label` 时使用 `bm dump -n <bundle> -l` 解析资源名称。能力探测限定在单批请求，名称也不跨请求缓存；不支持或失败时保留原在线/包名回退。不能将应用的 apiTargetVersion 当设备版本。图标仍使用原在线策略，`$media:` 资源引用不能直接作为图片路径；当前未实现 HAP 资源解析。Application.tsx 列表插入名称与图片 URL 时做 HTML 转义。
 
@@ -111,13 +111,16 @@ Canvas pointer 事件
 
 `getUiDriver()` 加载资源 `uitestkit_sdk/uitest_agent_v1.1.0.so`，传给 `target.createUiDriver(..., '1.1.0')`。资源版本与调用参数需要保持匹配。
 
+`uitest.ts` 的 start/stop 捕获处理器必须等待 UiDriver 的异步方法完成，再结束 IPC；启动还须等待前置停止完成。否则 renderer 的串行队列只能等待提前完成的 handler，底层错误也不会传播给调用者。`test/capture-handlers.test.cjs` 保留实际 handler 和 UiDriver 方法，在传输边界验证完成时序及拒绝传播。
+
 定位投屏问题时：
 
 - 帧解码入口：`src/renderer/screencast/lib/ScreencastClient.ts` 的 `draw()`；图像加载辅助在同目录 `util.ts`。实现使用 JPEG Blob 和 Canvas，不是 H.264/WebCodecs 管线。
 - 触摸映射：`getPointer()` 先按帧宽高比算 CSS 容器内的实际图像区域，再按百分比映射到 `getDisplaySize()` 返回的设备尺寸。请求 `scale` 与实际流缩放可能不同。
 - 首帧或帧尺寸变化时重新查询设备尺寸；尺寸必须是正整数。坐标上限为 width/height 减一。没有有效尺寸时不发送触摸。
 - `isDrawing` 让绘制和尺寸查询串行进行，期间新帧会跳过；它不是帧队列。改动时注意异步旧帧覆盖新状态。
-- 启动包含 5 秒未就绪重试，`destroy()` 停止捕获并退订帧事件。若修改重启/销毁逻辑，实际核对定时器和异步回调生命周期，不假设已有完整取消机制。
+- 客户端在同一 renderer 内按设备将 stop/start 串行化（包含旧客户端销毁与新客户端启动），并用启动代次丢弃迟到结果；本次启动未出图时五秒重试（包括 stop/start 拒绝），停止阶段不接收帧。`ready` 仍只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，再排队停止捕获；已发出的 IPC 不能撤销，若 bridge 请求不返回，设备端清理仍不能保证。
+- `loadImage(url, signal?)` 清理图片处理器并支持取消；客户端在 finally 中释放 Blob URL。无设备生命周期回归见 `test/screencast-lifecycle.test.cjs`，真实捕获和原应用问题的验收边界见 `docs/maintenance/M2-3-recovery.md`。
 - `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
 
 ## UI 和生成文件
