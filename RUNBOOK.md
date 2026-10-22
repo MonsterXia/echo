@@ -227,17 +227,15 @@
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
 
-<<<<<<< HEAD
 ### M3-3 用户与构建说明推进
 
 - 2026-10-22 / Codex；基线 `9e944ae`，独立分支 `codex/m3-3-user-build-docs`。已读上游 #14/#20，并核对 v1.0.2、master、菜单与日志实现，补齐 README 导航、[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)。
 - 独立 Windows x64 检出完成固定子模块初始化、锁文件安装、资源准备、66 项测试、lint、build 和 no-publish 打包；下载两次 TLS 失败及重试结果如实记录，见 [M3-3 报告](docs/maintenance/M3-3.md)。未修改生产代码、锁文件或工作流。
 - M3-3 保持待验收：本轮不访问真机或设备应用，不安装/卸载应用；macOS 使用已核实历史 CI，未做本机人工走读。下一步按发行版指南验收授权、设备选择、投屏/输入及脱敏日志导出；PR 与 CI 结果集中记录在专项报告，不以文档或无设备测试替代这些验收。
-=======
+
 ### M4-1 音频能力评估交接
 
 - 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`，独立分支 `codex/m4-1-audio-assessment`。完成来源正文、当前官方 HarmonyOS/OpenHarmony/HDC 文档及锁定依赖/投屏路径的静态核对，见 [独立报告](docs/maintenance/M4-1-audio.md)。
 - 结论为暂缓实现、待能力验证：存在经用户同意的设备端公共捕获候选，不等于现有 HDC/JPEG 投屏已具备音频；麦克风、内部音频、传输与系统/受限权限分别列明。API 26.0.0 新接口不推定兼容旧系统，未编造同步或延迟实测结果。
 - 本轮仅本报告与本条记录，不修改生产代码/依赖；不连接真机、不安装 HAP、不录音、不访问媒体。普通签名部署、SDK/设备能力、应用捕获策略与分发仍待验证；当前仅 bilibili 后续侧载范围不能授权安装采集伴侣。
 - 交付：[独立草稿 PR #24](https://github.com/MonsterXia/scrcpy-harmony/pull/24)，[CI 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/24/checks)。独立审查已完成，发现的官方链接问题已修正，评估文档无未解决阻断项；核验范围见报告，CI 以当前提交检查页为准。下一步：维护者先处理 G1/G2 的产品范围、授权部署、目标 API/SDK 条件；满足后另立探针与实现任务，不自动合并或发布。
->>>>>>> origin/master
