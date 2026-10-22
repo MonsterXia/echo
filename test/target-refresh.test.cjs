@@ -27,6 +27,7 @@ function loadSource(file, imports, globals = {}) {
   vm.runInNewContext(code, {
     module, exports: module.exports, ...globals,
     require(id) {
+      if (id === './hdc/finiteShell') return { runFiniteShell() { throw new Error('Enumeration must not use finite memory transport') } }
       if (id === './hdc/parameters') return loadSource('src/main/lib/hdc/parameters.ts', {})
       if (Object.hasOwn(imports, id)) return imports[id]
       if (id.startsWith('licia/') || ['node:os', 'node:path', 'fs-extra',
