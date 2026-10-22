@@ -46,7 +46,14 @@ jobs:
     - name: Build distribution
       run: npm run build
     - name: Package installer
-      run: npm run pack -- --no-publish
+      shell: bash
+      run: |
+        # GitHub expands absent secrets to empty strings. electron-builder treats
+        # an empty CSC_LINK as a certificate path, so omit unset credentials.
+        for name in APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID CSC_LINK CSC_KEY_PASSWORD; do
+          if [[ -z "${!name}" ]]; then unset "$name"; fi
+        done
+        npm run pack -- --no-publish
       env:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
