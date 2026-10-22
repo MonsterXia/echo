@@ -42,9 +42,11 @@
 
 ## 维护与开发入口
 
+- [用户指南](docs/user-guide.md)：安装、调试授权、设备选择、投屏与输入、日志保存和常见失败。
+- [构建指南](docs/build-guide.md)：从干净检出准备依赖和资源，在 Windows/macOS 构建与启动 Electron。
 - [分阶段维护 RUNBOOK](RUNBOOK.md)：待办、优先顺序、验收条件及交接记录。
 - [维护来源记录](docs/maintenance/SOURCES.md)：上游 Issue/PR、本仓库已完成 PR 和归档说明。
-- [开发与验证](.agents/skills/scrcpy-harmony-project/references/development.md)：环境、启动、构建、打包和 CI。
+- [维护者开发与验证参考](.agents/skills/scrcpy-harmony-project/references/development.md)：模块验证脚本、打包和 CI 细节。
 - [变更记录](CHANGELOG.md)：独立维护后的发行改动与上游历史版本。
 
 ## 安装
@@ -53,7 +55,11 @@
 
 **1.0.2 的安装包未做发行者签名或 macOS 公证，macOS Gatekeeper 检查未通过。** 三平台安装启动检查已通过，签名报告、校验清单和未验证范围见 [发布记录](docs/releases/1.0.2.md)。
 
-当前源码使用 Electron 45，macOS 需要 13 或更新版本。开发环境需要 Node.js 22.12.0 或更新版本；初始化子模块后执行 `npm ci` 安装锁定的依赖。开发与验证步骤见 [项目开发指南](.agents/skills/scrcpy-harmony-project/references/development.md)。
+当前使用 Electron 45，macOS 需要 13 或更新版本。安装包包含设备资源，普通用户无需安装 Node.js。开启设备 USB 调试并授权电脑后，在主窗口刷新、选择设备，再点“投屏”；完整步骤及日志保存注意事项见[用户指南](docs/user-guide.md)。
+
+截至 2026-10-22，公开发行版为 **1.0.2**；master 后续的设备枚举、应用读取和名称回退修复尚未发行，不能用 master 的验收结果代替 1.0.2。源码构建的包版本目前也显示 1.0.2，反馈时请附提交号。
+
+开发需要 Node.js 22.12.0 或更新版本、Git 子模块及锁文件安装，按[构建指南](docs/build-guide.md)执行。应用必需 Electron 主进程与 preload；单独打开 Vite 页面不能作为浏览器版使用。
 
 ## 功能
 
