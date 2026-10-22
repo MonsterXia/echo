@@ -60,7 +60,7 @@
 | M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[有限命令等待调查](docs/maintenance/M2-2-command-timeout.md)已建立受控缺口用例；尚未实现生产超时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 待开始 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 以 Pura 70 Pro / 5.1.0.150（API 17）原报告为线索，核对 socket、端口转发和 `/json`；官方调试方法能发现的目标在应用中也可见，空目标及断连可恢复。 |
-| M2-5 | 待开始 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。 |
+| M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。无设备验证证据与后续步骤见 [M2-5 报告](docs/maintenance/M2-5.md)；生产代码只读，真机待验收。 |
 
 入口：`src/renderer/screencast/lib/ScreencastClient.ts`、`src/main/lib/hdc/uitest.ts`、`src/renderer/main/App.tsx`、`src/main/lib/hdc/webview.ts`、`src/main/lib/hdc.ts`。M2-4/5 应在 M1-1 后复验，避免把设备枚举失败误判为调试协议问题。
 
@@ -235,6 +235,13 @@
 - 统一终审补验：fetch/merge 最新 master 仍为 `9e944ae`。增加 Canvas 左右边界（1px 容差），左右平移注入的 104 样本全部被拒绝；正常矩阵通过。280×400/100% 实测现有工具栏纵向 overflow 为 auto，滚轮至 scrollTop=28 后第三行缩放控件完整可达，10 控件逐个命中检查通过；因此未额外修改生产样式。跨显示器动态约束仍待验收，详见专项报告及更新后的脚本/证据哈希。
 - 随后同步已推进的 master `92a0725`（合并提交 `e3fcac7`），保留并行任务全部状态与交接。按新锁文件安装后，完整 84 项测试、lint、main/renderer 构建、104 样本显示矩阵重新通过；最终显示证据更新为合并版本。
 - #22 集成复验：按协调顺序固定同步 master `78f6057`（合并提交 `2ca4a0b`），完整保留 M2-3/M2-2 交接和架构记录。原显示脚本/fixture 无需修改，新客户端 104 样本全部通过；完整测试 117/117、lint、main/renderer 构建通过。最终显示归档替换为本次真实结果，客户端源码哈希更新；不以合成 transport 代表真实 IPC 或真机通过，未操作设备，不自行合并。
+
+### M2-5 网络调试证据与验证准备
+
+- 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`；分支 `codex/m2-5-network-evidence`。M2-5 保持**进行中，真机待验收**。
+- 已读取上游 #13、当前华为/OpenHarmony 官方文档和锁定 hdckit 0.12.1；具体来源、版本边界、应用链路和验收步骤见 [独立报告](docs/maintenance/M2-5.md)。
+- 独立回环 fixture 使用实际 hdckit、getTargets、store 与工具栏代码：专项 3 通过、2 个执行失败的 TODO；全量 69 通过、2 TODO，lint 通过。严格模式复现两项失败：枚举失败仍提示成功、参数错误文本被视为空参数。生产代码未修改，修复方案留待协调独立任务。
+- 无 HDC 可执行文件/真机操作；USB、网络授权/连接、自动恢复和投屏均未验收。[PR #23](https://github.com/MonsterXia/scrcpy-harmony/pull/23) 已进入合并审查；补充本次参数查询断言、初始化和晚到连接清理回归后，专项为 4 通过、2 TODO。[必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/23/checks) 按最终提交核验；两项生产缺陷由独立 PR #26/#27 修复后再将对应 TODO 转为普通断言。
 
 ### M2-3 无设备恢复子任务
 
