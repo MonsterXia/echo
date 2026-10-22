@@ -119,7 +119,7 @@
 | --- | --- | --- | --- |
 | 2026-10-21 | 维护基线 | PR #1–#8 已合并；PR #8 五项 CI 通过；fork 已解除；来源归档已核验 | 从 M0-1 或 M1-1 开始，更新此文件记录执行结果 |
 | 2026-10-21 | M0-1：已完成 | Issues 已启用，About/主页已修正，Windows 应用反馈与关于窗口已核验；见下方记录 | M0-2：确定版本号并准备首次独立 Release |
-| 2026-10-22 | M0-2 前置验证修复 | Codex 在基线 `5a1660a`、分支 `codex/macos-build-test-realpath` 上复现 macOS 临时目录路径别名导致构建测试误报：Node 22.22.3 / npm 10.9.8，`npm test` 为 12 通过、1 失败。测试 fixture 统一为真实路径；不改构建脚本和应用行为。修复后本地 13 项测试及 lint 通过；远端 CI 以该 PR 的检查记录为准 | 独立 PR 等待全部必需 CI；随后继续 1.0.2 发布准备。安装、真机及线上更新不由本地单测覆盖 |
+| 2026-10-22 | M0-2 前置验证修复 | Codex 在基线 `5a1660a`、分支 `codex/macos-build-test-realpath` 上复现 macOS 临时目录路径别名导致构建测试误报：Node 22.22.3 / npm 10.9.8，`npm test` 为 12 通过、1 失败。测试 fixture 统一为真实路径；不改构建脚本和应用行为。修复后本地 13 项测试及 lint 通过；[PR #11](https://github.com/MonsterXia/scrcpy-harmony/pull/11) 的 [五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39716524966) 全部通过，已合入 `b81c656` | 前置测试问题已完成；继续 1.0.2 发布准备。安装、真机及线上更新不由本地单测覆盖 |
 
 ### M0-1 验收记录
 
@@ -137,5 +137,5 @@
 - 开始时现场核验：本地与远端 master 一致、工作区干净；本仓库无 Release、无开放 PR，远端不存在 `v1.0.2`。本地 macOS 27.0 arm64、Node 22.22.3、npm 10.9.8；依赖、共享代码子模块和设备资源尚未准备。随后按锁文件安装、初始化固定子模块并下载构建资源。
 - 版本选择：首次独立发行使用 `1.0.2`，接续继承的 `1.0.1`；同步 package.json、package-lock.json 和 CHANGELOG，计划 tag 为 `v1.0.2`。尚未创建 tag，不能将计划版本一致视为实际 tag 已验收。
 - 发布材料：[1.0.2 发布清单与说明](docs/releases/1.0.2.md) 包含三个平台产物、更新元数据、旧 ECHO 配置边界及签名/公证/真机状态。保持现有手动 Build 只上传 artifact、不自动发布的行为。
-- 验证证据：版本一致性检查、lint、完整 build 通过；默认 macOS 临时目录下的构建测试误报已在基线复现并独立提交 [PR #11](https://github.com/MonsterXia/scrcpy-harmony/pull/11)。发布分支将 TMPDIR 解析为真实路径后，13 项测试通过；该临时规避仅用于验证，不改项目脚本。本次详细命令、边界及 CI 入口见发布清单；历史 PR #8 的检查不能代替本次版本检查。
+- 改动与证据：[PR #12](https://github.com/MonsterXia/scrcpy-harmony/pull/12) 准备首次独立版本；版本一致性检查、lint、完整 build 通过，提交 `9a0b681` 的 [五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39716730594) 全部通过（含三个平台安装与启动）。默认 macOS 临时目录下的测试误报由独立 PR #11 修复并合入 `b81c656`，本分支已同步；直接 npm test 为 13/13 通过，无需 TMPDIR 规避。本次边界及最终提交的 CI 入口见发布清单。
 - 未验证 / 下一步：等待本次 PR 的全部必需 CI，通过后将合入提交作为候选发布源，运行 Build 并验收实际待上传产物，核对元数据及校验值后创建同源 tag 和 Release。签名、公证及真机状态逐项如实披露；M0-3 另行使用两个明确版本验证线上更新。M0-2 保持进行中，不提前标记完成。
