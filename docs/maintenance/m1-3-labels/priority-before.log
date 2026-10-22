@@ -206,9 +206,9 @@ not ok 34 - a local label equal to the bundle name still takes priority over the
   failureType: 'testCodeFailure'
   error: |-
     Expected values to be strictly equal:
-    
+
     'Label app' !== 'app'
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected: 'app'
