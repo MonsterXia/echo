@@ -3,6 +3,7 @@ const { test } = require('node:test')
 const vm = require('node:vm')
 const path = require('node:path')
 const { build } = require('esbuild')
+const { captureHandlers } = require('./helpers/capture-handlers.cjs')
 
 // Bundle the real client, loadImage and Readiness. Only Electron, DOM decoding
 // and time are controlled; frames enter through the registered bridge listener.
@@ -99,13 +100,13 @@ async function fixture(t, bridge = {}) {
     document: { createElement: () => canvas },
     testStore: { scale: 1 },
     main: {
-      stopCaptureScreen: async () => {
+      stopCaptureScreen: async (key) => {
         calls.push('stop')
-        return bridge.stop?.()
+        return bridge.stop?.(key)
       },
-      startCaptureScreen: async (_key, scale) => {
+      startCaptureScreen: async (key, scale) => {
         calls.push(['start', scale])
-        return bridge.start?.()
+        return bridge.start?.(key, scale)
       },
       getDisplaySize: async () => {
         calls.push('size')
@@ -433,4 +434,54 @@ test('destroy retains the synchronous React effect cleanup return contract', asy
   const f = await fixture(t)
   await flush()
   assert.equal(f.client.destroy(), undefined)
+})
+
+test('destroy waits through the main handler for UiDriver startup before final stop', async (t) => {
+  const pending = deferred(),
+    calls = []
+  const handlers = captureHandlers(async (_method, api) => {
+    calls.push(api)
+    return api === 'startCaptureScreen' ? pending.promise : {}
+  })
+  const f = await fixture(t, handlers)
+  await flush()
+  assert.deepEqual(calls, [
+    'stopCaptureScreen',
+    'stopCaptureScreen',
+    'startCaptureScreen',
+  ])
+  f.client.destroy()
+  await flush()
+  assert.equal(calls.length, 3)
+  pending.resolve({ sessionId: 'synthetic-session' })
+  await flush()
+  assert.deepEqual(calls, [
+    'stopCaptureScreen',
+    'stopCaptureScreen',
+    'startCaptureScreen',
+    'stopCaptureScreen',
+  ])
+  handlers.driver.emit('message', 'synthetic-session', Buffer.from([1]))
+  assert.equal(handlers.frames.length, 0)
+  assert.equal(f.timers.size, 0)
+})
+
+test('UiDriver rejection reaches renderer recovery through the main capture handler', async (t) => {
+  let starts = 0
+  const handlers = captureHandlers(async (_method, api) => {
+    if (api === 'startCaptureScreen' && ++starts === 1)
+      throw new Error('synthetic transport failure')
+    return { sessionId: 'synthetic-session' }
+  })
+  const f = await fixture(t, handlers)
+  await flush()
+  assert.equal(f.errors.length, 1)
+  assert.equal(f.timers.size, 1)
+  await f.tick(5000)
+  assert.equal(starts, 2)
+  handlers.driver.emit('message', 'synthetic-session', Buffer.from([1]))
+  assert.equal(handlers.frames.length, 1)
+  f.client.destroy()
+  await flush()
+  assert.equal(f.timers.size, 0)
 })

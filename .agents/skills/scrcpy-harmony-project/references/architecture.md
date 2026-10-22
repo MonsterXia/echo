@@ -111,6 +111,8 @@ Canvas pointer 事件
 
 `getUiDriver()` 加载资源 `uitestkit_sdk/uitest_agent_v1.1.0.so`，传给 `target.createUiDriver(..., '1.1.0')`。资源版本与调用参数需要保持匹配。
 
+`uitest.ts` 的 start/stop 捕获处理器必须等待 UiDriver 的异步方法完成，再结束 IPC；启动还须等待前置停止完成。否则 renderer 的串行队列只能等待提前完成的 handler，底层错误也不会传播给调用者。`test/capture-handlers.test.cjs` 保留实际 handler 和 UiDriver 方法，在传输边界验证完成时序及拒绝传播。
+
 定位投屏问题时：
 
 - 帧解码入口：`src/renderer/screencast/lib/ScreencastClient.ts` 的 `draw()`；图像加载辅助在同目录 `util.ts`。实现使用 JPEG Blob 和 Canvas，不是 H.264/WebCodecs 管线。

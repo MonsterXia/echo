@@ -1,6 +1,6 @@
 # M2-3：无设备异常恢复与资源释放
 
-日期：2026-10-22（Asia/Hong_Kong）。执行：Codex。M2-3 整体保持**进行中**；本子任务仅验证 renderer 客户端生命周期。
+日期：2026-10-22（Asia/Hong_Kong）。执行：Codex。M2-3 整体保持**进行中**；本子任务验证 renderer 客户端生命周期及主进程捕获处理器的异步契约，设备传输受控。
 
 ## 来源与隔离
 
@@ -40,10 +40,20 @@
 - 独立审查后复核：上述三项问题均已解决，25 项相关测试通过，未发现新的范围内阻断问题；审查者额外在内存验证不同设备队列互不阻塞/完成后移除，以及启动拒绝时取消解码并允许下一代恢复。这是限定范围的代码审查，不是真机验收或合并批准。
 - 交付 [PR #22](https://github.com/MonsterXia/scrcpy-harmony/pull/22)，保留待审查，不自动合并或发布。五项必需 CI（test、lint、Windows、macOS arm64/x64 打包安装启动）的最终提交结果以 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/22/checks)及 PR 验证说明为准；这些 CI 不证明真机投屏通过。
 
+## 合并前复审补充：主进程异步契约
+
+前述 83 项测试和独立复审只覆盖 bridge Promise 边界，漏掉了主进程实际实现未将 UiDriver Promise 传回 IPC 的缺陷；不能用此前结果证明真实捕获方法的 stop/start 串行。后续独立审查指出此问题，本轮已核对锁定的 hdckit 0.12.1 实现：`startCaptureScreen` 等待传输后注册帧回调，`stopCaptureScreen` 等待传输后解除回调，两者均为 async。共享 `handleEvent` 返回 handler 结果，因此丢失等待发生在本项目 `uitest.ts` 的两处调用。
+
+- 本轮明确获准修改这两个处理器。修改前执行 fetch/merge，`origin/master` 当时仍为 `9e944ae`，merge 返回 already up to date；未覆盖其他任务记录。
+- 新增 `test/capture-handlers.test.cjs` 五项回归，并在生命周期测试中增加两项贯通回归。共用 helper 加载实际 `uitest.ts` 并调用 `init` 注册的处理器，使用实际 hdckit UiDriver 的 start/stop/Emitter；只控制 `send` 传输响应、缓存驱动查询及 Electron 注册/窗口发送边界。构造驱动不连接设备，未执行 HDC。
+- **修复前：新增七项全部失败**，原十七项生命周期通过。证据包括内部 stop 未完成就发送 start、stop handler 提前 resolve、start/stop 拒绝未传播并触发 unhandledRejection、销毁时 final stop 抢在真实 start 完成前，以及 renderer 没有收到底层拒绝。
+- 最小生产修复仅为 `await uiDriver.startCaptureScreen(...)` 和 `await uiDriver.stopCaptureScreen()`。捕获处理器现在等待真实方法完成后才 resolve，错误沿既有 IPC Promise 传播；不更改参数、通道、输入算法或主进程等待超时策略。
+- **修复后：24/24 相关测试通过**（五项 handler、十九项 lifecycle）；全套 `npm test` 90/90、lint 和 `build:main` 通过。最终提交 CI 见 PR 验证说明。此次增量留待安排的独立复审，不沿用上一轮复审为本次批准。
+
 ## 验证边界与下一步
 
 1. **未复现原报告的特定应用问题，未验证受保护内容或真机行为。** Image 回调受控，未证明真实 JPEG 解码、GPU/Canvas、IPC、HDC/UiDriver 或系统捕获兼容性；无设备测试不能替代原应用/系统组合回归。
 2. 此处“关闭”是调用 `ScreencastClient.destroy()` 的生命周期边界。操作系统销毁 renderer 后仍在主进程执行的 IPC、主进程窗口清理不在本次改动范围；未进行真实关窗验收。
-3. 已发出的 bridge 请求不能在 renderer 撤销。若 stop/start/getDisplaySize 永不 settle，renderer 不能保证设备端停止；有序 final stop 和同设备后续客户端也可能等待未完成的 start。此事实可供 M2-2 参考，本任务不更改其 `hdc/base.ts` 等待实现或 `uitest.ts`。跨 renderer 的所有权、首帧后流静默健康监测、触控手势取消不在本子任务内；当前帧事件只有 connectKey，没有捕获 session ID，无法区分开始新捕获后才送达的旧流帧。
+3. 已发出的 bridge 请求不能在 renderer 撤销。若 stop/start/getDisplaySize 永不 settle，renderer 不能保证设备端停止；有序 final stop 和同设备后续客户端也可能等待未完成的 start。此事实可供 M2-2 参考，本任务不更改其 `hdc/base.ts` 等待实现；`uitest.ts` 仅补齐上述两处 await。跨 renderer 的所有权、首帧后流静默健康监测、触控手势取消不在本子任务内；当前帧事件只有 connectKey，没有捕获 session ID，无法区分开始新捕获后才送达的旧流帧。
 4. 本次不是持续运行内存/CPU 验收，也没有证明 M2-2 长时间空闲报告已修复。可复用的证据仅限客户端销毁后的计时器、监听及图片 URL 清理。
 5. 后续在明确授权的测试设备上记录系统/应用/HDC 版本，对比正常捕获与原报告场景并采集脱敏错误；区分捕获失败、客户端解码异常与受保护内容限制。当前不安装或操作任何应用；后续侧载仍仅限获准的 bilibili，缺本地 HAP 不得绕过。
