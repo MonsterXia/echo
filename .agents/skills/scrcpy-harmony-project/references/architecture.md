@@ -117,7 +117,8 @@ Canvas pointer 事件
 - 触摸映射：`getPointer()` 先按帧宽高比算 CSS 容器内的实际图像区域，再按百分比映射到 `getDisplaySize()` 返回的设备尺寸。请求 `scale` 与实际流缩放可能不同。
 - 首帧或帧尺寸变化时重新查询设备尺寸；尺寸必须是正整数。坐标上限为 width/height 减一。没有有效尺寸时不发送触摸。
 - `isDrawing` 让绘制和尺寸查询串行进行，期间新帧会跳过；它不是帧队列。改动时注意异步旧帧覆盖新状态。
-- 启动包含 5 秒未就绪重试，`destroy()` 停止捕获并退订帧事件。若修改重启/销毁逻辑，实际核对定时器和异步回调生命周期，不假设已有完整取消机制。
+- 客户端在同一 renderer 内按设备将 stop/start 串行化（包含旧客户端销毁与新客户端启动），并用启动代次丢弃迟到结果；本次启动未出图时五秒重试（包括 stop/start 拒绝），停止阶段不接收帧。`ready` 仍只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，再排队停止捕获；已发出的 IPC 不能撤销，若 bridge 请求不返回，设备端清理仍不能保证。
+- `loadImage(url, signal?)` 清理图片处理器并支持取消；客户端在 finally 中释放 Blob URL。无设备生命周期回归见 `test/screencast-lifecycle.test.cjs`，真实捕获和原应用问题的验收边界见 `docs/maintenance/M2-3-recovery.md`。
 - `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
 
 ## UI 和生成文件

@@ -52,9 +52,11 @@ async function fixture({ scale = 1, width = 1084, height = 2412 } = {}) {
     module: { exports: {} },
     exports: {},
     Blob,
+    AbortController,
     Uint8Array,
     URL: { createObjectURL: () => 'blob:frame', revokeObjectURL() {} },
     setTimeout: () => 0,
+    clearTimeout() {},
     document: { createElement: () => canvas },
     testStore: { scale },
     testImage: { naturalWidth: 542, naturalHeight: 1206 },
@@ -70,6 +72,8 @@ async function fixture({ scale = 1, width = 1084, height = 2412 } = {}) {
   })
   vm.runInContext((await bundle).outputFiles[0].text, context)
   const client = new context.module.exports.default('device')
+  // Coordinate tests deliver frames only after the async capture start settles.
+  await new Promise((resolve) => setImmediate(resolve))
   return {
     calls,
     listeners,
