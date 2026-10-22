@@ -37,6 +37,7 @@ export default observer(function Overview() {
       const overview = await main.getOverview(target.key)
       setOverview(overview)
     } catch {
+      setOverview({})
       notify(t('commonErr'), { icon: 'error' })
     }
 
