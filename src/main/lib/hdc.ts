@@ -12,6 +12,7 @@ import startWith from 'licia/startWith'
 import trim from 'licia/trim'
 import os from 'node:os'
 import { shell } from './hdc/base'
+import { getTargetParameters } from './hdc/parameters'
 import * as shellHdc from './hdc/shell'
 import * as base from './hdc/base'
 import * as bundle from './hdc/bundle'
@@ -52,7 +53,7 @@ const getTargets: IpcGetTargets = async function () {
   const results = await Promise.all(
     connectKeys.map(async (connectKey) => {
       try {
-        const parameters = await client.getTarget(connectKey).getParameters()
+        const parameters = await getTargetParameters(client.getTarget(connectKey))
         const softwareVersion = parameters['const.product.software.version']
         // Accept bare versions and product prefixes; a build suffix is optional.
         const ohosVersion =
@@ -94,7 +95,7 @@ function parameterString(value: unknown): string {
 const getOverview: IpcGetOverview = async function (connectKey) {
   const target = client.getTarget(connectKey)
 
-  const parameters = await target.getParameters()
+  const parameters = await getTargetParameters(target)
   const [deviceInfo, kernelVersion] = await shell(connectKey, [
     'SP_daemon -deviceinfo',
     'uname -a',

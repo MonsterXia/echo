@@ -29,6 +29,7 @@ async function loadTargets(client) {
       if (id === 'share/common/log') return () => logger
       if (id === 'share/main/lib/window') return { sendTo() {} }
       if (id === './store') return { getSettingsStore: () => ({ get: () => '' }) }
+      if (id === './hdc/parameters') return { getTargetParameters: (target) => target.getParameters() }
       if (id.startsWith('./hdc/')) return { init() {} }
       if (id.startsWith('node:') || id.startsWith('licia/') || id === 'fs-extra') return require(id)
       throw new Error(`Unexpected import: ${id}`)

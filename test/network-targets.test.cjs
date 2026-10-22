@@ -27,6 +27,7 @@ function loadSource(file, imports, globals = {}) {
   vm.runInNewContext(code, {
     module, exports: module.exports, ...globals,
     require(id) {
+      if (id === './hdc/parameters') return loadSource('src/main/lib/hdc/parameters.ts', {})
       if (Object.hasOwn(imports, id)) return imports[id]
       if (id.startsWith('licia/') || ['node:os', 'node:path', 'fs-extra',
         'mobx', 'react/jsx-runtime'].includes(id)) return require(id)
@@ -242,9 +243,7 @@ test('host handshake failure is diagnosed and manual refresh recovers', { timeou
   assert.equal(store.target.key, KEY)
 })
 
-// The remaining parameter-output gap executes and fails against current code.
-// Set M2_5_STRICT=1 to produce a nonzero regression run for its follow-up fix.
-const knownGap = (reason) => ({ timeout: 5000, todo: process.env.M2_5_STRICT !== '1' && reason })
+// Both previously reproduced gaps are ordinary passing regressions after fixes.
 
 test('regression: failed enumeration must not report a successful refresh',
   { timeout: 5000 }, async (t) => {
@@ -256,7 +255,7 @@ test('regression: failed enumeration must not report a successful refresh',
   })
 
 test('regression: textual target command failure must not create a selectable device',
-  knownGap('M2-5: hdckit parses non-parameter error output as {}, accepted by getTargets'), async (t) => {
+  { timeout: 5000 }, async (t) => {
     const { state, store } = await fixture(t)
     const requestStart = state.requests.length
     state.parameters.set(KEY, '[Fail]Failed to communicate with daemon.\n')

@@ -78,6 +78,10 @@ React 组件 / MobX store
 
 设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
 
+`hdc/parameters.ts` 使用 hdckit 的公开 `Target.shell('param get')` 读取设备参数，供设备枚举和概览共用。解析前拒绝行首 `[Fail]`、`[E` 加六位数字 `]`、`error:` 等明确命令错误；合法参数值中的同名文本不算错误。读取结束或解析失败后关闭该连接；缺少可选字段仍交给上层兼容处理。此层不修改 HDC 服务生命周期，也未实现共享 shell 的超时治理。
+
+概览 `Overview.refresh()` 在读取失败后清空旧概览并提示错误，释放加载状态后允许再次刷新，避免将上次数据呈现为当前结果。
+
 `hdc.ts` 的 `getTargets` 对每个设备单独读取参数并隔离失败，保留可读取设备的原始顺序。版本从可识别的点分数字字段提取；缺失或未知版本返回空字符串并记警告，名称缺失回退到 connectKey，API 字段缺失返回空字符串。`listTargets` 失败记录 error，非空设备列表全部读取失败记录 warn，两者均拒绝 IPC；正常无设备记录 info 并返回空数组；部分设备失败仍返回其余设备。成功返回类型仍为 `ITarget[]`。主窗口 `refreshTargets()` 捕获失败、清空列表和选择、设置 `targetsError` 并返回 false；初始化和设备事件刷新也使用此路径。工具栏区分读取失败与正常无设备，手动刷新按布尔结果提示成功或错误。
 
 `hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批。Application.tsx 用面板生命周期内的同步引用串行处理刷新，将在途期间的安装/卸载刷新请求合并为后续一轮，重新读取系统应用选项；卸载或设备切换后忽略旧结果并停止后续批次，查询失败释放加载状态。此处不取消已发送 IPC，也不设置 HDC 命令超时。
