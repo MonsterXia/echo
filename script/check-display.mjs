@@ -114,8 +114,9 @@ const report = {
 for (const pixels of [
   [800, 600],
   [1024, 768],
+  [280, 400],
 ]) {
-  for (const dsf of [1, 1.25, 1.5]) {
+  for (const dsf of pixels[0] === 280 ? [1] : [1, 1.25, 1.5]) {
     for (const restored of pixels[0] === 800 && dsf === 1.5
       ? [false, true]
       : [false]) {
@@ -155,14 +156,15 @@ for (const pixels of [
           versions: process.versions,
         }))
         const samples = []
-        const sizes = restored
-          ? [['initial', null]]
-          : [
-              ['initial', null],
-              ['minimum', [320, 320]],
-              ['compact-edge', [480, 360]],
-              ['wide-edge', [481, 360]],
-            ]
+        const sizes =
+          restored || pixels[0] === 280
+            ? [['initial', null]]
+            : [
+                ['initial', null],
+                ['minimum', [320, 320]],
+                ['compact-edge', [480, 360]],
+                ['wide-edge', [481, 360]],
+              ]
         for (const [size, requested] of sizes) {
           if (requested)
             await application.evaluate(
@@ -181,6 +183,9 @@ for (const pixels of [
               )
               await page.locator('canvas').waitFor()
               await page.evaluate(() => document.fonts.ready)
+              await page
+                .locator('.luna-toolbar')
+                .evaluate((el) => el.scrollTo(0, 0))
               const metrics = await page.evaluate(() => {
                 const canvas = document.querySelector('canvas')
                 const toolbar = document.querySelector('.luna-toolbar')
@@ -202,6 +207,14 @@ for (const pixels of [
                   bitmap: [canvas.width, canvas.height],
                   toolbar: rect(toolbar),
                   toolbarScroll: [toolbar.clientWidth, toolbar.scrollWidth],
+                  toolbarVerticalScroll: [
+                    toolbar.clientHeight,
+                    toolbar.scrollHeight,
+                  ],
+                  toolbarOverflow: [
+                    getComputedStyle(toolbar).overflowX,
+                    getComputedStyle(toolbar).overflowY,
+                  ],
                   controls: [...toolbar.querySelectorAll('button,select')].map(
                     rect,
                   ),
@@ -256,6 +269,8 @@ for (const pixels of [
                 canvasVisible:
                   metrics.canvas.width > 0 &&
                   metrics.canvas.height > 0 &&
+                  metrics.canvas.x >= -1 &&
+                  metrics.canvas.right <= metrics.viewport[0] + 1 &&
                   metrics.canvas.bottom <= metrics.viewport[1] + 1 &&
                   metrics.canvas.y >= metrics.toolbar.bottom - 1,
                 aspectPreserved:
@@ -288,6 +303,60 @@ for (const pixels of [
               }
               const filename = `${id}-${size}-${width}x${height}-${scale}.png`
               await page.screenshot({ path: path.join(output, filename) })
+              // Check real wheel reachability, not just programmatic scrolling.
+              const toolbarReachability = []
+              const toolbarLocator = page.locator('.luna-toolbar')
+              const controls = toolbarLocator.locator('button,select')
+              for (let index = 0; index < (await controls.count()); index++) {
+                const control = controls.nth(index)
+                let position
+                for (let attempt = 0; attempt < 8; attempt++) {
+                  position = await control.evaluate((el) => {
+                    const r = el.getBoundingClientRect()
+                    const toolbar = el.closest('.luna-toolbar')
+                    const t = toolbar.getBoundingClientRect()
+                    const x = r.x + r.width / 2,
+                      y = r.y + r.height / 2
+                    return {
+                      hit:
+                        r.x >= t.x - 1 &&
+                        r.right <= t.x + toolbar.clientWidth + 1 &&
+                        r.y >= t.y - 1 &&
+                        r.bottom <= t.y + toolbar.clientHeight + 1 &&
+                        el.contains(document.elementFromPoint(x, y)),
+                      rect: {
+                        x: r.x,
+                        y: r.y,
+                        right: r.right,
+                        bottom: r.bottom,
+                      },
+                      scrollTop: toolbar.scrollTop,
+                      x: t.x + t.width / 2,
+                      y: t.y + t.height / 2,
+                      delta: r.y < t.y ? -50 : 50,
+                    }
+                  })
+                  if (position.hit) break
+                  await page.mouse.move(position.x, position.y)
+                  await page.mouse.wheel(0, position.delta)
+                  await page.waitForTimeout(80)
+                }
+                toolbarReachability.push({ index, ...position })
+              }
+              checks.toolbarWheelReachable =
+                toolbarReachability.length === 10 &&
+                toolbarReachability.every((p) => p.hit)
+              // In the extreme-width scenario controls may live in scrollable
+              // rows; normal widths must continue showing all controls at once.
+              if (pixels[0] === 280) delete checks.toolbarAccessible
+              const scrolledScreenshot =
+                pixels[0] === 280
+                  ? filename.replace('.png', '-scrolled.png')
+                  : null
+              if (scrolledScreenshot)
+                await page.screenshot({
+                  path: path.join(output, scrolledScreenshot),
+                })
               samples.push({
                 size,
                 device: [width, height],
@@ -295,8 +364,10 @@ for (const pixels of [
                 bounds,
                 metrics,
                 pointers,
+                toolbarReachability,
                 checks,
                 screenshot: filename,
+                scrolledScreenshot,
               })
             }
           }
