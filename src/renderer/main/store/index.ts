@@ -14,6 +14,7 @@ import { Layout } from './layout'
 class Store extends BaseStore {
   targets: ITarget[] = []
   target: ITarget | null = null
+  targetsError = false
   panel = 'overview'
   settings = new Settings()
   application = new Application()
@@ -26,6 +27,7 @@ class Store extends BaseStore {
     makeObservable(this, {
       targets: observable,
       target: observable,
+      targetsError: observable,
       panel: observable,
       ready: observable,
     })
@@ -50,9 +52,16 @@ class Store extends BaseStore {
     setMainStore('panel', panel)
   }
   refreshTargets = async () => {
-    const targets = await main.getTargets()
+    let targets: ITarget[] = []
+    let success = true
+    try {
+      targets = await main.getTargets()
+    } catch {
+      success = false
+    }
     runInAction(() => {
       this.targets = targets
+      this.targetsError = !success
       setMemStore('targets', targets)
     })
     if (!isEmpty(targets)) {
@@ -69,6 +78,7 @@ class Store extends BaseStore {
         this.selectTarget(null)
       }
     }
+    return success
   }
   private async init() {
     const panel = await main.getMainStore('panel')

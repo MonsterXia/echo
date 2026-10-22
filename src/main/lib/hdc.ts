@@ -41,7 +41,7 @@ const getTargets: IpcGetTargets = async function () {
     connectKeys = await client.listTargets()
   } catch (error) {
     logger.error('Failed to list HDC targets', error)
-    return []
+    throw new Error('Failed to list HDC targets')
   }
 
   if (connectKeys.length === 0) {
@@ -82,6 +82,7 @@ const getTargets: IpcGetTargets = async function () {
   const targets = results.filter((target): target is ITarget => target !== null)
   if (targets.length === 0) {
     logger.warn('No HDC target parameters could be read', connectKeys.length)
+    throw new Error('No HDC target parameters could be read')
   }
   return targets
 }

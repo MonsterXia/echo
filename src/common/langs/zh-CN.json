@@ -8,6 +8,7 @@
   "ohosVersion": "鸿蒙版本",
   "kernelVersion": "内核版本",
   "targetRefreshed": "设备已刷新",
+  "targetRefreshFailed": "设备读取失败，请检查 HDC 连接后刷新",
   "commonErr": "出错了",
   "remoteController": "遥控器",
   "processor": "处理器",
