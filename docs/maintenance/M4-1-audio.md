@@ -19,7 +19,7 @@
 | U1 | [上游 Issue #25](https://github.com/liriliri/echo/issues/25) | 创建/更新于 2026-04-09；读取时 open、评论列表为空。正文要求像安卓版一样把声音投到电脑，没有设备型号、性能目标或权限方案。它是需求，不能作能力证据。 |
 | H1 | [HarmonyOS：AVScreenCapture 录屏基础流程](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/avscreencapture-c-basic-process) | 页面更新 2026-10-14；内录/麦克风分开配置、用户隐私弹窗、数据/状态回调、停止释放；PC/2in1 的 API 22 特例。 |
 | H2 | [HarmonyOS：native_avscreen_capture.h](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/capi-native-avscreen-capture-h) | 页面更新 2026-09-24；基础接口 API 10，State/Data/Error 回调 API 12；当前设备标签 Phone/Tablet 12+、PC/2in1 13+、TV 19+；须结合具体接口。 |
-| H3 | [HarmonyOS：AudioCapturer](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-audio-AudioCapturer#requestplaybackcapturestart) | 页面更新 2026-10-10；`requestPlaybackCaptureStart` 起始 26.0.0，Stage 模型、Phone/PC/Tablet/TV；异步检查用户授权并回报启动结果。 |
+| H3 | [HarmonyOS：AudioCapturer](https://developer.huawei.com/consumer/cn/doc/doccenter-references/api/arkts-apis-audio-audiocapturer#requestplaybackcapturestart) | 页面更新 2026-10-10；`requestPlaybackCaptureStart` 起始 26.0.0，Stage 模型、Phone/PC/Tablet/TV；异步检查用户授权并回报启动结果。 |
 | H4 | [HarmonyOS：Audio Enums](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-audio-e) | 页面更新 2026-09-14；SourceType 旧内录废弃标记、AudioPrivacyType、API 26.0.0 AudioPlaybackCaptureMode 的内容范围。 |
 | H5 | [HarmonyOS：Audio Interfaces](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-audio-i) | 页面更新 2026-09-14；AudioCapturerOptions 的旧 `playbackCaptureConfig` 与新 `playbackCaptureMode`，AudioRendererOptions 的 `privacyType`。 |
 | H6 | [HarmonyOS：受限开放权限](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/restricted-permissions) | 页面更新 2026-10-10；CUSTOM_SCREEN_RECORDING、CAPTURE_PLAYBACK_DOWNLINK 的场景、设备、授权类型及 AGC 审核要求。 |
@@ -88,4 +88,5 @@ D1 的 UiDriver 启动路径还可能上传 agent、设置测试模式、启动/
 - 来源：GitHub 连接器不可用，使用 `gh api` 读取 U1 正文及空评论列表；华为官方网页经浏览器读取，OpenHarmony 经官方仓库固定提交读取。仅使用一手来源作事实依据。
 - 静态探针：解析 package/lock；下载 D1、校验 SHA-512 与 lock 完全匹配并读取 UiDriver；检索图像 IPC/Canvas/转发路径。无依赖安装、构建、HDC 调用、设备捕获或模拟性能测试。
 - 文档变更检查：提交前执行 `git diff --check`、本地链接和变更范围核对；仅本报告及 RUNBOOK 的 M4-1 行/交接。文档变更不另写实现镜像测试；CI 的 test/lint/三个平台打包启动检查只证明基线回归，不证明音频能力。
-- PR、审查和 CI：以本分支独立 PR 的检查页为准；待审查，不自动合并或发布。M4-1 维持“暂缓（评估已记录，能力待验证）”，下一步由维护者处理 G1/G2。
+- 独立审查：审查基线至 `7b511fe` 及随后链接修订；发现 H3 旧路径大小写导致 404，已替换为官方导航的准确地址并复核正文。审查结论为能力评估文档无未解决阻断项；已交叉核对新内录授权/版本、旧接口废弃、回调生命周期、系统权限和实际投屏源码。审查者未逐项复核所有页面日期、受限权限审核条目及包完整性记录，未执行 SDK/签名/真机/性能验收；不能作为功能通过证据。
+- PR、审查和 CI：[独立草稿 PR #24](https://github.com/MonsterXia/scrcpy-harmony/pull/24)，[当前提交检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/24/checks)；待审查，不自动合并或发布。M4-1 维持“暂缓（评估已记录，能力待验证）”，下一步由维护者处理 G1/G2。
