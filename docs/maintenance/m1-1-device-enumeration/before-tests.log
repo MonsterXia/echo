@@ -1,0 +1,442 @@
+TAP version 13
+# Subtest: a failed device does not hide healthy devices or change their order
+not ok 1 - a failed device does not hide healthy devices or change their order
+  ---
+  duration_ms: 116.5835
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:61:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   {
+    -     key: 'first',
+    -     name: 'nova 15',
+    -     ohosVersion: '7.0.0.109',
+    -     sdkVersion: '26'
+    -   },
+    -   {
+    -     key: 'last',
+    -     name: 'nova 15',
+    -     ohosVersion: '4.1.0',
+    -     sdkVersion: '26'
+    -   }
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      key: 'first'
+      name: 'nova 15'
+      ohosVersion: '7.0.0.109'
+      sdkVersion: '26'
+    1:
+      key: 'last'
+      name: 'nova 15'
+      ohosVersion: '4.1.0'
+      sdkVersion: '26'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:66:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: a synchronous target lookup failure is isolated too
+not ok 2 - a synchronous target lookup failure is isolated too
+  ---
+  duration_ms: 2.439542
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:73:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   'good'
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'good'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:81:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: device prefix and build suffix
+ok 3 - version compatibility: device prefix and build suffix
+  ---
+  duration_ms: 1.65875
+  type: 'test'
+  ...
+# Subtest: version compatibility: prefix without parentheses
+not ok 4 - version compatibility: prefix without parentheses
+  ---
+  duration_ms: 1.54425
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '4.1.' !== '4.1.0'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '4.1.0'
+  actual: '4.1.'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:103:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: bare version
+not ok 5 - version compatibility: bare version
+  ---
+  duration_ms: 2.397583
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Incomplete metadata must not hide connected devices
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:102:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: bare version and spaced suffix
+not ok 6 - version compatibility: bare version and spaced suffix
+  ---
+  duration_ms: 1.536875
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '' !== '5.0.0.22'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '5.0.0.22'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:103:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: repeated whitespace
+not ok 7 - version compatibility: repeated whitespace
+  ---
+  duration_ms: 1.752208
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    '' !== '7.0.0.109'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '7.0.0.109'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:103:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: multiword product prefix
+not ok 8 - version compatibility: multiword product prefix
+  ---
+  duration_ms: 1.440125
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'NEX' !== '6.1.0.117'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '6.1.0.117'
+  actual: 'NEX'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:103:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: missing value
+not ok 9 - version compatibility: missing value
+  ---
+  duration_ms: 2.203917
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Incomplete metadata must not hide connected devices
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:102:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: null value
+not ok 10 - version compatibility: null value
+  ---
+  duration_ms: 2.145167
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Incomplete metadata must not hide connected devices
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:102:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: non-string value
+not ok 11 - version compatibility: non-string value
+  ---
+  duration_ms: 1.848458
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Incomplete metadata must not hide connected devices
+    
+    0 !== 2
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 2
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:102:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: version compatibility: blank value
+ok 12 - version compatibility: blank value
+  ---
+  duration_ms: 1.743541
+  type: 'test'
+  ...
+# Subtest: version compatibility: unrecognized text
+not ok 13 - version compatibility: unrecognized text
+  ---
+  duration_ms: 2.125
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:97:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    'releas' !== ''
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ''
+  actual: 'releas'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:103:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: missing optional metadata preserves a selectable key and string IPC fields
+not ok 14 - missing optional metadata preserves a selectable key and string IPC fields
+  ---
+  duration_ms: 2.299334
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:108:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + []
+    - [
+    -   {
+    -     key: 'unnamed',
+    -     name: 'unnamed',
+    -     ohosVersion: '',
+    -     sdkVersion: ''
+    -   }
+    - ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      key: 'unnamed'
+      name: 'unnamed'
+      ohosVersion: ''
+      sdkVersion: ''
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:110:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: parameter whitespace is removed from the display name and API version
+not ok 15 - parameter whitespace is removed from the display name and API version
+  ---
+  duration_ms: 1.795875
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:116:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        {
+          key: 'device',
+    +     name: ' nova 15\n',
+    -     name: 'nova 15',
+          ohosVersion: '7.0.0.109',
+    +     sdkVersion: '26 '
+    -     sdkVersion: '26'
+        }
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      key: 'device'
+      name: 'nova 15'
+      ohosVersion: '7.0.0.109'
+      sdkVersion: '26'
+  actual:
+    0:
+      name: |-
+         nova 15
+        
+      key: 'device'
+      ohosVersion: '7.0.0.109'
+      sdkVersion: '26 '
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:119:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: no connected devices has an informational diagnostic, not a read failure
+not ok 16 - no connected devices has an informational diagnostic, not a read failure
+  ---
+  duration_ms: 4.976625
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(logs.some(({ level }) => level === 'info'))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:127:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: all failed devices retain per-device causes and an aggregate diagnostic
+not ok 17 - all failed devices retain per-device causes and an aggregate diagnostic
+  ---
+  duration_ms: 2.172833
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:131:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(logs.some(({ level, args }) => level === 'warn' && args.includes(key) && args.includes(error)))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:137:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: list failure returns a diagnosed empty result and can recover on the next refresh
+not ok 18 - list failure returns a diagnosed empty result and can recover on the next refresh
+  ---
+  duration_ms: 1.697875
+  type: 'test'
+  location: '<repository>/test/targets.test.cjs:142:1'
+  failureType: 'testCodeFailure'
+  error: 'HDC server unavailable'
+  code: 'ERR_TEST_FAILURE'
+  stack: |-
+    TestContext.<anonymous> (<repository>/test/targets.test.cjs:143:17)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: disconnect and reconnect do not retain a failed target or stale parameters
+ok 19 - disconnect and reconnect do not retain a failed target or stale parameters
+  ---
+  duration_ms: 1.316667
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 3
+# fail 16
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 216.936459

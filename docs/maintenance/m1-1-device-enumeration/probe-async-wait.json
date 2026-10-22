@@ -1,0 +1,91 @@
+{
+  "startedAt": "2026-10-22T08:49:50.042Z",
+  "platform": "darwin",
+  "os": "27.0.0",
+  "arch": "arm64",
+  "reconnect": true,
+  "sourceSha256": "dedd9002a9b8e6b29ae4ba66e86e23f7a9126447c27ab2f7ad269afec02c6588",
+  "states": [
+    {
+      "phase": "connected",
+      "at": "2026-10-22T08:49:52.242Z",
+      "ipcTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "rendererTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "selected": {
+        "name": "nova 15",
+        "key": "DEVICE_1",
+        "ohosVersion": "7.0.0.109",
+        "sdkVersion": "26"
+      },
+      "events": 0,
+      "select": {
+        "disabled": false,
+        "value": "DEVICE_1",
+        "labels": [
+          "nova 15 (DEVICE_1)"
+        ]
+      }
+    },
+    {
+      "phase": "disconnected",
+      "at": "2026-10-22T08:49:52.911Z",
+      "ipcTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "rendererTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "selected": {
+        "name": "nova 15",
+        "key": "DEVICE_1",
+        "ohosVersion": "7.0.0.109",
+        "sdkVersion": "26"
+      },
+      "events": 0,
+      "select": {
+        "disabled": false,
+        "value": "DEVICE_1",
+        "labels": [
+          "nova 15 (DEVICE_1)"
+        ]
+      }
+    }
+  ],
+  "passed": false,
+  "runtime": {
+    "version": "1.0.2",
+    "packaged": false,
+    "electron": "45.0.0"
+  },
+  "device": {
+    "name": "nova 15",
+    "model": "PSN-AL00",
+    "software": "PSN-AL00 7.0.0.109(SP6C00E105R3P3)",
+    "api": "26"
+  },
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n+ [\n+   {\n+     key: 'DEVICE_1',\n+     name: 'nova 15',\n+     ohosVersion: '7.0.0.109',\n+     sdkVersion: '26'\n+   }\n+ ]\n- []\n\n    at file://<repository>/script/check-targets-live.mjs:82:12"
+}

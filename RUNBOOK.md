@@ -40,7 +40,7 @@
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
-| M1-1 | 进行中 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。 |
+| M1-1 | 已完成 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。见 [验收报告](docs/maintenance/M1-1.md)及 [PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。 |
 | M1-2 | 待开始 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。 |
 | M1-3 | 待开始 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | 验证本地 label/iconPath 的实际格式与可读性；侧载应用可显示名称和图标；本地资源缺失、不可读或离线时有合理回退；商店应用仍正常。 |
 
@@ -182,3 +182,12 @@
 
 - 2026-10-22 初轮验证：新增 19 项真实 getTargets 处理器回归，修复前 16 失败、3 通过，确认异常设备会清空列表且 `OpenHarmony 4.1.0` 被截为 `4.1.`。逐设备隔离、字段防御解析与诊断加入后，完整 32 项测试、lint 和 build 通过。
 - 真机已验证：本地 dist 在 Electron 45 启动，nova 15 的真实 HDC 参数、getTargets IPC、renderer 列表和当前选择一致，显示 `7.0.0.109 / API 26`；无页面异常并正常退出。USB 断开/重连仍待用户协助，不能用单测中的模拟状态替代该项。
+
+### M1-1 验收记录
+
+- 日期 / 执行者：2026-10-22 / Codex，用户协助 USB 拔插。基线 `e79de6e`，分支 `codex/m1-1-target-isolation`；[PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。M1-1 验收已完成，本次归档提交须通过全部必需检查后合并；最终合并与检查状态见 PR 页面。
+- 修订：真实 getTargets 处理器逐设备隔离失败，保留正常设备和顺序；兼容带/不带前缀及括号的点分版本，缺失/异常版本返回空字符串并记警告；空列表、枚举失败、逐设备失败和全部失败具有不同诊断。未改 IPC 契约或共享子模块。
+- 回归：新增 19 项在原实现为 16 失败、3 通过，修复后全部通过；完整 32 项测试、lint、build 通过。应用代码提交 `3e7820b` 的 [五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39750249252) 全部通过，最终归档提交检查见 PR。
+- 真机：macOS arm64 / Electron 45 / HDC 3.1.0b / nova 15（PSN-AL00，7.0.0.109，API 26）。实际 USB 断开后 getTargets IPC、renderer 列表和选择清空，选择器禁用；重连自动恢复设备和选择，真实 changeTarget 计数递增，页面无异常，进程正常退出。见 [完整报告及证据](docs/maintenance/M1-1.md)。
+- 验收脚本的异步等待与 Luna 禁用状态断言曾误判，已修正并保留失败记录；最终三阶段在同一应用运行中通过。设备标识已脱敏。
+- 边界 / 下一步：真实异常设备混合、缺失和损坏字段由受控 HDC 回归覆盖；未宣称多台异常真机、Windows 真机或长期稳定性已验证。本次为未发布源码构建，公开 v1.0.2 未变。下一项 M1-2，先复现逐应用 bm dump 失败与结果错位问题，再做最小修复。

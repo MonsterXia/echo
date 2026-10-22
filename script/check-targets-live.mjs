@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process'
 import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
+import { setTimeout as delay } from 'node:timers/promises'
 import { _electron as electron } from 'playwright-core'
 
 assert.ok(process.argv[2], 'Pass an evidence directory')
@@ -23,6 +24,16 @@ const report = { startedAt: new Date().toISOString(), platform: process.platform
   states: [], passed: false }
 let application
 let output = ''
+let snapshot
+async function waitFor(check, timeout = 20_000) {
+  const deadline = Date.now() + timeout
+  do {
+    // IPC predicates are asynchronous. Await the result before deciding to retry.
+    if (await check()) return
+    await delay(250)
+  } while (Date.now() < deadline)
+  throw new Error('Timed out waiting for the requested device connection state')
+}
 try {
   application = await electron.launch({ executablePath: require('electron'),
     args: [path.resolve('dist'), `--user-data-dir=${profile}`, '--enable-logging'],
@@ -41,18 +52,21 @@ try {
     window.targetChangeCount = 0
     main.on('changeTarget', () => window.targetChangeCount++)
   })
-  const snapshot = async (phase) => {
+  snapshot = async (phase) => {
     const state = await page.evaluate(async () => {
       const select = document.querySelector('#app select')
       return { ipcTargets: await main.getTargets(), rendererTargets: await main.getMemStore('targets'),
         selected: await main.getMainStore('target'), events: window.targetChangeCount,
-        select: { disabled: select.disabled, value: select.value,
+        select: { disabled: select.closest('.luna-toolbar-item').classList.contains('luna-toolbar-disabled'),
+          nativeDisabled: select.disabled, value: select.value,
           labels: [...select.options].map((option) => option.text) } }
     })
     report.states.push({ phase, at: new Date().toISOString(), ...state })
     return state
   }
-  await page.waitForFunction(async () => (await main.getMemStore('targets'))?.length > 0)
+  console.log('WAITING: connect and authorize a Harmony device')
+  await waitFor(() => page.evaluate(async () => (await main.getMemStore('targets'))?.length > 0),
+    report.reconnect ? 240_000 : 20_000)
   const initial = await snapshot('connected')
   keys.push(...initial.ipcTargets.map((target) => target.key))
   assert.ok(keys.length > 0, 'Connect and authorize a Harmony device first')
@@ -73,23 +87,25 @@ try {
   if (report.reconnect) {
     assert.equal(keys.length, 1, 'Disconnect/reconnect check expects one device')
     console.log('READY: unplug USB and leave it disconnected until DISCONNECTED is printed')
-    await page.waitForFunction(async () => {
+    await waitFor(() => page.evaluate(async () => {
       const targets = await main.getMemStore('targets')
       return Array.isArray(targets) && targets.length === 0 &&
-        (await main.getMainStore('target')) === null && document.querySelector('#app select').disabled
-    }, null, { timeout: 240_000 })
+        (await main.getMainStore('target')) === null &&
+        document.querySelector('#app select').closest('.luna-toolbar-item').classList.contains('luna-toolbar-disabled')
+    }), 240_000)
     const disconnected = await snapshot('disconnected')
     assert.deepEqual(disconnected.ipcTargets, [])
     assert.ok(disconnected.events > initial.events)
     console.log('DISCONNECTED verified: reconnect USB now')
-    await page.waitForFunction(async (key) => {
+    await waitFor(() => page.evaluate(async (key) => {
       const targets = await main.getMemStore('targets')
       return targets?.some((target) => target.key === key) &&
         (await main.getMainStore('target'))?.key === key && document.querySelector('#app select').value === key
-    }, keys[0], { timeout: 240_000 })
+    }, keys[0]), 240_000)
     const reconnected = await snapshot('reconnected')
     assert.deepEqual(reconnected.ipcTargets, initial.ipcTargets)
     assert.deepEqual(reconnected.rendererTargets, initial.rendererTargets)
+    assert.equal(reconnected.select.disabled, false)
     assert.ok(reconnected.events > disconnected.events)
   }
   assert.deepEqual((await page.pageErrors()).map((error) => error.message), [])
@@ -98,6 +114,7 @@ try {
   report.passed = true
 } catch (error) {
   report.error = error.stack
+  if (snapshot) await snapshot('failure').catch(() => {})
   throw error
 } finally {
   if (application) await application.close().catch(() => {})

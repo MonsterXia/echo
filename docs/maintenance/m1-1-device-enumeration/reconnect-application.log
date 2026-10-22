@@ -1,0 +1,35 @@
+[56546:1022/165834.171858:INFO:CONSOLE:50] "16:58:34.171 I renderer: start", source: file://<repository>/dist/renderer/assets/app-BK7K8d-v.js (50)
+[56546:1022/165834.172103:INFO:CONSOLE:0] "Electron Security Warning (Disabled webSecurity) This renderer process has "webSecurity" disabled. This
+  exposes users of this app to severe security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+[56546:1022/165834.172122:INFO:CONSOLE:0] "Electron Security Warning (allowRunningInsecureContent) This renderer process has "allowRunningInsecureContent"
+  enabled. This exposes users of this app to severe security risks.
+
+  
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+[56546:1022/165834.172150:INFO:CONSOLE:0] "Electron Security Warning (Insecure Content-Security-Policy) This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: file://<repository>/dist/renderer/index.html (0)
+16:58:34.172 I window: main on ready-to-show
+16:58:34.172 I window: main ready and show
+[56546:1022/165834.249413:INFO:CONSOLE:50] "16:58:34.172 I renderer: render app", source: file://<repository>/dist/renderer/assets/app-BK7K8d-v.js (50)
+16:58:34.295 I hdc: No HDC targets connected
+16:59:51.309 I hdc: target change
+17:00:24.400 I hdc: target change
+17:00:26.407 I hdc: No HDC targets connected
+17:00:26.579 I hdc: No HDC targets connected
+17:01:15.524 I hdc: target change
+Debugger ending on ws://127.0.0.1:51775/c59775b3-8d1b-4ef8-96bd-f25aafb61403
+For help, see: https://nodejs.org/learn/getting-started/debugging

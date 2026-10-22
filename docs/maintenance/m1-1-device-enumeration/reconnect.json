@@ -1,0 +1,108 @@
+{
+  "startedAt": "2026-10-22T08:58:33.801Z",
+  "platform": "darwin",
+  "os": "27.0.0",
+  "arch": "arm64",
+  "reconnect": true,
+  "sourceSha256": "dedd9002a9b8e6b29ae4ba66e86e23f7a9126447c27ab2f7ad269afec02c6588",
+  "states": [
+    {
+      "phase": "connected",
+      "at": "2026-10-22T08:59:53.686Z",
+      "ipcTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "rendererTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "selected": {
+        "name": "nova 15",
+        "key": "DEVICE_1",
+        "ohosVersion": "7.0.0.109",
+        "sdkVersion": "26"
+      },
+      "events": 1,
+      "select": {
+        "disabled": false,
+        "nativeDisabled": false,
+        "value": "DEVICE_1",
+        "labels": [
+          "nova 15 (DEVICE_1)"
+        ]
+      }
+    },
+    {
+      "phase": "disconnected",
+      "at": "2026-10-22T09:00:26.580Z",
+      "ipcTargets": [],
+      "rendererTargets": [],
+      "selected": null,
+      "events": 2,
+      "select": {
+        "disabled": true,
+        "nativeDisabled": false,
+        "value": "",
+        "labels": [
+          "未连接设备"
+        ]
+      }
+    },
+    {
+      "phase": "reconnected",
+      "at": "2026-10-22T09:01:17.813Z",
+      "ipcTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "rendererTargets": [
+        {
+          "name": "nova 15",
+          "key": "DEVICE_1",
+          "ohosVersion": "7.0.0.109",
+          "sdkVersion": "26"
+        }
+      ],
+      "selected": {
+        "name": "nova 15",
+        "key": "DEVICE_1",
+        "ohosVersion": "7.0.0.109",
+        "sdkVersion": "26"
+      },
+      "events": 3,
+      "select": {
+        "disabled": false,
+        "nativeDisabled": false,
+        "value": "DEVICE_1",
+        "labels": [
+          "nova 15 (DEVICE_1)"
+        ]
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.2",
+    "packaged": false,
+    "electron": "45.0.0"
+  },
+  "device": {
+    "name": "nova 15",
+    "model": "PSN-AL00",
+    "software": "PSN-AL00 7.0.0.109(SP6C00E105R3P3)",
+    "api": "26"
+  }
+}
