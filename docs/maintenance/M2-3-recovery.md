@@ -37,7 +37,8 @@
 - `npm run lint`：通过。
 - `npm run build:renderer`：通过；现有 Vite CJS/Sass 弃用、Licia eval 和 chunk 大小警告仍存在。
 - 额外 `node node_modules/typescript/bin/tsc --noEmit --pretty false --ignoreDeprecations 6.0` **未通过**：28 条诊断。使用 TypeScript compiler host 仅在内存用 `git show 9e944ae` 替换本次两份生产源码，对比基线与修订后的文件名/诊断码/消息：两侧均为相同 28 条，新增 0。包含 CSS 模块声明、DataGridNode 联合类型、Blob/Uint8Array 类型和共享子模块可选依赖；本次 React effect 清理类型错误已消除，不把现有类型债务标为通过。
-- 独立审查后复核：上述三项问题均已解决，25 项相关测试通过，未发现新的范围内阻断问题；审查者额外在内存验证不同设备队列互不阻塞/完成后移除，以及启动拒绝时取消解码并允许下一代恢复。这是限定范围的代码审查，不是真机验收或合并批准。本 PR 五项必需 CI 待记录；未自动合并或发布。
+- 独立审查后复核：上述三项问题均已解决，25 项相关测试通过，未发现新的范围内阻断问题；审查者额外在内存验证不同设备队列互不阻塞/完成后移除，以及启动拒绝时取消解码并允许下一代恢复。这是限定范围的代码审查，不是真机验收或合并批准。
+- 交付 [PR #22](https://github.com/MonsterXia/scrcpy-harmony/pull/22)，保留待审查，不自动合并或发布。五项必需 CI（test、lint、Windows、macOS arm64/x64 打包安装启动）的最终提交结果以 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/22/checks)及 PR 验证说明为准；这些 CI 不证明真机投屏通过。
 
 ## 验证边界与下一步
 
