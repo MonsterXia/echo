@@ -53,4 +53,4 @@
 - 合入 `5dcc7bd` 后，`npm test`：185/185，通过，无 TODO/跳过/取消；`npm run lint` 和 `npm run build:main` 通过。
 - `node node_modules/typescript/bin/tsc --ignoreConfig --noEmit --strict --types node --target ES2022 --module node16 --moduleResolution node16 --skipLibCheck src/main/lib/hdc/finiteShell.ts` 通过，仅此模块，不宣称全仓库类型检查通过。
 - 旧路径截止用例再次运行：退出码 1，预期失败 1/1；新适配器专项 27/27。
-- 最终提交的独立 PR 和五项必需 CI 由 PR 检查页及交付消息核验，不自动合并或发布。
+- 交付：[PR #30](https://github.com/MonsterXia/scrcpy-harmony/pull/30)，[五项必需 CI 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/30/checks)。实现提交 `f7872e6`，后续仅补本交付链接；最终 SHA 与 CI 结果由检查页及交付消息核验，不自动合并或发布。

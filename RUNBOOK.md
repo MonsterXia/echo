@@ -293,7 +293,7 @@
 
 - 2026-10-22 / Codex；分支 `codex/m2-cancellable-transport`，起点 `9f8ddcb`，已同步 master `5dcc7bd` 并保留 #28/#29 交接。新增独占 socket 的有限 shell 模块，显式总截止/AbortSignal，取消销毁并等待本地 close，不管理共享 HDC 服务。
 - 旧 base.ts + hdckit 静默握手的截止断言确认失败；新模块专项 27/27、组合全量 185/185、lint、单模块 strict TypeScript 与 build:main 通过。独立审查无生产阻断，修正测试写入注入与握手阶段屏障并补确定性拆包。完整合约、验证命令和差异见[专项报告](docs/maintenance/M2-2-cancellable-transport.md)。
-- 未接 base.shell/IPC，没有生产调用者；hello 恰为 16 字节、目标 32 字节及 16 MiB 限额等兼容性仍待真机验证。下一步选择有限只读调用接入并验证服务启动交接，再逐步扩展；M2-2 保持进行中，不宣称上游空闲卡死已修复。未操作设备/HAP、共享用户数据或发布版本；最终 PR/CI 见专项报告交付记录。
+- 未接 base.shell/IPC，没有生产调用者；hello 恰为 16 字节、目标 32 字节及 16 MiB 限额等兼容性仍待真机验证。下一步选择有限只读调用接入并验证服务启动交接，再逐步扩展；M2-2 保持进行中，不宣称上游空闲卡死已修复。未操作设备/HAP、共享用户数据或发布版本；[PR #30](https://github.com/MonsterXia/scrcpy-harmony/pull/30) 保留待维护者审查，最终 CI 见[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/30/checks)。
 
 ### M3-3 用户与构建说明推进
 
