@@ -1,6 +1,6 @@
 # Scrcpy Harmony 构建指南
 
-[返回 README](../README.md) · [用户指南](user-guide.md) · [维护者开发与验证参考](../.agents/skills/scrcpy-harmony-project/references/development.md)
+[返回中文 README](../README_ZH.md) · [用户指南](user-guide.md) · [维护者开发与验证参考](../.agents/skills/scrcpy-harmony-project/references/development.md)
 
 ## 范围与准备
 

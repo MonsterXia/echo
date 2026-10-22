@@ -1,79 +1,111 @@
-<div align="center">
-  <a href="https://github.com/MonsterXia/scrcpy-harmony" target="_blank">
-    <img src="https://echo.liriliri.io/icon.png" width="400">
-  </a>
-</div>
+# Scrcpy Harmony
 
-<h1 align="center">Scrcpy Harmony</h1>
+[![Version](https://img.shields.io/github/v/release/MonsterXia/scrcpy-harmony?color=blue&label=version)](https://github.com/MonsterXia/scrcpy-harmony/releases)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey.svg)](https://github.com/MonsterXia/scrcpy-harmony/releases)
+[![Downloads](https://img.shields.io/github/downloads/MonsterXia/scrcpy-harmony/total)](https://github.com/MonsterXia/scrcpy-harmony/releases/latest)
 
-<div align="center">
+**English** | [中文](README_ZH.md)
 
-鸿蒙 HDC 桌面应用。
+Scrcpy Harmony is a graphical HDC desktop tool for HarmonyOS devices, bringing together screen mirroring, device control, app management, logs, and debugging tools.
 
-[![Windows][windows-image]][release-url]
-[![macOS][mac-image]][release-url]
-[![Downloads][download-image]][release-url]
-![License][license-image]
+[Download](https://github.com/MonsterXia/scrcpy-harmony/releases/latest) · [Changelog](CHANGELOG.md) · [Report an issue](https://github.com/MonsterXia/scrcpy-harmony/issues)
 
-</div>
+## Features
 
-[windows-image]: https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows
-[mac-image]: https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple
-[download-image]: https://img.shields.io/github/downloads/MonsterXia/scrcpy-harmony/total?style=flat-square
-[release-url]: https://github.com/MonsterXia/scrcpy-harmony/releases
-[license-image]: https://img.shields.io/github/license/MonsterXia/scrcpy-harmony?style=flat-square
+| Feature | Description |
+| --- | --- |
+| Screen mirroring and control | View the device screen, click and drag with your mouse, and use the toolbar to send text or device key events |
+| Device overview | View the device model, system version, and display information |
+| Screenshots | Capture, view, and save device screenshots |
+| App management | Install and uninstall apps, inspect app details, and clear app cache or data |
+| Processes and logs | View processes, browse and filter HiLog output, and export logs |
+| Debugging tools | Interactive terminal, layout inspector, port forwarding, and WebView debugging |
 
-<img src="https://echo.liriliri.io/screencast.png" style="width:100%">
+## Download and installation
 
-[Scrcpy Harmony](https://github.com/MonsterXia/scrcpy-harmony) 是一个用于简化对鸿蒙设备操作控制的桌面应用程序，可以看作是 HDC 的图形用户界面。
+Visit [Releases](https://github.com/MonsterXia/scrcpy-harmony/releases/latest) and choose the installer for your operating system and processor:
 
-## 项目来源与维护
+| Platform | Installer suffix | Installation |
+| --- | --- | --- |
+| Windows x64 | `win-x64.exe` | Run the installer and follow the prompts |
+| macOS Apple Silicon | `mac-arm64.dmg` | Open the disk image and drag the app into Applications |
+| macOS Intel | `mac-x64.dmg` | Open the disk image and drag the app into Applications |
 
-本项目基于 [liriliri/echo](https://github.com/liriliri/echo)，由 MonsterXia 独立维护。2026-10-21 已解除 GitHub fork 关系，保留代码来源与历史。原作者为 surunzi，保留上游提交历史、署名及 AGPL-3.0 许可证。仓库名为 `scrcpy-harmony`，应用名为 Scrcpy Harmony，npm 包名为 `scrcpy-harmony`；本项目是基于 HDC 的 Electron 应用。
+macOS requires **version 13 or later**. Linux installers are not currently available.
 
-问题反馈、下载和后续版本以本仓库为准。应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装并使用新的用户配置目录。旧配置保留原处，不会自动迁移。本页界面图片来自上游，仅供功能参考，可能与当前名称和界面不同。
+Installers include HDC and the required device resources; Node.js is not needed for normal use. See the [user guide](docs/user-guide.md) for detailed installation and connection steps.
 
-## 主页与问题反馈
+**The 1.0.2 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.2 release report](docs/releases/1.0.2.md) for installation and launch results, signing status, and checksum files.
 
-- [项目主页](https://github.com/MonsterXia/scrcpy-harmony#readme)：本仓库 README，包含安装、功能与维护说明。
-- [问题反馈](https://github.com/MonsterXia/scrcpy-harmony/issues)：先搜索已有报告，再通过 New issue 提交。应用内也可从“帮助 → 报告问题”（Help → Report Issue）打开此入口。
+If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
 
-反馈时请提供 Scrcpy Harmony 版本、桌面系统、设备型号与 HarmonyOS/HDC 版本、复现步骤、预期与实际结果；附上相关日志或截图前，请移除设备标识及其他个人信息。
+The public **1.0.2** release does not include subsequent fixes on `master`, such as device enumeration isolation, per-app metadata read error handling, and app name fallbacks. Source builds currently also report version 1.0.2, so include the commit SHA when reporting a problem with a source build.
 
-## 维护与开发入口
+## Quick start
 
-- [用户指南](docs/user-guide.md)：安装、调试授权、设备选择、投屏与输入、日志保存和常见失败。
-- [构建指南](docs/build-guide.md)：从干净检出准备依赖和资源，在 Windows/macOS 构建与启动 Electron。
-- [分阶段维护 RUNBOOK](RUNBOOK.md)：待办、优先顺序、验收条件及交接记录。
-- [维护来源记录](docs/maintenance/SOURCES.md)：上游 Issue/PR、本仓库已完成 PR 和归档说明。
-- [维护者开发与验证参考](.agents/skills/scrcpy-harmony-project/references/development.md)：模块验证脚本、打包和 CI 细节。
-- [变更记录](CHANGELOG.md)：独立维护后的发行改动与上游历史版本。
+1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
+2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
+3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. To send text, click **Input text** (输入文本) in the screencast toolbar.
+4. Switch between the **Apps** (应用), **Terminal** (终端), and **Logs** (日志) panels in the main window. To export HiLog output, click **Save** (保存) in the Logs toolbar.
 
-## 安装
+The app uses its bundled HDC by default. To use another version, specify the executable path in **HDC location** (HDC 位置) in settings.
 
-点击[这里](https://github.com/MonsterXia/scrcpy-harmony/releases/)下载并安装 Scrcpy Harmony，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。首次独立发行版为 [1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，上游安装包不包含本项目的改动。
+### Common questions
 
-**1.0.2 的安装包未做发行者签名或 macOS 公证，macOS Gatekeeper 检查未通过。** 三平台安装启动检查已通过，签名报告、校验清单和未验证范围见 [发布记录](docs/releases/1.0.2.md)。
+- **The device list is empty:** Make sure your cable supports data transfer and debugging is authorized on the device, then refresh the list. If you use a custom HDC, check that its configured path is valid.
+- **The device appears, but screencasting or layout inspection fails:** These features also depend on compatibility between the device system and uitestkit. Include your device model, system version, and the exact error when reporting a problem.
+- **How do I install an update?** The app prompts you to open this repository's Releases page. Download and install the new version manually.
 
-当前使用 Electron 45，macOS 需要 13 或更新版本。安装包包含设备资源，普通用户无需安装 Node.js。开启设备 USB 调试并授权电脑后，在主窗口刷新、选择设备，再点“投屏”；完整步骤及日志保存注意事项见[用户指南](docs/user-guide.md)。
+Report other problems through [Issues](https://github.com/MonsterXia/scrcpy-harmony/issues) or **Help → Report Issue** (帮助 → 报告问题) in the app menu. Include the app version, desktop operating system, device model, HarmonyOS/HDC versions, reproduction steps, and expected and actual behavior. Remove device identifiers and personal information before uploading logs or screenshots.
 
-截至 2026-10-22，公开发行版为 **1.0.2**；master 后续的设备枚举、应用读取和名称回退修复尚未发行，不能用 master 的验收结果代替 1.0.2。源码构建的包版本目前也显示 1.0.2，反馈时请附提交号。
+## Local development
 
-开发需要 Node.js 22.12.0 或更新版本、Git 子模块及锁文件安装，按[构建指南](docs/build-guide.md)执行。应用必需 Electron 主进程与 preload；单独打开 Vite 页面不能作为浏览器版使用。
+The project uses Electron, React, and TypeScript. You need **Node.js 22.12.0 or later** and Git. The resource download script also requires `curl` and `unzip`; on Windows, these tools can be provided by Git Bash.
 
-## 功能
+```sh
+git clone --recurse-submodules https://github.com/MonsterXia/scrcpy-harmony.git
+cd scrcpy-harmony
+npm ci
+npm run init
+```
 
-<img src="https://echo.liriliri.io/screenshot.png" style="width:100%">
+`npm run init` downloads HDC and uitestkit resources. For an existing checkout, run `git submodule update --init --recursive` first to initialize any missing submodules.
 
-* 设备概览、截图与按键操作
-* 投屏、触控与文本输入
-* 应用安装、管理和信息查看
-* 进程监控、HiLog 与交互终端
-* 布局查看、端口转发与 WebView 调试
+Start the development build in one terminal:
 
-## 相关项目
+```sh
+npm run dev
+```
 
-* [licia](https://github.com/liriliri/licia): Scrcpy Harmony 使用的工具库。
-* [luna](https://github.com/liriliri/luna): Scrcpy Harmony 使用的 UI 库。
-* [vivy](https://github.com/liriliri/vivy): 图标生成工具。
-* [hdckit](https://github.com/liriliri/hdckit)：基于 Node.js 实现的鸿蒙 HDC 客户端。
+Once the initial main-process and preload builds finish, launch the app in a second terminal:
+
+```sh
+npm start
+```
+
+The app depends on the Electron main process; the Vite page cannot run as a standalone browser app. Restart the app after changing the main process or preload code.
+
+Common validation and packaging commands:
+
+```sh
+npm test
+npm run lint
+npm run build
+npm run pack -- --no-publish
+```
+
+Installers are written to `release/<version>/`. See the [build guide](docs/build-guide.md) for setup from a clean checkout and Windows shell configuration, and the [maintainer development and validation reference](.agents/skills/scrcpy-harmony-project/references/development.md) for validation scripts and CI details.
+
+## Origins and maintenance
+
+This project is based on [liriliri/echo](https://github.com/liriliri/echo) and is independently maintained by MonsterXia. It retains attribution to the original author, surunzi, and the upstream commit history, and is licensed under [AGPL-3.0](LICENSE).
+
+Core dependencies include [hdckit](https://github.com/liriliri/hdckit) (HDC client), [Luna](https://github.com/liriliri/luna) (UI components), and [Licia](https://github.com/liriliri/licia) (utilities).
+
+- [User guide](docs/user-guide.md): Installation, debugging authorization, device selection, screencasting, text input, and log export.
+- [Build guide](docs/build-guide.md): Set up a clean checkout, build, and launch Electron on Windows/macOS.
+- [Maintenance plan](RUNBOOK.md): Progress, acceptance criteria, and next steps.
+- [Maintenance sources](docs/maintenance/SOURCES.md): Upstream issues, pull requests, and archive index.
+- [Changelog](CHANGELOG.md): Release changes and version history.
+
+The linked user guide, build guide, maintainer reference, maintenance documents, and release report are currently available in Chinese.

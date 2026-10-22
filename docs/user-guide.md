@@ -1,6 +1,6 @@
 # Scrcpy Harmony 用户指南
 
-[返回 README](../README.md) · [从源码构建](build-guide.md)
+[返回中文 README](../README_ZH.md) · [从源码构建](build-guide.md)
 
 ## 版本与支持范围
 
