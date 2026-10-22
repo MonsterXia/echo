@@ -42,10 +42,15 @@ async function fixture(t) {
   const state = { keys: [KEY], badHello: false, parameters: new Map(), requests: [] }
   const sockets = new Set()
   const errors = []
+  let stopping = false
   const server = net.createServer((socket) => {
     sockets.add(socket)
     socket.on('close', () => sockets.delete(socket))
     socket.on('error', (error) => errors.push(error))
+    if (stopping) {
+      socket.destroy()
+      return
+    }
     const send = (text) => {
       const body = Buffer.isBuffer(text) ? text : Buffer.from(text)
       const size = Buffer.alloc(4)
@@ -88,15 +93,20 @@ async function fixture(t) {
       }
     })
   })
-  // Explicit IPv4 loopback and OS-assigned port; no shared 8710 listener.
-  server.listen(0, '127.0.0.1')
-  await once(server, 'listening')
   t.after(async () => {
+    stopping = true
+    const closed = server.listening
+      ? new Promise((resolve, reject) => server.close((e) => e ? reject(e) : resolve()))
+      : Promise.resolve()
     for (const socket of sockets) socket.destroy()
-    await new Promise((resolve, reject) => server.close((e) => e ? reject(e) : resolve()))
+    await closed
     assert.deepEqual(errors, [])
     assert.equal(execFile.mock.callCount(), 0, 'No HDC executable may be started')
   })
+  // Explicit IPv4 loopback and OS-assigned port; no shared 8710 listener.
+  // Cleanup is registered before setup and also closes late accepted sockets.
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
   const client = Hdc.createClient({
     host: '127.0.0.1', port: server.address().port,
     bin: path.join(ROOT, 'test', '__forbidden_hdc_executable__'),
@@ -159,8 +169,43 @@ async function fixture(t) {
     return { notifications, select: children[0].props,
       refresh: children.find((child) => child.props.icon === 'refresh').props.onClick }
   }
-  return { state, logs, getTargets, store, toolbar, events }
+  return { state, logs, getTargets, store, toolbar, events, server }
 }
+
+test('network fixture cleanup closes a peer whose accept callback arrives late', { timeout: 5000 }, async (t) => {
+  let cleanup, cleanupPromise, peer, client, f, emit, timer
+  t.after(async () => {
+    clearTimeout(timer)
+    if (f && emit) f.server.emit = emit
+    peer?.destroy()
+    client?.destroy()
+    if (cleanup) await (cleanupPromise ?? cleanup())
+  })
+  f = await fixture({ signal: t.signal, after(fn) { cleanup = fn } })
+  emit = f.server.emit
+  let accepted
+  const queuedAccept = new Promise((resolve) => { accepted = resolve })
+  f.server.emit = function (event, ...args) {
+    if (event === 'connection') {
+      peer = args[0]
+      accepted()
+      return true
+    }
+    return emit.call(this, event, ...args)
+  }
+  client = net.connect({ host: '127.0.0.1', port: f.server.address().port })
+  client.on('error', () => {})
+  await queuedAccept
+  cleanupPromise = cleanup()
+  emit.call(f.server, 'connection', peer)
+  const result = await Promise.race([
+    cleanupPromise.then(() => 'closed'),
+    new Promise((resolve) => { timer = setTimeout(() => resolve('pending'), 200) }),
+  ])
+  assert.equal(result, 'closed', 'late accepted peer must not hold server.close open')
+  assert.equal(peer.destroyed, true)
+  assert.equal(f.server.listening, false)
+})
 
 test('network keys survive real hdckit, getTargets, selection and toolbar options', { timeout: 5000 }, async (t) => {
   const { state, store, toolbar } = await fixture(t)
@@ -213,8 +258,12 @@ test('regression: failed enumeration must not report a successful refresh',
 test('regression: textual target command failure must not create a selectable device',
   knownGap('M2-5: hdckit parses non-parameter error output as {}, accepted by getTargets'), async (t) => {
     const { state, store } = await fixture(t)
+    const requestStart = state.requests.length
     state.parameters.set(KEY, '[Fail]Failed to communicate with daemon.\n')
     await store.refreshTargets()
+    assert.ok(state.requests.slice(requestStart).some(
+      ({ key, command }) => key === KEY && command === 'shell param get'),
+    'the failing refresh must actually query the target parameters')
     assert.equal(store.targets.length, 0)
     assert.equal(store.target, null)
   })

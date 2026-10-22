@@ -232,7 +232,7 @@
 - 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`；分支 `codex/m2-5-network-evidence`。M2-5 保持**进行中，真机待验收**。
 - 已读取上游 #13、当前华为/OpenHarmony 官方文档和锁定 hdckit 0.12.1；具体来源、版本边界、应用链路和验收步骤见 [独立报告](docs/maintenance/M2-5.md)。
 - 独立回环 fixture 使用实际 hdckit、getTargets、store 与工具栏代码：专项 3 通过、2 个执行失败的 TODO；全量 69 通过、2 TODO，lint 通过。严格模式复现两项失败：枚举失败仍提示成功、参数错误文本被视为空参数。生产代码未修改，修复方案留待协调独立任务。
-- 无 HDC 可执行文件/真机操作；USB、网络授权/连接、自动恢复和投屏均未验收。[PR #23](https://github.com/MonsterXia/scrcpy-harmony/pull/23) 保留草稿待审查；独立 reviewer 已复核失败回归、未发现阻塞问题，[必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/23/checks) 单独核验，不自动合并或发布。
+- 无 HDC 可执行文件/真机操作；USB、网络授权/连接、自动恢复和投屏均未验收。[PR #23](https://github.com/MonsterXia/scrcpy-harmony/pull/23) 已进入合并审查；补充本次参数查询断言、初始化和晚到连接清理回归后，专项为 4 通过、2 TODO。[必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/23/checks) 按最终提交核验；两项生产缺陷由独立 PR #26/#27 修复后再将对应 TODO 转为普通断言。
 
 ### M2-3 无设备恢复子任务
 
