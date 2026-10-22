@@ -76,6 +76,8 @@ React 组件 / MobX store
 | HiLog | `hilog/Hilog.tsx` | `hdc/hilog.ts`，pid 名称缓存依赖 `hdc/base.ts` |
 | 设置 | `toolbar/SettingsModal.tsx`、`src/renderer/main/store/settings.ts` | `src/main/lib/store.ts` 和 `src/main/window/main.ts` |
 
+`hdc/hilog.ts` 在暂停或关闭时使当前流的在途 PID 名称补全失效；恢复只接受恢复后的记录。关闭解除 reader 的 entry 监听并结束 reader，迟到的暂停/恢复/关闭 IPC 为无操作。PID 查询失败时保留活动记录，以 `pid-<数字>` 回退并记警告；已失效回调不更新缓存或发送记录。此边界不取消共享 PID 查询，也不撤回已发送 IPC；renderer 的“清除”仅清空本地记录。
+
 设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
 
 `hdc/parameters.ts` 使用 hdckit 的公开 `Target.shell('param get')` 读取设备参数，供设备枚举和概览共用。解析前拒绝行首 `[Fail]`、`[E` 加六位数字 `]`、`error:` 等明确命令错误；合法参数值中的同名文本不算错误。读取结束或解析失败后关闭该连接；缺少可选字段仍交给上层兼容处理。此层不修改 HDC 服务生命周期，也未实现共享 shell 的超时治理。

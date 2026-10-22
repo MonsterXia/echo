@@ -1,0 +1,146 @@
+
+> scrcpy-harmony@1.0.2 build
+> node script/build.mjs
+
+
+> scrcpy-harmony@1.0.2 build:main
+> vite build --config vite.main.ts
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+vite v5.4.21 building for production...
+transforming...
+✓ 1076 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/main/index.js  631.05 kB │ gzip: 189.82 kB
+✓ built in 1.68s
+
+> scrcpy-harmony@1.0.2 build:preload
+> vite build --config vite.preload.ts
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+vite v5.4.21 building for production...
+transforming...
+✓ 222 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/preload/index.js  121.83 kB │ gzip: 34.28 kB
+✓ built in 361ms
+
+> scrcpy-harmony@1.0.2 build:renderer
+> vite build
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+vite v5.4.21 building for production...
+transforming...
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($class == ":root"): #ddd; else: #393939)
+
+More info: https://sass-lang.com/d/if-function
+
+  ╷
+6 │         background-color: if($class == ':root', #ddd, #393939);
+  │                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src\renderer\luna.scss 6:27  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($class == ":root"): #f2f7fd; else: #0b2544)
+
+More info: https://sass-lang.com/d/if-function
+
+  ╷
+9 │         background-color: if($class == ':root', #f2f7fd, #0b2544);
+  │                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src\renderer\luna.scss 9:27  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($class == ":root"): (color-primary-bg: color.adjust($color-primary, $lightness: 25%), color-bg-container-darker: color.adjust($color-bg-container, $lightness: -5%), color-bg-container-lighter: color.adjust($color-bg-container, $lightness: 5%)); else: (color-primary-bg: color.adjust($color-primary, $lightness: -25%), color-bg-container-darker: color.adjust($color-bg-container-dark, $lightness: -5%), color-bg-container-lighter: color.adjust($color-bg-container-dark, $lightness: 5%)))
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+36 │ ┌         if(
+37 │ │           $class == ':root',
+38 │ │           (
+39 │ │             color-primary-bg: color.adjust($color-primary, $lightness: 25%),
+40 │ │             color-bg-container-darker:
+41 │ │               color.adjust($color-bg-container, $lightness: -5%),
+42 │ │             color-bg-container-lighter:
+43 │ │               color.adjust($color-bg-container, $lightness: 5%),
+44 │ │           ),
+45 │ │           (
+46 │ │             color-primary-bg: color.adjust($color-primary, $lightness: -25%),
+47 │ │             color-bg-container-darker:
+48 │ │               color.adjust($color-bg-container-dark, $lightness: -5%),
+49 │ │             color-bg-container-lighter:
+50 │ │               color.adjust($color-bg-container-dark, $lightness: 5%),
+51 │ │           )
+52 │ └         )
+   ╵
+    src\share\renderer\main.scss 36:9  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($class == ":root"): "light"; else: "dark")
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+54 │       if($class == ':root', 'light', 'dark')
+   │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    src\share\renderer\main.scss 54:7  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($theme == "dark"): "-dark"; else: "")
+
+More info: https://sass-lang.com/d/if-function
+
+  ╷
+7 │   $suffix: if($theme == 'dark', '-dark', '');
+  │            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src\share\renderer\mixin.scss 7:12  @use
+    src\share\renderer\main.scss 2:1    root stylesheet
+
+✓ 832 modules transformed.
+node_modules/licia/randomBytes.js (20:13): Use of eval in "node_modules/licia/randomBytes.js" is strongly discouraged as it poses security risks and may cause issues with minification.
+rendering chunks...
+computing gzip size...
+dist/renderer/index.html                              0.39 kB │ gzip:   0.27 kB
+dist/renderer/assets/default-icon-BEowIRRb.png       20.09 kB
+dist/renderer/assets/icon-RRtXdow_.png               21.79 kB
+dist/renderer/assets/MiSans-Regular-BjbB2O6q.ttf  8,073.15 kB
+dist/renderer/assets/App-DplwvdpB.css                 0.12 kB │ gzip:   0.12 kB
+dist/renderer/assets/App-o3hzah0p.css                 0.19 kB │ gzip:   0.15 kB
+dist/renderer/assets/App-BSrh4QD_.css                 0.37 kB │ gzip:   0.25 kB
+dist/renderer/assets/App-IFHVt93n.css                 0.65 kB │ gzip:   0.31 kB
+dist/renderer/assets/xterm-DYP7pi_n.css               4.15 kB │ gzip:   1.68 kB
+dist/renderer/assets/App-DMlEgHFO.css                 8.13 kB │ gzip:   2.15 kB
+dist/renderer/assets/app-Bq1a6kil.css               109.30 kB │ gzip:  24.37 kB
+dist/renderer/assets/App-B9P9T-3C.js                  0.35 kB │ gzip:   0.27 kB
+dist/renderer/assets/App-Dy2RQ8jS.js                  1.93 kB │ gzip:   0.99 kB
+dist/renderer/assets/randomBytes-Bh5GZDQm.js          6.62 kB │ gzip:   2.62 kB
+dist/renderer/assets/toBool-BEjzeV2X.js              10.19 kB │ gzip:   3.84 kB
+dist/renderer/assets/App-BN2_7VBK.js                 10.30 kB │ gzip:   3.66 kB
+dist/renderer/assets/download-Cub1ndoo.js            10.44 kB │ gzip:   4.03 kB
+dist/renderer/assets/App-BEhqGHZY.js                 14.25 kB │ gzip:   5.77 kB
+dist/renderer/assets/react-C_PAqfHb.js               32.97 kB │ gzip:  10.52 kB
+dist/renderer/assets/theme-1JUnz7Cf.js               83.38 kB │ gzip:  25.31 kB
+dist/renderer/assets/App-DpoJVTwD.js                246.38 kB │ gzip:  78.85 kB
+dist/renderer/assets/app--ngE1lCq.js                253.04 kB │ gzip:  82.16 kB
+dist/renderer/assets/xterm-C8S31Q3K.js              500.15 kB │ gzip: 126.28 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.71s
+
+up to date in 1s

@@ -1,0 +1,354 @@
+TAP version 13
+# Subtest: active HiLog preserves IPC payload, cached PID names and PID zero fallback
+ok 1 - active HiLog preserves IPC payload, cached PID names and PID zero fallback
+  ---
+  duration_ms: 86.4624
+  type: 'test'
+  ...
+# Subtest: pause drops a pending PID lookup result and records arriving while paused
+not ok 2 - pause drops a pending PID lookup result and records arriving while paused
+  ---
+  duration_ms: 6.7202
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:105:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   [
+    +     'main',
+    +     'hilogEntry',
+    +     'hilog2',
+    +     {
+    +       bundleName: 'stale.app',
+    +       date: 2026-10-22T00:00:00.000Z,
+    +       domain: '00000',
+    +       level: 4,
+    +       message: 'before pause',
+    +       pid: 42,
+    +       tag: 'synthetic',
+    +       tid: 7,
+    +       type: 0
+    +     }
+    +   ]
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      0: 'main'
+      1: 'hilogEntry'
+      2: 'hilog2'
+      3:
+        date: 2026-10-22T00:00:00.000Z
+        pid: 42
+        tid: 7
+        level: 4
+        type: 0
+        domain: '00000'
+        tag: 'synthetic'
+        message: 'before pause'
+        bundleName: 'stale.app'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:113:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: pause then resume cannot revive an old callback, while new records recover
+not ok 3 - pause then resume cannot revive an old callback, while new records recover
+  ---
+  duration_ms: 3.6202
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:118:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   [
+    +     'main',
+    +     'hilogEntry',
+    +     'hilog3',
+    +     {
+    +       bundleName: 'stale.app',
+    +       date: 2026-10-22T00:00:00.000Z,
+    +       domain: '00000',
+    +       level: 4,
+    +       message: 'old',
+    +       pid: 42,
+    +       tag: 'synthetic',
+    +       tid: 7,
+    +       type: 0
+    +     }
+    +   ]
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      0: 'main'
+      1: 'hilogEntry'
+      2: 'hilog3'
+      3:
+        date: 2026-10-22T00:00:00.000Z
+        pid: 42
+        tid: 7
+        level: 4
+        type: 0
+        domain: '00000'
+        tag: 'synthetic'
+        message: 'old'
+        bundleName: 'stale.app'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:126:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: close suppresses pending output, detaches the listener and tolerates late control IPC
+not ok 4 - close suppresses pending output, detaches the listener and tolerates late control IPC
+  ---
+  duration_ms: 4.1484
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:136:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   [
+    +     'main',
+    +     'hilogEntry',
+    +     'hilog4',
+    +     {
+    +       bundleName: 'synthetic.app',
+    +       date: 2026-10-22T00:00:00.000Z,
+    +       domain: '00000',
+    +       level: 4,
+    +       message: 'before close',
+    +       pid: 42,
+    +       tag: 'synthetic',
+    +       tid: 7,
+    +       type: 0
+    +     }
+    +   ],
+    +   [
+    +     'main',
+    +     'hilogEntry',
+    +     'hilog4',
+    +     {
+    +       bundleName: 'pid-0',
+    +       date: 2026-10-22T00:00:00.000Z,
+    +       domain: '00000',
+    +       level: 4,
+    +       message: 'after close',
+    +       pid: 0,
+    +       tag: 'synthetic',
+    +       tid: 7,
+    +       type: 0
+    +     }
+    +   ]
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0:
+      0: 'main'
+      1: 'hilogEntry'
+      2: 'hilog4'
+      3:
+        date: 2026-10-22T00:00:00.000Z
+        pid: 42
+        tid: 7
+        level: 4
+        type: 0
+        domain: '00000'
+        tag: 'synthetic'
+        message: 'before close'
+        bundleName: 'synthetic.app'
+    1:
+      0: 'main'
+      1: 'hilogEntry'
+      2: 'hilog4'
+      3:
+        date: 2026-10-22T00:00:00.000Z
+        pid: 0
+        tid: 7
+        level: 4
+        type: 0
+        domain: '00000'
+        tag: 'synthetic'
+        message: 'after close'
+        bundleName: 'pid-0'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:144:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: PID lookup rejection falls back for the current entry and a later lookup recovers
+not ok 5 - PID lookup rejection falls back for the current entry and a later lookup recovers
+  ---
+  duration_ms: 4.7844
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:153:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted rejection.
+    Actual message: "synthetic PID lookup failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'synthetic PID lookup failure'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:157:16)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'doesNotReject'
+  stack: |-
+    async TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:158:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: PID rejection after pause is handled without publishing a stale entry
+not ok 6 - PID rejection after pause is handled without publishing a stale entry
+  ---
+  duration_ms: 3.4627
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:173:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted rejection.
+    Actual message: "synthetic late lookup failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'synthetic late lookup failure'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:182:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'doesNotReject'
+  stack: |-
+    async TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:183:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: PID rejection after close is handled without publishing a stale entry
+not ok 7 - PID rejection after close is handled without publishing a stale entry
+  ---
+  duration_ms: 3.4293
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:173:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted rejection.
+    Actual message: "synthetic late lookup failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'synthetic late lookup failure'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:182:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'doesNotReject'
+  stack: |-
+    async TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:183:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: PID rejection after pause-resume is handled without publishing a stale entry
+not ok 8 - PID rejection after pause-resume is handled without publishing a stale entry
+  ---
+  duration_ms: 3.2804
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:173:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted rejection.
+    Actual message: "synthetic late lookup failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'synthetic late lookup failure'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:182:18)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'doesNotReject'
+  stack: |-
+    async TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:183:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: repeated resume does not invalidate active work
+ok 9 - repeated resume does not invalidate active work
+  ---
+  duration_ms: 3.9266
+  type: 'test'
+  ...
+# Subtest: closing one stream does not suppress another sharing the same pending PID lookup
+not ok 10 - closing one stream does not suppress another sharing the same pending PID lookup
+  ---
+  duration_ms: 4.1952
+  type: 'test'
+  location: '<worktree>\\test\\hilog-lifecycle.test.cjs:201:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        [
+    +     'hilog10',
+    +     'closed'
+    +   ],
+    +   [
+          'hilog11',
+          'remaining'
+        ]
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: 'hilog11'
+      1: 'remaining'
+  actual:
+    0:
+      0: 'hilog10'
+      1: 'closed'
+    1:
+      0: 'hilog11'
+      1: 'remaining'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<worktree>\test\hilog-lifecycle.test.cjs:209:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 2
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 220.7576
