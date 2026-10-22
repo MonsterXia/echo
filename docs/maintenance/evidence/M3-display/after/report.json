@@ -5,12 +5,12 @@
     "osVersion": "Windows 11 Pro",
     "node": "v22.21.1"
   },
-  "revision": "e3fcac775b8166ccb9017a760a2f6a38368040ef",
+  "revision": "2ca4a0bcb57fbd7182556ac6f1bbb72b7c1ef90b",
   "sourceHashes": {
     "src/main/window/screencast.ts": "fa57d9604eaf8f6d8864efc776d4544b734ac2bdaac6a9bfea5620b35de5d158",
     "src/renderer/screencast/components/Toolbar.module.scss": "7c8cf51c9de5d25a91879669f37cc32db02381c1cf70a1439e57e8e3eb398755",
     "src/renderer/screencast/components/Screencast.module.scss": "23c2691794ec60ab643e5ed5def1e62bbb93d87e6b6be71716c08b2f2eb7d8c7",
-    "src/renderer/screencast/lib/ScreencastClient.ts": "d818b06bdb318a4a41d7e8338c0366806fea356012892906f85deadd2b3a3e42",
+    "src/renderer/screencast/lib/ScreencastClient.ts": "3c6e02376825bc827f32bd6a94e4765c6ae882160ba3c78b0351bb390d9af514",
     "script/check-display.mjs": "5be9eb9898c37107dc2dd19abbe94599c6dd961f8764ebdbbe75cec52985a4f7"
   },
   "cases": [
