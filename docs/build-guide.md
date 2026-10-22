@@ -80,7 +80,7 @@ npm run pack -- --no-publish
 
 ## 开发启动
 
-先完成依赖、子模块和设备资源准备。在仓库根目录打开两个终端：
+先完成依赖、子模块和设备资源准备。**先正常退出已安装的 Scrcpy Harmony 和其他使用同一配置的开发实例**，再在仓库根目录打开两个终端，避免同时写入相同配置文件；不需要为此终止共享 HDC 服务。
 
 ```text
 # 终端 1：监听 main/preload 构建，启动 renderer 开发服务
@@ -94,7 +94,7 @@ npm start
 
 `dev` 不会启动 Electron。Vite 端口配置为 **8080**，主进程开发加载地址也固定使用 8080；若 Vite 因占用转到 8081，请先解决端口冲突，不能直接继续。`start` 加载 `dist/main/index.js` 并打开 9229 inspector。HMR 已关闭，renderer 改动后需重新加载页面；main/preload 改动后退出并重启 Electron。
 
-Electron 45 的运行时按需下载；如提示缺少 Electron 二进制，可先执行 `node node_modules/electron/install.js`，完成后再启动。主进程诊断保留终端 2 的相关输出，页面错误可在“帮助 → 切换开发人员工具”的 Console 查看；分享前脱敏。开发构建仍可能使用与已安装 Scrcpy Harmony 相同的配置目录，启动会初始化真实 HDC；若当前禁止设备访问，不要运行 `npm start` 或设备验收脚本。
+Electron 45 的运行时按需下载；如提示缺少 Electron 二进制，可先执行 `node node_modules/electron/install.js`，完成后再启动。主进程诊断保留终端 2 的相关输出，页面错误可在“帮助 → 切换开发人员工具”的 Console 查看；分享前脱敏。开发构建仍可能使用与已安装 Scrcpy Harmony 相同的配置目录，即使错开运行也可能改变该配置；启动会初始化真实 HDC。若当前禁止设备访问，不要运行 `npm start` 或设备验收脚本。
 
 ### 为什么不能直接在浏览器运行
 
