@@ -300,6 +300,7 @@
 - 2026-10-22 / Codex；基线 `8f1becb`，分支 `codex/m2-memory-deadline`。仅 `hdc.ts/getMemory` 的 `cat /proc/meminfo` 改走已合并有限模块，与 Hdc.createClient 共用从 OHOS_HDC_SERVER_PORT 解析一次的端点，保留默认/非默认端口语义，非法范围明确拒绝；10 秒保守总截止尚未真机校准。失败拒绝，不回退无界 shell，不重试用户命令。
 - 真实处理器/base/parameters/hdckit/finiteShell + 随机回环首批 13 项先 9 失败/4 通过，接入后通过；增加真实 React 概览超时清空及重试恢复后专项 14/14。真实时钟截止约 10 秒；最终全量 199/199、lint、build:main 通过。三个既有枚举夹具补新增 import 的禁止调用边界；过程失败与证据见[专项报告](docs/maintenance/M2-2-memory-deadline.md)。
 - 主对话独立审查发现初稿固定 8710 覆盖环境端口（P2）。改为加载真实 Hdc.createClient 后新增 9 项端口回归先 6 失败/3 通过，修复共享解析后专项 23/23、全量 208/208、lint、build:main 通过；不把初轮内部复核视为最终审查结论。
+- 交付 [PR #32](https://github.com/MonsterXia/scrcpy-harmony/pull/32)；主对话对 `2e7cd3e` 的[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)确认 P2 已修复，独立 45/45 通过，无剩余阻断；最终组合 SHA 与五项必需 CI 仍须按最终提交核验。
 - 前序参数/设备信息与后续屏幕查询仍未限时，服务启动保持原 hdckit 路径；终端/HiLog/投屏/写操作未迁移。协议严格度与预算需授权真机验收，M2-2 仍进行中。最终 SHA/PR/CI 由交付消息和 PR 正文承载，主对话完成独立 review、五项必需 CI 核验后统一合并；本分支不自行合并或操作设备。
 
 ### M3-3 用户与构建说明推进
