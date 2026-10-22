@@ -52,12 +52,12 @@
 
 ## 阶段 2：投屏、长时间运行与连接回归
 
-目标：补足实际设备和长时间运行证据。当前阶段状态：**待开始**。
+目标：补足实际设备和长时间运行证据。当前阶段状态：**进行中**。
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 待开始 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[有限命令等待调查](docs/maintenance/M2-2-command-timeout.md)已建立受控缺口用例；尚未实现生产超时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
 | M2-3 | 待开始 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。 |
 | M2-4 | 待开始 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 以 Pura 70 Pro / 5.1.0.150（API 17）原报告为线索，核对 socket、端口转发和 `/json`；官方调试方法能发现的目标在应用中也可见，空目标及断连可恢复。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。失败回归修复与真机证据按 docs/maintenance/ 下的 M2-5 专项报告归档；网络真机断连重连仍待验收。 |
@@ -68,13 +68,13 @@
 
 ## 阶段 3：显示适配与用户文档
 
-目标：改善小屏显示并提供可照做的操作说明。当前阶段状态：**待开始**。
+目标：改善小屏显示并提供可照做的操作说明。当前阶段状态：**进行中**。
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M3-1 | 待开始 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
 | M3-2 | 待开始 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
-| M3-3 | 待开始 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 覆盖安装、开发者选项/调试授权、设备选择、投屏/输入、日志导出、常见失败和旧配置边界；按文档在干净环境走通构建。说明应用依赖 Electron 主进程，Vite 页面不能独立作为浏览器版使用。 |
+| M3-3 | 待验收 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 已补[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)，区分 1.0.2 与 master、HiLog 保存与桌面诊断；Windows 干净构建及边界见 [M3-3 报告](docs/maintenance/M3-3.md)。Electron 主进程必需；真机用户流程与本轮 macOS 人工走读未验收，保留待验收。 |
 
 入口：`src/main/window/screencast.ts`、`src/renderer/screencast/components/`、`src/renderer/main.tsx`、`README.md` 与开发指南。开发指南已经存在，但不能据此将普通用户操作文档标为完成。
 
@@ -226,6 +226,19 @@
 - Node HTTP(S) 与 Chromium 均经不转发流量的拒绝代理，分别确认探针失败和代理收到请求；离线图片哈希与默认资源一致。`verificationPassed=true` 仅代表验证完成，`offlineIconAcceptancePassed=false` 明确表示离线应用图标未通过。
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
+
+### M2-2 有限命令等待调查
+
+- 2026-10-22 / Codex，基线 9e944ae，分支 codex/m2-command-timeout；独立 worktree。已核对 Issue #22 与锁定 hdckit 0.12.1，建立真实 base.ts → hdckit → 本地受控 TCP 的缺口用例。
+- 结论：握手/ready 阶段缺少请求取消与连接所有权接口，外层 Promise.race 或 Connection.end 无法可靠清理；本轮 [PR #20](https://github.com/MonsterXia/scrcpy-harmony/pull/20) 提交测试与接口方案，生产代码不变；本地 74 项测试、lint、build:main 通过，独立审查问题已修正并复核，必需 CI 见 PR 检查页。详见[证据及交接](docs/maintenance/M2-2-command-timeout.md)。
+- 下一步：独立评审可取消 transport 方案，再推进有限命令截止；长期空闲复现、CPU/内存、原复现时长与真机监听释放仍未验证，M2-2 保持进行中。
+- 审查补充：已合入 master `ea53acc` 并保留 M4-1 交接；确定性复现 fixture 清理快照后的迟到 accept 会阻塞 server.close，先停监听并销毁迟到 peer，新增回归由失败转通过。初始化故障注入与独立复核通过；完整测试更新为 75/75，lint 通过，最终 CI 见 PR #20 检查页。只改测试清理，生产超时与真机验收仍未完成。
+
+### M3-3 用户与构建说明推进
+
+- 2026-10-22 / Codex；基线 `9e944ae`，独立分支 `codex/m3-3-user-build-docs`。已读上游 #14/#20，并核对 v1.0.2、master、菜单与日志实现，补齐 README 导航、[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)。
+- 独立 Windows x64 检出完成固定子模块初始化、锁文件安装、资源准备、66 项测试、lint、build 和 no-publish 打包；下载两次 TLS 失败及重试结果如实记录，见 [M3-3 报告](docs/maintenance/M3-3.md)。未修改生产代码、锁文件或工作流。
+- M3-3 保持待验收：本轮不访问真机或设备应用，不安装/卸载应用；macOS 使用已核实历史 CI，未做本机人工走读。下一步按发行版指南验收授权、设备选择、投屏/输入及脱敏日志导出；PR 与 CI 结果集中记录在专项报告，不以文档或无设备测试替代这些验收。
 
 ### M4-1 音频能力评估交接
 
