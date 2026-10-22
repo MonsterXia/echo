@@ -52,48 +52,79 @@ export default observer(function Application() {
   })
   const draggingRef = useRef(0)
   const iconsRef = useRef<any[]>([])
+  const refreshRef = useRef<{
+    active: boolean
+    running: boolean
+    pending: boolean
+  } | null>(null)
 
   const { target } = store
 
   useEffect(() => {
+    const state = { active: true, running: false, pending: false }
+    refreshRef.current = state
     refresh()
-  }, [])
+    return () => {
+      state.active = false
+      state.pending = false
+    }
+  }, [target?.key])
   useWindowResize(() => dataGridRef.current?.fit())
 
   async function refresh() {
-    if (!target || isLoading) {
+    const state = refreshRef.current
+    if (!target || !state?.active || store.target?.key !== target.key) {
       return
     }
 
-    setBundleInfos([])
-    setIsLoading(true)
-    const bundles = await main.getBundles(
-      target.key,
-      store.application.sysBundle
-    )
-    const chunks = chunk(bundles, 5)
-    let bundleInfos: IBundleInfo[] = []
-    for (let i = 0, len = chunks.length; i < len; i++) {
-      const chunk: string[] = chunks[i]
-      bundleInfos = concat(
-        bundleInfos,
-        await main.getBundleInfos(target.key, chunk)
-      )
-      iconsRef.current = map(bundleInfos, (info) => {
-        const style: any = {
-          borderRadius: '20%',
-        }
-
-        return {
-          info: info,
-          src: escape(info.icon || defaultIcon),
-          name: escape(info.label),
-          style,
-        }
-      })
-      setBundleInfos(bundleInfos)
+    // React state is for display; old install/menu closures must share this lock.
+    state.pending = true
+    if (state.running) {
+      return
     }
-    setIsLoading(false)
+    state.running = true
+    const isCurrent = () =>
+      state.active &&
+      refreshRef.current === state &&
+      store.target?.key === target.key
+
+    setIsLoading(true)
+    try {
+      while (state.pending && isCurrent()) {
+        state.pending = false
+        iconsRef.current = []
+        setBundleInfos([])
+        try {
+          const bundles = await main.getBundles(
+            target.key,
+            store.application.sysBundle
+          )
+          if (!isCurrent()) return
+          const chunks = chunk(bundles, 5)
+          let bundleInfos: IBundleInfo[] = []
+          for (let i = 0, len = chunks.length; i < len; i++) {
+            const chunk: string[] = chunks[i]
+            const infos = await main.getBundleInfos(target.key, chunk)
+            if (!isCurrent()) return
+            bundleInfos = concat(bundleInfos, infos)
+            iconsRef.current = map(bundleInfos, (info) => ({
+              info,
+              src: escape(info.icon || defaultIcon),
+              name: escape(info.label),
+              style: { borderRadius: '20%' },
+            }))
+            setBundleInfos(bundleInfos)
+          }
+        } catch {
+          if (isCurrent()) {
+            notify(t('commonErr'), { icon: 'error' })
+          }
+        }
+      }
+    } finally {
+      state.running = false
+      if (isCurrent()) setIsLoading(false)
+    }
   }
 
   async function onDrop(e: React.DragEvent) {

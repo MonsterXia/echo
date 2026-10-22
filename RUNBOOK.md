@@ -41,7 +41,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M1-1 | 已完成 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。见 [验收报告](docs/maintenance/M1-1.md)及 [PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。 |
-| M1-2 | 待验收 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。代码与只读验证见 [M1-2 报告](docs/maintenance/M1-2.md)；缺测试 HAP，安装/卸载验收待办。 |
+| M1-2 | 待验收 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。代码与只读验证见 [M1-2 报告](docs/maintenance/M1-2.md)；本轮仅补[并发刷新回归](docs/maintenance/M1-2-refresh.md)，缺专用 bilibili HAP，真实安装/卸载验收仍待办。 |
 | M1-3 | 进行中 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | [PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18) 仅使用 bilibili 验证名称与图标，见 [名称报告](docs/maintenance/M1-3.md)及[离线图标专项报告](docs/maintenance/M1-3-icons.md)。已补齐 Node/Chromium 双侧断网、两种视图、解码/哈希与刷新验证，但离线仍显示默认图标；HAP/资源索引读取被拒绝，无本地测试 HAP，不能标为完成。 |
 
 代码入口：M1-1 为 `src/main/lib/hdc.ts` 的 `getTargets`；M1-2/3 为 `src/main/lib/hdc/bundle.ts` 的 `getBundleInfos`，UI 为 `src/renderer/main/components/application/`。
@@ -86,7 +86,7 @@
 
 | ID | 来源 | 评估与验收方向 |
 | --- | --- | --- |
-| M4-1 | [#25](https://github.com/liriliri/echo/issues/25)：音频转发 | 验证 HarmonyOS/HDC 是否有可用音频捕获路径，再确定同步、延迟、断连恢复及权限范围。 |
+| M4-1 | [#25](https://github.com/liriliri/echo/issues/25)：音频转发 | **暂缓（评估已记录，能力待验证）**：官方 AVScreenCapture 与 HarmonyOS API 26.0.0 新内录接口是候选，尚未建立普通调试授权下可分发的实际链路；权限/版本矩阵、架构缺口、同步/延迟/恢复范围及解除条件见 [能力评估](docs/maintenance/M4-1-audio.md)。未操作设备、未实现功能。 |
 | M4-2 | [#23](https://github.com/liriliri/echo/issues/23)：电脑复制文本到设备 | 现有投屏工具栏已有文本输入；先复现复制/粘贴与该入口的差别，再定义快捷键、中文、多行输入和失败反馈。 |
 | M4-3 | [#15](https://github.com/liriliri/echo/issues/15)：文件下载 | 验证目标目录权限及 HDC 文件传输能力，再定义选择文件、进度、取消、重名处理和失败恢复。 |
 | M4-4 | [#32](https://github.com/liriliri/echo/issues/32)：连接后手机息屏 | 验证息屏后捕获与输入是否继续可用；区分熄屏、锁屏和黑屏效果，确定用户唤醒及断连恢复行为。 |
@@ -204,6 +204,12 @@
 
 - 独立修复与证据归档：[PR #17](https://github.com/MonsterXia/scrcpy-harmony/pull/17)，最终提交的五项必需 CI 与合并状态见 PR 检查页。合并代码后仍保持 M1-2 待验收。
 
+### M1-2 并发刷新补充
+
+- 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`，独立分支 `codex/m1-2-app-refresh`，[PR #21](https://github.com/MonsterXia/scrcpy-harmony/pull/21)。只修改应用面板刷新控制；不修改 HDC 命令层、不操作真机。
+- 真实 React / MobX / Application / installBundles 路径的首批 12 项无设备回归：旧实现 11 失败、1 通过；独立审查后补充至 15/15，通过同步引用合并在途刷新请求、抑制重叠查询与失效结果，失败后恢复手动刷新。完整测试 81/81、lint 和完整 build 通过。独立审查、PR、CI 结果见[专项记录](docs/maintenance/M1-2-refresh.md)。
+- M1-2 保持**待验收**。本轮仅补并发回归，不代表真实安装/卸载通过；仍缺可用于授权验证的专用 bilibili HAP。下一步由维护者审查 PR 并确认必需 CI，再准备测试 HAP 补真实操作与刷新验收；不自行合并或发布。
+
 ### M1-3 名称读取推进
 
 - 2026-10-22 / Codex；从远端 master `009b3fb` 创建 `codex/m1-3-local-app-metadata`，上游 Issue #24 与 PR #29 正文、patch、讨论已读取。当前候选仅有模拟数据，不能直接证明资源可读。
@@ -221,8 +227,17 @@
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
 
+<<<<<<< HEAD
 ### M3-3 用户与构建说明推进
 
 - 2026-10-22 / Codex；基线 `9e944ae`，独立分支 `codex/m3-3-user-build-docs`。已读上游 #14/#20，并核对 v1.0.2、master、菜单与日志实现，补齐 README 导航、[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)。
 - 独立 Windows x64 检出完成固定子模块初始化、锁文件安装、资源准备、66 项测试、lint、build 和 no-publish 打包；下载两次 TLS 失败及重试结果如实记录，见 [M3-3 报告](docs/maintenance/M3-3.md)。未修改生产代码、锁文件或工作流。
 - M3-3 保持待验收：本轮不访问真机或设备应用，不安装/卸载应用；macOS 使用已核实历史 CI，未做本机人工走读。下一步按发行版指南验收授权、设备选择、投屏/输入及脱敏日志导出；PR 与 CI 结果集中记录在专项报告，不以文档或无设备测试替代这些验收。
+=======
+### M4-1 音频能力评估交接
+
+- 2026-10-22 / Codex；基线 `9e944ae27ad7cc4c656467257e3e84d8067dc2f8`，独立分支 `codex/m4-1-audio-assessment`。完成来源正文、当前官方 HarmonyOS/OpenHarmony/HDC 文档及锁定依赖/投屏路径的静态核对，见 [独立报告](docs/maintenance/M4-1-audio.md)。
+- 结论为暂缓实现、待能力验证：存在经用户同意的设备端公共捕获候选，不等于现有 HDC/JPEG 投屏已具备音频；麦克风、内部音频、传输与系统/受限权限分别列明。API 26.0.0 新接口不推定兼容旧系统，未编造同步或延迟实测结果。
+- 本轮仅本报告与本条记录，不修改生产代码/依赖；不连接真机、不安装 HAP、不录音、不访问媒体。普通签名部署、SDK/设备能力、应用捕获策略与分发仍待验证；当前仅 bilibili 后续侧载范围不能授权安装采集伴侣。
+- 交付：[独立草稿 PR #24](https://github.com/MonsterXia/scrcpy-harmony/pull/24)，[CI 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/24/checks)。独立审查已完成，发现的官方链接问题已修正，评估文档无未解决阻断项；核验范围见报告，CI 以当前提交检查页为准。下一步：维护者先处理 G1/G2 的产品范围、授权部署、目标 API/SDK 条件；满足后另立探针与实现任务，不自动合并或发布。
+>>>>>>> origin/master
