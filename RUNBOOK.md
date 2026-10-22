@@ -42,7 +42,7 @@
 | --- | --- | --- | --- |
 | M1-1 | 已完成 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。见 [验收报告](docs/maintenance/M1-1.md)及 [PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。 |
 | M1-2 | 待验收 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。代码与只读验证见 [M1-2 报告](docs/maintenance/M1-2.md)；缺测试 HAP，安装/卸载验收待办。 |
-| M1-3 | 进行中 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | [PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18) 本轮仅使用 bilibili 验证设备名称读取、离线回退及在线图标兼容，见 [M1-3 报告](docs/maintenance/M1-3.md)。本地 iconPath 为资源引用且 HAP 不可读，离线图标尚未解决；不可标为完成。 |
+| M1-3 | 进行中 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | [PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18) 仅使用 bilibili 验证名称与图标，见 [名称报告](docs/maintenance/M1-3.md)及[离线图标专项报告](docs/maintenance/M1-3-icons.md)。已补齐 Node/Chromium 双侧断网、两种视图、解码/哈希与刷新验证，但离线仍显示默认图标；HAP/资源索引读取被拒绝，无本地测试 HAP，不能标为完成。 |
 
 代码入口：M1-1 为 `src/main/lib/hdc.ts` 的 `getTargets`；M1-2/3 为 `src/main/lib/hdc/bundle.ts` 的 `getBundleInfos`，UI 为 `src/renderer/main/components/application/`。
 
@@ -213,3 +213,10 @@
 - 独立提交与 CI：[PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18)；应用代码 `b62b9a5` 的独立检出已重复完成上述本地与真机验证，最终五项必需 CI 见 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
 - 边界 / 下一步：M1-3 保持进行中；线上商店本来就能识别本次样本，新增改善为离线设备名称。离线图标仍回退默认图标；设备返回发行属性 `app_gallery / release`，不能将本次样本当成 debug 签名侧载样本。继续研究无需提权的图标资源读取，另补非商店样本与旧系统真机验证；M1-2 仍需专用测试 HAP。
 - 审查后续：共享 shell 的 `readAll` 无期限等待（包含新增名称命令）纳入 M2-2；安装完成但已有刷新未结束时，原 `refresh()` 会忽略新请求，纳入 M1-2 的并发安装/刷新回归。两项均未在本轮修复，不宣称覆盖。能力探测本批失败后回退、下批重试为刻意策略；搜索排除非匹配应用和在线图标仍被补全的断言已加强。
+
+### M1-3 离线图标验证推进
+
+- 2026-10-22 / Codex；同一分支继续推进，应用基线 `cccf486`。仅 bilibili；全新进程/配置的联网与受控离线对照、列表和图标视图、真实图片解码/哈希及刷新均已完成，见[专项报告](docs/maintenance/M1-3-icons.md)。
+- Node HTTP(S) 与 Chromium 均经不转发流量的拒绝代理，分别确认探针失败和代理收到请求；离线图片哈希与默认资源一致。`verificationPassed=true` 仅代表验证完成，`offlineIconAcceptancePassed=false` 明确表示离线应用图标未通过。
+- 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
+- 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。

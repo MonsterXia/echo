@@ -1,0 +1,84 @@
+{
+  "startedAt": "2026-10-22T11:24:24.727Z",
+  "bundleName": "yylx.danmaku.bili",
+  "offline": false,
+  "scope": "One real application; getBundles selector restricted to bilibili; real getBundleInfos, HDC and renderer; fresh profile; no application mutations",
+  "verificationPassed": true,
+  "offlineIconAcceptancePassed": false,
+  "sourceSha256": "f42c33008a3ec485231e03900d3f2751d95d491873488234ffa051ddfdf93eb7",
+  "rendererSourceSha256": "abd81a17073d70efddbe834f013a5cdcedaccc130ca4b6dc44ef0b20eaeafa2c",
+  "mainBuildSha256": "59379018bfec70348a89ee5e21fdab08fd3678a8a2ed3fb4cc13f8447ee4e2a4",
+  "scriptSha256": "9e136a44c2847bbb04fd19d9a0738dce7240045f7609ec0797ab4df7d6738dea",
+  "device": {
+    "version": "7.0.0.109",
+    "api": "26"
+  },
+  "runtime": {
+    "packaged": false,
+    "electron": "45.0.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "metadata": {
+    "label": "$string:app_name",
+    "iconPath": "$media:app_icon",
+    "iconId": 637534209,
+    "distribution": "app_gallery",
+    "provision": "release"
+  },
+  "capabilities": {
+    "labelOption": true,
+    "iconOption": false
+  },
+  "resourceAccess": [
+    {
+      "kind": "hap",
+      "readable": false,
+      "permissionDenied": true
+    },
+    {
+      "kind": "resourceIndex",
+      "readable": false,
+      "permissionDenied": true
+    }
+  ],
+  "network": {
+    "mode": "Normal network; fresh profile and process"
+  },
+  "ipc": {
+    "before": {
+      "label": "哔哩哔哩",
+      "iconPresent": true,
+      "iconKind": "remote-url"
+    },
+    "after": {
+      "label": "哔哩哔哩",
+      "iconPresent": true,
+      "iconKind": "remote-url"
+    }
+  },
+  "stage": "complete",
+  "ui": {
+    "list": {
+      "width": 1024,
+      "height": 1024,
+      "sha256": "01fdad07d02119585f66c4ba2dafeaf1564bb6a6f711bf2f99ab592fec9e6e42",
+      "isDefault": false
+    },
+    "icons": {
+      "width": 1024,
+      "height": 1024,
+      "sha256": "01fdad07d02119585f66c4ba2dafeaf1564bb6a6f711bf2f99ab592fec9e6e42",
+      "isDefault": false
+    },
+    "afterRefresh": {
+      "width": 1024,
+      "height": 1024,
+      "sha256": "01fdad07d02119585f66c4ba2dafeaf1564bb6a6f711bf2f99ab592fec9e6e42",
+      "isDefault": false
+    }
+  },
+  "outcome": "application-icon-rendered",
+  "pageErrorCount": 0,
+  "exitCode": 0
+}
