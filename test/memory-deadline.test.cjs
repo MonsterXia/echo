@@ -41,7 +41,7 @@ async function bounded(promise, ms = 1200) {
 // Production handlers, base, parameters, finiteShell and installed hdckit all run.
 // Only TCP endpoints, Electron registration, tracker and other module init are
 // isolated. Every socket is remapped to this fixture's random loopback listener.
-async function fixture(t, { wallClock = false } = {}) {
+async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = {}) {
   const state = { stall: '', mem: 'MemTotal: 8192 kB\nMemFree: 1024 kB\nMemAvailable: 3072 kB\n', requests: [], deadlines: [] }
   const clients = [], peers = [], handlers = new Map(), initOptions = []
   let stopping = false, sequence = 0
@@ -98,7 +98,7 @@ async function fixture(t, { wallClock = false } = {}) {
       connect(options) {
         assert.equal(stopping, false)
         assert.equal(options.host, '127.0.0.1')
-        assert.equal(options.port, 8710)
+        assert.equal(options.port, expectedPort)
         return super.connect({ host: '127.0.0.1', port: address.port })
       }
     }
@@ -110,6 +110,8 @@ async function fixture(t, { wallClock = false } = {}) {
     'node:child_process': { execFile() { throw new Error('Real HDC start forbidden') } },
   })
   const { default: Client } = load(path.join(dir, 'hdc/Client.js'), { './Connection': Connection })
+  const processEnv = { env: { OHOS_HDC_SERVER_PORT: envPort } }
+  const { default: Hdc } = load(path.join(dir, 'Hdc.js'), { './hdc/Client': Client }, { process: processEnv })
   const util = { handleEvent: (name, handler) => handlers.set(name, handler), resolveResources: (name) => name }
   const logger = () => ({ debug() {}, info() {}, warn() {}, error() {} })
   const base = load('src/main/lib/hdc/base.ts', { 'share/main/lib/util': util, 'share/common/log': logger })
@@ -119,7 +121,7 @@ async function fixture(t, { wallClock = false } = {}) {
   const imports = {
     hdckit: { createClient(options) {
       initOptions.push(options)
-      const client = new Client(options)
+      const client = Hdc.createClient(options)
       client.trackTargets = async () => ({ on() {} })
       client.kill = () => { throw new Error('Real HDC kill forbidden') }
       return client
@@ -131,6 +133,7 @@ async function fixture(t, { wallClock = false } = {}) {
     './hdc/base': base,
     './hdc/parameters': load('src/main/lib/hdc/parameters.ts'),
     './hdc/finiteShell': finite,
+    'node:process': processEnv,
     'node:child_process': { spawn() { throw new Error('process forbidden') }, exec() { throw new Error('process forbidden') } },
   }
   for (const name of ['bundle', 'shell', 'port', 'uitest', 'hilog', 'webview']) imports[`./hdc/${name}`] = { init() {} }
@@ -155,6 +158,24 @@ test('overview routes only memory through finite transport and retains memory/ov
   assert.deepEqual(f.state.requests.slice(-2), [READY, 'shell uinput -K -d 3 -u 3'])
   assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 2)
 })
+
+for (const [envPort, expectedPort] of [
+  ['18710', 18710], [' 23456 ', 23456], ['23456suffix', 23456],
+  ['', 8710], ['not-a-port', 8710], ['   ', 8710],
+]) {
+  test(`real factory and finite memory share env port ${JSON.stringify(envPort)}`, async (t) => {
+    const f = await fixture(t, { envPort, expectedPort })
+    assert.equal((await f.overview()).memTotal, 8388608)
+    assert.equal(f.initOptions[0].port, expectedPort)
+    assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 2)
+  })
+}
+
+for (const envPort of ['0', '-1', '65536']) {
+  test(`invalid numeric env port ${envPort} rejects before any connection`, async (t) => {
+    await assert.rejects(fixture(t, { envPort }), /Invalid OHOS_HDC_SERVER_PORT/)
+  })
+}
 
 for (const [mem, total, used] of [
   ['MemTotal: 8192 kB\nMemFree: 1024 kB\n', 8388608, 7340032],

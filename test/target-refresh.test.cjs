@@ -30,7 +30,7 @@ function loadSource(file, imports, globals = {}) {
       if (id === './hdc/finiteShell') return { runFiniteShell() { throw new Error('Enumeration must not use finite memory transport') } }
       if (id === './hdc/parameters') return loadSource('src/main/lib/hdc/parameters.ts', {})
       if (Object.hasOwn(imports, id)) return imports[id]
-      if (id.startsWith('licia/') || ['node:os', 'node:path', 'fs-extra',
+      if (id.startsWith('licia/') || ['node:os', 'node:path', 'node:process', 'fs-extra',
         'mobx', 'react/jsx-runtime'].includes(id)) return require(id)
       throw new Error(`Unmocked import: ${id}`)
     },

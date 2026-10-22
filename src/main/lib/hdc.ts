@@ -11,6 +11,7 @@ import log from 'share/common/log'
 import startWith from 'licia/startWith'
 import trim from 'licia/trim'
 import os from 'node:os'
+import process from 'node:process'
 import { shell } from './hdc/base'
 import { getTargetParameters } from './hdc/parameters'
 import { runFiniteShell } from './hdc/finiteShell'
@@ -33,8 +34,16 @@ import childProcess from 'node:child_process'
 
 const logger = log('hdc')
 
-// Match hdckit 0.12.1 createClient({ bin }) defaults without reading its state.
-const HDC_ENDPOINT = { host: '127.0.0.1', port: 8710 }
+// Resolve once using hdckit 0.12.1 Hdc.createClient's environment parsing and
+// Client's default fallback, then share it without reading client state.
+const configuredPort = parseInt(process.env.OHOS_HDC_SERVER_PORT || '8710', 10)
+const HDC_ENDPOINT = {
+  host: '127.0.0.1',
+  port: Number.isNaN(configuredPort) ? 8710 : configuredPort,
+}
+if (HDC_ENDPOINT.port < 1 || HDC_ENDPOINT.port > 65535) {
+  throw new RangeError('Invalid OHOS_HDC_SERVER_PORT')
+}
 // Conservative budget for this small read only; not yet calibrated on devices.
 const MEMORY_TIMEOUT_MS = 10_000
 
