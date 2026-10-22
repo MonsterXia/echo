@@ -102,7 +102,7 @@ npm start
 
 `macos-package-arm64` 和 `macos-package-x64` 使用标准 `macos-15` 与 `macos-15-intel` runner，分别在原生架构上完成依赖安装、资源下载、build 和 DMG 打包。两个任务固定相同系统版本，避免 latest 标签自动切换系统。`script/check-macos-install.mjs` 挂载 DMG，将 `.app` 复制到临时目录后卸载镜像，验证包内资源和可执行权限，再运行共享的启动检查。此检查校验实际架构，使用隔离用户配置并在退出后清理配置及 HDC 服务；只读仓库权限、不发布、不上传 artifact、不使用签名或公证 secrets。它不验证 Developer ID 签名、公证或从互联网下载后的 Gatekeeper 放行。
 
-`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 是手动产物构建（workflow_dispatch），矩阵使用 `windows-latest`、`macos-latest`、`macos-15-intel`；它与 CI 固定的 macOS runner 标签不同。顺序为 checkout（含子模块）→ npm ci → init → build → pack --no-publish → 上传 artifact。它不会创建 GitHub Release，也不能以 workflow 成功代替用户下载后的签名与设备验收。
+`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 是手动产物构建（workflow_dispatch），矩阵与 CI 对齐为 `windows-latest` x64、`macos-15` arm64、`macos-15-intel` x64，并核验 Node 实际架构。顺序为 checkout（含子模块）→ npm ci → 下载资源（Windows 显式 Git Bash）→ build → pack --no-publish → 使用现有安装脚本验收实际安装包 → 记录签名和 SHA-256 → 上传 artifact。任一安装启动检查失败时不上传该平台 artifact。产物附带 `verification-win-x64.json` 或 `verification-mac-<arch>.txt`，记录源 SHA、运行链接、安装启动结果和系统签名检查；macOS 另外记录 Gatekeeper 与 stapler 退出码。信任检查失败如实记录，不把未签名包可启动等同于签名/公证通过。该 workflow 不创建 GitHub Release，真机及用户从互联网下载后的信任体验仍需单独验收。
 
 Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平台验证安装包及设备功能，单测和 lint 不代表完整运行兼容性。
 

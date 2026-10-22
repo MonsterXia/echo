@@ -3,39 +3,119 @@ name: Build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
-
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, macos-15-intel]
+        include:
+          - os: windows-latest
+            arch: x64
+          - os: macos-15
+            arch: arm64
+          - os: macos-15-intel
+            arch: x64
+
+    env:
+      EXPECTED_ARCH: ${{ matrix.arch }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       with:
-        submodules: true
-    - uses: actions/setup-node@v4
+        submodules: recursive
+        persist-credentials: false
+    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: '22'
-    - run: |
-        npm ci
-        npm run init 
-        npm run build
-        npm run pack -- --no-publish
+        cache: npm
+    - name: Verify runner architecture
+      run: node -e "require('node:assert/strict').equal(process.arch, process.env.EXPECTED_ARCH)"
+    - name: Install dependencies
+      run: npm ci --no-audit --no-fund
+    - name: Download Windows device resources
+      if: runner.os == 'Windows'
+      run: npx --no-install zx --shell "C:/Program Files/Git/bin/bash.exe" script/resources.mjs
+    - name: Download macOS device resources
+      if: runner.os == 'macOS'
+      run: npm run init
+    - name: Build distribution
+      run: npm run build
+    - name: Package installer
+      run: npm run pack -- --no-publish
       env:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         CSC_LINK: ${{ secrets.CSC_LINK }}
-        CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}  
+        CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+    - name: Install and smoke test Windows release artifact
+      if: runner.os == 'Windows'
+      timeout-minutes: 5
+      run: ./script/check-windows-install.ps1
+    - name: Install and smoke test macOS release artifact
+      if: runner.os == 'macOS'
+      timeout-minutes: 5
+      run: node script/check-macos-install.mjs
+    - name: Record Windows signature and hash
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $pkg = Get-Content package.json -Raw | ConvertFrom-Json
+        $release = Join-Path release $pkg.version
+        $installer = Join-Path $release "$($pkg.productName)-$($pkg.version)-win-x64.exe"
+        $signature = Get-AuthenticodeSignature -LiteralPath $installer
+        @{
+          sourceCommit = $env:GITHUB_SHA
+          runUrl = "https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+          installer = Split-Path $installer -Leaf
+          sha256 = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()
+          authenticodeStatus = [string]$signature.Status
+          signer = $signature.SignerCertificate.Subject
+          installationAndStartup = 'passed'
+        } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $release 'verification-win-x64.json')
+    - name: Record macOS signature, Gatekeeper and hash
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        version=$(node -p 'require("./package.json").version')
+        product=$(node -p 'require("./package.json").productName')
+        release="$PWD/release/$version"
+        dmg="$release/$product-$version-mac-$EXPECTED_ARCH.dmg"
+        mount=$(mktemp -d "$RUNNER_TEMP/release-inspection.XXXXXX")
+        hdiutil attach -readonly -nobrowse -mountpoint "$mount" "$dmg"
+        trap 'hdiutil detach "$mount"' EXIT
+        app="$mount/$product.app"
+        {
+          echo "sourceCommit=$GITHUB_SHA"
+          echo "runUrl=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          echo 'installationAndStartup=passed'
+          shasum -a 256 "$dmg"
+          # Trust-policy failures are reported, not mislabelled as smoke failures.
+          set +e
+          codesign -dvvv --entitlements :- "$app" 2>&1
+          echo "codesignDetailsExit=$?"
+          codesign --verify --deep --strict --verbose=2 "$app" 2>&1
+          echo "codesignVerifyExit=$?"
+          spctl --assess --type execute --verbose=4 "$app" 2>&1
+          echo "gatekeeperExit=$?"
+          xcrun stapler validate "$app" 2>&1
+          echo "staplerExit=$?"
+          set -e
+        } > "$release/verification-mac-$EXPECTED_ARCH.txt"
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.os }}
+        if-no-files-found: error
         path: |
           release/**/*.dmg
           release/**/*.exe
           release/**/*.yml
           release/**/*.blockmap
+          release/**/verification-*.json
+          release/**/verification-*.txt
           !release/**/win-unpacked/
