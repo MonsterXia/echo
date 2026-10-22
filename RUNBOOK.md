@@ -139,3 +139,11 @@
 - 发布材料：[1.0.2 发布清单与说明](docs/releases/1.0.2.md) 包含三个平台产物、更新元数据、旧 ECHO 配置边界及签名/公证/真机状态。保持现有手动 Build 只上传 artifact、不自动发布的行为。
 - 改动与证据：[PR #12](https://github.com/MonsterXia/scrcpy-harmony/pull/12) 准备首次独立版本；版本一致性检查、lint、完整 build 通过，提交 `9a0b681` 的 [五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39716730594) 全部通过（含三个平台安装与启动）。默认 macOS 临时目录下的测试误报由独立 PR #11 修复并合入 `b81c656`，本分支已同步；直接 npm test 为 13/13 通过，无需 TMPDIR 规避。本次边界及最终提交的 CI 入口见发布清单。
 - 未验证 / 下一步：等待本次 PR 的全部必需 CI，通过后将合入提交作为候选发布源，运行 Build 并验收实际待上传产物，核对元数据及校验值后创建同源 tag 和 Release。签名、公证及真机状态逐项如实披露；M0-3 另行使用两个明确版本验证线上更新。M0-2 保持进行中，不提前标记完成。
+
+### M0-2 实际发行产物验证推进
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `e04942cc6d3cf776dfdd52891fc88e8997c83a61`，分支 `codex/m0-2-verified-release-artifacts`，M0-2 保持进行中。
+- 核验：本仓库仍无 Release、无手动 Build 运行，远端不存在 `v1.0.2`。旧 Build 直接上传包，无法证明实际发行 artifact 已安装启动；PR CI 验证的是另一批构建。
+- 改动：Build 对齐 CI 的三个 runner/架构，复用现有 Windows/macOS 安装启动脚本，通过后才上传本批安装包；同时上传源提交、安装包 SHA-256 与签名报告。macOS Gatekeeper、公证票据校验退出码如实保留；未签名不被记为通过。
+- 首次实际验证：[Build 39723428883](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723428883) 的 macOS 打包因空 `CSC_LINK` 被当作证书路径而未生成 DMG，新增安装检查正确失败、阻止上传。打包前移除未配置的空签名环境变量，非空配置保留；重新运行验证，不将首次失败当作通过。
+- 验证与下一步：通过独立 PR 和必需 CI 后，从合入提交执行 Build；下载本次已验收产物核对版本、YAML、哈希和签名报告，再准备同源 tag 与 Release。实际 Build 结果和公开发布状态后续补入 [1.0.2 发布记录](docs/releases/1.0.2.md)。不把 workflow 配置完成视为发行产物已经验收。
