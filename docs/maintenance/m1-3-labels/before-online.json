@@ -1,0 +1,7 @@
+{
+  "baseline": "009b3fb",
+  "bundleName": "yylx.danmaku.bili",
+  "label": "哔哩哔哩",
+  "iconPresent": true,
+  "scope": "Original production handler with real HDC and online lookup; Electron registration replaced"
+}

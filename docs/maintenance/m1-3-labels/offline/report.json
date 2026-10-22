@@ -1,0 +1,38 @@
+{
+  "startedAt": "2026-10-22T10:34:36.507Z",
+  "platform": "win32",
+  "arch": "x64",
+  "os": "10.0.26300",
+  "bundleName": "yylx.danmaku.bili",
+  "offline": true,
+  "networkControl": "Child process HTTP(S) proxy at closed localhost port 9; HDC remains real",
+  "sourceSha256": "f42c33008a3ec485231e03900d3f2751d95d491873488234ffa051ddfdf93eb7",
+  "passed": true,
+  "runtime": {
+    "packaged": false,
+    "version": "1.0.2",
+    "electron": "45.0.0"
+  },
+  "device": {
+    "version": "7.0.0.109",
+    "api": "26",
+    "model": "PSN-AL00"
+  },
+  "hdc": "Ver: 3.1.0e",
+  "metadata": {
+    "label": "$string:app_name",
+    "iconPath": "$media:app_icon",
+    "distribution": "app_gallery",
+    "provision": "release"
+  },
+  "ipc": {
+    "label": "哔哩哔哩",
+    "iconPresent": false
+  },
+  "ui": {
+    "label": "哔哩哔哩",
+    "refreshPassed": true
+  },
+  "pageErrors": [],
+  "exitCode": 0
+}
