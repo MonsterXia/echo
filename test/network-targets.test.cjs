@@ -242,12 +242,12 @@ test('host handshake failure is diagnosed and manual refresh recovers', { timeou
   assert.equal(store.target.key, KEY)
 })
 
-// These execute and fail the desired assertions against the unchanged code.
-// Set M2_5_STRICT=1 to produce a nonzero regression run for the follow-up fix.
+// The remaining parameter-output gap executes and fails against current code.
+// Set M2_5_STRICT=1 to produce a nonzero regression run for its follow-up fix.
 const knownGap = (reason) => ({ timeout: 5000, todo: process.env.M2_5_STRICT !== '1' && reason })
 
 test('regression: failed enumeration must not report a successful refresh',
-  knownGap('M2-5: getTargets collapses failure into [] and toolbar always reports success'), async (t) => {
+  { timeout: 5000 }, async (t) => {
     const { state, toolbar } = await fixture(t)
     state.badHello = true
     const ui = toolbar()
