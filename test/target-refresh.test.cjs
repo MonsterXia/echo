@@ -43,10 +43,15 @@ async function fixture(t, badHello = false) {
   const state = { keys: [KEY], badHello, parameters: new Map(), requests: [] }
   const sockets = new Set()
   const errors = []
+  let stopping = false
   const server = net.createServer((socket) => {
+    socket.on('error', (error) => errors.push(error))
+    if (stopping) {
+      socket.destroy()
+      return
+    }
     sockets.add(socket)
     socket.on('close', () => sockets.delete(socket))
-    socket.on('error', (error) => errors.push(error))
     const send = (text) => {
       const body = Buffer.isBuffer(text) ? text : Buffer.from(text)
       const size = Buffer.alloc(4)
@@ -89,15 +94,21 @@ async function fixture(t, badHello = false) {
       }
     })
   })
-  // Explicit IPv4 loopback and OS-assigned port; no shared 8710 listener.
-  server.listen(0, '127.0.0.1')
-  await once(server, 'listening')
+  // Register before setup can fail. Stop accepting before taking the socket
+  // snapshot, and destroy peers whose queued connection event arrives later.
   t.after(async () => {
+    stopping = true
+    const closed = server.listening
+      ? new Promise((resolve, reject) => server.close((e) => e ? reject(e) : resolve()))
+      : Promise.resolve()
     for (const socket of sockets) socket.destroy()
-    await new Promise((resolve, reject) => server.close((e) => e ? reject(e) : resolve()))
+    await closed
     assert.deepEqual(errors, [])
     assert.equal(execFile.mock.callCount(), 0, 'No HDC executable may be started')
   })
+  // Explicit IPv4 loopback and OS-assigned port; no shared 8710 listener.
+  server.listen(0, '127.0.0.1')
+  await once(server, 'listening')
   const client = Hdc.createClient({
     host: '127.0.0.1', port: server.address().port,
     bin: path.join(ROOT, 'test', '__forbidden_hdc_executable__'),
@@ -160,8 +171,46 @@ async function fixture(t, badHello = false) {
     return { notifications, select: children[0].props,
       refresh: children.find((child) => child.props.icon === 'refresh').props.onClick }
   }
-  return { state, logs, getTargets, store, toolbar, events }
+  return { state, logs, getTargets, store, toolbar, events, server }
 }
+
+test('fixture cleanup closes a peer whose accept event arrives after teardown starts', { timeout: 3000 }, async (t) => {
+  let cleanup, closing, f, emit, peer, client, timer
+  t.after(async () => {
+    clearTimeout(timer)
+    if (f) f.server.emit = emit
+    peer?.destroy()
+    client?.destroy()
+    if (cleanup) await (closing ?? cleanup())
+  })
+  f = await fixture({ after(fn) { cleanup = fn }, signal: t.signal })
+  emit = f.server.emit
+  let accepted
+  const queuedAccept = new Promise((resolve) => { accepted = resolve })
+  // Let TCP count a real loopback peer but delay its JS connection event.
+  f.server.emit = function (event, ...args) {
+    if (event === 'connection') {
+      peer = args[0]
+      accepted()
+      return true
+    }
+    return emit.call(this, event, ...args)
+  }
+  client = net.connect({ host: '127.0.0.1', port: f.server.address().port })
+  client.on('error', () => {})
+  await queuedAccept
+  const requestCount = f.state.requests.length
+  closing = cleanup()
+  emit.call(f.server, 'connection', peer)
+  const result = await Promise.race([
+    closing.then(() => 'closed'),
+    new Promise((resolve) => { timer = setTimeout(() => resolve('pending'), 200) }),
+  ])
+  assert.equal(result, 'closed', 'late peer must not keep server.close pending')
+  assert.equal(peer.destroyed, true)
+  assert.equal(f.server.listening, false)
+  assert.equal(f.state.requests.length, requestCount)
+})
 
 test('network keys survive real hdckit, getTargets, selection and toolbar options', { timeout: 5000 }, async (t) => {
   const { state, store, toolbar } = await fixture(t)
