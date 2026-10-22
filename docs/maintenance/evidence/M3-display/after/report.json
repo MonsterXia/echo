@@ -5,7 +5,7 @@
     "osVersion": "Windows 11 Pro",
     "node": "v22.21.1"
   },
-  "revision": "75e4cc0a72af4b22a914dd6d2fbe761edf5d9f8f",
+  "revision": "e3fcac775b8166ccb9017a760a2f6a38368040ef",
   "sourceHashes": {
     "src/main/window/screencast.ts": "fa57d9604eaf8f6d8864efc776d4544b734ac2bdaac6a9bfea5620b35de5d158",
     "src/renderer/screencast/components/Toolbar.module.scss": "7c8cf51c9de5d25a91879669f37cc32db02381c1cf70a1439e57e8e3eb398755",

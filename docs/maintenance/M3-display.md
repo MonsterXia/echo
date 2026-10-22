@@ -97,6 +97,8 @@ npm run build:renderer
 
 2026-10-22 同步 `origin/master` 后仍为 `9e944ae`，`git merge origin/master` 返回 Already up to date。本次只更新验证脚本和证据/交接，没有修改生产样式或 `ScreencastClient`。
 
+等待 CI 时 master 又合入并行任务，随后同步 `92a0725`，形成合并提交 `e3fcac7`。RUNBOOK 冲突按条目合并：保留本线 M3-1/M3-2 状态及交接，同时保留 M1-2、M3-3、M4-1 的新状态/完整记录。相对 master 的差异仍仅本工作线文件。按合入后的锁文件重新 `npm ci`，完整测试变为 84/84，lint、main/renderer 构建及 104 样本显示矩阵重新通过；最终归档来自此合并版本。
+
 - 补齐 `canvasVisible` 左右边界及 1px 舍入容差。额外使用脚本临时副本，在测量前给真实 Canvas 注入 `translateX(100vw)` / `translateX(-100vw)`，分别模拟右/左溢出；104 样本均被 `canvasVisible=false` 检出，脚本按预期退出 1，见[注入验证记录](evidence/M3-display/horizontal-mutation.json)。注入不写入生产文件，正常无注入矩阵 104 样本仍通过。
 - 280×400 / 100% 下，未滚动工具栏 `clientHeight=62`、`scrollHeight=90`；缩放选择框初始 y=95–117，超出工具栏 y=31–93。实际计算的 overflowX/Y 为 `hidden/auto`，现有纵向滚动已经可用。真实滚轮使 `scrollTop=28`，选择框变为 y=67–89，完整处于工具栏内并命中控件。全部 10 个控件均通过滚动到达验证；因此不新增重复的 overflow 生产设置，也不声称第三行始终可见。
 - 每个样本先归零工具栏滚动位置，再采集未滚动指标和截图。280 DIP 样本另存滚动后截图及逐控件最终矩形、scrollTop、命中结果。跨显示器动态约束、真实 DPI 与真实标题栏仍未验收。
@@ -107,7 +109,7 @@ npm run build:renderer
 
 ## 验证、审查与剩余验收
 
-- 新增窗口单测 3/3，原投屏坐标回归 8/8，完整 `npm test` 69/69，lint 通过。
+- 新增窗口单测 3/3，原投屏坐标回归 8/8；初始完整 `npm test` 69/69，同步 `92a0725` 后完整测试 84/84，lint 通过。
 - `build:main`、`build:renderer` 通过；现有 Sass 弃用及大 bundle 警告保留。未把 Vite 转译当作完整 TypeScript 类型检查。
 - 独立只读审查未发现原目标范围内 P0–P2 生产问题；按建议加强数量/结构断言，补精确断点及真实工厂恢复验证。统一终审要求的左右边界和 280 DIP 滚动证据已补齐；其余极窄条件和模拟边界如上。
 - 改动见 [PR #25](https://github.com/MonsterXia/scrcpy-harmony/pull/25)，最终提交的五项必需 CI（test、lint、windows-package、macos-package-arm64、macos-package-x64）见 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/25/checks)。此记录提交时 CI 尚在运行，以对应最终 head 的结果为准。没有合并、发布；本机没有做安装包验证，平台安装启动由 CI 单独报告。
