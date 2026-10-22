@@ -27,7 +27,7 @@
 | ID | 状态 | 工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M0-1 | 已完成 | 启用本仓库 Issues，核对 About、主页和反馈入口 | Issues 和新建反馈页面可访问；应用反馈菜单指向本仓库；GitHub About 的主页已改为本仓库 README。见 [验收记录](#m0-1-验收记录)。 |
-| M0-2 | 待开始 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
+| M0-2 | 进行中 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
 | M0-3 | 待开始 | 验证实际更新检查与下载入口 | 使用两个明确版本的已打包应用和本仓库 Release，验证“有更新 / 无更新 / 网络或元数据错误”；Windows、macOS arm64、macOS x64 读取各自元数据并跳转本仓库 Releases。记录具体文件名和日志，不能只凭单测通过勾选。 |
 
 操作入口：`package.json`、`script/pack.mjs`、`.github/workflows/build.yml`、`src/main/lib/updater.ts`、`src/renderer/main/App.tsx`。手动 Build workflow 只生成并上传 artifact，不创建 Release。更新功能当前提示用户打开 Releases 下载，不执行自动下载安装。
@@ -129,3 +129,12 @@
 - 应用验收：Windows x64 本地打包的 Scrcpy Harmony 1.0.1（PR #8 应用代码，PR #9 仅改文档），使用隔离临时配置，通过 Playwright Electron 调用实际菜单回调。在 `shell.openExternal` 边界捕获到 `https://github.com/MonsterXia/scrcpy-harmony/issues`，并单独在浏览器验证目标可访问。“关于”窗口显示 `Scrcpy Harmony / Version 1.0.1`，无外链。临时配置已清理。
 - 仓库改动：README 增加主页、反馈链接及反馈所需信息；来源记录保留历史快照并标明当前状态。本项无需修改已正确的应用 URL，也不涉及设备调用或共享子模块。
 - 验证边界：菜单验证未调用操作系统默认浏览器；macOS 未在本次重新运行。此项不代表首次 Release、线上更新或设备功能已验收，M0-2、M0-3 仍待开始。
+
+### M0-2 发布准备记录
+
+- 日期 / 执行者：2026-10-22 / Codex（按 MonsterXia 指令）。基线 `5a1660ab585f6689e4de62eec4314b0768edf021`，工作分支 `codex/m0-2-first-release`。
+- 开始时现场核验：本地与远端 master 一致、工作区干净；本仓库无 Release、无开放 PR，远端不存在 `v1.0.2`。本地 macOS 27.0 arm64、Node 22.22.3、npm 10.9.8；依赖、共享代码子模块和设备资源尚未准备。随后按锁文件安装、初始化固定子模块并下载构建资源。
+- 版本选择：首次独立发行使用 `1.0.2`，接续继承的 `1.0.1`；同步 package.json、package-lock.json 和 CHANGELOG，计划 tag 为 `v1.0.2`。尚未创建 tag，不能将计划版本一致视为实际 tag 已验收。
+- 发布材料：[1.0.2 发布清单与说明](docs/releases/1.0.2.md) 包含三个平台产物、更新元数据、旧 ECHO 配置边界及签名/公证/真机状态。保持现有手动 Build 只上传 artifact、不自动发布的行为。
+- 验证证据：版本一致性检查、lint、完整 build 通过；默认 macOS 临时目录下的构建测试误报已在基线复现并独立提交 [PR #11](https://github.com/MonsterXia/scrcpy-harmony/pull/11)。发布分支将 TMPDIR 解析为真实路径后，13 项测试通过；该临时规避仅用于验证，不改项目脚本。本次详细命令、边界及 CI 入口见发布清单；历史 PR #8 的检查不能代替本次版本检查。
+- 未验证 / 下一步：等待本次 PR 的全部必需 CI，通过后将合入提交作为候选发布源，运行 Build 并验收实际待上传产物，核对元数据及校验值后创建同源 tag 和 Release。签名、公证及真机状态逐项如实披露；M0-3 另行使用两个明确版本验证线上更新。M0-2 保持进行中，不提前标记完成。

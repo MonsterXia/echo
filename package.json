@@ -2,7 +2,7 @@
   "name": "scrcpy-harmony",
   "productName": "Scrcpy Harmony",
   "appId": "io.github.monsterxia.scrcpyharmony",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Harmony hdc desktop app",
   "main": "dist/main/index.js",
   "engines": {
