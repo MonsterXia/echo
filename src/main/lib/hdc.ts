@@ -11,8 +11,10 @@ import log from 'share/common/log'
 import startWith from 'licia/startWith'
 import trim from 'licia/trim'
 import os from 'node:os'
+import process from 'node:process'
 import { shell } from './hdc/base'
 import { getTargetParameters } from './hdc/parameters'
+import { runFiniteShell } from './hdc/finiteShell'
 import * as shellHdc from './hdc/shell'
 import * as base from './hdc/base'
 import * as bundle from './hdc/bundle'
@@ -31,6 +33,19 @@ import isMac from 'licia/isMac'
 import childProcess from 'node:child_process'
 
 const logger = log('hdc')
+
+// Resolve once using hdckit 0.12.1 Hdc.createClient's environment parsing and
+// Client's default fallback, then share it without reading client state.
+const configuredPort = parseInt(process.env.OHOS_HDC_SERVER_PORT || '8710', 10)
+const HDC_ENDPOINT = {
+  host: '127.0.0.1',
+  port: Number.isNaN(configuredPort) ? 8710 : configuredPort,
+}
+if (HDC_ENDPOINT.port < 1 || HDC_ENDPOINT.port > 65535) {
+  throw new RangeError('Invalid OHOS_HDC_SERVER_PORT')
+}
+// Conservative budget for this small read only; not yet calibrated on devices.
+const MEMORY_TIMEOUT_MS = 10_000
 
 const settingsStore = getSettingsStore()
 
@@ -135,7 +150,15 @@ async function getScreen(connectKey: string) {
 }
 
 async function getMemory(connectKey: string) {
-  const memInfo = await shell(connectKey, 'cat /proc/meminfo')
+  // Earlier overview queries retain hdckit's server-start behavior. Do not fall
+  // back to unbounded shell or retry a failed memory request here.
+  const memInfo = await runFiniteShell(connectKey, 'cat /proc/meminfo', {
+    ...HDC_ENDPOINT,
+    timeoutMs: MEMORY_TIMEOUT_MS,
+  })
+  if (/^\s*(?:\[Fail\]|\[E\d{6}\]|error:)/im.test(memInfo)) {
+    throw new Error('HDC memory command failed')
+  }
   let memTotal = 0
   let memFree = 0
 
@@ -223,6 +246,7 @@ export async function init() {
   })
 
   client = Hdc.createClient({
+    ...HDC_ENDPOINT,
     bin,
   })
   client.trackTargets().then((tracker) => {
