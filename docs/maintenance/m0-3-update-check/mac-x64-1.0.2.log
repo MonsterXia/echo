@@ -1,0 +1,17 @@
+[4890:1022/081742.555101:INFO:CONSOLE:50] "08:17:42.553 I renderer: start", source: file:///Users/runner/work/_temp/update-install-p7NqMW/Installed%20Apps/Scrcpy%20Harmony.app/Contents/Resources/app.asar/renderer/assets/app-BK7K8d-v.js (50)
+[4890:1022/081742.577374:INFO:CONSOLE:50] "08:17:42.576 I renderer: render app", source: file:///Users/runner/work/_temp/update-install-p7NqMW/Installed%20Apps/Scrcpy%20Harmony.app/Contents/Resources/app.asar/renderer/assets/app-BK7K8d-v.js (50)
+08:17:43.114 I window: main on ready-to-show
+Checking for update
+Generated new staging user ID: ebcfb654-6c0a-557e-b17c-e3784b0b057c
+Update for version 1.0.2 is not available (latest version: 1.0.2, downgrade is allowed).
+Checking for update
+Error: Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Checking for update
+Update for version 1.0.2 is not available (latest version: 1.0.2, downgrade is allowed).
+Debugger ending on ws://127.0.0.1:49209/3fd66719-474b-4476-a572-5e665965973a
+For help, see: https://nodejs.org/learn/getting-started/debugging

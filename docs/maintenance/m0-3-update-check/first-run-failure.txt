@@ -1,0 +1,8 @@
+Run: https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39745364171/job/119712345500
+Excerpt only. 1.0.1 passed; 1.0.2 was not started because image detach failed.
+2026-10-22T08:11:59.8017970Z hdiutil: couldn't eject "disk2" - Resource busy
+2026-10-22T08:11:59.9920870Z hdiutil: detach failed - No such file or directory
+2026-10-22T08:12:00.1056510Z Error: Command failed: hdiutil detach /Users/runner/work/_temp/update-install-UduK2l/volume
+2026-10-22T08:12:00.1201530Z     at run (file:///Users/runner/work/scrcpy-harmony/scrcpy-harmony/script/install-update-check.mjs:37:3)
+2026-10-22T08:12:00.1204640Z     at file:///Users/runner/work/scrcpy-harmony/scrcpy-harmony/script/install-update-check.mjs:59:16 {
+2026-10-22T08:12:00.1301930Z ##[error]Process completed with exit code 1.
