@@ -69,8 +69,12 @@ async function fixture(t, { handshake = true, ready = true } = {}) {
   let stopping = false
   // allowHalfOpen deliberately models a peer that ignores the client's FIN.
   const server = net.createServer({ allowHalfOpen: true }, (socket) => {
-    peers.push(socket)
     socket.on('error', () => {})
+    if (stopping) {
+      socket.destroy()
+      return
+    }
+    peers.push(socket)
     accepted.resolve(socket)
     let buffer = Buffer.alloc(0), handshaken = false
     socket.on('data', (chunk) => {
@@ -97,13 +101,17 @@ async function fixture(t, { handshake = true, ready = true } = {}) {
   // the server alive. Also prevent late continuations from opening new sockets.
   t.after(async () => {
     stopping = true
+    // Stop listening before yielding; an already accepted connection event may
+    // still arrive, in which case the callback above destroys that peer.
+    const serverClosed = server.listening
+      ? new Promise((resolve) => server.close(resolve))
+      : Promise.resolve()
     // Only the harness owns these sockets. It must also clean up deliberately
     // stuck readers (destroy without an error does not settle hdckit's reads).
     const sockets = [...peers, ...connections.map((c) => c.socket).filter(Boolean)]
     const closes = sockets.filter((s) => !s.closed).map((s) => new Promise((resolve) => s.once('close', resolve)))
     for (const socket of sockets) socket.destroy()
-    await Promise.all(closes)
-    if (server.listening) await new Promise((resolve) => server.close(resolve))
+    await Promise.all([...closes, serverClosed])
     for (const socket of sockets) socket.removeAllListeners()
   })
   server.listen(0, '127.0.0.1')
@@ -130,7 +138,7 @@ async function fixture(t, { handshake = true, ready = true } = {}) {
     'share/main/lib/util': { handleEvent() {} },
   }, true)
   await base.init(client)
-  return { base, client, connections, commands, accepted, readyRequest, commandRequest }
+  return { base, client, connections, commands, accepted, readyRequest, commandRequest, server }
 }
 
 function hello(socket, banner = 'OHOS HDC') {
@@ -138,6 +146,41 @@ function hello(socket, banner = 'OHOS HDC') {
   data.write(banner)
   socket.write(frame(data))
 }
+
+test('fixture teardown closes a TCP peer accepted after its socket snapshot', { timeout: 3000 }, async (t) => {
+  let cleanup, cleanupPromise, peer, client, f, emit
+  // Register before fixture initialization, which may fail after listening.
+  t.after(async () => {
+    if (f) f.server.emit = emit
+    peer?.destroy()
+    client?.destroy()
+    if (cleanup) await (cleanupPromise ?? cleanup())
+  })
+  // Capture the same hook that node:test runs on failure, so its race can be
+  // exercised explicitly without intentionally failing the enclosing test.
+  f = await fixture({ after(fn) { cleanup = fn } }, { handshake: false })
+  emit = f.server.emit
+  const queuedAccept = deferred()
+  // TCP accepts the real connection and counts it, but hold delivery of the
+  // connection event until teardown has taken its snapshot. No sleep race.
+  f.server.emit = function (event, ...args) {
+    if (event === 'connection') {
+      peer = args[0]
+      queuedAccept.resolve()
+      return true
+    }
+    return emit.call(this, event, ...args)
+  }
+  client = net.connect({ host: '127.0.0.1', port: f.server.address().port })
+  client.on('error', () => {})
+  await queuedAccept.promise
+  cleanupPromise = cleanup()
+  emit.call(f.server, 'connection', peer)
+  assert.equal(await deadline(cleanupPromise, 200), 'settled', 'late accepted peer must not hold server.close open')
+  assert.equal(peer.destroyed, true)
+  assert.equal(f.server.listening, false)
+  assert.deepEqual(f.commands, [])
+})
 
 test('hdckit getTarget is synchronous and opens no transport', { timeout: 3000 }, async (t) => {
   const f = await fixture(t)

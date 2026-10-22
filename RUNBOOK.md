@@ -226,6 +226,7 @@
 - 2026-10-22 / Codex，基线 9e944ae，分支 codex/m2-command-timeout；独立 worktree。已核对 Issue #22 与锁定 hdckit 0.12.1，建立真实 base.ts → hdckit → 本地受控 TCP 的缺口用例。
 - 结论：握手/ready 阶段缺少请求取消与连接所有权接口，外层 Promise.race 或 Connection.end 无法可靠清理；本轮 [PR #20](https://github.com/MonsterXia/scrcpy-harmony/pull/20) 提交测试与接口方案，生产代码不变；本地 74 项测试、lint、build:main 通过，独立审查问题已修正并复核，必需 CI 见 PR 检查页。详见[证据及交接](docs/maintenance/M2-2-command-timeout.md)。
 - 下一步：独立评审可取消 transport 方案，再推进有限命令截止；长期空闲复现、CPU/内存、原复现时长与真机监听释放仍未验证，M2-2 保持进行中。
+- 审查补充：已合入 master `ea53acc` 并保留 M4-1 交接；确定性复现 fixture 清理快照后的迟到 accept 会阻塞 server.close，先停监听并销毁迟到 peer，新增回归由失败转通过。初始化故障注入与独立复核通过；完整测试更新为 75/75，lint 通过，最终 CI 见 PR #20 检查页。只改测试清理，生产超时与真机验收仍未完成。
 
 ### M4-1 音频能力评估交接
 

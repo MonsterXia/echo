@@ -75,9 +75,19 @@
 
 ## 验证与交接
 
-- 已执行：独立 `npm ci`；专测 `node --test test/shell-timeout.test.cjs` 8/8 通过；`npm test` 74/74 通过，0 失败/跳过/取消。
+- 已执行：独立 `npm ci`；首轮专测 8/8、全套 74/74 通过。下述审查补充后 `npm test` 75/75 通过（含 9 项 shell/fixture 专测），0 失败/跳过/取消；lint 与 diff --check 再次通过。
 - `npm run lint`、`npm run build:main`、`git diff --check` 通过。构建保留现有 Vite CJS API 弃用提示；没有声称完整类型检查、打包或设备验收通过。本地未运行完整发行构建，三个平台的完整构建/打包/安装启动由该 PR 的 CI 验证。
 - 独立审查指出 fixture 在模块初始化失败时可能遗漏清理；已将清理登记提前到 listen/模块加载前，并禁止清理期间新增连接。子进程内存注入初始化异常（不改源码文件）：8 项预期失败，进程以 1 自行退出、无终止信号、未触发 5 秒兜底期限；正常全套复测仍为 74/74。独立审查已复核该修正，无新增发现。首次注入命令因引号错误未命中预期路径，修正脚本后取得上述结果。
 - PR CI 的 test、lint、Windows/macOS arm64/macOS x64 打包安装启动结果见 PR 检查页；[PR #20 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/20/checks)对应最终提交的状态为准。CI 无设备启动不代替本项真机验收。
 - 未验证：Issue #22 的长期空闲复现、CPU/内存趋势、至少原复现时长的运行、切换设备/关闭投屏后的真机监听与定时器释放。没有原报告时长，也未操作真机。
 - 下一步：评审取消接口方案，独立推进可取消 transport，完成有限命令全链截止后，再按 RUNBOOK 的 M2-2 原始验收条件补充真实复现与回归。M2-2 保持进行中。
+
+### 审查补充：teardown 期间迟到的 accept
+
+2026-10-22 继续处理 [PR #20 的清理讨论](https://github.com/MonsterXia/scrcpy-harmony/pull/20#discussion_r4348010157)。先 fetch/merge 最新 master；期间 master 更新到 `ea53accac62de2551af78b4043595d9a385aa500`，已合入，RUNBOOK 尾部冲突保留 M2-2 与 M4-1 的双方记录。
+
+- 新增确定性回归：使用真实 loopback TCP，在服务端已接受并计数连接后暂缓 `connection` 事件分发，启动真实 fixture 清理、取完 socket 快照，再释放 accept 回调。不靠反复运行碰撞网络时序。旧实现断言失败：清理仍为 `pending`，未快照的 peer 使 `server.close` 等待；回归自身的 finally/after 兜底销毁测试 socket，避免失败把测试进程挂住。
+- 最小修复：teardown 设置 stopping 后立即停止监听，再等待连接关闭；迟到 accept 在读取或握手前检查 stopping 并立即 destroy。客户端的停止保护仍保留。此处只修复测试 fixture，不改变 base.ts 或 hdckit 生产行为。
+- 验证命令：`node --test --test-name-pattern='fixture teardown' test/shell-timeout.test.cjs`，修复前 1 项失败，修复后 1/1 通过，确认 peer 已销毁、server 不再监听、未执行命令。有限观察窗只用于检测清理是否完成，不代表产品命令期限。
+- 独立审查进一步指出新增回归在 `await fixture` 失败时的兜底登记过晚；已前移到初始化前。对子进程内存中的 `base.init` 注入异常，修复前 9 项预期错误后进程仍不退出、3 秒兜底触发 ETIMEDOUT；修复后同样 9 项预期错误、进程自行以 1 退出、无终止信号。兜底仅终止自己启动的测试子进程。独立审查最终复核无新增问题。
+- 完整复测 75/75、lint、diff --check 通过；更新后的最终 SHA 与五项必需 CI 记录在 PR 描述及检查页，不沿用先前提交的通过状态。仍未操作真机、未认定空闲卡死根因，M2-2 保持进行中。
