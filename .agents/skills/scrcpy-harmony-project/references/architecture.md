@@ -80,7 +80,7 @@ React 组件 / MobX store
 
 设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
 
-`hdc/finiteShell.ts` 是尚无生产调用者的有限命令适配器：调用方显式提供已运行服务的 IP/端口、总截止和可选 AbortSignal；模块独占 TCP socket，取消后 destroy 并等待本地 close，不管理共享 HDC 服务。未接入 base.shell/IPC，不影响终端、HiLog 或投屏；hello 长度、目标长度和 16 MiB 输出限额比旧依赖严格，接入前须验证兼容性。详见 `docs/maintenance/M2-2-cancellable-transport.md`。
+`hdc/finiteShell.ts` 是有限命令适配器：调用方显式提供服务 IP/端口、总截止和可选 AbortSignal；模块独占 TCP socket，取消后 destroy 并等待本地 close，不管理共享 HDC 服务。当前仅 `hdc.ts/getMemory` 的固定 `cat /proc/meminfo` 使用 10 秒总截止，与 Hdc.createClient 共用显式端点：host 为 `127.0.0.1`，port 按锁定 factory 的规则从 `OHOS_HDC_SERVER_PORT` 解析一次，空值/非数字回退 8710，非法范围明确拒绝；失败沿 getOverview 拒绝，不回退旧 shell。前序参数/设备信息及后续屏幕读取仍走 hdckit，因此整个概览没有总截止。base.shell、终端、HiLog、投屏未迁移；hello 长度、目标长度和 16 MiB 输出限额比旧依赖严格，真机兼容与预算仍待验证。详见 `docs/maintenance/M2-2-memory-deadline.md` 及前轮协议报告。
 
 `hdc/parameters.ts` 使用 hdckit 的公开 `Target.shell('param get')` 读取设备参数，供设备枚举和概览共用。解析前拒绝行首 `[Fail]`、`[E` 加六位数字 `]`、`error:` 等明确命令错误；合法参数值中的同名文本不算错误。读取结束或解析失败后关闭该连接；缺少可选字段仍交给上层兼容处理。此层不修改 HDC 服务生命周期，也未实现共享 shell 的超时治理。
 
