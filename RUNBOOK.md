@@ -297,7 +297,7 @@
 ### M3-3 HiLog 在途记录后续
 
 - 2026-10-22 / Codex；基线 `9f8ddcb`，独立分支 `codex/hilog-inflight-lifecycle`。旧实现 10 项专项回归中 8 失败、2 通过，暂停/关闭或暂停→恢复后会发送旧记录，PID 查询拒绝未在 listener 内处理。
-- 仅修改主进程 `hdc/hilog.ts` 的生命周期边界：旧回调失效、关闭解绑监听、迟到控制 IPC 无操作；当前记录的 PID 查询失败回退且后续可恢复。专项 10/10、全量 150/150、lint、完整 build 通过，见[报告与证据](docs/maintenance/M3-3-hilog.md)。
+- 仅修改主进程 `hdc/hilog.ts` 的生命周期边界：旧回调失效、关闭解绑监听、迟到控制 IPC 无操作；当前记录的 PID 查询失败回退且后续可恢复。独立审查通过，合入 master `ddc1df4` 后专项 11/11、全量 158/158、lint、完整 build 通过，见[报告与证据](docs/maintenance/M3-3-hilog.md)。
 - 不取消底层查询、不撤回已发送 IPC、不更改 renderer 清除边界；未访问设备/HAP，真机用户流程与长时行为仍待验收。独立审查、PR 和最终 CI 见专项报告，由主对话审查后整合。
 
 ### M4-1 音频能力评估交接

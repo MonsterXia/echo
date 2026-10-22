@@ -142,6 +142,7 @@ test('close suppresses pending output, detaches the listener and tolerates late 
   await pending
   await reader.entry(entry('after close', 0))
   assert.deepEqual(h.sent, [])
+  assert.equal(h.cache(), undefined)
   assert.equal(reader._events.entry.length, 0)
   assert.equal(reader.endCalls, 1)
   await assert.doesNotReject(h.pause(id))
@@ -208,4 +209,20 @@ test('closing one stream does not suppress another sharing the same pending PID 
   await Promise.all([old, current])
   assert.deepEqual(h.sent.map(args => [args[2], args[3].message]), [[second, 'remaining']])
   await h.close(second)
+})
+
+test('a new entry after resume can share a pending lookup without reviving the old entry', async () => {
+  const h = await harness(), id = await h.open(), reader = h.readers[0]
+  const query = h.lookup(), old = reader.entry(entry('before pause'))
+  await query.started
+  await h.pause(id)
+  await h.resume(id)
+  const current = reader.entry(entry('after resume'))
+  query.resolve('shared.app')
+  await Promise.all([old, current])
+  assert.deepEqual(h.sent.map(args => [args[2], args[3].message, args[3].bundleName]), [
+    [id, 'after resume', 'shared.app'],
+  ])
+  assert.equal(h.cache()[42], 'shared.app')
+  await h.close(id)
 })

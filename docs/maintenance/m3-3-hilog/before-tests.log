@@ -15,7 +15,7 @@ not ok 2 - pause drops a pending PID lookup result and records arriving while pa
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
     + [
     +   [
     +     'main',
@@ -35,7 +35,7 @@ not ok 2 - pause drops a pending PID lookup result and records arriving while pa
     +   ]
     + ]
     - []
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:
@@ -70,7 +70,7 @@ not ok 3 - pause then resume cannot revive an old callback, while new records re
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
     + [
     +   [
     +     'main',
@@ -90,7 +90,7 @@ not ok 3 - pause then resume cannot revive an old callback, while new records re
     +   ]
     + ]
     - []
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:
@@ -125,7 +125,7 @@ not ok 4 - close suppresses pending output, detaches the listener and tolerates 
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
     + [
     +   [
     +     'main',
@@ -161,7 +161,7 @@ not ok 4 - close suppresses pending output, detaches the listener and tolerates 
     +   ]
     + ]
     - []
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:
@@ -312,7 +312,7 @@ not ok 10 - closing one stream does not suppress another sharing the same pendin
   error: |-
     Expected values to be strictly deep-equal:
     + actual - expected
-    
+
       [
         [
     +     'hilog10',
@@ -323,7 +323,7 @@ not ok 10 - closing one stream does not suppress another sharing the same pendin
           'remaining'
         ]
       ]
-    
+
   code: 'ERR_ASSERTION'
   name: 'AssertionError'
   expected:

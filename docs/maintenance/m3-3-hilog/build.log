@@ -9,11 +9,11 @@
 The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
 vite v5.4.21 building for production...
 transforming...
-✓ 1076 modules transformed.
+✓ 1077 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/main/index.js  631.05 kB │ gzip: 189.82 kB
-✓ built in 1.68s
+dist/main/index.js  630.99 kB │ gzip: 189.81 kB
+✓ built in 1.65s
 
 > scrcpy-harmony@1.0.2 build:preload
 > vite build --config vite.preload.ts
@@ -25,7 +25,7 @@ transforming...
 rendering chunks...
 computing gzip size...
 dist/preload/index.js  121.83 kB │ gzip: 34.28 kB
-✓ built in 361ms
+✓ built in 367ms
 
 > scrcpy-harmony@1.0.2 build:renderer
 > vite build
@@ -113,7 +113,7 @@ More info: https://sass-lang.com/d/if-function
 node_modules/licia/randomBytes.js (20:13): Use of eval in "node_modules/licia/randomBytes.js" is strongly discouraged as it poses security risks and may cause issues with minification.
 rendering chunks...
 computing gzip size...
-dist/renderer/index.html                              0.39 kB │ gzip:   0.27 kB
+dist/renderer/index.html                              0.39 kB │ gzip:   0.28 kB
 dist/renderer/assets/default-icon-BEowIRRb.png       20.09 kB
 dist/renderer/assets/icon-RRtXdow_.png               21.79 kB
 dist/renderer/assets/MiSans-Regular-BjbB2O6q.ttf  8,073.15 kB
@@ -124,23 +124,23 @@ dist/renderer/assets/App-IFHVt93n.css                 0.65 kB │ gzip:   0.31 k
 dist/renderer/assets/xterm-DYP7pi_n.css               4.15 kB │ gzip:   1.68 kB
 dist/renderer/assets/App-DMlEgHFO.css                 8.13 kB │ gzip:   2.15 kB
 dist/renderer/assets/app-Bq1a6kil.css               109.30 kB │ gzip:  24.37 kB
-dist/renderer/assets/App-B9P9T-3C.js                  0.35 kB │ gzip:   0.27 kB
-dist/renderer/assets/App-Dy2RQ8jS.js                  1.93 kB │ gzip:   0.99 kB
-dist/renderer/assets/randomBytes-Bh5GZDQm.js          6.62 kB │ gzip:   2.62 kB
-dist/renderer/assets/toBool-BEjzeV2X.js              10.19 kB │ gzip:   3.84 kB
-dist/renderer/assets/App-BN2_7VBK.js                 10.30 kB │ gzip:   3.66 kB
-dist/renderer/assets/download-Cub1ndoo.js            10.44 kB │ gzip:   4.03 kB
-dist/renderer/assets/App-BEhqGHZY.js                 14.25 kB │ gzip:   5.77 kB
-dist/renderer/assets/react-C_PAqfHb.js               32.97 kB │ gzip:  10.52 kB
-dist/renderer/assets/theme-1JUnz7Cf.js               83.38 kB │ gzip:  25.31 kB
-dist/renderer/assets/App-DpoJVTwD.js                246.38 kB │ gzip:  78.85 kB
-dist/renderer/assets/app--ngE1lCq.js                253.04 kB │ gzip:  82.16 kB
-dist/renderer/assets/xterm-C8S31Q3K.js              500.15 kB │ gzip: 126.28 kB
+dist/renderer/assets/App-C2Yz1ja4.js                  0.35 kB │ gzip:   0.27 kB
+dist/renderer/assets/App-tZokV8z-.js                  1.93 kB │ gzip:   0.99 kB
+dist/renderer/assets/randomBytes-CqWZSQc8.js          6.62 kB │ gzip:   2.63 kB
+dist/renderer/assets/toBool-CCgEOYX7.js              10.19 kB │ gzip:   3.84 kB
+dist/renderer/assets/App-CiDbSGtr.js                 10.30 kB │ gzip:   3.66 kB
+dist/renderer/assets/download-BT9ycEs4.js            10.44 kB │ gzip:   4.04 kB
+dist/renderer/assets/App-ZixT-SrE.js                 14.25 kB │ gzip:   5.77 kB
+dist/renderer/assets/react-DymGRXep.js               32.97 kB │ gzip:  10.52 kB
+dist/renderer/assets/theme-Dbr_bQTz.js               83.38 kB │ gzip:  25.32 kB
+dist/renderer/assets/App-BVuXK1IS.js                246.48 kB │ gzip:  78.89 kB
+dist/renderer/assets/app-DVRqHqVM.js                253.04 kB │ gzip:  82.16 kB
+dist/renderer/assets/xterm-o1FXkdqT.js              500.15 kB │ gzip: 126.28 kB
 
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
-✓ built in 2.71s
+✓ built in 2.69s
 
 up to date in 1s
