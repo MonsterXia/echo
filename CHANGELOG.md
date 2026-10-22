@@ -1,8 +1,8 @@
 # 变更记录
 
-## v1.0.2（待发布）：Scrcpy Harmony 首次独立发行
+## v1.0.2（2026年10月22日）：Scrcpy Harmony 首次独立发行
 
-首次独立版本定为 1.0.2，接续上游历史版本 1.0.1。包元数据与锁文件已同步；计划标签为 `v1.0.2`，尚未创建标签或发布安装包。发布材料与验收状态见 [1.0.2 发布清单](docs/releases/1.0.2.md)。
+[1.0.2 已发布](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，接续上游历史版本 1.0.1。包元数据、锁文件与实际 tag 一致，三平台安装与启动验收通过。本版未做发行者签名或 macOS 公证，macOS Gatekeeper 检查未通过；完整证据与剩余限制见 [1.0.2 发布记录](docs/releases/1.0.2.md)。
 
 * 更名为 Scrcpy Harmony，包名改为 scrcpy-harmony，应用 ID 改为 io.github.monsterxia.scrcpyharmony；旧 ECHO 配置不自动迁移。[PR #8](https://github.com/MonsterXia/scrcpy-harmony/pull/8)
 * 下载、反馈与更新源切换到本仓库，保留上游署名、许可证和历史。[PR #8](https://github.com/MonsterXia/scrcpy-harmony/pull/8)
