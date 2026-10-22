@@ -21,6 +21,7 @@ class Store extends BaseStore {
   process = new Process()
   layout = new Layout()
   ready = false
+  private targetsRefreshId = 0
   constructor() {
     super()
 
@@ -52,12 +53,18 @@ class Store extends BaseStore {
     setMainStore('panel', panel)
   }
   refreshTargets = async () => {
+    const refreshId = ++this.targetsRefreshId
     let targets: ITarget[] = []
     let success = true
     try {
       targets = await main.getTargets()
     } catch {
       success = false
+    }
+    // Only the newest request may publish state or produce a toolbar notice.
+    // Older IPC requests still finish; this does not cancel HDC operations.
+    if (refreshId !== this.targetsRefreshId) {
+      return undefined
     }
     runInAction(() => {
       this.targets = targets
