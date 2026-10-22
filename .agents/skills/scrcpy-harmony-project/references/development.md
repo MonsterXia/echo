@@ -129,3 +129,11 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 2026-10-21 的 [PR #8 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39611929271) 已通过 test、lint 及 Windows/macOS arm64/macOS x64 的安装包、安装和启动检查；这是该提交的历史结果，后续改动仍需自己的检查。真实设备、签名/公证、线上更新检查及普通用户操作文档的待办见 [RUNBOOK](../../../../RUNBOOK.md)。
 
 签名环境变量来自 CI secrets；手动 Build 在打包前移除空值，防止缺失的 `CSC_LINK` 被当作证书路径，非空凭据保留。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。
+
+## Sourcery 超额度评论清理
+
+`.github/workflows/sourcery-quota-comments.yml` 在默认分支监听 PR 顶层评论的 `issue_comment.created/edited`。只有 `sourcery-ai[bot]`（Bot 类型）且整段正文匹配已确认的额度耗尽模板时才删除；匹配限定本仓库账号、Sourcery billing 链接和 `rate_limit_hit`，金额与等待时长可变。普通审查、指南、混合正文、其他作者、Issue 和未知模板均保留。
+
+工作流不 checkout、不执行 PR 代码，只授予任务 `issues: write`；通过 `context.payload` 读取正文，删除前重新读取并核对作者、正文、评论 ID 和所属 PR。404 视为已删除，权限/其他错误使任务失败。事件发生于默认分支部署前的评论不回溯清理，未知新模板需先确认再更新；GET 与 DELETE 之间仍存在 GitHub API 不提供条件删除导致的短暂竞态。
+
+`node --test test/sourcery-quota-comments.test.cjs` 直接执行 workflow 中的真实 JavaScript，只替换 GitHub I/O，覆盖删除、保留、陈旧事件与错误处理。测试不发布模拟评论，也不冒充机器人。上线状态查看 Actions 的 `Remove Sourcery quota notices`；真实删除验收以未来匹配事件的运行记录为准。

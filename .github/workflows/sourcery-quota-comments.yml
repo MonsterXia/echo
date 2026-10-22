@@ -1,0 +1,62 @@
+name: Remove Sourcery quota notices
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions: {}
+
+jobs:
+  remove-quota-notice:
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.user.login == 'sourcery-ai[bot]' &&
+      github.event.comment.user.type == 'Bot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      issues: write
+    steps:
+      # No checkout: never execute code from the PR with a write token.
+      - name: Delete only a verified quota-only notice
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const { payload } = context;
+            if (context.eventName !== 'issue_comment' ||
+                !['created', 'edited'].includes(payload.action) ||
+                !payload.issue?.pull_request) return;
+
+            // Full-body allowlist of the observed notification, not keyword matching.
+            // Unknown templates and any appended review content are left untouched.
+            const quotaNotice = new RegExp(
+              String.raw`^Sorry @MonsterXia, you've used your own review budget of \d[\d,]* diff characters for the last 7 days\.\n\n` +
+              String.raw`You can request another review in \d+ (?:days?|hours?|minutes?)(?: and \d+ (?:days?|hours?|minutes?))? ` +
+              String.raw`by commenting \x60@sourcery-ai review\x60\. \[Upgrade\]\(https://app\.sourcery\.ai/dashboard/billing\?` +
+              String.raw`connection=github&owner=MonsterXia&from_surface=github_bot&intent=rate_limit_hit\) to get a review now\.$`
+            );
+            const issueUrl = 'https://api.github.com/repos/' + context.repo.owner +
+              '/' + context.repo.repo + '/issues/' + payload.issue.number;
+            function isQuotaNotice(comment) {
+              return comment?.user?.login === 'sourcery-ai[bot]' &&
+                comment.user.type === 'Bot' &&
+                comment.issue_url === issueUrl &&
+                typeof comment.body === 'string' &&
+                quotaNotice.test(comment.body.replace(/\r\n/g, '\n').trim());
+            }
+
+            const eventComment = payload.comment;
+            if (!isQuotaNotice(eventComment)) return;
+            const params = { ...context.repo, comment_id: eventComment.id };
+            try {
+              const { data: current } = await github.rest.issues.getComment(params);
+              // Ignore stale events: an edit may have added real review content.
+              if (current.id !== eventComment.id ||
+                  current.body !== eventComment.body || !isQuotaNotice(current)) return;
+              await github.rest.issues.deleteComment(params);
+              core.info('Deleted Sourcery quota notice ' + current.id +
+                ' on PR #' + payload.issue.number);
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.info('Comment already absent; nothing to delete.');
+            }
