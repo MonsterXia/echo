@@ -129,7 +129,8 @@
 
 - 用户指定优先修复设备刷新竞争。基线 `9f8ddcb`，分支 `codex/target-refresh-order`；按最后发起请求的序号阻止旧结果写入状态/选择/持久化，并抑制过期手动刷新通知。7 项真实 Store/工具栏回归先全部失败、修复后全部通过；完整测试 147/147、lint 通过，详见[专项报告](docs/maintenance/M2-5-refresh-order.md)。最终独立审查和五项 CI 通过后合并；M2-5 的真机验收仍未完成。
 - 回收状态：[设备刷新 PR #28](https://github.com/MonsterXia/scrcpy-harmony/pull/28) 与 [HiLog PR #29](https://github.com/MonsterXia/scrcpy-harmony/pull/29) 均经独立审查、五项必需 CI 通过后合并，最新整合基线 `5dcc7bd`。HiLog 代次隔离修复暂停/关闭后的迟到记录，见[专项报告](docs/maintenance/M3-3-hilog.md)。
-- M2-2 [有限命令可取消模块基础](docs/maintenance/M2-2-cancellable-transport.md)已由 PR #30 合并；后续仅将[概览内存查询接入](docs/maintenance/M2-2-memory-deadline.md)，端口修订后 23 项专项、全量 208/208、lint 和 build:main 通过。base.shell 未全局迁移，仍保持进行中；最终 PR 审查/CI 由主对话回收，不以此替代真机或长期空闲验收。
+- M2-2 [有限命令可取消模块基础](docs/maintenance/M2-2-cancellable-transport.md)已由 PR #30 合并；[PR #32 概览内存查询接入](https://github.com/MonsterXia/scrcpy-harmony/pull/32)端口修订后专项 23/23，合入 master `bd3e3c9` 后组合全量 221/221、lint 和 build:main 通过。[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)已确认端口问题修复，最终组合增量审查与五项 CI 待主对话核验，PR #32 尚未合并。base.shell 未全局迁移，M2-2 仍进行中，不以此替代真机或长期空闲验收。
+- M2-4 [WebView PR #31](https://github.com/MonsterXia/scrcpy-harmony/pull/31) 经[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/31#pullrequestreview-5615622602)及[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39793778948)全部成功后合并为 `bd3e3c914905e440c1b4f6897013873eb918cba9`。完整保留其精确 PID 匹配、请求隔离和 HTTP 总截止；M2-4 仍进行中，原机型、真实 socket/端口转发和实际调试页面仍待验收，见[专项报告](docs/maintenance/M2-4-webview-discovery.md)。
 - 本轮不操作真机、不安装应用；侧载验证仍仅限 bilibili，离线图标及 HAP 缺失保持原有边界。
 
 ```text
@@ -301,6 +302,7 @@
 - 真实处理器/base/parameters/hdckit/finiteShell + 随机回环首批 13 项先 9 失败/4 通过，接入后通过；增加真实 React 概览超时清空及重试恢复后专项 14/14。真实时钟截止约 10 秒；最终全量 199/199、lint、build:main 通过。三个既有枚举夹具补新增 import 的禁止调用边界；过程失败与证据见[专项报告](docs/maintenance/M2-2-memory-deadline.md)。
 - 主对话独立审查发现初稿固定 8710 覆盖环境端口（P2）。改为加载真实 Hdc.createClient 后新增 9 项端口回归先 6 失败/3 通过，修复共享解析后专项 23/23、全量 208/208、lint、build:main 通过；不把初轮内部复核视为最终审查结论。
 - 交付 [PR #32](https://github.com/MonsterXia/scrcpy-harmony/pull/32)；主对话对 `2e7cd3e` 的[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)确认 P2 已修复，独立 45/45 通过，无剩余阻断；最终组合 SHA 与五项必需 CI 仍须按最终提交核验。
+- 最终组合：通过普通 merge 同步已合并 #31 的 master `bd3e3c9`，无 rebase/force push，两个工作项记录均保留；全量 **221/221**、lint、build:main 通过。仅后续交接文档更新，最终 SHA 见 PR；尚未宣称 #32 合并或最终 CI 通过。
 - 前序参数/设备信息与后续屏幕查询仍未限时，服务启动保持原 hdckit 路径；终端/HiLog/投屏/写操作未迁移。协议严格度与预算需授权真机验收，M2-2 仍进行中。最终 SHA/PR/CI 由交付消息和 PR 正文承载，主对话完成独立 review、五项必需 CI 核验后统一合并；本分支不自行合并或操作设备。
 
 ### M3-3 用户与构建说明推进
