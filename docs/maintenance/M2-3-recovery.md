@@ -45,6 +45,7 @@
 前述 83 项测试和独立复审只覆盖 bridge Promise 边界，漏掉了主进程实际实现未将 UiDriver Promise 传回 IPC 的缺陷；不能用此前结果证明真实捕获方法的 stop/start 串行。后续独立审查指出此问题，本轮已核对锁定的 hdckit 0.12.1 实现：`startCaptureScreen` 等待传输后注册帧回调，`stopCaptureScreen` 等待传输后解除回调，两者均为 async。共享 `handleEvent` 返回 handler 结果，因此丢失等待发生在本项目 `uitest.ts` 的两处调用。
 
 - 本轮明确获准修改这两个处理器。修改前执行 fetch/merge，`origin/master` 当时仍为 `9e944ae`，merge 返回 already up to date；未覆盖其他任务记录。
+- 提交前再次 fetch 后同步 `ea53acc`（#24 音频评估合入）；仅 RUNBOOK 末尾追加记录发生冲突，保留 M2-3 与 M4-1 两段完整记录，音频报告与其任务状态原样保留。
 - 新增 `test/capture-handlers.test.cjs` 五项回归，并在生命周期测试中增加两项贯通回归。共用 helper 加载实际 `uitest.ts` 并调用 `init` 注册的处理器，使用实际 hdckit UiDriver 的 start/stop/Emitter；只控制 `send` 传输响应、缓存驱动查询及 Electron 注册/窗口发送边界。构造驱动不连接设备，未执行 HDC。
 - **修复前：新增七项全部失败**，原十七项生命周期通过。证据包括内部 stop 未完成就发送 start、stop handler 提前 resolve、start/stop 拒绝未传播并触发 unhandledRejection、销毁时 final stop 抢在真实 start 完成前，以及 renderer 没有收到底层拒绝。
 - 最小生产修复仅为 `await uiDriver.startCaptureScreen(...)` 和 `await uiDriver.stopCaptureScreen()`。捕获处理器现在等待真实方法完成后才 resolve，错误沿既有 IPC Promise 传播；不更改参数、通道、输入算法或主进程等待超时策略。
