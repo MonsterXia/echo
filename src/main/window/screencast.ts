@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, screen } from 'electron'
 import * as window from 'share/main/lib/window'
 import { getScreencastStore } from '../lib/store'
 import once from 'licia/once'
@@ -20,10 +20,24 @@ export function showWin() {
 
   win = window.create({
     name: 'screencast',
-    minWidth: 500,
-    minHeight: 640,
+    minWidth: 320,
+    minHeight: 320,
     width: 500,
     height: 640,
+  })
+
+  // The shared factory may restore bounds from a larger display. Constrain
+  // the result in DIP, after restoration and before the window is shown.
+  const bounds = win.getBounds()
+  const area = screen.getDisplayMatching(bounds).workArea
+  const width = Math.min(bounds.width, area.width)
+  const height = Math.min(bounds.height, area.height)
+  win.setMinimumSize(Math.min(320, area.width), Math.min(320, area.height))
+  win.setBounds({
+    x: Math.max(area.x, Math.min(bounds.x, area.x + area.width - width)),
+    y: Math.max(area.y, Math.min(bounds.y, area.y + area.height - height)),
+    width,
+    height,
   })
 
   win.on('close', () => {

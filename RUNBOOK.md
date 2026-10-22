@@ -72,8 +72,8 @@
 
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
-| M3-1 | 待开始 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
-| M3-2 | 待开始 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
+| M3-1 | 待验收 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
+| M3-2 | 进行中 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
 | M3-3 | 待开始 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 覆盖安装、开发者选项/调试授权、设备选择、投屏/输入、日志导出、常见失败和旧配置边界；按文档在干净环境走通构建。说明应用依赖 Electron 主进程，Vite 页面不能独立作为浏览器版使用。 |
 
 入口：`src/main/window/screencast.ts`、`src/renderer/screencast/components/`、`src/renderer/main.tsx`、`README.md` 与开发指南。开发指南已经存在，但不能据此将普通用户操作文档标为完成。
@@ -220,3 +220,9 @@
 - Node HTTP(S) 与 Chromium 均经不转发流量的拒绝代理，分别确认探针失败和代理收到请求；离线图片哈希与默认资源一致。`verificationPassed=true` 仅代表验证完成，`offlineIconAcceptancePassed=false` 明确表示离线应用图标未通过。
 - 实际 HDC 文件接收确认 HAP 与 resources.index 均无读取权限；设备帮助没有图标导出选项。用户确认没有本地 bilibili HAP。生产图标逻辑未改，M1-3 保持进行中；下一步需可读的该应用资源，或先验证有授权的设备图标接口。M1-2 保持待验收。
 - 本地独立检出的 build、66 项测试、lint 通过；归档仅含指定应用字段和四张裁剪图，不保存设备 key、完整应用列表或原始运行日志。最终增量 CI 见 [PR #18 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/18/checks)。
+
+### M3-1 / M3-2 合并显示工作线
+
+- 2026-10-22 / Codex；基线 `9e944ae`，独立分支 `codex/m3-display`。来源 #28/#32 正文及评论已读取。M3-1 待验收、M3-2 进行中；见 [显示专项报告](docs/maintenance/M3-display.md)。
+- 复现固定 500×640 最小窗口高于小工作区；限制创建/恢复后的边界，并允许 320×320，窄窗口使用两行工具栏。合成 Electron 100 样本通过；窗口单测先失败后通过，完整 69 项测试及 lint、main/renderer 构建通过。原坐标测试和投屏客户端未修改。
+- UI 字体与 JPEG 缩放链已区分，保留同条件前后截图，未开启未经证实的抗锯齿开关。没有真机、物理分辨率/DPI 修改或 HDC 操作。真实显示器、标题栏、原机型画面仍待验收；不把合成测试记作字体问题修复。PR/CI 证据后续补入专项报告；不自动合并或发布。
