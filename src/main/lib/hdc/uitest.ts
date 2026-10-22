@@ -68,7 +68,7 @@ const startCaptureScreen: IpcStartCaptureScreen = async function (
 ) {
   const uiDriver = await getUiDriver(connectKey)
   await stopCaptureScreen(connectKey)
-  uiDriver.startCaptureScreen(
+  await uiDriver.startCaptureScreen(
     function (image) {
       window.sendTo('screencast', 'captureScreen', connectKey, image)
     },
@@ -80,7 +80,7 @@ const startCaptureScreen: IpcStartCaptureScreen = async function (
 
 const stopCaptureScreen: IpcStopCaptureScreen = async function (connectKey) {
   const uiDriver = await getUiDriver(connectKey)
-  uiDriver.stopCaptureScreen()
+  await uiDriver.stopCaptureScreen()
 }
 
 const touchDown: IpcTouchDown = async function (connectKey, x, y) {
