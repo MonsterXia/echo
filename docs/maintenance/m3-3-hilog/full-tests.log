@@ -1,0 +1,962 @@
+
+> scrcpy-harmony@1.0.2 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: installation during an in-flight refresh schedules a fresh query after it
+ok 1 - installation during an in-flight refresh schedules a fresh query after it
+  ---
+  duration_ms: 173.5461
+  type: 'test'
+  ...
+# Subtest: an install callback from an idle render cannot overlap a newer refresh
+ok 2 - an install callback from an idle render cannot overlap a newer refresh
+  ---
+  duration_ms: 12.6053
+  type: 'test'
+  ...
+# Subtest: multiple install completions coalesce, and a request in the trailing pass runs once more
+ok 3 - multiple install completions coalesce, and a request in the trailing pass runs once more
+  ---
+  duration_ms: 9.5257
+  type: 'test'
+  ...
+# Subtest: uninstall during a later metadata batch refreshes the final list and icon view
+ok 4 - uninstall during a later metadata batch refreshes the final list and icon view
+  ---
+  duration_ms: 9.8048
+  type: 'test'
+  ...
+# Subtest: the trailing pass reads the latest system-app option
+ok 5 - the trailing pass reads the latest system-app option
+  ---
+  duration_ms: 9.1175
+  type: 'test'
+  ...
+# Subtest: lists failure releases loading and a manual refresh recovers
+ok 6 - lists failure releases loading and a manual refresh recovers
+  ---
+  duration_ms: 9.8119
+  type: 'test'
+  ...
+# Subtest: infos failure releases loading and a manual refresh recovers
+ok 7 - infos failure releases loading and a manual refresh recovers
+  ---
+  duration_ms: 8.1055
+  type: 'test'
+  ...
+# Subtest: a failed active query still drains a queued installation refresh
+ok 8 - a failed active query still drains a queued installation refresh
+  ---
+  duration_ms: 6.2209
+  type: 'test'
+  ...
+# Subtest: a failed installation does not request a refresh
+ok 9 - a failed installation does not request a refresh
+  ---
+  duration_ms: 5.4872
+  type: 'test'
+  ...
+# Subtest: unmount discards queued refreshes and late metadata without starting another batch
+ok 10 - unmount discards queued refreshes and late metadata without starting another batch
+  ---
+  duration_ms: 5.2672
+  type: 'test'
+  ...
+# Subtest: device remount ignores old enumeration and installation completions
+ok 11 - device remount ignores old enumeration and installation completions
+  ---
+  duration_ms: 6.2616
+  type: 'test'
+  ...
+# Subtest: StrictMode cleanup does not allow its abandoned refresh to overwrite the active effect
+ok 12 - StrictMode cleanup does not allow its abandoned refresh to overwrite the active effect
+  ---
+  duration_ms: 6.8702
+  type: 'test'
+  ...
+# Subtest: a later metadata batch failure still drains a queued installation refresh
+ok 13 - a later metadata batch failure still drains a queued installation refresh
+  ---
+  duration_ms: 7.5998
+  type: 'test'
+  ...
+# Subtest: a late old-device rejection cannot notify or release the new device loading state
+ok 14 - a late old-device rejection cannot notify or release the new device loading state
+  ---
+  duration_ms: 9.0641
+  type: 'test'
+  ...
+# Subtest: a partially successful multi-file installation requests one trailing refresh
+ok 15 - a partially successful multi-file installation requests one trailing refresh
+  ---
+  duration_ms: 6.3752
+  type: 'test'
+  ...
+# Subtest: build prepares a runnable distribution without requiring a shell
+ok 16 - build prepares a runnable distribution without requiring a shell
+  ---
+  duration_ms: 724.2955
+  type: 'test'
+  ...
+# Subtest: a failed build stops before packaging incomplete output
+ok 17 - a failed build stops before packaging incomplete output
+  ---
+  duration_ms: 272.0191
+  type: 'test'
+  ...
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 18 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 152.2305
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+ok 19 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 7.7089
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+ok 20 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 8.7888
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+ok 21 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 8.1757
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+ok 22 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 28.5193
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+ok 23 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 13.7371
+  type: 'test'
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 24 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 14.3192
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 25 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 18.7455
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+ok 26 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 15.2677
+  type: 'test'
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+ok 27 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 14.029
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+ok 28 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 28.4574
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+ok 29 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 17.781
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+ok 30 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 14.7643
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+ok 31 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 9.862
+  type: 'test'
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+ok 32 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 15.8241
+  type: 'test'
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+ok 33 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 25.023
+  type: 'test'
+  ...
+# Subtest: empty input performs no shell or online request
+ok 34 - empty input performs no shell or online request
+  ---
+  duration_ms: 10.6942
+  type: 'test'
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+ok 35 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 11.1943
+  type: 'test'
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+ok 36 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 8.658
+  type: 'test'
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+ok 37 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 12.5113
+  type: 'test'
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+ok 38 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 7.3597
+  type: 'test'
+  ...
+# Subtest: literal device label wins over the store name while keeping the store icon
+ok 39 - literal device label wins over the store name while keeping the store icon
+  ---
+  duration_ms: 12.7545
+  type: 'test'
+  ...
+# Subtest: resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+ok 40 - resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+  ---
+  duration_ms: 10.3528
+  type: 'test'
+  ...
+# Subtest: a label command failure preserves that bundle and resolves the following bundle
+ok 41 - a label command failure preserves that bundle and resolves the following bundle
+  ---
+  duration_ms: 10.4894
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: ""
+ok 42 - invalid label command response falls back without exposing diagnostics: ""
+  ---
+  duration_ms: 5.8065
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "$string:name"
+ok 43 - invalid label command response falls back without exposing diagnostics: "$string:name"
+  ---
+  duration_ms: 10.4178
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+ok 44 - invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+  ---
+  duration_ms: 11.6627
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+ok 45 - invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+  ---
+  duration_ms: 6.1131
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+ok 46 - invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+  ---
+  duration_ms: 4.9376
+  type: 'test'
+  ...
+# Subtest: old bm without label support retains the original store fallback
+ok 47 - old bm without label support retains the original store fallback
+  ---
+  duration_ms: 5.67
+  type: 'test'
+  ...
+# Subtest: capability errors do not drop apps and are retried after reconnect on the next request
+ok 48 - capability errors do not drop apps and are retried after reconnect on the next request
+  ---
+  duration_ms: 7.1674
+  type: 'test'
+  ...
+# Subtest: refresh reads changed local names rather than caching them across reinstalls or locale changes
+ok 49 - refresh reads changed local names rather than caching them across reinstalls or locale changes
+  ---
+  duration_ms: 6.44
+  type: 'test'
+  ...
+# Subtest: malformed literal label still allows device label resolution
+ok 50 - malformed literal label still allows device label resolution
+  ---
+  duration_ms: 5.0641
+  type: 'test'
+  ...
+# Subtest: a local label equal to the bundle name still takes priority over the store
+ok 51 - a local label equal to the bundle name still takes priority over the store
+  ---
+  duration_ms: 5.6213
+  type: 'test'
+  ...
+# Subtest: capture start handler waits for UiDriver stop before sending start and resolves after registration
+ok 52 - capture start handler waits for UiDriver stop before sending start and resolves after registration
+  ---
+  duration_ms: 142.3353
+  type: 'test'
+  ...
+# Subtest: capture stop handler remains pending until UiDriver removes the frame callback
+ok 53 - capture stop handler remains pending until UiDriver removes the frame callback
+  ---
+  duration_ms: 4.9559
+  type: 'test'
+  ...
+# Subtest: startCaptureScreen handler propagates the real UiDriver transport rejection
+ok 54 - startCaptureScreen handler propagates the real UiDriver transport rejection
+  ---
+  duration_ms: 4.5463
+  type: 'test'
+  ...
+# Subtest: stopCaptureScreen handler propagates the real UiDriver transport rejection
+ok 55 - stopCaptureScreen handler propagates the real UiDriver transport rejection
+  ---
+  duration_ms: 21.6994
+  type: 'test'
+  ...
+# Subtest: start handler propagates its prerequisite stop failure without sending start
+ok 56 - start handler propagates its prerequisite stop failure without sending start
+  ---
+  duration_ms: 9.264
+  type: 'test'
+  ...
+# Subtest: active HiLog preserves IPC payload, cached PID names and PID zero fallback
+ok 57 - active HiLog preserves IPC payload, cached PID names and PID zero fallback
+  ---
+  duration_ms: 169.067
+  type: 'test'
+  ...
+# Subtest: pause drops a pending PID lookup result and records arriving while paused
+ok 58 - pause drops a pending PID lookup result and records arriving while paused
+  ---
+  duration_ms: 18.6959
+  type: 'test'
+  ...
+# Subtest: pause then resume cannot revive an old callback, while new records recover
+ok 59 - pause then resume cannot revive an old callback, while new records recover
+  ---
+  duration_ms: 9.8399
+  type: 'test'
+  ...
+# Subtest: close suppresses pending output, detaches the listener and tolerates late control IPC
+ok 60 - close suppresses pending output, detaches the listener and tolerates late control IPC
+  ---
+  duration_ms: 6.493
+  type: 'test'
+  ...
+# Subtest: PID lookup rejection falls back for the current entry and a later lookup recovers
+ok 61 - PID lookup rejection falls back for the current entry and a later lookup recovers
+  ---
+  duration_ms: 20.896
+  type: 'test'
+  ...
+# Subtest: PID rejection after pause is handled without publishing a stale entry
+ok 62 - PID rejection after pause is handled without publishing a stale entry
+  ---
+  duration_ms: 15.2498
+  type: 'test'
+  ...
+# Subtest: PID rejection after close is handled without publishing a stale entry
+ok 63 - PID rejection after close is handled without publishing a stale entry
+  ---
+  duration_ms: 12.8943
+  type: 'test'
+  ...
+# Subtest: PID rejection after pause-resume is handled without publishing a stale entry
+ok 64 - PID rejection after pause-resume is handled without publishing a stale entry
+  ---
+  duration_ms: 13.6424
+  type: 'test'
+  ...
+# Subtest: repeated resume does not invalidate active work
+ok 65 - repeated resume does not invalidate active work
+  ---
+  duration_ms: 14.8422
+  type: 'test'
+  ...
+# Subtest: closing one stream does not suppress another sharing the same pending PID lookup
+ok 66 - closing one stream does not suppress another sharing the same pending PID lookup
+  ---
+  duration_ms: 8.8248
+  type: 'test'
+  ...
+# Subtest: a new entry after resume can share a pending lookup without reviving the old entry
+ok 67 - a new entry after resume can share a pending lookup without reviving the old entry
+  ---
+  duration_ms: 12.0916
+  type: 'test'
+  ...
+# Subtest: network fixture cleanup closes a peer whose accept callback arrives late
+ok 68 - network fixture cleanup closes a peer whose accept callback arrives late
+  ---
+  duration_ms: 257.4373
+  type: 'test'
+  ...
+# Subtest: network keys survive real hdckit, getTargets, selection and toolbar options
+ok 69 - network keys survive real hdckit, getTargets, selection and toolbar options
+  ---
+  duration_ms: 45.5158
+  type: 'test'
+  ...
+# Subtest: empty network list clears selection; a new port can be selected after recovery
+ok 70 - empty network list clears selection; a new port can be selected after recovery
+  ---
+  duration_ms: 31.9752
+  type: 'test'
+  ...
+# Subtest: host handshake failure is diagnosed and manual refresh recovers
+ok 71 - host handshake failure is diagnosed and manual refresh recovers
+  ---
+  duration_ms: 19.7508
+  type: 'test'
+  ...
+# Subtest: regression: failed enumeration must not report a successful refresh
+ok 72 - regression: failed enumeration must not report a successful refresh
+  ---
+  duration_ms: 18.2807
+  type: 'test'
+  ...
+# Subtest: regression: textual target command failure must not create a selectable device
+ok 73 - regression: textual target command failure must not create a selectable device
+  ---
+  duration_ms: 23.1973
+  type: 'test'
+  ...
+# Subtest: overview clears stale details after a failed refresh and recovers on retry
+ok 74 - overview clears stale details after a failed refresh and recovers on retry
+  ---
+  duration_ms: 161.2324
+  type: 'test'
+  ...
+# Subtest: small work area contains the initial window and permits a compact window
+ok 75 - small work area contains the initial window and permits a compact window
+  ---
+  duration_ms: 111.2322
+  type: 'test'
+  ...
+# Subtest: restored bounds fit a negative-origin display after work area shrinks
+ok 76 - restored bounds fit a negative-origin display after work area shrinks
+  ---
+  duration_ms: 1.041
+  type: 'test'
+  ...
+# Subtest: valid saved placement is retained and a tiny work area caps the minimum
+ok 77 - valid saved placement is retained and a tiny work area caps the minimum
+  ---
+  duration_ms: 2.1755
+  type: 'test'
+  ...
+# Subtest: destroy cancels retry and unregisters bridge and canvas listeners once
+ok 78 - destroy cancels retry and unregisters bridge and canvas listeners once
+  ---
+  duration_ms: 107.281
+  type: 'test'
+  ...
+# Subtest: destroy during initial stop prevents late start
+ok 79 - destroy during initial stop prevents late start
+  ---
+  duration_ms: 2.1163
+  type: 'test'
+  ...
+# Subtest: destroy waits for an in-flight start before final stop
+ok 80 - destroy waits for an in-flight start before final stop
+  ---
+  duration_ms: 2.6264
+  type: 'test'
+  ...
+# Subtest: overlapping starts are serialized and latest scale wins without new listeners
+ok 81 - overlapping starts are serialized and latest scale wins without new listeners
+  ---
+  duration_ms: 2.3071
+  type: 'test'
+  ...
+# Subtest: stop rejection is handled and later retry recovers
+ok 82 - stop rejection is handled and later retry recovers
+  ---
+  duration_ms: 2.0905
+  type: 'test'
+  ...
+# Subtest: start rejection is handled and later retry recovers
+ok 83 - start rejection is handled and later retry recovers
+  ---
+  duration_ms: 1.7246
+  type: 'test'
+  ...
+# Subtest: destroy stop rejection is handled without rearming retry
+ok 84 - destroy stop rejection is handled without rearming retry
+  ---
+  duration_ms: 1.6651
+  type: 'test'
+  ...
+# Subtest: bad frame releases URL and a later good frame becomes ready
+ok 85 - bad frame releases URL and a later good frame becomes ready
+  ---
+  duration_ms: 2.528
+  type: 'test'
+  ...
+# Subtest: destroy during decode releases URL and ignores a late decoder callback
+ok 86 - destroy during decode releases URL and ignores a late decoder callback
+  ---
+  duration_ms: 2.8477
+  type: 'test'
+  ...
+# Subtest: destroy during display-size lookup ignores late state and readiness
+ok 87 - destroy during display-size lookup ignores late state and readiness
+  ---
+  duration_ms: 1.7219
+  type: 'test'
+  ...
+# Subtest: display-size rejection drops one frame and permits the next frame
+ok 88 - display-size rejection drops one frame and permits the next frame
+  ---
+  duration_ms: 2.2413
+  type: 'test'
+  ...
+# Subtest: restart invalidates a pending frame before it can signal readiness
+ok 89 - restart invalidates a pending frame before it can signal readiness
+  ---
+  duration_ms: 1.8589
+  type: 'test'
+  ...
+# Subtest: failed restart after a ready frame still retries and recovers
+ok 90 - failed restart after a ready frame still retries and recovers
+  ---
+  duration_ms: 2.4118
+  type: 'test'
+  ...
+# Subtest: repeated no-frame retries retain one listener and destroy prevents explicit restart
+ok 91 - repeated no-frame retries retain one listener and destroy prevents explicit restart
+  ---
+  duration_ms: 1.6877
+  type: 'test'
+  ...
+# Subtest: same-target replacement waits for old capture cleanup before starting
+ok 92 - same-target replacement waits for old capture cleanup before starting
+  ---
+  duration_ms: 3.7498
+  type: 'test'
+  ...
+# Subtest: old stream frame during restart stop cannot suppress retry after start failure
+ok 93 - old stream frame during restart stop cannot suppress retry after start failure
+  ---
+  duration_ms: 2.0199
+  type: 'test'
+  ...
+# Subtest: destroy retains the synchronous React effect cleanup return contract
+ok 94 - destroy retains the synchronous React effect cleanup return contract
+  ---
+  duration_ms: 1.7242
+  type: 'test'
+  ...
+# Subtest: destroy waits through the main handler for UiDriver startup before final stop
+ok 95 - destroy waits through the main handler for UiDriver startup before final stop
+  ---
+  duration_ms: 117.89
+  type: 'test'
+  ...
+# Subtest: UiDriver rejection reaches renderer recovery through the main capture handler
+ok 96 - UiDriver rejection reaches renderer recovery through the main capture handler
+  ---
+  duration_ms: 5.3958
+  type: 'test'
+  ...
+# Subtest: maps a half-resolution device frame to full touch coordinates
+ok 97 - maps a half-resolution device frame to full touch coordinates
+  ---
+  duration_ms: 133.3095
+  type: 'test'
+  ...
+# Subtest: uses actual display size when the requested scale differs from the stream scale
+ok 98 - uses actual display size when the requested scale differs from the stream scale
+  ---
+  duration_ms: 2.1684
+  type: 'test'
+  ...
+# Subtest: keeps full-resolution capture coordinates unchanged
+ok 99 - keeps full-resolution capture coordinates unchanged
+  ---
+  duration_ms: 1.5027
+  type: 'test'
+  ...
+# Subtest: changing the requested scale does not remap the frame still on screen
+ok 100 - changing the requested scale does not remap the frame still on screen
+  ---
+  duration_ms: 2.3944
+  type: 'test'
+  ...
+# Subtest: refreshes touch dimensions when a landscape frame arrives
+ok 101 - refreshes touch dimensions when a landscape frame arrives
+  ---
+  duration_ms: 1.7874
+  type: 'test'
+  ...
+# Subtest: clamps a released pointer to the last valid device pixel
+ok 102 - clamps a released pointer to the last valid device pixel
+  ---
+  duration_ms: 1.8286
+  type: 'test'
+  ...
+# Subtest: does not send touches before a frame and display size are available
+ok 103 - does not send touches before a frame and display size are available
+  ---
+  duration_ms: 1.2242
+  type: 'test'
+  ...
+# Subtest: does not send touches when device dimensions are invalid
+ok 104 - does not send touches when device dimensions are invalid
+  ---
+  duration_ms: 1.3839
+  type: 'test'
+  ...
+# Subtest: fixture teardown closes a TCP peer accepted after its socket snapshot
+ok 105 - fixture teardown closes a TCP peer accepted after its socket snapshot
+  ---
+  duration_ms: 270.5193
+  type: 'test'
+  ...
+# Subtest: hdckit getTarget is synchronous and opens no transport
+ok 106 - hdckit getTarget is synchronous and opens no transport
+  ---
+  duration_ms: 12.001
+  type: 'test'
+  ...
+# Subtest: real shell preserves delayed scalar output and batched framing
+ok 107 - real shell preserves delayed scalar output and batched framing
+  ---
+  duration_ms: 108.5164
+  type: 'test'
+  ...
+# Subtest: silent handshake leaves shell pending before a connection can be returned
+ok 108 - silent handshake leaves shell pending before a connection can be returned
+  ---
+  duration_ms: 103.7882
+  type: 'test'
+  ...
+# Subtest: ready read can exceed transport waitUntil 10000 ms without timing out
+ok 109 - ready read can exceed transport waitUntil 10000 ms without timing out
+  ---
+  duration_ms: 10126.3943
+  type: 'test'
+  ...
+# Subtest: an outer deadline leaves readAll and its socket alive; late output still succeeds
+ok 110 - an outer deadline leaves readAll and its socket alive; late output still succeeds
+  ---
+  duration_ms: 94.4352
+  type: 'test'
+  ...
+# Subtest: Connection.end only half-closes TCP; a stalled reader remains and EOF accepts partial data
+ok 111 - Connection.end only half-closes TCP; a stalled reader remains and EOF accepts partial data
+  ---
+  duration_ms: 89.7679
+  type: 'test'
+  ...
+# Subtest: socket.destroy without an error closes TCP but does not settle readAll
+ok 112 - socket.destroy without an error closes TCP but does not settle readAll
+  ---
+  duration_ms: 92.4028
+  type: 'test'
+  ...
+# Subtest: socket.destroy(error) rejects the real reader, removes read listeners and permits a fresh call
+ok 113 - socket.destroy(error) rejects the real reader, removes read listeners and permits a fresh call
+  ---
+  duration_ms: 12.4281
+  type: 'test'
+  ...
+# Subtest: fixture cleanup closes a peer whose accept event arrives after teardown starts
+ok 114 - fixture cleanup closes a peer whose accept event arrives after teardown starts
+  ---
+  duration_ms: 236.3871
+  type: 'test'
+  ...
+# Subtest: network keys survive real hdckit, getTargets, selection and toolbar options
+ok 115 - network keys survive real hdckit, getTargets, selection and toolbar options
+  ---
+  duration_ms: 30.917
+  type: 'test'
+  ...
+# Subtest: empty network list clears selection; a new port can be selected after recovery
+ok 116 - empty network list clears selection; a new port can be selected after recovery
+  ---
+  duration_ms: 26.0834
+  type: 'test'
+  ...
+# Subtest: host handshake failure is diagnosed and manual refresh recovers
+ok 117 - host handshake failure is diagnosed and manual refresh recovers
+  ---
+  duration_ms: 14.6504
+  type: 'test'
+  ...
+# Subtest: parameter error text cannot create a selectable target and recovery works
+ok 118 - parameter error text cannot create a selectable target and recovery works
+  ---
+  duration_ms: 15.3273
+  type: 'test'
+  ...
+# Subtest: parameter failure is isolated from a healthy peer
+ok 119 - parameter failure is isolated from a healthy peer
+  ---
+  duration_ms: 17.5794
+  type: 'test'
+  ...
+# Subtest: error-looking parameter values and missing optional fields are accepted
+ok 120 - error-looking parameter values and missing optional fields are accepted
+  ---
+  duration_ms: 13.9425
+  type: 'test'
+  ...
+# Subtest: parameter reader rejects explicit error prefixes and releases the connection
+ok 121 - parameter reader rejects explicit error prefixes and releases the connection
+  ---
+  duration_ms: 4.3946
+  type: 'test'
+  ...
+# Subtest: parameter reader preserves valid values and releases successful or failed reads
+ok 122 - parameter reader preserves valid values and releases successful or failed reads
+  ---
+  duration_ms: 1.7322
+  type: 'test'
+  ...
+# Subtest: late success cannot replace latest empty list
+ok 123 - late success cannot replace latest empty list
+  ---
+  duration_ms: 188.4282
+  type: 'test'
+  ...
+# Subtest: late success cannot replace latest failure
+ok 124 - late success cannot replace latest failure
+  ---
+  duration_ms: 14.0899
+  type: 'test'
+  ...
+# Subtest: late failure cannot replace latest empty list
+ok 125 - late failure cannot replace latest empty list
+  ---
+  duration_ms: 6.5524
+  type: 'test'
+  ...
+# Subtest: late failure cannot replace latest failure
+ok 126 - late failure cannot replace latest failure
+  ---
+  duration_ms: 6.2613
+  type: 'test'
+  ...
+# Subtest: older tracker failure cannot erase a newer successful manual refresh
+ok 127 - older tracker failure cannot erase a newer successful manual refresh
+  ---
+  duration_ms: 9.6822
+  type: 'test'
+  ...
+# Subtest: superseded result is ignored even while the latest request is pending
+ok 128 - superseded result is ignored even while the latest request is pending
+  ---
+  duration_ms: 10.6525
+  type: 'test'
+  ...
+# Subtest: late initialization result cannot replace a completed tracker refresh
+ok 129 - late initialization result cannot replace a completed tracker refresh
+  ---
+  duration_ms: 8.3639
+  type: 'test'
+  ...
+# Subtest: fixture cleanup closes a peer whose accept event arrives after teardown starts
+ok 130 - fixture cleanup closes a peer whose accept event arrives after teardown starts
+  ---
+  duration_ms: 221.8127
+  type: 'test'
+  ...
+# Subtest: network keys survive real hdckit, getTargets, selection and toolbar options
+ok 131 - network keys survive real hdckit, getTargets, selection and toolbar options
+  ---
+  duration_ms: 32.503
+  type: 'test'
+  ...
+# Subtest: empty network list clears selection; a new port can be selected after recovery
+ok 132 - empty network list clears selection; a new port can be selected after recovery
+  ---
+  duration_ms: 18.6699
+  type: 'test'
+  ...
+# Subtest: host handshake failure is diagnosed and manual refresh recovers
+ok 133 - host handshake failure is diagnosed and manual refresh recovers
+  ---
+  duration_ms: 18.446
+  type: 'test'
+  ...
+# Subtest: failed enumeration reports an error and a later refresh reports success
+ok 134 - failed enumeration reports an error and a later refresh reports success
+  ---
+  duration_ms: 19.5734
+  type: 'test'
+  ...
+# Subtest: normal empty enumeration still reports successful refresh
+ok 135 - normal empty enumeration still reports successful refresh
+  ---
+  duration_ms: 12.2365
+  type: 'test'
+  ...
+# Subtest: startup failure finishes initialization and a device event restores the selector
+ok 136 - startup failure finishes initialization and a device event restores the selector
+  ---
+  duration_ms: 16.1935
+  type: 'test'
+  ...
+# Subtest: a failed device does not hide healthy devices or change their order
+ok 137 - a failed device does not hide healthy devices or change their order
+  ---
+  duration_ms: 199.924
+  type: 'test'
+  ...
+# Subtest: a synchronous target lookup failure is isolated too
+ok 138 - a synchronous target lookup failure is isolated too
+  ---
+  duration_ms: 5.3079
+  type: 'test'
+  ...
+# Subtest: version compatibility: device prefix and build suffix
+ok 139 - version compatibility: device prefix and build suffix
+  ---
+  duration_ms: 4.8751
+  type: 'test'
+  ...
+# Subtest: version compatibility: prefix without parentheses
+ok 140 - version compatibility: prefix without parentheses
+  ---
+  duration_ms: 2.5902
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version
+ok 141 - version compatibility: bare version
+  ---
+  duration_ms: 3.6337
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version and spaced suffix
+ok 142 - version compatibility: bare version and spaced suffix
+  ---
+  duration_ms: 2.7675
+  type: 'test'
+  ...
+# Subtest: version compatibility: repeated whitespace
+ok 143 - version compatibility: repeated whitespace
+  ---
+  duration_ms: 2.7811
+  type: 'test'
+  ...
+# Subtest: version compatibility: multiword product prefix
+ok 144 - version compatibility: multiword product prefix
+  ---
+  duration_ms: 3.6979
+  type: 'test'
+  ...
+# Subtest: version compatibility: missing value
+ok 145 - version compatibility: missing value
+  ---
+  duration_ms: 3.2655
+  type: 'test'
+  ...
+# Subtest: version compatibility: null value
+ok 146 - version compatibility: null value
+  ---
+  duration_ms: 3.5658
+  type: 'test'
+  ...
+# Subtest: version compatibility: non-string value
+ok 147 - version compatibility: non-string value
+  ---
+  duration_ms: 3.682
+  type: 'test'
+  ...
+# Subtest: version compatibility: blank value
+ok 148 - version compatibility: blank value
+  ---
+  duration_ms: 2.9488
+  type: 'test'
+  ...
+# Subtest: version compatibility: unrecognized text
+ok 149 - version compatibility: unrecognized text
+  ---
+  duration_ms: 2.5129
+  type: 'test'
+  ...
+# Subtest: missing optional metadata preserves a selectable key and string IPC fields
+ok 150 - missing optional metadata preserves a selectable key and string IPC fields
+  ---
+  duration_ms: 3.3895
+  type: 'test'
+  ...
+# Subtest: parameter whitespace is removed from the display name and API version
+ok 151 - parameter whitespace is removed from the display name and API version
+  ---
+  duration_ms: 2.7731
+  type: 'test'
+  ...
+# Subtest: no connected devices has an informational diagnostic, not a read failure
+ok 152 - no connected devices has an informational diagnostic, not a read failure
+  ---
+  duration_ms: 2.6709
+  type: 'test'
+  ...
+# Subtest: all failed devices reject with per-device causes and an aggregate diagnostic
+ok 153 - all failed devices reject with per-device causes and an aggregate diagnostic
+  ---
+  duration_ms: 3.1468
+  type: 'test'
+  ...
+# Subtest: list failure rejects with a diagnostic and can recover on the next refresh
+ok 154 - list failure rejects with a diagnostic and can recover on the next refresh
+  ---
+  duration_ms: 3.0062
+  type: 'test'
+  ...
+# Subtest: disconnect and reconnect do not retain a failed target or stale parameters
+ok 155 - disconnect and reconnect do not retain a failed target or stale parameters
+  ---
+  duration_ms: 8.36
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=false, arch=x64
+ok 156 - project update feed: mac=false, arch=x64
+  ---
+  duration_ms: 122.9997
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=true, arch=arm64
+ok 157 - project update feed: mac=true, arch=arm64
+  ---
+  duration_ms: 2.8069
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=true, arch=x64
+ok 158 - project update feed: mac=true, arch=x64
+  ---
+  duration_ms: 2.5077
+  type: 'test'
+  ...
+1..158
+# tests 158
+# suites 0
+# pass 158
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11288.1929

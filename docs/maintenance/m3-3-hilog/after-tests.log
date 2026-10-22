@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: active HiLog preserves IPC payload, cached PID names and PID zero fallback
+ok 1 - active HiLog preserves IPC payload, cached PID names and PID zero fallback
+  ---
+  duration_ms: 98.5916
+  type: 'test'
+  ...
+# Subtest: pause drops a pending PID lookup result and records arriving while paused
+ok 2 - pause drops a pending PID lookup result and records arriving while paused
+  ---
+  duration_ms: 4.5559
+  type: 'test'
+  ...
+# Subtest: pause then resume cannot revive an old callback, while new records recover
+ok 3 - pause then resume cannot revive an old callback, while new records recover
+  ---
+  duration_ms: 4.1325
+  type: 'test'
+  ...
+# Subtest: close suppresses pending output, detaches the listener and tolerates late control IPC
+ok 4 - close suppresses pending output, detaches the listener and tolerates late control IPC
+  ---
+  duration_ms: 3.7619
+  type: 'test'
+  ...
+# Subtest: PID lookup rejection falls back for the current entry and a later lookup recovers
+ok 5 - PID lookup rejection falls back for the current entry and a later lookup recovers
+  ---
+  duration_ms: 5.0541
+  type: 'test'
+  ...
+# Subtest: PID rejection after pause is handled without publishing a stale entry
+ok 6 - PID rejection after pause is handled without publishing a stale entry
+  ---
+  duration_ms: 3.7845
+  type: 'test'
+  ...
+# Subtest: PID rejection after close is handled without publishing a stale entry
+ok 7 - PID rejection after close is handled without publishing a stale entry
+  ---
+  duration_ms: 3.6324
+  type: 'test'
+  ...
+# Subtest: PID rejection after pause-resume is handled without publishing a stale entry
+ok 8 - PID rejection after pause-resume is handled without publishing a stale entry
+  ---
+  duration_ms: 3.7626
+  type: 'test'
+  ...
+# Subtest: repeated resume does not invalidate active work
+ok 9 - repeated resume does not invalidate active work
+  ---
+  duration_ms: 3.7512
+  type: 'test'
+  ...
+# Subtest: closing one stream does not suppress another sharing the same pending PID lookup
+ok 10 - closing one stream does not suppress another sharing the same pending PID lookup
+  ---
+  duration_ms: 4.5268
+  type: 'test'
+  ...
+# Subtest: a new entry after resume can share a pending lookup without reviving the old entry
+ok 11 - a new entry after resume can share a pending lookup without reviving the old entry
+  ---
+  duration_ms: 3.8749
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 265.8096
