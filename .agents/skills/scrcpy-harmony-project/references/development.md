@@ -106,10 +106,10 @@ npm start
 
 Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平台验证安装包及设备功能，单测和 lint 不代表完整运行兼容性。
 
-打包更新元数据使用 `MonsterXia/scrcpy-harmony` 的 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`；手动构建 workflow 显式 `--no-publish`，仅上传安装包、YAML 更新元数据和 blockmap 为 artifact，不创建 Release。正式发布时需将各平台安装包及配套更新文件放入本仓库相应版本的 Release；无 Release 时检查更新可能报错，不能回退到上游。
+打包更新元数据使用 `MonsterXia/scrcpy-harmony` 的 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`；手动构建 workflow 显式 `--no-publish`，仅上传安装包、YAML 更新元数据和 blockmap 为 artifact，不创建 Release。正式发布时需将各平台安装包及配套更新文件放入本仓库相应版本的 Release。electron-builder 的 GitHub 更新 YAML 使用安全文件名（例如 `Scrcpy-Harmony-...`），可能不同于本地带空格的安装包名；上传前按 YAML 的 URL 命名安装包和配套 blockmap，保持字节不变，并核对 size、SHA-512 和远端 SHA-256。无 Release 时检查更新可能报错，不能回退到上游。
 
 ## 当前验证基线与后续维护
 
 2026-10-21 的 [PR #8 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39611929271) 已通过 test、lint 及 Windows/macOS arm64/macOS x64 的安装包、安装和启动检查；这是该提交的历史结果，后续改动仍需自己的检查。真实设备、签名/公证、线上更新检查及普通用户操作文档的待办见 [RUNBOOK](../../../../RUNBOOK.md)。
 
-签名环境变量来自 CI secrets。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。
+签名环境变量来自 CI secrets；手动 Build 在打包前移除空值，防止缺失的 `CSC_LINK` 被当作证书路径，非空凭据保留。理解打包时查看配置即可，不需要为项目分析读取或配置真实签名凭据。

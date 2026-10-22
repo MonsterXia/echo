@@ -45,11 +45,13 @@
 - [分阶段维护 RUNBOOK](RUNBOOK.md)：待办、优先顺序、验收条件及交接记录。
 - [维护来源记录](docs/maintenance/SOURCES.md)：上游 Issue/PR、本仓库已完成 PR 和归档说明。
 - [开发与验证](.agents/skills/scrcpy-harmony-project/references/development.md)：环境、启动、构建、打包和 CI。
-- [变更记录](CHANGELOG.md)：独立维护后的未发布改动与上游历史版本。
+- [变更记录](CHANGELOG.md)：独立维护后的发行改动与上游历史版本。
 
 ## 安装
 
-点击[这里](https://github.com/MonsterXia/scrcpy-harmony/releases/)下载并安装 Scrcpy Harmony，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。如果本仓库尚无发行版，请按开发指南从源码构建；上游安装包不包含本项目的改动。
+点击[这里](https://github.com/MonsterXia/scrcpy-harmony/releases/)下载并安装 Scrcpy Harmony，支持 Windows x64，Mac arm64 平台和 Mac x64 平台。首次独立发行版为 [1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，上游安装包不包含本项目的改动。
+
+**1.0.2 的安装包未做发行者签名或 macOS 公证，macOS Gatekeeper 检查未通过。** 三平台安装启动检查已通过，签名报告、校验清单和未验证范围见 [发布记录](docs/releases/1.0.2.md)。
 
 当前源码使用 Electron 45，macOS 需要 13 或更新版本。开发环境需要 Node.js 22.12.0 或更新版本；初始化子模块后执行 `npm ci` 安装锁定的依赖。开发与验证步骤见 [项目开发指南](.agents/skills/scrcpy-harmony-project/references/development.md)。
 

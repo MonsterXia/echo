@@ -27,7 +27,7 @@
 | ID | 状态 | 工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M0-1 | 已完成 | 启用本仓库 Issues，核对 About、主页和反馈入口 | Issues 和新建反馈页面可访问；应用反馈菜单指向本仓库；GitHub About 的主页已改为本仓库 README。见 [验收记录](#m0-1-验收记录)。 |
-| M0-2 | 进行中 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
+| M0-2 | 已完成 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
 | M0-3 | 待开始 | 验证实际更新检查与下载入口 | 使用两个明确版本的已打包应用和本仓库 Release，验证“有更新 / 无更新 / 网络或元数据错误”；Windows、macOS arm64、macOS x64 读取各自元数据并跳转本仓库 Releases。记录具体文件名和日志，不能只凭单测通过勾选。 |
 
 操作入口：`package.json`、`script/pack.mjs`、`.github/workflows/build.yml`、`src/main/lib/updater.ts`、`src/renderer/main/App.tsx`。手动 Build workflow 只生成并上传 artifact，不创建 Release。更新功能当前提示用户打开 Releases 下载，不执行自动下载安装。
@@ -147,3 +147,13 @@
 - 改动：Build 对齐 CI 的三个 runner/架构，复用现有 Windows/macOS 安装启动脚本，通过后才上传本批安装包；同时上传源提交、安装包 SHA-256 与签名报告。macOS Gatekeeper、公证票据校验退出码如实保留；未签名不被记为通过。
 - 首次实际验证：[Build 39723428883](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723428883) 的 macOS 打包因空 `CSC_LINK` 被当作证书路径而未生成 DMG，新增安装检查正确失败、阻止上传。打包前移除未配置的空签名环境变量，非空配置保留；重新运行验证，不将首次失败当作通过。
 - 验证与下一步：通过独立 PR 和必需 CI 后，从合入提交执行 Build；下载本次已验收产物核对版本、YAML、哈希和签名报告，再准备同源 tag 与 Release。实际 Build 结果和公开发布状态后续补入 [1.0.2 发布记录](docs/releases/1.0.2.md)。不把 workflow 配置完成视为发行产物已经验收。
+
+### M0-2 首次发行验收记录
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `51cc610a17e5c4d977da282c87496b5d4366eb75`；证据归档分支 `codex/m0-2-release-evidence`。M0-2 **已完成**，阶段 0 仍进行中，M0-3 尚待实际应用验收。
+- 流程修复：[PR #13](https://github.com/MonsterXia/scrcpy-harmony/pull/13) 已合入；最终源提交 `1c545a7702547d8c53e31bcbfe7d76febc326cba` 的 [五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723562359) 与 [实际发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596) 全部通过。Build 在 Windows x64、macOS arm64 / x64 托管 runner 上安装并启动了随后上传的同一批安装包。
+- 版本与发布：[Scrcpy Harmony 1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2) 于 2026-10-22 12:47（UTC+8）公开发布；实际 `v1.0.2` tag 解析为上述构建源提交，该提交已位于 master 历史中。package.json、锁文件两处根版本、CHANGELOG 版本章节一致。源码 tag 保留当时的准备记录，本节为发布后证据更新。
+- 产物核验：三个 Actions artifact ZIP 的 SHA-256 与 GitHub digest 一致；三个 YAML 的版本、文件名、size、SHA-512 与安装包一致。按 YAML 指定名称将安装包和 blockmap 的空格改为连字符，未修改文件字节。Release 共 14 个文件，远端文件名、size、SHA-256 digest 全部与本地验收文件一致；公开下载检查见发布记录。
+- 签名状态：Windows Authenticode `NotSigned`；macOS arm64 只有 linker ad-hoc 签名，严格签名校验及 Gatekeeper 均失败；macOS x64 未签名，Gatekeeper 拒绝。两种 macOS 均无 stapled 公证票据。已在 Release、README、CHANGELOG 与发布记录明确说明，未把安装启动成功当作系统信任通过。
+- 配置边界：Release 明确旧 ECHO 配置保留原处、不自动迁移，Scrcpy Harmony 使用新的用户配置目录。
+- 未验证 / 下一步：鸿蒙真机、长时间运行和用户从互联网下载后的系统信任体验未验收；M0-3 需要两个明确版本的已打包应用验证有更新、无更新、网络/元数据错误及 Releases 跳转。公开 YAML 可下载和哈希一致不能替代应用内更新验收。下一项为 M0-3。
