@@ -98,5 +98,5 @@ npm run build:renderer
 - 新增窗口单测 3/3，原投屏坐标回归 8/8，完整 `npm test` 69/69，lint 通过。
 - `build:main`、`build:renderer` 通过；现有 Sass 弃用及大 bundle 警告保留。未把 Vite 转译当作完整 TypeScript 类型检查。
 - 独立只读审查未发现目标范围内 P0–P2 生产问题；按建议加强数量/结构断言，补精确断点及真实工厂恢复验证。极窄窗口 P3 和模拟边界如上，不隐藏为通过。
-- 本 PR 的必需 CI 与审查链接在下方追加。没有合并、发布；本机没有做安装包验证，平台安装启动由 CI 单独报告。
+- 改动见 [PR #25](https://github.com/MonsterXia/scrcpy-harmony/pull/25)，最终提交的五项必需 CI（test、lint、windows-package、macos-package-arm64、macos-package-x64）见 [检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/25/checks)。此记录提交时 CI 尚在运行，以对应最终 head 的结果为准。没有合并、发布；本机没有做安装包验证，平台安装启动由 CI 单独报告。
 - 下一步：原报告机型、真实低分辨率显示器和 100%/125%/150% 系统 DPI；真实标题栏、跨显示器移动/恢复、任务栏变化；真实横竖屏帧和拖动输入。M3-1 保持待验收，M3-2 保持进行中。
