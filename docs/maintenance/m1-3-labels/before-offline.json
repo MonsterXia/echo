@@ -1,0 +1,8 @@
+{
+  "baseline": "009b3fb",
+  "bundleName": "yylx.danmaku.bili",
+  "label": "yylx.danmaku.bili",
+  "iconPresent": false,
+  "networkControl": "HTTP(S) proxy at closed localhost port 9",
+  "scope": "Original production handler with real HDC; Electron registration replaced"
+}

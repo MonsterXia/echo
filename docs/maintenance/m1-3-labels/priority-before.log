@@ -1,0 +1,230 @@
+TAP version 13
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 1 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 83.7007
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+ok 2 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 4.8104
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+ok 3 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 4.1397
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+ok 4 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 3.8032
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+ok 5 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 4.1086
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+ok 6 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 3.7396
+  type: 'test'
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 7 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 3.8395
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 8 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 3.3998
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+ok 9 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 4.1569
+  type: 'test'
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+ok 10 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 3.855
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+ok 11 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 3.6105
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+ok 12 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 3.4549
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+ok 13 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 3.287
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+ok 14 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 3.5561
+  type: 'test'
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+ok 15 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 3.5079
+  type: 'test'
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+ok 16 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 4.2945
+  type: 'test'
+  ...
+# Subtest: empty input performs no shell or online request
+ok 17 - empty input performs no shell or online request
+  ---
+  duration_ms: 3.6849
+  type: 'test'
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+ok 18 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 3.8483
+  type: 'test'
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+ok 19 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 3.6868
+  type: 'test'
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+ok 20 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 3.6834
+  type: 'test'
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+ok 21 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 3.5301
+  type: 'test'
+  ...
+# Subtest: literal device label wins over the store name while keeping the store icon
+ok 22 - literal device label wins over the store name while keeping the store icon
+  ---
+  duration_ms: 4.2942
+  type: 'test'
+  ...
+# Subtest: resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+ok 23 - resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+  ---
+  duration_ms: 3.744
+  type: 'test'
+  ...
+# Subtest: a label command failure preserves that bundle and resolves the following bundle
+ok 24 - a label command failure preserves that bundle and resolves the following bundle
+  ---
+  duration_ms: 3.9726
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: ""
+ok 25 - invalid label command response falls back without exposing diagnostics: ""
+  ---
+  duration_ms: 4.216
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "$string:name"
+ok 26 - invalid label command response falls back without exposing diagnostics: "$string:name"
+  ---
+  duration_ms: 3.6532
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+ok 27 - invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+  ---
+  duration_ms: 3.5608
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+ok 28 - invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+  ---
+  duration_ms: 3.8013
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+ok 29 - invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+  ---
+  duration_ms: 3.2249
+  type: 'test'
+  ...
+# Subtest: old bm without label support retains the original store fallback
+ok 30 - old bm without label support retains the original store fallback
+  ---
+  duration_ms: 3.3928
+  type: 'test'
+  ...
+# Subtest: capability errors do not drop apps and are retried after reconnect on the next request
+ok 31 - capability errors do not drop apps and are retried after reconnect on the next request
+  ---
+  duration_ms: 4.188
+  type: 'test'
+  ...
+# Subtest: refresh reads changed local names rather than caching them across reinstalls or locale changes
+ok 32 - refresh reads changed local names rather than caching them across reinstalls or locale changes
+  ---
+  duration_ms: 3.8258
+  type: 'test'
+  ...
+# Subtest: malformed literal label still allows device label resolution
+ok 33 - malformed literal label still allows device label resolution
+  ---
+  duration_ms: 3.7043
+  type: 'test'
+  ...
+# Subtest: a local label equal to the bundle name still takes priority over the store
+not ok 34 - a local label equal to the bundle name still takes priority over the store
+  ---
+  duration_ms: 4.1144
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:257:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    'Label app' !== 'app'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'app'
+  actual: 'Label app'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:260:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 33
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 294.8795

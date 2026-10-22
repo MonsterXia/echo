@@ -1,0 +1,410 @@
+
+> scrcpy-harmony@1.0.2 test
+> node --test test/*.test.cjs
+
+TAP version 13
+# Subtest: build prepares a runnable distribution without requiring a shell
+ok 1 - build prepares a runnable distribution without requiring a shell
+  ---
+  duration_ms: 325.7406
+  type: 'test'
+  ...
+# Subtest: a failed build stops before packaging incomplete output
+ok 2 - a failed build stops before packaging incomplete output
+  ---
+  duration_ms: 181.0887
+  type: 'test'
+  ...
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 3 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 93.8559
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+ok 4 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 4.7214
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+ok 5 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 4.1448
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+ok 6 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 4.0897
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+ok 7 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 4.6546
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+ok 8 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 4.2798
+  type: 'test'
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 9 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 3.7111
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 10 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 4.1995
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+ok 11 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 5.4546
+  type: 'test'
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+ok 12 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 3.8726
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+ok 13 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 3.7447
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+ok 14 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 3.746
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+ok 15 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 4.3679
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+ok 16 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 3.4616
+  type: 'test'
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+ok 17 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 3.6905
+  type: 'test'
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+ok 18 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 5.2154
+  type: 'test'
+  ...
+# Subtest: empty input performs no shell or online request
+ok 19 - empty input performs no shell or online request
+  ---
+  duration_ms: 3.6542
+  type: 'test'
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+ok 20 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 3.9477
+  type: 'test'
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+ok 21 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 3.1757
+  type: 'test'
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+ok 22 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 4.206
+  type: 'test'
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+ok 23 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 3.7474
+  type: 'test'
+  ...
+# Subtest: literal device label wins over the store name while keeping the store icon
+ok 24 - literal device label wins over the store name while keeping the store icon
+  ---
+  duration_ms: 5.1128
+  type: 'test'
+  ...
+# Subtest: resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+ok 25 - resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+  ---
+  duration_ms: 4.5171
+  type: 'test'
+  ...
+# Subtest: a label command failure preserves that bundle and resolves the following bundle
+ok 26 - a label command failure preserves that bundle and resolves the following bundle
+  ---
+  duration_ms: 4.2548
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: ""
+ok 27 - invalid label command response falls back without exposing diagnostics: ""
+  ---
+  duration_ms: 3.5676
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "$string:name"
+ok 28 - invalid label command response falls back without exposing diagnostics: "$string:name"
+  ---
+  duration_ms: 3.4721
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+ok 29 - invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+  ---
+  duration_ms: 3.7945
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+ok 30 - invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+  ---
+  duration_ms: 4.1747
+  type: 'test'
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+ok 31 - invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+  ---
+  duration_ms: 3.8383
+  type: 'test'
+  ...
+# Subtest: old bm without label support retains the original store fallback
+ok 32 - old bm without label support retains the original store fallback
+  ---
+  duration_ms: 4.0003
+  type: 'test'
+  ...
+# Subtest: capability errors do not drop apps and are retried after reconnect on the next request
+ok 33 - capability errors do not drop apps and are retried after reconnect on the next request
+  ---
+  duration_ms: 4.1659
+  type: 'test'
+  ...
+# Subtest: refresh reads changed local names rather than caching them across reinstalls or locale changes
+ok 34 - refresh reads changed local names rather than caching them across reinstalls or locale changes
+  ---
+  duration_ms: 4.3009
+  type: 'test'
+  ...
+# Subtest: malformed literal label still allows device label resolution
+ok 35 - malformed literal label still allows device label resolution
+  ---
+  duration_ms: 3.8909
+  type: 'test'
+  ...
+# Subtest: a local label equal to the bundle name still takes priority over the store
+ok 36 - a local label equal to the bundle name still takes priority over the store
+  ---
+  duration_ms: 3.8077
+  type: 'test'
+  ...
+# Subtest: maps a half-resolution device frame to full touch coordinates
+ok 37 - maps a half-resolution device frame to full touch coordinates
+  ---
+  duration_ms: 18.1951
+  type: 'test'
+  ...
+# Subtest: uses actual display size when the requested scale differs from the stream scale
+ok 38 - uses actual display size when the requested scale differs from the stream scale
+  ---
+  duration_ms: 1.3689
+  type: 'test'
+  ...
+# Subtest: keeps full-resolution capture coordinates unchanged
+ok 39 - keeps full-resolution capture coordinates unchanged
+  ---
+  duration_ms: 0.8605
+  type: 'test'
+  ...
+# Subtest: changing the requested scale does not remap the frame still on screen
+ok 40 - changing the requested scale does not remap the frame still on screen
+  ---
+  duration_ms: 0.7694
+  type: 'test'
+  ...
+# Subtest: refreshes touch dimensions when a landscape frame arrives
+ok 41 - refreshes touch dimensions when a landscape frame arrives
+  ---
+  duration_ms: 1.1806
+  type: 'test'
+  ...
+# Subtest: clamps a released pointer to the last valid device pixel
+ok 42 - clamps a released pointer to the last valid device pixel
+  ---
+  duration_ms: 0.8037
+  type: 'test'
+  ...
+# Subtest: does not send touches before a frame and display size are available
+ok 43 - does not send touches before a frame and display size are available
+  ---
+  duration_ms: 1.4264
+  type: 'test'
+  ...
+# Subtest: does not send touches when device dimensions are invalid
+ok 44 - does not send touches when device dimensions are invalid
+  ---
+  duration_ms: 0.7845
+  type: 'test'
+  ...
+# Subtest: a failed device does not hide healthy devices or change their order
+ok 45 - a failed device does not hide healthy devices or change their order
+  ---
+  duration_ms: 105.422
+  type: 'test'
+  ...
+# Subtest: a synchronous target lookup failure is isolated too
+ok 46 - a synchronous target lookup failure is isolated too
+  ---
+  duration_ms: 3.1658
+  type: 'test'
+  ...
+# Subtest: version compatibility: device prefix and build suffix
+ok 47 - version compatibility: device prefix and build suffix
+  ---
+  duration_ms: 2.3448
+  type: 'test'
+  ...
+# Subtest: version compatibility: prefix without parentheses
+ok 48 - version compatibility: prefix without parentheses
+  ---
+  duration_ms: 2.2095
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version
+ok 49 - version compatibility: bare version
+  ---
+  duration_ms: 2.0461
+  type: 'test'
+  ...
+# Subtest: version compatibility: bare version and spaced suffix
+ok 50 - version compatibility: bare version and spaced suffix
+  ---
+  duration_ms: 2.963
+  type: 'test'
+  ...
+# Subtest: version compatibility: repeated whitespace
+ok 51 - version compatibility: repeated whitespace
+  ---
+  duration_ms: 2.035
+  type: 'test'
+  ...
+# Subtest: version compatibility: multiword product prefix
+ok 52 - version compatibility: multiword product prefix
+  ---
+  duration_ms: 2.0782
+  type: 'test'
+  ...
+# Subtest: version compatibility: missing value
+ok 53 - version compatibility: missing value
+  ---
+  duration_ms: 2.2443
+  type: 'test'
+  ...
+# Subtest: version compatibility: null value
+ok 54 - version compatibility: null value
+  ---
+  duration_ms: 3.5348
+  type: 'test'
+  ...
+# Subtest: version compatibility: non-string value
+ok 55 - version compatibility: non-string value
+  ---
+  duration_ms: 2.6835
+  type: 'test'
+  ...
+# Subtest: version compatibility: blank value
+ok 56 - version compatibility: blank value
+  ---
+  duration_ms: 2.3897
+  type: 'test'
+  ...
+# Subtest: version compatibility: unrecognized text
+ok 57 - version compatibility: unrecognized text
+  ---
+  duration_ms: 2.3368
+  type: 'test'
+  ...
+# Subtest: missing optional metadata preserves a selectable key and string IPC fields
+ok 58 - missing optional metadata preserves a selectable key and string IPC fields
+  ---
+  duration_ms: 1.8205
+  type: 'test'
+  ...
+# Subtest: parameter whitespace is removed from the display name and API version
+ok 59 - parameter whitespace is removed from the display name and API version
+  ---
+  duration_ms: 1.9641
+  type: 'test'
+  ...
+# Subtest: no connected devices has an informational diagnostic, not a read failure
+ok 60 - no connected devices has an informational diagnostic, not a read failure
+  ---
+  duration_ms: 1.6826
+  type: 'test'
+  ...
+# Subtest: all failed devices retain per-device causes and an aggregate diagnostic
+ok 61 - all failed devices retain per-device causes and an aggregate diagnostic
+  ---
+  duration_ms: 2.4022
+  type: 'test'
+  ...
+# Subtest: list failure returns a diagnosed empty result and can recover on the next refresh
+ok 62 - list failure returns a diagnosed empty result and can recover on the next refresh
+  ---
+  duration_ms: 2.5502
+  type: 'test'
+  ...
+# Subtest: disconnect and reconnect do not retain a failed target or stale parameters
+ok 63 - disconnect and reconnect do not retain a failed target or stale parameters
+  ---
+  duration_ms: 2.7139
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=false, arch=x64
+ok 64 - project update feed: mac=false, arch=x64
+  ---
+  duration_ms: 72.333
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=true, arch=arm64
+ok 65 - project update feed: mac=true, arch=arm64
+  ---
+  duration_ms: 2.0454
+  type: 'test'
+  ...
+# Subtest: project update feed: mac=true, arch=x64
+ok 66 - project update feed: mac=true, arch=x64
+  ---
+  duration_ms: 1.5248
+  type: 'test'
+  ...
+1..66
+# tests 66
+# suites 0
+# pass 66
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 579.2131

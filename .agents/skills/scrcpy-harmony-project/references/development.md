@@ -79,6 +79,8 @@ npm start
 
 完整 build 后可运行 `node script/check-bundles-live.mjs <证据目录>`：需要一台已授权鸿蒙设备，使用隔离配置验证真实正常包与不存在包混合查询、应用面板加载与手动刷新。脚本只读设备，不安装/卸载；保存运行与页面错误记录，并脱敏设备标识及非抽样包名。主模块源码 SHA-256 随报告保存，公开归档前仍需检查日志。
 
+图标专项验证使用 `node script/check-bundle-icon-live.mjs <证据目录> [offline]`。启动时不挂载功能面板，再将应用选择范围限制为 bilibili；真实元数据处理器、HDC 与 renderer 保留。离线模式同时拒绝 Node HTTP(S) 和 Chromium 联网，并验证探针确实经过代理；检查两种视图的图片解码/哈希和真实刷新完成。报告中的 `verificationPassed` 与 `offlineIconAcceptancePassed` 分别表示验证步骤完成和离线应用图标通过，不能混同。只保存指定应用字段与裁剪面板，不收集完整应用列表、设备 key 或原始日志；不执行安装、卸载、提权。全新配置的冷启动结果不代表进程内热缓存切换已验收。
+
 `test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
 
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。

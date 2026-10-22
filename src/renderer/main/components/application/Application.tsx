@@ -25,6 +25,7 @@ import endWith from 'licia/endWith'
 import BundleInfoModal from './BundleInfoModal'
 import LunaDataGrid from 'luna-data-grid/react'
 import toEl from 'licia/toEl'
+import escape from 'licia/escape'
 import dateFormat from 'licia/dateFormat'
 import contextMenu from 'share/renderer/lib/contextMenu'
 import LunaModal from 'luna-modal'
@@ -85,8 +86,8 @@ export default observer(function Application() {
 
         return {
           info: info,
-          src: info.icon || defaultIcon,
-          name: info.label,
+          src: escape(info.icon || defaultIcon),
+          name: escape(info.label),
           style,
         }
       })
@@ -157,7 +158,7 @@ export default observer(function Application() {
         label: t('stop'),
         click: async () => {
           const result = await LunaModal.confirm(
-            t('stopBundleConfirm', { name: info.label })
+            t('stopBundleConfirm', { name: escape(info.label) })
           )
           if (result) {
             await main.stopBundle(target.key, info.bundleName)
@@ -171,7 +172,7 @@ export default observer(function Application() {
         label: t('cleanCache'),
         click: async () => {
           const result = await LunaModal.confirm(
-            t('cleanCacheConfirm', { name: info.label })
+            t('cleanCacheConfirm', { name: escape(info.label) })
           )
           if (result) {
             await main.cleanBundleCache(target.key, info.bundleName)
@@ -183,7 +184,7 @@ export default observer(function Application() {
         label: t('cleanData'),
         click: async () => {
           const result = await LunaModal.confirm(
-            t('cleanDataConfirm', { name: info.label })
+            t('cleanDataConfirm', { name: escape(info.label) })
           )
           if (result) {
             await main.cleanBundleData(target.key, info.bundleName)
@@ -195,7 +196,7 @@ export default observer(function Application() {
         label: t('uninstall'),
         click: async () => {
           const result = await LunaModal.confirm(
-            t('uninstallConfirm', { name: info.label })
+            t('uninstallConfirm', { name: escape(info.label) })
           )
           if (result) {
             await main.uninstallBundle(target.key, info.bundleName)
@@ -215,6 +216,15 @@ export default observer(function Application() {
         overflowY: store.application.listView ? 'hidden' : 'auto',
       }}
       onDrop={onDrop}
+      onMouseOver={(e) => {
+        // Luna interprets name as HTML but escapes it again for the tooltip.
+        // Restore the literal rendered text before displaying that tooltip.
+        const name = (e.target as HTMLElement).closest('.luna-icon-list-name')
+        if (name) {
+          const text = name.querySelector('.luna-icon-list-name-wrapper')
+          name.setAttribute('title', text?.textContent || '')
+        }
+      }}
       onDragEnter={() => {
         draggingRef.current++
       }}
@@ -252,9 +262,9 @@ export default observer(function Application() {
             return {
               info,
               label: toEl(
-                `<span><img src="${info.icon || defaultIcon}" />${
+                `<span><img src="${escape(info.icon || defaultIcon)}" />${escape(
                   info.label
-                }</span>`
+                )}</span>`
               ),
               bundleName: info.bundleName,
               versionName: info.versionName,
@@ -278,7 +288,11 @@ export default observer(function Application() {
         <LunaIconList
           icons={iconsRef.current}
           size={store.application.itemSize}
-          filter={filter}
+          filter={(icon) =>
+            (icon.data as any).info.label
+              .toLowerCase()
+              .includes(filter.trim().toLowerCase())
+          }
           onClick={(e: any, icon) => {
             const info = (icon.data as any).info
             showInfo(info.bundleName)

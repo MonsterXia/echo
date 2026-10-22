@@ -6,7 +6,7 @@ const vm = require('node:vm')
 
 // Load both production modules: the shared shell framing and registered IPC
 // handler remain real. Only HDC transport, online metadata and Electron are mocked.
-async function loadBundles(entries, online = async (name) => ({ data: { name: `Label ${name}`, icon: `icon:${name}` } })) {
+async function loadBundles(entries, online = async (name) => ({ data: { name: `Label ${name}`, icon: `icon:${name}` } }), labels = {}) {
   const handlers = new Map(), logs = [], commands = [], lookups = []
   const logger = Object.fromEntries(['debug', 'info', 'warn', 'error'].map((level) =>
     [level, (...args) => logs.push({ level, args })]))
@@ -29,6 +29,15 @@ async function loadBundles(entries, online = async (name) => ({ data: { name: `L
   base = load('src/main/lib/hdc/base.ts')
   const client = { getTarget() { return { async shell(command) {
     commands.push(command)
+    if (command === 'bm dump -h') {
+      if (labels.help instanceof Error) throw labels.help
+      return { readAll: async () => Buffer.from(labels.help ?? 'usage: bm dump\n  -n, --bundle-name <bundle-name>') }
+    }
+    if (command.endsWith(' -l')) {
+      const value = labels[command.slice('bm dump -n '.length, -3)]
+      if (value instanceof Error) throw value
+      return { readAll: async () => Buffer.from(value ?? 'error: label unavailable') }
+    }
     const responses = command.split('\necho "echo_separator"\n').map((cmd) => {
       const name = cmd.replace(/^bm dump -n /, '')
       const value = entries[name]
@@ -170,4 +179,85 @@ test('missing optional display fields retain the IPC field types', async () => {
   const { getInfos } = await loadBundles({ minimal: dump('minimal', { applicationInfo: {} }) })
   assert.deepEqual(await getInfos(['minimal']), [{ bundleName: 'minimal', label: 'Label minimal', icon: 'icon:minimal',
     system: false, versionName: '', apiTargetVersion: 0, vendor: '', installTime: 0, releaseType: '' }])
+})
+
+const labelHelp = 'usage: bm dump <options>\n  -l, --label                          list the label info'
+
+test('literal device label wins over the store name while keeping the store icon', async () => {
+  const d = info('personal'); d.applicationInfo.label = '  个人工具  '
+  const { getInfos, commands } = await loadBundles({ personal: dump('personal', d) })
+  const [result] = await getInfos(['personal'])
+  assert.equal(result.label, '个人工具')
+  assert.equal(result.icon, 'icon:personal')
+  assert.deepEqual(commands, ['bm dump -n personal'])
+})
+
+test('resource labels resolve on the device even for vendor-prefixed sideloads and system apps', async () => {
+  const names = ['personal', 'com.huawei.personal', 'system']
+  const entries = Object.fromEntries(names.map((name) => {
+    const d = info(name); d.applicationInfo.label = '$string:app_name'
+    d.applicationInfo.isSystemApp = name === 'system'
+    return [name, dump(name, d)]
+  }))
+  const { getInfos, commands } = await loadBundles(entries, async () => { throw new Error('offline') },
+    { help: labelHelp, personal: '个人工具\r\n', 'com.huawei.personal': '侧载工具', system: '设置' })
+  const result = await getInfos(names)
+  assert.deepEqual(result.map(x => [x.bundleName, x.label, x.icon]),
+    [['personal', '个人工具', ''], ['com.huawei.personal', '侧载工具', ''], ['system', '设置', '']])
+  assert.equal(commands.filter(c => c === 'bm dump -h').length, 1)
+})
+
+test('a label command failure preserves that bundle and resolves the following bundle', async () => {
+  const { getInfos, logs } = await loadBundles({ first: dump('first'), last: dump('last') }, undefined,
+    { help: labelHelp, first: new Error('disconnected'), last: '本地名称' })
+  assert.deepEqual((await getInfos(['first', 'last'])).map(x => [x.bundleName, x.label]),
+    [['first', 'Label first'], ['last', '本地名称']])
+  assert.ok(diagnostic(logs, 'first'))
+})
+
+for (const invalid of ['', '$string:name', 'error: failed to get information', 'usage: bm dump <options>', 'line one\nline two']) {
+  test(`invalid label command response falls back without exposing diagnostics: ${JSON.stringify(invalid)}`, async () => {
+    const { getInfos, logs } = await loadBundles({ app: dump('app') }, undefined, { help: labelHelp, app: invalid })
+    assert.equal((await getInfos(['app']))[0].label, 'Label app')
+    assert.ok(diagnostic(logs, 'app'))
+  })
+}
+
+test('old bm without label support retains the original store fallback', async () => {
+  const d = info('app'); d.applicationInfo.label = '$string:app_name'
+  const { getInfos, commands } = await loadBundles({ app: dump('app', d) })
+  assert.equal((await getInfos(['app']))[0].label, 'Label app')
+  assert.ok(commands.includes('bm dump -h'))
+  assert.ok(!commands.includes('bm dump -n app -l'))
+})
+
+test('capability errors do not drop apps and are retried after reconnect on the next request', async () => {
+  const labels = { help: new Error('disconnected'), app: '恢复后的名称' }
+  const { getInfos, logs } = await loadBundles({ app: dump('app') }, undefined, labels)
+  assert.equal((await getInfos(['app']))[0].label, 'Label app')
+  assert.ok(logs.some(({ args }) => args.includes('DEVICE_TEST') && args.some(x => x instanceof Error)))
+  labels.help = labelHelp
+  assert.equal((await getInfos(['app']))[0].label, '恢复后的名称')
+})
+
+test('refresh reads changed local names rather than caching them across reinstalls or locale changes', async () => {
+  const labels = { help: labelHelp, app: '旧名称' }
+  const { getInfos } = await loadBundles({ app: dump('app') }, undefined, labels)
+  assert.equal((await getInfos(['app']))[0].label, '旧名称')
+  labels.app = '新名称'
+  assert.equal((await getInfos(['app']))[0].label, '新名称')
+})
+
+test('malformed literal label still allows device label resolution', async () => {
+  const d = info('app'); d.applicationInfo.label = { invalid: true }
+  const { getInfos } = await loadBundles({ app: dump('app', d) }, undefined, { help: labelHelp, app: '有效名称' })
+  assert.equal((await getInfos(['app']))[0].label, '有效名称')
+})
+
+test('a local label equal to the bundle name still takes priority over the store', async () => {
+  const d = info('app'); d.applicationInfo.label = 'app'
+  const { getInfos } = await loadBundles({ app: dump('app', d) })
+  const [result] = await getInfos(['app'])
+  assert.equal(result.label, 'app')
+  assert.equal(result.icon, 'icon:app')
 })

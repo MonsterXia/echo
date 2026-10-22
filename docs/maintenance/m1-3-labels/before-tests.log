@@ -1,0 +1,471 @@
+TAP version 13
+# Subtest: valid dump keeps fields and online metadata associated with its bundle
+ok 1 - valid dump keeps fields and online metadata associated with its bundle
+  ---
+  duration_ms: 111.737
+  type: 'test'
+  ...
+# Subtest: mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+ok 2 - mixed command failure, error text, malformed JSON and missing module preserve later bundle identity
+  ---
+  duration_ms: 4.9013
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing module arrays
+ok 3 - incomplete launch metadata: missing module arrays
+  ---
+  duration_ms: 3.6646
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing indexed module
+ok 4 - incomplete launch metadata: missing indexed module
+  ---
+  duration_ms: 4.0697
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: missing ability list
+ok 5 - incomplete launch metadata: missing ability list
+  ---
+  duration_ms: 4.5235
+  type: 'test'
+  ...
+# Subtest: incomplete launch metadata: empty ability list
+ok 6 - incomplete launch metadata: empty ability list
+  ---
+  duration_ms: 4.0295
+  type: 'test'
+  ...
+# Subtest: first ability remains a fallback when mainAbility is absent
+ok 7 - first ability remains a fallback when mainAbility is absent
+  ---
+  duration_ms: 4.4275
+  type: 'test'
+  ...
+# Subtest: no main entry is a valid non-launchable bundle
+ok 8 - no main entry is a valid non-launchable bundle
+  ---
+  duration_ms: 3.5812
+  type: 'test'
+  ...
+# Subtest: shell separator text inside metadata cannot split or misassociate results
+ok 9 - shell separator text inside metadata cannot split or misassociate results
+  ---
+  duration_ms: 3.8621
+  type: 'test'
+  ...
+# Subtest: raw JSON and CRLF dumps are accepted
+ok 10 - raw JSON and CRLF dumps are accepted
+  ---
+  duration_ms: 4.1762
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null
+ok 11 - invalid bundle shape is skipped with a diagnostic: null
+  ---
+  duration_ms: 3.8308
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: array
+ok 12 - invalid bundle shape is skipped with a diagnostic: array
+  ---
+  duration_ms: 3.8238
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+ok 13 - invalid bundle shape is skipped with a diagnostic: missing applicationInfo
+  ---
+  duration_ms: 3.7256
+  type: 'test'
+  ...
+# Subtest: invalid bundle shape is skipped with a diagnostic: null applicationInfo
+ok 14 - invalid bundle shape is skipped with a diagnostic: null applicationInfo
+  ---
+  duration_ms: 3.2137
+  type: 'test'
+  ...
+# Subtest: a response for another bundle is rejected instead of mislabeled
+ok 15 - a response for another bundle is rejected instead of mislabeled
+  ---
+  duration_ms: 3.5366
+  type: 'test'
+  ...
+# Subtest: online lookup failure retains local fields and does not shift later enrichment
+ok 16 - online lookup failure retains local fields and does not shift later enrichment
+  ---
+  duration_ms: 3.2986
+  type: 'test'
+  ...
+# Subtest: empty input performs no shell or online request
+ok 17 - empty input performs no shell or online request
+  ---
+  duration_ms: 4.0211
+  type: 'test'
+  ...
+# Subtest: all failures return an empty result with per-bundle diagnostics
+ok 18 - all failures return an empty result with per-bundle diagnostics
+  ---
+  duration_ms: 3.6499
+  type: 'test'
+  ...
+# Subtest: next refresh reads current state after removal, failure and reinstall
+ok 19 - next refresh reads current state after removal, failure and reinstall
+  ---
+  duration_ms: 3.6534
+  type: 'test'
+  ...
+# Subtest: body identity mismatch is rejected even with the expected header
+ok 20 - body identity mismatch is rejected even with the expected header
+  ---
+  duration_ms: 3.4499
+  type: 'test'
+  ...
+# Subtest: missing optional display fields retain the IPC field types
+ok 21 - missing optional display fields retain the IPC field types
+  ---
+  duration_ms: 2.9802
+  type: 'test'
+  ...
+# Subtest: literal device label wins over the store name while keeping the store icon
+not ok 22 - literal device label wins over the store name while keeping the store icon
+  ---
+  duration_ms: 4.6789
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:186:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'Label personal'
+    - '个人工具'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '个人工具'
+  actual: 'Label personal'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:190:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+not ok 23 - resource labels resolve on the device even for vendor-prefixed sideloads and system apps
+  ---
+  duration_ms: 4.4587
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:195:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        [
+          'personal',
+    +     'personal',
+    -     '个人工具',
+          ''
+        ],
+        [
+          'VENDOR_PREFIXED_TEST_APP',
+    +     'VENDOR_PREFIXED_TEST_APP',
+    -     '侧载工具',
+          ''
+        ],
+        [
+          'system',
+    +     'system',
+    -     '设置',
+          ''
+        ]
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: 'personal'
+      1: '个人工具'
+      2: ''
+    1:
+      0: 'VENDOR_PREFIXED_TEST_APP'
+      1: '侧载工具'
+      2: ''
+    2:
+      0: 'system'
+      1: '设置'
+      2: ''
+  actual:
+    0:
+      0: 'personal'
+      1: 'personal'
+      2: ''
+    1:
+      0: 'VENDOR_PREFIXED_TEST_APP'
+      1: 'VENDOR_PREFIXED_TEST_APP'
+      2: ''
+    2:
+      0: 'system'
+      1: 'system'
+      2: ''
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:205:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a label command failure preserves that bundle and resolves the following bundle
+not ok 24 - a label command failure preserves that bundle and resolves the following bundle
+  ---
+  duration_ms: 3.9067
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:210:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        [
+          'first',
+          'Label first'
+        ],
+        [
+          'last',
+    +     'Label last'
+    -     '本地名称'
+        ]
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: 'first'
+      1: 'Label first'
+    1:
+      0: 'last'
+      1: '本地名称'
+  actual:
+    0:
+      0: 'first'
+      1: 'Label first'
+    1:
+      0: 'last'
+      1: 'Label last'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:213:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: ""
+not ok 25 - invalid label command response falls back without exposing diagnostics: ""
+  ---
+  duration_ms: 6.6785
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:219:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(diagnostic(logs, 'app'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:222:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "$string:name"
+not ok 26 - invalid label command response falls back without exposing diagnostics: "$string:name"
+  ---
+  duration_ms: 3.8049
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:219:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(diagnostic(logs, 'app'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:222:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+not ok 27 - invalid label command response falls back without exposing diagnostics: "error: failed to get information"
+  ---
+  duration_ms: 3.5678
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:219:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(diagnostic(logs, 'app'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:222:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+not ok 28 - invalid label command response falls back without exposing diagnostics: "usage: bm dump <options>"
+  ---
+  duration_ms: 3.8832
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:219:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(diagnostic(logs, 'app'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:222:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+not ok 29 - invalid label command response falls back without exposing diagnostics: "line one\\nline two"
+  ---
+  duration_ms: 3.6103
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:219:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(diagnostic(logs, 'app'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:222:12)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: old bm without label support retains the original store fallback
+not ok 30 - old bm without label support retains the original store fallback
+  ---
+  duration_ms: 3.8933
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:226:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(commands.includes('bm dump -h'))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:230:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: capability errors do not drop apps and are retried after reconnect on the next request
+not ok 31 - capability errors do not drop apps and are retried after reconnect on the next request
+  ---
+  duration_ms: 4.245
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:234:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(logs.some(({ args }) => args.includes('DEVICE_TEST') && args.some(x => x instanceof Error)))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:238:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: refresh reads changed local names rather than caching them across reinstalls or locale changes
+not ok 32 - refresh reads changed local names rather than caching them across reinstalls or locale changes
+  ---
+  duration_ms: 3.6696
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:243:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    'Label app' !== '旧名称'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '旧名称'
+  actual: 'Label app'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:246:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: malformed literal label still allows device label resolution
+not ok 33 - malformed literal label still allows device label resolution
+  ---
+  duration_ms: 3.3204
+  type: 'test'
+  location: 'C:\\Users\\Admin\\Desktop\\Code\\scrcpy-harmony\\test\\bundles.test.cjs:251:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'Label app'
+    - '有效名称'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '有效名称'
+  actual: 'Label app'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (<repository>\test\bundles.test.cjs:254:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..33
+# tests 33
+# suites 0
+# pass 21
+# fail 12
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 327.9942
