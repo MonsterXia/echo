@@ -66,6 +66,9 @@ function isSystemBundle(bundle: string) {
 
 const getBundleInfos: IpcGetBundleInfos = async (connectKey, bundleNames) => {
   const result: IBundleInfo[] = []
+  // Probe the connected device, not the app's target API. Keep this scoped to
+  // one request so reconnects and system updates cannot leave stale support.
+  let supportsLabel: boolean | undefined
 
   for (const bundleName of bundleNames) {
     try {
@@ -134,10 +137,39 @@ const getBundleInfos: IpcGetBundleInfos = async (connectKey, bundleNames) => {
         }
       }
 
+      let localLabel = displayableLabel(applicationInfo.label)
+      if (localLabel) {
+        bundleInfo.label = localLabel
+      } else {
+        if (supportsLabel === undefined) {
+          supportsLabel = false
+          try {
+            const help = await shell(connectKey, 'bm dump -h')
+            supportsLabel = /^\s*-l,\s*--label\b/m.test(help)
+          } catch (error) {
+            logger.warn('Failed to check bundle label support', connectKey, error)
+          }
+        }
+        if (supportsLabel) {
+          try {
+            const label = displayableLabel(
+              await shell(connectKey, `bm dump -n ${bundleName} -l`)
+            )
+            if (!label) {
+              throw new Error('Empty, unresolved or invalid bundle label response')
+            }
+            bundleInfo.label = label
+            localLabel = label
+          } catch (error) {
+            logger.warn('Failed to read bundle label', connectKey, bundleName, error)
+          }
+        }
+      }
+
       if (!bundleInfo.system && !startWith(bundleName, 'com.huawei')) {
         try {
           const onlineInfo = await getOnlineBundleInfo(bundleName)
-          if (onlineInfo.name) {
+          if (!localLabel && onlineInfo.name) {
             bundleInfo.label = onlineInfo.name
           }
           if (onlineInfo.icon) {
@@ -159,6 +191,20 @@ const getBundleInfos: IpcGetBundleInfos = async (connectKey, bundleNames) => {
   }
 
   return result
+}
+
+function displayableLabel(value: unknown): string {
+  if (typeof value !== 'string') return ''
+  const label = value.trim()
+  if (
+    !label ||
+    label.startsWith('$') ||
+    Array.from(label).some((char) => char.charCodeAt(0) < 32) ||
+    /^(error|usage)\s*:/i.test(label)
+  ) {
+    return ''
+  }
+  return label
 }
 
 const INFO_URL = 'https://web-drcn.hispace.dbankcloud.com/edge/webedge/appinfo'

@@ -82,6 +82,8 @@ React 组件 / MobX store
 
 `hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批；安装/卸载后的刷新由 Application.tsx 原有调用链负责。
 
+应用名称优先取本地有效明文 label；否则在设备 `bm dump -h` 声明 `-l, --label` 时使用 `bm dump -n <bundle> -l` 解析资源名称。能力探测限定在单批请求，名称也不跨请求缓存；不支持或失败时保留原在线/包名回退。不能将应用的 apiTargetVersion 当设备版本。图标仍使用原在线策略，`$media:` 资源引用不能直接作为图片路径；当前未实现 HAP 资源解析。Application.tsx 列表插入名称与图片 URL 时做 HTML 转义。
+
 ## 状态与面板生命周期
 
 - `src/renderer/main/store/index.ts` 是主窗口 MobX store，持有 targets、target、panel，以及 settings/application/process/layout 子 store。
