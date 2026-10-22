@@ -57,7 +57,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[有限命令等待调查](docs/maintenance/M2-2-command-timeout.md)已建立受控缺口用例；尚未实现生产超时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[等待调查](docs/maintenance/M2-2-command-timeout.md)与[可取消适配器](docs/maintenance/M2-2-cancellable-transport.md)已建立受控证据和独立模块；尚未接入 base.shell，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 待开始 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 以 Pura 70 Pro / 5.1.0.150（API 17）原报告为线索，核对 socket、端口转发和 `/json`；官方调试方法能发现的目标在应用中也可见，空目标及断连可恢复。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；无线真机、物理断连重连及授权失败仍待验收。 |
@@ -128,7 +128,8 @@
 ### 2026-10-22 无设备任务继续推进
 
 - 用户指定优先修复设备刷新竞争。基线 `9f8ddcb`，分支 `codex/target-refresh-order`；按最后发起请求的序号阻止旧结果写入状态/选择/持久化，并抑制过期手动刷新通知。7 项真实 Store/工具栏回归先全部失败、修复后全部通过；完整测试 147/147、lint 通过，详见[专项报告](docs/maintenance/M2-5-refresh-order.md)。最终独立审查和五项 CI 通过后合并；M2-5 的真机验收仍未完成。
-- 并行分派：原 M2-2 对话推进有限命令可取消 transport；原 M3-3 对话处理 HiLog 暂停/关闭后的迟到记录。各自独立分支、测试和 PR，不依赖设备或 HAP；结果未回收前不标完成。
+- 回收状态：[设备刷新 PR #28](https://github.com/MonsterXia/scrcpy-harmony/pull/28) 与 [HiLog PR #29](https://github.com/MonsterXia/scrcpy-harmony/pull/29) 均经独立审查、五项必需 CI 通过后合并，最新整合基线 `5dcc7bd`。HiLog 代次隔离修复暂停/关闭后的迟到记录，见[专项报告](docs/maintenance/M3-3-hilog.md)。
+- M2-2 本轮交付[有限命令可取消模块基础](docs/maintenance/M2-2-cancellable-transport.md)，尚未接入 base.shell，保持进行中；27 项专项和最新基线组合全量 185/185、lint、模块严格类型检查及 build:main 通过。独立 PR 最终审查/CI 见本项交接，不以此替代真机或长期空闲验收。
 - 本轮不操作真机、不安装应用；侧载验证仍仅限 bilibili，离线图标及 HAP 缺失保持原有边界。
 
 ```text
@@ -287,6 +288,12 @@
 - 结论：握手/ready 阶段缺少请求取消与连接所有权接口，外层 Promise.race 或 Connection.end 无法可靠清理；本轮 [PR #20](https://github.com/MonsterXia/scrcpy-harmony/pull/20) 提交测试与接口方案，生产代码不变；本地 74 项测试、lint、build:main 通过，独立审查问题已修正并复核，必需 CI 见 PR 检查页。详见[证据及交接](docs/maintenance/M2-2-command-timeout.md)。
 - 下一步：独立评审可取消 transport 方案，再推进有限命令截止；长期空闲复现、CPU/内存、原复现时长与真机监听释放仍未验证，M2-2 保持进行中。
 - 审查补充：已合入 master `ea53acc` 并保留 M4-1 交接；确定性复现 fixture 清理快照后的迟到 accept 会阻塞 server.close，先停监听并销毁迟到 peer，新增回归由失败转通过。初始化故障注入与独立复核通过；完整测试更新为 75/75，lint 通过，最终 CI 见 PR #20 检查页。只改测试清理，生产超时与真机验收仍未完成。
+
+### M2-2 可取消适配器交接
+
+- 2026-10-22 / Codex；分支 `codex/m2-cancellable-transport`，起点 `9f8ddcb`，已同步 master `5dcc7bd` 并保留 #28/#29 交接。新增独占 socket 的有限 shell 模块，显式总截止/AbortSignal，取消销毁并等待本地 close，不管理共享 HDC 服务。
+- 旧 base.ts + hdckit 静默握手的截止断言确认失败；新模块专项 27/27、组合全量 185/185、lint、单模块 strict TypeScript 与 build:main 通过。独立审查无生产阻断，修正测试写入注入与握手阶段屏障并补确定性拆包。完整合约、验证命令和差异见[专项报告](docs/maintenance/M2-2-cancellable-transport.md)。
+- 未接 base.shell/IPC，没有生产调用者；hello 恰为 16 字节、目标 32 字节及 16 MiB 限额等兼容性仍待真机验证。下一步选择有限只读调用接入并验证服务启动交接，再逐步扩展；M2-2 保持进行中，不宣称上游空闲卡死已修复。未操作设备/HAP、共享用户数据或发布版本；[PR #30](https://github.com/MonsterXia/scrcpy-harmony/pull/30) 保留待维护者审查，最终 CI 见[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/30/checks)。
 
 ### M3-3 用户与构建说明推进
 
