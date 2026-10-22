@@ -1,0 +1,38 @@
+update-win-x64
+2026-10-22T08:14:21.8411168Z ##[group]Operating System
+2026-10-22T08:14:21.8411811Z Microsoft Windows Server 2025
+2026-10-22T08:14:21.8412425Z 10.0.26100
+2026-10-22T08:14:21.8412925Z Datacenter
+2026-10-22T08:14:21.8413854Z ##[endgroup]
+2026-10-22T08:14:21.8414452Z ##[group]Runner Image
+2026-10-22T08:14:21.8415032Z Image: windows-2025-vs2026
+2026-10-22T08:14:21.8415619Z Version: 20261007.264.1
+2026-10-22T08:14:21.8417150Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+2026-10-22T08:14:21.8418843Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+2026-10-22T08:14:21.8419802Z ##[endgroup]
+
+update-mac-arm64
+2026-10-22T08:14:21.2512630Z ##[group]Operating System
+2026-10-22T08:14:21.2514010Z macOS
+2026-10-22T08:14:21.2515160Z 15.7.9
+2026-10-22T08:14:21.2516720Z 24G830
+2026-10-22T08:14:21.2518250Z ##[endgroup]
+2026-10-22T08:14:21.2519710Z ##[group]Runner Image
+2026-10-22T08:14:21.2521330Z Image: macos-15-arm64
+2026-10-22T08:14:21.2526530Z Version: 20260907.0337.1
+2026-10-22T08:14:21.2530060Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260907.0337/images/macos/macos-15-arm64-Readme.md
+2026-10-22T08:14:21.2533670Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260907.0337
+2026-10-22T08:14:21.2535820Z ##[endgroup]
+
+update-mac-x64
+2026-10-22T08:14:21.9051890Z ##[group]Operating System
+2026-10-22T08:14:21.9053330Z macOS
+2026-10-22T08:14:21.9054230Z 15.7.9
+2026-10-22T08:14:21.9063690Z 24G830
+2026-10-22T08:14:21.9065480Z ##[endgroup]
+2026-10-22T08:14:21.9066900Z ##[group]Runner Image
+2026-10-22T08:14:21.9069030Z Image: macos-15
+2026-10-22T08:14:21.9071260Z Version: 20260824.0482.1
+2026-10-22T08:14:21.9074140Z Included Software: https://github.com/actions/runner-images/blob/macos-15/20260824.0482/images/macos/macos-15-Readme.md
+2026-10-22T08:14:21.9077830Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15%2F20260824.0482
+2026-10-22T08:14:21.9080340Z ##[endgroup]

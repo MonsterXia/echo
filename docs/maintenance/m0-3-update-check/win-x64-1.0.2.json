@@ -1,0 +1,149 @@
+{
+  "version": "1.0.2",
+  "metadata": "latest.yml",
+  "startedAt": "2026-10-22T08:17:17.041Z",
+  "scenarios": [
+    {
+      "name": "not-available",
+      "text": "There are currently no updates available\nOK",
+      "offline": false,
+      "requests": [
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "status": 200
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "status": 302,
+          "redirect": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2",
+          "status": 200
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "status": 302,
+          "redirect": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb",
+          "cancelled": false
+        },
+        {
+          "url": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb",
+          "status": 200
+        }
+      ],
+      "external": []
+    },
+    {
+      "name": "network-error",
+      "text": "Failed to check for updates\nOK",
+      "offline": true,
+      "requests": [
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "cancelled": true
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "error": "net::ERR_BLOCKED_BY_CLIENT"
+        }
+      ],
+      "external": []
+    },
+    {
+      "name": "recovered",
+      "text": "There are currently no updates available\nOK",
+      "offline": false,
+      "requests": [
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases.atom",
+          "status": 200
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "status": 302,
+          "redirect": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/latest",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2",
+          "status": 200
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "cancelled": false
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "status": 302,
+          "redirect": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb"
+        },
+        {
+          "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/latest.yml",
+          "error": "net::ERR_ABORTED"
+        },
+        {
+          "url": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb",
+          "cancelled": false
+        },
+        {
+          "url": "https://release-assets.githubusercontent.com/github-production-release-asset/1426959270/3a334d7c-d45c-4b57-b846-559bef05b6bb",
+          "status": 200
+        }
+      ],
+      "external": []
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "packaged": true,
+    "version": "1.0.2",
+    "arch": "x64",
+    "electron": "45.0.0",
+    "executable": "D:\\a\\_temp\\update-install-vqSRLP\\Installed Apps\\Scrcpy Harmony.exe",
+    "appPath": "D:\\a\\_temp\\update-install-vqSRLP\\Installed Apps\\resources\\app.asar",
+    "userData": "C:\\Users\\runneradmin\\AppData\\Local\\Temp\\scrcpy-harmony-update-g2CaAn"
+  }
+}

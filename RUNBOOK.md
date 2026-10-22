@@ -22,13 +22,13 @@
 
 ## 阶段 0：维护入口与首次独立发布
 
-目标：确保反馈入口可用，并建立可验证的独立发行流程。当前阶段状态：**进行中**。
+目标：确保反馈入口可用，并建立可验证的独立发行流程。当前阶段状态：**已完成**。
 
 | ID | 状态 | 工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M0-1 | 已完成 | 启用本仓库 Issues，核对 About、主页和反馈入口 | Issues 和新建反馈页面可访问；应用反馈菜单指向本仓库；GitHub About 的主页已改为本仓库 README。见 [验收记录](#m0-1-验收记录)。 |
 | M0-2 | 已完成 | 准备首次独立 Release，确定新版本号 | 包元数据、锁文件、CHANGELOG 和 tag 一致；三个平台安装与启动检查通过；逐项说明签名、公证及真机验证状态；向用户说明旧 ECHO 配置不自动迁移。 |
-| M0-3 | 待开始 | 验证实际更新检查与下载入口 | 使用两个明确版本的已打包应用和本仓库 Release，验证“有更新 / 无更新 / 网络或元数据错误”；Windows、macOS arm64、macOS x64 读取各自元数据并跳转本仓库 Releases。记录具体文件名和日志，不能只凭单测通过勾选。 |
+| M0-3 | 已完成 | 验证实际更新检查与下载入口 | 使用两个明确版本的已打包应用和本仓库 Release，验证“有更新 / 无更新 / 网络或元数据错误”；Windows、macOS arm64、macOS x64 读取各自元数据并跳转本仓库 Releases。记录具体文件名和日志，不能只凭单测通过勾选。见 [实际验收记录](docs/maintenance/M0-3.md)。 |
 
 操作入口：`package.json`、`script/pack.mjs`、`.github/workflows/build.yml`、`src/main/lib/updater.ts`、`src/renderer/main/App.tsx`。手动 Build workflow 只生成并上传 artifact，不创建 Release。更新功能当前提示用户打开 Releases 下载，不执行自动下载安装。
 
@@ -157,3 +157,18 @@
 - 签名状态：Windows Authenticode `NotSigned`；macOS arm64 只有 linker ad-hoc 签名，严格签名校验及 Gatekeeper 均失败；macOS x64 未签名，Gatekeeper 拒绝。两种 macOS 均无 stapled 公证票据。已在 Release、README、CHANGELOG 与发布记录明确说明，未把安装启动成功当作系统信任通过。
 - 配置边界：Release 明确旧 ECHO 配置保留原处、不自动迁移，Scrcpy Harmony 使用新的用户配置目录。
 - 未验证 / 下一步：鸿蒙真机、长时间运行和用户从互联网下载后的系统信任体验未验收；M0-3 需要两个明确版本的已打包应用验证有更新、无更新、网络/元数据错误及 Releases 跳转。公开 YAML 可下载和哈希一致不能替代应用内更新验收。下一项为 M0-3。
+
+### M0-3 实际更新检查推进
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `b0bd16a9b05d10575065d4e3bf50f5336751c593`，分支 `codex/m0-3-packaged-update-check`。
+- 方案：固定源码 `b81c6563e7502819142d651aad15a6b4d45f33bf` 的 Scrcpy Harmony 1.0.1 打包应用与公开 Release v1.0.2 原始安装包对照；原生 Windows x64、macOS arm64/x64 验证菜单、真实网络请求、IPC 提示和 Releases 外链。
+- 错误场景在应用的更新网络会话中取消请求，不修改远端 Release、应用版本或更新结果；恢复网络后再次检查。现场结果待补，暂不标记完成。
+
+### M0-3 验收记录
+
+- 日期 / 执行者：2026-10-22 / Codex。基线 `b0bd16a`，分支 `codex/m0-3-packaged-update-check`；[PR #15](https://github.com/MonsterXia/scrcpy-harmony/pull/15)。M0-3 **已完成**，阶段 0 三项验收均完成。
+- 版本：固定提交 `b81c656` 原样打包的 Scrcpy Harmony 1.0.1，与公开 v1.0.2 的三个原始安装包。每版实际 app.isPackaged、版本、原生架构和安装包 SHA-256 均已核验，未修改应用版本或替换更新器。
+- 结果：验收提交 `2359c96` 的 [三平台实际运行](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39746252306) 全通过。Windows x64、macOS arm64/x64 各自读取正确的 YAML；1.0.1 检出 1.0.2 并经实际确认按钮调用系统 Releases 外链，1.0.2 提示无更新；两版均通过受控断网提示及恢复检查，共 18 个场景。
+- 验证：同提交 [五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39746252396) 全通过；本地 13 项单测、lint 和脚本语法检查通过。首轮 macOS x64 在卸载第二个 DMG 时失败，修订验收安装脚本后完整重跑；失败记录未被记为通过。
+- 证据：[M0-3 报告](docs/maintenance/M0-3.md) 记录具体文件名、完整哈希、runner 环境、网络重定向、六份运行 JSON/应用日志及截图；原始 artifact ZIP digest 已复核。PR 最终提交检查结果见 PR 页面。
+- 边界 / 下一步：系统外链调用成功，未检查默认浏览器页面内容；错误验收选择网络失败，未另测损坏 YAML。更新仍是提示用户手动下载；未扩大签名、公证、真机或长时间运行结论。下一项为 M1-1，按规则先核对上游报告和当前设备枚举路径。

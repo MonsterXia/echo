@@ -1,0 +1,59 @@
+[
+  {
+    "id": 12411562638,
+    "name": "update-mac-arm64",
+    "size_in_bytes": 125608268,
+    "url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12411562638",
+    "archive_download_url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12411562638/zip",
+    "expired": false,
+    "created_at": "2026-10-22T08:16:15Z",
+    "expires_at": "2027-01-20T08:14:16Z",
+    "updated_at": "2026-10-22T08:16:15Z",
+    "digest": "sha256:daf402089aedc2c64a5cd1a00ba5262ac4db4a28c24f8e0a23a454ada737aab4",
+    "workflow_run": {
+      "id": 39746252306,
+      "repository_id": 1426959270,
+      "head_repository_id": 1426959270,
+      "head_branch": "codex/m0-3-packaged-update-check",
+      "head_sha": "2359c960e6413824671579e79c12b9c8005405cc"
+    }
+  },
+  {
+    "id": 12411064448,
+    "name": "update-mac-x64",
+    "size_in_bytes": 130107561,
+    "url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12411064448",
+    "archive_download_url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12411064448/zip",
+    "expired": false,
+    "created_at": "2026-10-22T08:17:59Z",
+    "expires_at": "2027-01-20T08:14:16Z",
+    "updated_at": "2026-10-22T08:17:59Z",
+    "digest": "sha256:b07924d9a71622e6d0cb50611400d0273ed66d9fe4a834a41a7536c42be1996d",
+    "workflow_run": {
+      "id": 39746252306,
+      "repository_id": 1426959270,
+      "head_repository_id": 1426959270,
+      "head_branch": "codex/m0-3-packaged-update-check",
+      "head_sha": "2359c960e6413824671579e79c12b9c8005405cc"
+    }
+  },
+  {
+    "id": 12410974436,
+    "name": "update-win-x64",
+    "size_in_bytes": 119300930,
+    "url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12410974436",
+    "archive_download_url": "https://api.github.com/repos/MonsterXia/scrcpy-harmony/actions/artifacts/12410974436/zip",
+    "expired": false,
+    "created_at": "2026-10-22T08:17:24Z",
+    "expires_at": "2027-01-20T08:14:16Z",
+    "updated_at": "2026-10-22T08:17:24Z",
+    "digest": "sha256:b0cc0870ad60333578968706084a5175016bd7c27811aeeee2ca029fe1fd588e",
+    "workflow_run": {
+      "id": 39746252306,
+      "repository_id": 1426959270,
+      "head_repository_id": 1426959270,
+      "head_branch": "codex/m0-3-packaged-update-check",
+      "head_sha": "2359c960e6413824671579e79c12b9c8005405cc"
+    }
+  }
+]

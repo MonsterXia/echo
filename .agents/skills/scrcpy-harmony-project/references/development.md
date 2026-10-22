@@ -108,6 +108,12 @@ Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平�
 
 打包更新元数据使用 `MonsterXia/scrcpy-harmony` 的 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`；手动构建 workflow 显式 `--no-publish`，仅上传安装包、YAML 更新元数据和 blockmap 为 artifact，不创建 Release。正式发布时需将各平台安装包及配套更新文件放入本仓库相应版本的 Release。electron-builder 的 GitHub 更新 YAML 使用安全文件名（例如 `Scrcpy-Harmony-...`），可能不同于本地带空格的安装包名；上传前按 YAML 的 URL 命名安装包和配套 blockmap，保持字节不变，并核对 size、SHA-512 和远端 SHA-256。无 Release 时检查更新可能报错，不能回退到上游。
 
+## 实际打包应用的更新验收
+
+M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更新验收：在三个原生 runner 上从固定提交打包 1.0.1，下载并核对公开 1.0.2 安装包 SHA-256，再使用 `script/install-update-check.mjs` 安装两版。安装器包装只允许 GitHub 托管临时 runner，不能在开发机绕过限制。该 workflow 可手动运行，也在修改验收脚本/自身的 PR 上运行，不改变五项必需 CI 检查名称。
+
+`script/check-packaged-update.mjs <已安装程序路径> <1.0.1或1.0.2> <证据目录>` 使用隔离配置启动真实 app.asar，通过实际菜单回调触发检查；记录 `electron-updater` 网络会话的请求、重定向和最终响应，检查真实 IPC 驱动的提示并截图。网络错误通过取消该会话请求注入，之后恢复网络再检查；不替换更新器结果或应用版本。确认有更新时包装 `shell.openExternal` 记录 URL 并调用原方法，验收操作系统是否接受 Releases 跳转；不声称检查了默认浏览器页面内容。报告包含安装包哈希、运行版本/架构、JSON 和应用日志，CDN 临时签名查询参数不写入网络记录。本验收固定目标为 v1.0.2；发布后续版本后须显式更新对照版本、预期提示和安装包哈希，不能将旧断言继续用于新 Release。
+
 ## 当前验证基线与后续维护
 
 2026-10-21 的 [PR #8 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39611929271) 已通过 test、lint 及 Windows/macOS arm64/macOS x64 的安装包、安装和启动检查；这是该提交的历史结果，后续改动仍需自己的检查。真实设备、签名/公证、线上更新检查及普通用户操作文档的待办见 [RUNBOOK](../../../../RUNBOOK.md)。

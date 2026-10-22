@@ -1,0 +1,18 @@
+[7228:1022/081658.820:INFO:CONSOLE:50] "08:16:58.819 I renderer: start", source: file:///D:/a/_temp/update-install-idWcGU/Installed%20Apps/resources/app.asar/renderer/assets/app-CSJTVv9q.js (50)
+08:16:58.822 I window: main on ready-to-show
+08:16:58.822 I window: main ready and show
+[7228:1022/081658.851:INFO:CONSOLE:50] "08:16:58.822 I renderer: render app", source: file:///D:/a/_temp/update-install-idWcGU/Installed%20Apps/resources/app.asar/renderer/assets/app-CSJTVv9q.js (50)
+Checking for update
+Generated new staging user ID: 3800475d-fda8-5d01-b0cc-5af28797fc7b
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-win-x64.exe)
+Checking for update
+Error: Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Checking for update
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-win-x64.exe)
+Debugger ending on ws://127.0.0.1:60311/45f9b89b-34ba-4d02-9528-df5223571630
+For help, see: https://nodejs.org/learn/getting-started/debugging

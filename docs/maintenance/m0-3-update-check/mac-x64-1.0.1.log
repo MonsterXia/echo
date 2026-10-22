@@ -1,0 +1,17 @@
+[4354:1022/081709.515670:ERROR:components/viz/service/main/viz_main_impl.cc:192] Exiting GPU process due to errors during initialization
+08:17:10.049 I window: main ready and show
+Checking for update
+Generated new staging user ID: 1491eae9-6f55-55a3-b8c7-62721d51ab67
+08:17:10.389 I window: main on ready-to-show
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-mac-x64.dmg)
+Checking for update
+Error: Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Checking for update
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-mac-x64.dmg)
+Debugger ending on ws://127.0.0.1:49197/c717eaa8-3df3-47e9-b711-baae00d5a8a4
+For help, see: https://nodejs.org/learn/getting-started/debugging

@@ -1,0 +1,18 @@
+[2617:1022/081543.469223:INFO:CONSOLE:50] "08:15:43.457 I renderer: start", source: file:///Users/runner/work/_temp/update-install-YBYtec/Installed%20Apps/Scrcpy%20Harmony.app/Contents/Resources/app.asar/renderer/assets/app-CSJTVv9q.js (50)
+08:15:43.483 I window: main on ready-to-show
+08:15:43.484 I window: main ready and show
+[2617:1022/081543.579121:INFO:CONSOLE:50] "08:15:43.476 I renderer: render app", source: file:///Users/runner/work/_temp/update-install-YBYtec/Installed%20Apps/Scrcpy%20Harmony.app/Contents/Resources/app.asar/renderer/assets/app-CSJTVv9q.js (50)
+Checking for update
+Generated new staging user ID: 151c61ff-fac8-525e-9149-39eb02c89a12
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-mac-arm64.dmg)
+Checking for update
+Error: Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Error: net::ERR_BLOCKED_BY_CLIENT
+    at SimpleURLLoaderWrapper.<anonymous> (node:internal/electron/js2c/browser_init:4:32600)
+    at SimpleURLLoaderWrapper.emit (node:events:514:28)
+Checking for update
+Found version 1.0.2 (url: Scrcpy-Harmony-1.0.2-mac-arm64.dmg)
+Debugger ending on ws://127.0.0.1:49190/8bf94663-92e4-4c37-a9ba-da2fe14e1eac
+For help, see: https://nodejs.org/learn/getting-started/debugging
