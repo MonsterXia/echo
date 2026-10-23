@@ -14,6 +14,8 @@ import toStr from 'licia/toStr'
 import toNum from 'licia/toNum'
 import fullscreen from 'licia/fullscreen'
 import LunaModal from 'luna-modal'
+import { useEffect, useRef, useState } from 'react'
+import { notify } from 'share/renderer/lib/util'
 
 const KEYCODE_HOME = 1
 const KEYCODE_BACK = 2
@@ -23,6 +25,20 @@ const KEYCODE_POWER = 18
 
 export default observer(function Toolbar() {
   const { target, screencastClient } = store
+  const [isInputPending, setIsInputPending] = useState(false)
+  const inputSession = useRef<{ active: boolean; pending: boolean } | null>(
+    null,
+  )
+
+  useEffect(() => {
+    const session = { active: true, pending: false }
+    inputSession.current = session
+    setIsInputPending(false)
+    return () => {
+      // Invalidate UI continuations; an already sent write is not cancelled.
+      session.active = false
+    }
+  }, [target])
 
   async function captureScreenshot() {
     const canvas = screencastClient.canvas
@@ -40,9 +56,25 @@ export default observer(function Toolbar() {
   }
 
   async function inputText() {
-    const text = await LunaModal.prompt(t('inputText'), '')
-    if (text) {
-      main.inputText(target.key, text)
+    const session = inputSession.current
+    if (!target || !session?.active || session.pending) return
+    const isCurrent = () => session.active && store.target === target
+    if (!isCurrent()) return
+
+    session.pending = true
+    setIsInputPending(true)
+    try {
+      const text = await LunaModal.prompt(t('inputText'), '')
+      if (text && isCurrent()) {
+        await main.inputText(target.key, text)
+      }
+    } catch {
+      if (isCurrent()) notify(t('commonErr'), { icon: 'error' })
+    } finally {
+      if (isCurrent()) {
+        session.pending = false
+        setIsInputPending(false)
+      }
     }
   }
 
@@ -82,7 +114,12 @@ export default observer(function Toolbar() {
           title={t('home')}
           onClick={inputKey(KEYCODE_HOME)}
         />
-        <ToolbarIcon icon="text" title={t('inputText')} onClick={inputText} />
+        <ToolbarIcon
+          icon="text"
+          title={t('inputText')}
+          disabled={!target || isInputPending}
+          onClick={inputText}
+        />
         <LunaToolbarSeparator />
         <ToolbarIcon
           icon="camera"
