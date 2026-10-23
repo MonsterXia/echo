@@ -63,3 +63,11 @@ GitHub 官方 REST API 的 `/releases`、`/releases/latest`、tag ref 和 annota
 - M3-3 继续待验收：需按选定发行版本走读安装、授权、设备选择、投屏 / 输入、脱敏 HiLog 导出，以及 macOS 本机人工流程；CI 打包和无设备测试不能代替。
 - 本项交付独立文档 PR；最终 SHA、独立审查与五项 CI 以 PR 页面 / 交付消息为准，由主对话审查整合，不自行合并或发布。
 - 发布工作可能并行推进。本报告是带时间的 v1.0.2 快照；合入前若最新 Release 改变，重新读取 Release / tag / 资产，更新两份指南的版本与已发行能力，不能只替换版本数字或沿用旧包哈希。
+
+## 2026-10-23 主干同步复核
+
+- 在此前文档已审查的 `a3988394d0b9d015c3b08f0751521f41794865ff` 上普通 merge `origin/master` 的 `1f05c37a1b430673d53060dedd7f82442472b367`，无冲突；完整保留 #39 握手兼容、#35 屏幕查询和 #37 WebView 生命周期的源码、测试、专报与 RUNBOOK 记录。本 PR 相对该主干仍只有原先六份文档 / 证据文件的差异。
+- 指南核对基线更新为 `1f05c37`：概览现有内存和屏幕两项有限读取，不能相加推导整个概览的总截止；WebView 隐藏 / 切设备后旧结果失效，错误时清空旧列表和选择，恢复重新查询，选中项对应最新地址。已发出 IPC 与底层共享查询仍不取消。依据当前 `hdc.ts`、`finiteShell.ts` 和 `Webview.tsx` 核对，未新增生产改动。
+- 重新只读查询 GitHub latest Release，仍为 v1.0.2、源 `1c545a7`、14 个附件；先前的带时间发行快照保留不改写。本轮没有重新下载附件或重做其字节校验，未发布 Release。
+- 新主干记录的真实读取证据有明确局限：[握手专报](M2-2-handshake-compat.md)是候选有限模块读取内存，[屏幕专报](M2-2-screen-deadline.md)是提取源码函数后的真实读取，均不是完整 getOverview / Electron IPC 或用户流程；[WebView 专报](M2-4-webview-lifecycle.md)仍为无设备回归。不能将这些证据转记为本聊天真机操作或 M3-3 验收。
+- 本次核对合并差异、指南事实及 npm 命令；77 个本地链接 / 锚点全部有效，差异空白检查通过；未重复全量、lint 或模块构建，上表 250/250 等结果仍属于同步前基线。最终 SHA、增量审查、五项 CI 与合并状态见 [PR #36](https://github.com/MonsterXia/scrcpy-harmony/pull/36) 及其[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/36/checks)，由主对话决定合并；M3-3 仍待验收。

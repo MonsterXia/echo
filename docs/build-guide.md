@@ -4,9 +4,9 @@
 
 ## 范围与准备
 
-本指南于 2026-10-23 对照 master `8d1cfab` 核对。公开发行版仍为 [v1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，tag 固定到 `1c545a7702547d8c53e31bcbfe7d76febc326cba`；master 的包版本同为 1.0.2，但包含[未发行的功能修复](user-guide.md#版本与支持范围)。构建时应记录完整提交号。
+本指南于 2026-10-23 对照 master `1f05c37` 核对。公开发行版仍为 [v1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，tag 固定到 `1c545a7702547d8c53e31bcbfe7d76febc326cba`；master 的包版本同为 1.0.2，但包含[未发行的功能修复](user-guide.md#版本与支持范围)。构建时应记录完整提交号。
 
-Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)；本次独立检出的依赖安装、全量测试、lint、三个模块构建及发行元数据核对见[复核记录](maintenance/M3-3-release-guide.md)，没有重复下载设备资源或重做完整打包。macOS 命令仍与工作流一致，但没有 macOS 本机人工走读；[1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的构建、打包及安装启动结果是历史自动化证据。
+Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)；同步主干前独立检出的依赖安装、全量测试、lint、三个模块构建，以及同步后的文档核对见[复核记录](maintenance/M3-3-release-guide.md)，没有重复下载设备资源或重做完整打包。macOS 命令仍与工作流一致，但没有 macOS 本机人工走读；[1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的构建、打包及安装启动结果是历史自动化证据。
 
 准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取 npm 依赖、子模块、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
 

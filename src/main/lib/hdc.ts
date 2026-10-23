@@ -46,6 +46,8 @@ if (HDC_ENDPOINT.port < 1 || HDC_ENDPOINT.port > 65535) {
 }
 // Conservative budget for this small read only; not yet calibrated on devices.
 const MEMORY_TIMEOUT_MS = 10_000
+// Allow more headroom for RenderService work; still pending device calibration.
+const SCREEN_TIMEOUT_MS = 15_000
 
 const settingsStore = getSettingsStore()
 
@@ -130,7 +132,14 @@ const getOverview: IpcGetOverview = async function (connectKey) {
 }
 
 async function getScreen(connectKey: string) {
-  const screen = await shell(connectKey, 'hidumper -s RenderService -a screen')
+  const screen = await runFiniteShell(
+    connectKey,
+    'hidumper -s RenderService -a screen',
+    { ...HDC_ENDPOINT, timeoutMs: SCREEN_TIMEOUT_MS }
+  )
+  if (/^\s*(?:\[Fail\]|\[E\d{6}\]|error:)/im.test(screen)) {
+    throw new Error('HDC screen command failed')
+  }
 
   let physicalResolution = ''
   let physicalResolutionMatch = screen.match(
