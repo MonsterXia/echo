@@ -1,0 +1,101 @@
+{
+  "checkedAtUtc": "2026-10-23T11:34:51.9844428Z",
+  "baseline": "8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8",
+  "release": {
+    "assets": [
+      {
+        "digest": "sha256:a5e506526f62948e603af92cc3ad6db0e001c13af657b7a799cee44e7bbbf3d6",
+        "name": "latest-mac.yml",
+        "size": 365
+      },
+      {
+        "digest": "sha256:6d41ebccc649ac87853e6dacf9351f30838af042d805cb56ac5b5e49286dd10d",
+        "name": "latest-x64-mac.yml",
+        "size": 361
+      },
+      {
+        "digest": "sha256:fff270663f8cd21477cc2b2fef015efdb013e6ab1ddf67b1d715b150116cde21",
+        "name": "latest.yml",
+        "size": 361
+      },
+      {
+        "digest": "sha256:804598730b728144a6c8e3f59be9b084dca5386e97b176375dfe1069d8682b12",
+        "name": "release-validation.json",
+        "size": 1870
+      },
+      {
+        "digest": "sha256:5e9a04cad17fdd827bb4ab52b9679022ae6fae83f6e9b15f75690c49af1aefb2",
+        "name": "Scrcpy-Harmony-1.0.2-mac-arm64.dmg",
+        "size": 125795145
+      },
+      {
+        "digest": "sha256:479fbed3eeffaf3ad95e5ff9ba7da323ec6e354ab8724b5aaf18b0343623d33b",
+        "name": "Scrcpy-Harmony-1.0.2-mac-arm64.dmg.blockmap",
+        "size": 133237
+      },
+      {
+        "digest": "sha256:57a1fa3ea0de284aeb103afeff49a0c37127131101ac287ebd98692c1da32ab4",
+        "name": "Scrcpy-Harmony-1.0.2-mac-x64.dmg",
+        "size": 130274426
+      },
+      {
+        "digest": "sha256:f3215095b0e9d7b48d37862ca00300a2d76eb8c807629060e4aaba7611d266ef",
+        "name": "Scrcpy-Harmony-1.0.2-mac-x64.dmg.blockmap",
+        "size": 137162
+      },
+      {
+        "digest": "sha256:f9f2bac1bf6731c55851d4e22bd62f242b1145061fef2570ee603d34f97be4e8",
+        "name": "Scrcpy-Harmony-1.0.2-win-x64.exe",
+        "size": 119183785
+      },
+      {
+        "digest": "sha256:8a2d7aae4ffc073af0d30336c618d6083ff3b70eb7d2a4e3c5c52d7517d91798",
+        "name": "Scrcpy-Harmony-1.0.2-win-x64.exe.blockmap",
+        "size": 125430
+      },
+      {
+        "digest": "sha256:b0ae645e8faebf0c1ad90a4a75e305258853a89b3cb17af30d5d692385401097",
+        "name": "SHA256SUMS.txt",
+        "size": 1234
+      },
+      {
+        "digest": "sha256:381401d72d6eadf3b4fe9381d396b5aa5370e27772a5c7a5ea7df73743ae53ad",
+        "name": "verification-mac-arm64.txt",
+        "size": 1621
+      },
+      {
+        "digest": "sha256:f3cbc77b4322ef73dc130f5535d3099a189e4559144872e3a5c1db824a40e8ee",
+        "name": "verification-mac-x64.txt",
+        "size": 819
+      },
+      {
+        "digest": "sha256:d6b691594a1682f22f55eaf8fa68810bdb9779007e8fcfc8c53da40a2a55ff78",
+        "name": "verification-win-x64.json",
+        "size": 383
+      }
+    ],
+    "draft": false,
+    "html_url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2",
+    "id": 420317026,
+    "name": "Scrcpy Harmony 1.0.2",
+    "prerelease": false,
+    "published_at": "2026-10-22T04:47:24Z",
+    "tag_name": "v1.0.2",
+    "target_commitish": "1c545a7702547d8c53e31bcbfe7d76febc326cba"
+  },
+  "annotatedTagObject": "404146dce3ac00da7766f38ba6c96e907b65831d",
+  "sourceCommit": "1c545a7702547d8c53e31bcbfe7d76febc326cba",
+  "checks": {
+    "checksumEntriesMatchingApiDigests": 13,
+    "downloadedMetadataSha256Matches": [
+      "latest.yml",
+      "latest-mac.yml",
+      "latest-x64-mac.yml",
+      "SHA256SUMS.txt",
+      "release-validation.json"
+    ],
+    "installerMetadataMatches": 3,
+    "installerBytesDownloadedOrRehashed": false,
+    "deviceResourcesDownloaded": false
+  }
+}

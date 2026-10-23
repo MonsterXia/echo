@@ -74,7 +74,7 @@
 | --- | --- | --- | --- |
 | M3-1 | 待验收 | [#28](https://github.com/liriliri/echo/issues/28)：小分辨率窗口和黑边 | 记录桌面分辨率、DPI、设备方向与窗口尺寸；检查最小窗口、工具栏、纵横比例和输入坐标；调整布局后重跑投屏坐标回归。 |
 | M3-2 | 进行中 | [#32](https://github.com/liriliri/echo/issues/32)：中文字体锯齿 | 分开采集应用 UI 与设备投屏文字，记录系统缩放和显示器；确认问题发生于字体渲染还是捕获缩放，提供同条件前后截图。息屏诉求见 M4-4。 |
-| M3-3 | 待验收 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 已补[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)，区分 1.0.2 与 master、HiLog 保存与桌面诊断；Windows 干净构建及边界见 [M3-3 报告](docs/maintenance/M3-3.md)。[HiLog 在途记录后续](docs/maintenance/M3-3-hilog.md)补充暂停/关闭失效与查询失败恢复的无设备回归。Electron 主进程必需；真机用户流程与本轮 macOS 人工走读未验收，保留待验收。 |
+| M3-3 | 待验收 | [#14](https://github.com/liriliri/echo/issues/14)、[#20](https://github.com/liriliri/echo/issues/20)：用户与构建说明 | 已补[用户指南](docs/user-guide.md)和[构建指南](docs/build-guide.md)，区分 1.0.2 与 master、HiLog 保存与桌面诊断；Windows 干净构建及边界见 [M3-3 报告](docs/maintenance/M3-3.md)。[HiLog 在途记录后续](docs/maintenance/M3-3-hilog.md)补充暂停/关闭失效与查询失败恢复的无设备回归。[2026-10-23 发行版复核](docs/maintenance/M3-3-release-guide.md)确认 v1.0.2 与 master `8d1cfab` 的差异并更新指南。Electron 主进程必需；真机用户流程与 macOS 人工走读未验收，保留待验收。 |
 
 入口：`src/main/window/screencast.ts`、`src/renderer/screencast/components/`、`src/renderer/main.tsx`、`README.md` 与开发指南。开发指南已经存在，但不能据此将普通用户操作文档标为完成。
 
@@ -316,6 +316,13 @@
 - 2026-10-22 / Codex；基线 `9f8ddcb`，独立分支 `codex/hilog-inflight-lifecycle`。旧实现 10 项专项回归中 8 失败、2 通过，暂停/关闭或暂停→恢复后会发送旧记录，PID 查询拒绝未在 listener 内处理。
 - 仅修改主进程 `hdc/hilog.ts` 的生命周期边界：旧回调失效、关闭解绑监听、迟到控制 IPC 无操作；当前记录的 PID 查询失败回退且后续可恢复。独立审查通过，合入 master `ddc1df4` 后专项 11/11、全量 158/158、lint、完整 build 通过，见[报告与证据](docs/maintenance/M3-3-hilog.md)。
 - 不取消底层查询、不撤回已发送 IPC、不更改 renderer 清除边界；未访问设备/HAP，真机用户流程与长时行为仍待验收。独立审查、PR 和最终 CI 见专项报告，由主对话审查后整合。
+
+### M3-3 发行版与用户 / 构建指南复核
+
+- 2026-10-23 / Codex；基线 `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`，独立工作树与分支 `codex/m3-3-release-guide-audit`。只读 GitHub API 确认公开 Release 仍为 v1.0.2、tag 对应 `1c545a7`、14 个附件；未修改 README、代码、版本、Release、锁文件或 CI。
+- 更新两份指南的核对基线、master 未发行行为、刷新失败反馈与 tag 构建说明；首次 M3-3 报告明确作为历史证据保留。源码及发行元数据核验、执行结果见[专项记录](docs/maintenance/M3-3-release-guide.md)。
+- 独立依赖安装后全量 250/250、lint、main/preload/renderer 构建通过；本轮未重新下载设备资源或安装包，未执行完整资源复制 / 打包 / 安装启动，也未接触 HDC、真机或 HAP。M3-3 保持**待验收**。
+- 下一步：主对话按最终提交独立审查、核验五项 CI 后决定合并；如期间发布新版本，先重新核对 Release/tag/资产及指南中的版本边界。真机用户流程和 macOS 本机人工走读仍需另行验收，不自行合并或发布。
 
 ### M4-1 音频能力评估交接
 

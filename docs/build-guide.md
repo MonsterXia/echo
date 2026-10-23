@@ -4,7 +4,9 @@
 
 ## 范围与准备
 
-本指南对照 master `9e944ae`（2026-10-22），Windows x64 干净工作区验证见 [M3-3](maintenance/M3-3.md)。macOS 命令与现有工作流一致，但本轮没有 macOS 本机人工走读；已核实的历史证据是 [1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的资源准备、构建、打包及安装启动检查。
+本指南于 2026-10-23 对照 master `8d1cfab` 核对。公开发行版仍为 [v1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，tag 固定到 `1c545a7702547d8c53e31bcbfe7d76febc326cba`；master 的包版本同为 1.0.2，但包含[未发行的功能修复](user-guide.md#版本与支持范围)。构建时应记录完整提交号。
+
+Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)；本次独立检出的依赖安装、全量测试、lint、三个模块构建及发行元数据核对见[复核记录](maintenance/M3-3-release-guide.md)，没有重复下载设备资源或重做完整打包。macOS 命令仍与工作流一致，但没有 macOS 本机人工走读；[1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的构建、打包及安装启动结果是历史自动化证据。
 
 准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取 npm 依赖、子模块、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
 
@@ -25,7 +27,7 @@ npm --version
 npm ci --no-audit --no-fund
 ```
 
-`src/share` 是必需的共享 Electron 代码；`src/renderer/icon` 提供图标源。子模块状态行首 `-` 表示尚未初始化，`+` 表示与仓库固定提交不同。GitHub 的源码 ZIP 不包含子模块内容，建议使用 Git clone。若需要重建公开 1.0.2，在子模块初始化和安装前执行 `git checkout v1.0.2`；master 含未发行改动，即使包版本仍显示 1.0.2 也不等于发行版。
+`src/share` 是必需的共享 Electron 代码；`src/renderer/icon` 提供图标源。子模块状态行首 `-` 表示尚未初始化，`+` 表示与仓库固定提交不同。GitHub 的源码 ZIP 不包含子模块内容，建议使用 Git clone。若需要基于公开 1.0.2 的源码构建，在子模块初始化和安装前执行 `git checkout v1.0.2`，再用 `git rev-parse HEAD` 核对上述源提交；master 含未发行改动，即使包版本仍显示 1.0.2 也不等于发行版。切回旧 tag 不保证重新构建的安装包与已发布文件逐字节相同，设备资源来源限制见下一节。
 
 使用 `npm ci` 按 `package-lock.json` 安装；不要为了绕过安装错误删除锁文件或运行依赖升级命令。
 
@@ -74,7 +76,7 @@ npm run pack -- --no-publish
 | `release/<版本>/Scrcpy Harmony-<版本>-win-x64.exe` | Windows NSIS 安装包 |
 | `release/<版本>/Scrcpy Harmony-<版本>-mac-<架构>.dmg` | macOS 原生架构安装包 |
 
-本地文件名含空格，公开 Release 的安装包名使用连字符；不要据此误判缺包。打包按当前系统/Node 架构生成，请在目标平台的原生架构环境执行。`--no-publish` 禁止发布，打包完成不等于已经签名、公证或通过真机验收。
+本地文件名含空格，公开 v1.0.2 的安装包名使用连字符；不要据此误判缺包。该 Release 的 `latest.yml`、`latest-mac.yml`、`latest-x64-mac.yml` 分别对应 Windows x64、macOS arm64、macOS x64；`release-validation.json` 与 `SHA256SUMS.txt` 记录已发布文件的名称、大小或校验值，不应拿它们校验不同提交生成的本地包。打包按当前系统/Node 架构生成，请在目标平台的原生架构环境执行。`--no-publish` 禁止发布，打包完成不等于已经签名、公证或通过真机验收。
 
 未配置签名凭据的本地验证可先设置 `CSC_IDENTITY_AUTO_DISCOVERY=false`（PowerShell：`$env:CSC_IDENTITY_AUTO_DISCOVERY = 'false'`；macOS：`export CSC_IDENTITY_AUTO_DISCOVERY=false`）。不要把空字符串设为 `CSC_LINK`：它可能被解释为证书路径。正式签名/公证和发布另按[发行记录](releases/1.0.2.md)处理。
 
