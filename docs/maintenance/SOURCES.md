@@ -14,6 +14,8 @@
 
 ## 备份范围与读取方式
 
+后续依赖迁移前恢复节点见 [1.0.3 发布记录](../releases/1.0.3.md)：功能基线 `8087ac8`，发布完成后以固定 tag、三平台安装包及校验清单恢复。该节点与下述解除 fork 历史备份分别保留。
+
 解除 fork 前归档了本仓库 8 个 PR、上游 28 个 Issue 和 5 个 PR，共 41 个条目。保存内容包括正文、讨论评论、PR 审查、行内线程解决状态、提交和文件信息，以及 7 个附件；两个仓库当时均未启用 GitHub Discussions。
 
 完整备份名称为 `2026-10-21-before-detach.zip`，由维护者保存于仓库旁的 `scrcpy-harmony-backups/` 目录，未提交进本仓库。ZIP 内含 `README.md`、`CHECKLIST.md`、`local/`、`upstream/`、`attachments/`、`repository.bundle`、`SHA256SUMS.json` 和 `AFTER-DETACH.json`。Git bundle 还包含上游 5 个 PR 的提交引用。

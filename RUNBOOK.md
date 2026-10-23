@@ -14,6 +14,8 @@
 
 ## 当前已完成基线
 
+当前发行任务：**1.0.3 发布准备中**，以 `8087ac8` 为依赖源码迁移前功能基线。先完成三平台发行与恢复节点，再开始迁移；状态、证据和下一步见 [1.0.3 发布记录](docs/releases/1.0.3.md)。本次发布不改变下列真机待验收项的状态。
+
 - [x] 触控坐标映射修复已通过 [本仓库 PR #1](https://github.com/MonsterXia/scrcpy-harmony/pull/1) 合入；对应 [上游 PR #33](https://github.com/liriliri/echo/pull/33)。报告机型的剩余回归见阶段 2。
 - [x] 项目导航、锁文件、Electron 45、Windows 构建及三个平台 CI 已通过本仓库 PR #2–#7 合入，详情见来源索引。
 - [x] [PR #8](https://github.com/MonsterXia/scrcpy-harmony/pull/8) 完成 Scrcpy Harmony 更名、独立应用 ID、仓库链接和更新源配置。
