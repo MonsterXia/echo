@@ -79,6 +79,8 @@
 
 本 PR 只提供能力判断、缺口和可重复的无设备证据，不启动实现。维护者先确认目标语义验证范围、结果未知策略和允许的文本大小，再安排独立实现/真机任务。主对话对最终 SHA 做独立复审并记录审查身份与五项必需 CI；本分支不自行合并。CI 只能验证仓库兼容性，不能替代以上能力验收。
 
+2026-10-23 整合核对：初评 `aa8ab6e` 已获主对话 OpenAI GPT-6 独立审查，无阻断；审查核对源码、primary 引用及附录哈希，未重复探针。普通 merge 同步 master `2465cb343e60a0e6059036b6962a776409e3f7fd` 后，文本工具栏、投屏客户端、类型/preload、uitest handler、share 子模块、package.json 与锁文件相对初评基线均未变，评估结论继续成立。RUNBOOK 仅将同位置新增的 M4-2/M4-3 交接完整并存，另按主对话交接追加本轮合入汇总。此次仅核对文档、差异及引用，未重复全量测试或探针，未操作设备。最终提交的增量审查、五项必需 CI 和合并状态见 [PR #40](https://github.com/MonsterXia/scrcpy-harmony/pull/40)及[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)，不沿用初评结果宣布最终提交已通过。
+
 ## 附录：可重复的无设备探针
 
 在上述固定基线的独立检出完成子模块初始化与 npm ci 后，将以下内容保存到被忽略的 `dist/m4-2-probe.cjs`；Chrome 路径按实际安装位置调整。只启动隔离无头 Chrome；没有 network socket connect、真实 Electron main/preload 进程运行或系统剪贴板调用。禁止将此探针的替身结果标成真实 IPC 或设备通过。

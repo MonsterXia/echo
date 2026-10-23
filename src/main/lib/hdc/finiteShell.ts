@@ -110,7 +110,9 @@ export async function runFiniteShell(
       check()
       if (
         hello.done ||
-        hello.value.length !== 16 ||
+        // Legacy hello and the full hello observed on a real HDC server.
+        // Keep unsupported lengths rejected; trailing bytes are never echoed.
+        (hello.value.length !== 16 && hello.value.length !== 44) ||
         hello.value.subarray(0, 8).toString() !== 'OHOS HDC'
       ) {
         throw protocolError()
