@@ -1,0 +1,55 @@
+/* Quick sort implementation.
+ *
+ * |Name  |Desc         |
+ * |------|-------------|
+ * |arr   |Array to sort|
+ * |cmp   |Comparator   |
+ * |return|Sorted array |
+ */
+
+/* example
+ * quickSort([2, 1]); // -> [1, 2]
+ */
+
+/* module
+ * env: all
+ */
+
+/* typescript
+ * export declare function quickSort(arr: any[], cmp?: types.AnyFn): any[];
+ */
+
+_('swap isSorted types');
+
+exports = function(arr, cmp = isSorted.defComparator) {
+    return quickSort(arr, 0, arr.length - 1, cmp);
+};
+
+function quickSort(arr, left, right, cmp) {
+    if (arr.length <= 1) return arr;
+
+    const idx = partition(arr, left, right, cmp);
+
+    if (left < idx - 1) quickSort(arr, left, idx - 1, cmp);
+    if (idx < right) quickSort(arr, idx, right, cmp);
+
+    return arr;
+}
+
+function partition(arr, left, right, cmp) {
+    const pivot = arr[floor((right + left) / 2)];
+
+    while (left <= right) {
+        while (cmp(arr[left], pivot) < 0) left++;
+        while (cmp(arr[right], pivot) > 0) right--;
+        if (left <= right) {
+            swap(arr, left, right);
+            left++;
+            right--;
+        }
+    }
+
+    return left;
+}
+
+const floor = Math.floor;

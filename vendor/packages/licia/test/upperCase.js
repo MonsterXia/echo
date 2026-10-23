@@ -1,0 +1,4 @@
+tests([
+    ['test', 'TEST'],
+    [null, '']
+]);

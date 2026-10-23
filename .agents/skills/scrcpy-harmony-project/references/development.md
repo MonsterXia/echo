@@ -19,7 +19,7 @@ Test-Path resources/uitestkit_sdk
 
 `src/share` 与 `src/renderer/icon` 已由固定上游快照转为普通跟踪目录；来源见 `vendor/manifest.json`。只有检出 v1.0.3 或更早 tag 才需要按该版本指南初始化子模块。
 
-仓库要求 Node >=22.12.0，CI 使用 Node 22。`package-lock.json` 随仓库跟踪，日常安装使用 `npm ci`，postinstall 自动编译本地 HDC/Luna；更改依赖时使用 `npm install` 并同时提交锁文件。Electron 固定为 45.0.0，标题栏依赖使用兼容它的 4.4.1 系列。
+仓库要求 Node >=22.12.0，CI 使用 Node 22。`package-lock.json` 随仓库跟踪，日常安装使用 `npm ci`，postinstall 自动编译本地 HDC/Licia/Luna；更改依赖时使用 `npm install` 并同时提交锁文件。Electron 固定为 45.0.0，标题栏依赖使用兼容它的 4.4.1 系列。
 
 ## 首次准备与启动
 
@@ -54,7 +54,7 @@ npm start
 
 | 命令 | 作用 / 前提 |
 | --- | --- |
-| `npm run build:vendor` | 从本仓 TS/SCSS 编译 HDC/Luna；不联网、不运行上游安装脚本；不等于完整类型检查 |
+| `npm run build:vendor` | 从本仓源码编译 HDC/Licia/Luna；不联网、不运行上游安装脚本；不等于完整类型检查 |
 | `npm test` | Node test runner 执行 `test/*.test.cjs`，需要已安装 npm 依赖 |
 | `npm run lint` | ESLint 检查 `src` 下 ts/tsx；包括内置共享代码 |
 | `npm run build:main` | Vite 将主进程打为 `dist/main/index.js`，预先编译本地依赖并使用内置共享源码 |

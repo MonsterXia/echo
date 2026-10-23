@@ -1,0 +1,76 @@
+{
+  "name": "licia",
+  "version": "1.49.0",
+  "description": "Useful utility collection with zero dependencies",
+  "bin": {
+    "licia": "./bin/licia.js"
+  },
+  "scripts": {
+    "test:licia": "nyc mocha .licia/test",
+    "postinstall": "node ./lib/setup",
+    "ci": "licia lint && npm run lint && npm run build && npm run es5 && npm run lint:release && npm test",
+    "update": "licia update",
+    "es5": "node ./lib/es5",
+    "build": "licia build && npm run format:pkg && copyfiles -u 2 .licia/packages/licia/* node_modules",
+    "lint": "eslint -c eslint.src.js lib/**/*.js lib/*.js bin/*.js --fix",
+    "lint:release": "eslint -c eslint.release.js .licia/packages/licia-src/*.js --no-ignore",
+    "test": "npm run test:node && npm run test:browser && npm run test:release && npm run test:ts",
+    "demo": "licia demo",
+    "karma": "karma",
+    "mocha": "mocha",
+    "format": "prettier \"*.js\" \"lib/**/*.js\" \"lib/*.js\" \"bin/*.js\" --write && licia format",
+    "format:pkg": "prettier \".licia/packages/**/*.{js,d.ts}\" \".licia/packages/**/**/*.js\" --write",
+    "test:node": "licia test -s",
+    "test:browser": "licia test -bs",
+    "test:release": "copyfiles -u 2 .licia/packages/licia/* .licia/node_modules && licia test -r",
+    "test:sauce": "licia test -bs --sauce",
+    "test:ts": "licia test -s --ts && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/licia.git"
+  },
+  "keywords": [
+    "eustia",
+    "util"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/licia/issues"
+  },
+  "homepage": "https://github.com/liriliri/licia#readme",
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-transform-arrow-functions": "^7.2.0",
+    "@babel/plugin-transform-block-scoping": "^7.5.5",
+    "@babel/plugin-transform-destructuring": "^7.5.0",
+    "@babel/plugin-transform-parameters": "^7.4.4",
+    "@babel/plugin-transform-shorthand-properties": "^7.2.0",
+    "@babel/plugin-transform-template-literals": "^7.4.4",
+    "@types/node": "^20.19.40",
+    "babel-plugin-istanbul": "^6.0.0",
+    "chai": "^4.2.0",
+    "copyfiles": "^2.1.1",
+    "cspell": "^4.0.55",
+    "es-check": "^6.2.1",
+    "eslint": "^8.57.1",
+    "eustia": "^0.9.0",
+    "eustia-component": "^0.0.3",
+    "execa": "^5.1.1",
+    "glob": "^7.1.4",
+    "karma": "^6.3.19",
+    "karma-babel-preprocessor": "^8.0.1",
+    "karma-chai-plugins": "^0.9.0",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-coverage-istanbul-reporter": "^2.1.1",
+    "karma-jquery": "^0.2.4",
+    "karma-mocha": "^1.3.0",
+    "karma-sauce-launcher": "^2.0.2",
+    "mocha": "^7.2.0",
+    "ncp": "^2.0.0",
+    "nyc": "^14.1.1",
+    "prettier": "^1.19.1",
+    "typescript": "^5.3.2"
+  }
+}

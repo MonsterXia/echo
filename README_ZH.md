@@ -69,7 +69,7 @@ npm ci
 npm run init
 ```
 
-`npm ci` 安装工具链并编译本地 HDC/Luna 包。Licia、HDC、Luna、共享 Electron 代码及图标源已纳入本仓库，当前源码无需初始化子模块。`npm run init` 仍下载 HDC 和 uitestkit 设备资源；源码修改与重编译见[本地依赖维护](vendor/README.md)。已发布的 v1.0.3 恢复 tag 保留旧依赖及子模块结构。
+`npm ci` 安装工具链并编译本地 HDC/Licia/Luna 包。Licia、HDC、Luna、共享 Electron 代码及图标源已纳入本仓库，当前源码无需初始化子模块。`npm run init` 仍下载 HDC 和 uitestkit 设备资源；源码修改与重编译见[本地依赖维护](vendor/README.md)。已发布的 v1.0.3 恢复 tag 保留旧依赖及子模块结构。
 
 在第一个终端启动开发构建：
 

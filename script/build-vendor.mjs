@@ -28,7 +28,7 @@ if (process.argv.includes('--watch')) {
   }
   for (const dir of packages) {
     const source = path.join(dir, 'src')
-    if (!fs.existsSync(source)) continue // Licia JS is consumed directly by Vite.
+    if (!fs.existsSync(source)) throw new Error(`Missing source directory: ${source}`)
     fs.watch(source, { recursive: true }, () => {
       clearTimeout(timer)
       timer = setTimeout(rebuild, 150)

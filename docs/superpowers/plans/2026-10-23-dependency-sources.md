@@ -3,7 +3,7 @@
 > **For agentic workers:** Use superpowers:executing-plans; implement in this session and obtain one fresh whole-branch review.
 
 **Goal:** Maintain the selected dependencies locally after publishing the immutable 1.0.3 recovery Release.
-**Architecture:** npm file dependencies retain package imports; local TS/SCSS builds prepare HDC/Luna, while Licia is maintained as unminified JS. Shared submodules become tracked source at their existing paths.
+**Architecture:** npm file dependencies retain package imports; local TS/SCSS builds prepare HDC/Luna; Licia's original JS modules embed dependencies and type definitions, which a local generator compiles into runtime modules, declarations and indexes. Shared submodules become tracked source at their existing paths.
 **Tech Stack:** Node 22, npm, TypeScript, Sass/PostCSS, existing Vite/Electron.
 **Spec:** ../specs/2026-10-23-dependency-sources-design.md
 
@@ -34,6 +34,8 @@ Transitive package resolution must stay local; stale compiled output must not ma
 - [ ] Request fresh whole-branch review, resolve findings, publish PR and record actual CI results without marking missing device checks complete.
 
 ## Ledger
+
+- User refinement (2026-10-24): select original Licia sources, tests and necessary generator for long-term adaptations instead of editing the npm output. Import 456 original modules and test fixtures, preserve upstream generator references, add source/type edit and stale-output regression tests, run the original Node tests with explicit external-fixture exclusions, then repeat clean install, runtime smoke, review and CI.
 
 - Release gate: complete. PR #54 merged; five CI checks and Build 39978114409 passed; all 14 Release assets matched SHA-256. v1.0.3 is public and immutable.
 - Design builder check: no important unanswered questions. User selected suggested scope; native implementation follows existing authorization.

@@ -69,7 +69,7 @@ npm ci
 npm run init
 ```
 
-`npm ci` installs the toolchain and compiles local HDC/Luna packages. Licia, HDC, Luna, shared Electron code and icon sources are tracked in this repository; current source builds need no submodule checkout. `npm run init` still downloads HDC and uitestkit device resources. See [local dependency maintenance](vendor/README.md) to edit and rebuild these sources. The published v1.0.3 recovery tag retains the old dependency/submodule structure.
+`npm ci` installs the toolchain and compiles local HDC/Licia/Luna packages. Licia, HDC, Luna, shared Electron code and icon sources are tracked in this repository; current source builds need no submodule checkout. `npm run init` still downloads HDC and uitestkit device resources. See [local dependency maintenance](vendor/README.md) to edit and rebuild these sources. The published v1.0.3 recovery tag retains the old dependency/submodule structure.
 
 Start the development build in one terminal:
 

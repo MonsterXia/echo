@@ -1,0 +1,24 @@
+/* Check if a year is a leap year.
+ *
+ * |Name  |Desc                       |
+ * |------|---------------------------|
+ * |year  |Year to check              |
+ * |return|True if year is a leap year|
+ */
+
+/* example
+ * isLeapYear(2000); // -> true
+ * isLeapYear(2002); // -> false
+ */
+
+/* module
+ * env: all
+ */
+
+/* typescript
+ * export declare function isLeapYear(year: number): boolean;
+ */
+
+exports = function(year) {
+    return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
+};

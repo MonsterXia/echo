@@ -5,6 +5,7 @@ import * as sass from 'sass'
 import postcss from 'postcss'
 import autoprefixer from 'autoprefixer'
 import selectorParser from 'postcss-selector-parser'
+import { buildLicia } from './licia-build.mjs'
 
 export function sourceFiles(dir) {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -85,7 +86,7 @@ function compile(packageDir, files, output, module, removeComments) {
 export async function buildPackage(packageDir) {
   packageDir = fs.realpathSync(packageDir)
   const pkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), 'utf8'))
-  if (pkg.name === 'licia') return
+  if (pkg.name === 'licia') return buildLicia(packageDir)
   const files = sourceFiles(path.join(packageDir, 'src')).filter((f) => /\.(ts|tsx|js)$/.test(f) && !f.endsWith('.d.ts'))
   if (!files.length) throw new Error(`No runtime source in ${pkg.name}`)
   if (pkg.name === 'hdckit') {

@@ -9,7 +9,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.cjs",
+    "test": "node --test test/*.test.cjs && node script/test-licia.mjs && node script/test-licia.mjs --fallback",
     "dev": "concurrently \"node script/build-vendor.mjs --watch --skip-initial\" \"npm run dev:main\" \"npm run dev:preload\" \"npm run dev:renderer\"",
     "dev:main": "vite build --watch --config vite.main.ts --mode=development",
     "dev:preload": "vite build --watch --config vite.preload.ts --mode=development",
@@ -32,7 +32,9 @@
     "predev": "npm run build:vendor",
     "prebuild:main": "npm run build:vendor",
     "prebuild:preload": "npm run build:vendor",
-    "prebuild:renderer": "npm run build:vendor"
+    "prebuild:renderer": "npm run build:vendor",
+    "test:licia": "node script/test-licia.mjs",
+    "pretest:licia": "npm run build:vendor"
   },
   "repository": {
     "type": "git",
@@ -53,6 +55,13 @@
   "homepage": "https://github.com/MonsterXia/scrcpy-harmony#readme",
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.779.0",
+    "@babel/core": "7.29.7",
+    "@babel/plugin-transform-arrow-functions": "7.29.7",
+    "@babel/plugin-transform-block-scoping": "7.29.7",
+    "@babel/plugin-transform-destructuring": "7.29.7",
+    "@babel/plugin-transform-parameters": "7.29.7",
+    "@babel/plugin-transform-shorthand-properties": "7.29.7",
+    "@babel/plugin-transform-template-literals": "7.29.7",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.3.4",
@@ -64,6 +73,7 @@
     "@xterm/xterm": "^5.5.0",
     "autoprefixer": "10.6.1",
     "axios": "^1.8.4",
+    "chai": "4.5.0",
     "concurrently": "^9.1.2",
     "custom-electron-titlebar": "^4.4.1",
     "electron": "45.0.0",
@@ -95,6 +105,7 @@
     "luna-virtual-list": "file:vendor/packages/luna-virtual-list",
     "mobx": "^6.13.6",
     "mobx-react-lite": "^4.1.0",
+    "mocha": "11.8.0",
     "playwright-core": "1.64.1",
     "postcss": "8.5.31",
     "postcss-selector-parser": "7.1.7",

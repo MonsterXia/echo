@@ -1,0 +1,102 @@
+/* Performs an optimized deep comparison between the two objects, to determine if they should be considered equal.
+ *
+ * |Name  |Desc                         |
+ * |------|-----------------------------|
+ * |val   |Value to compare             |
+ * |other |Other value to compare       |
+ * |return|True if values are equivalent|
+ */
+
+/* example
+ * isEqual([1, 2, 3], [1, 2, 3]); // -> true
+ */
+
+/* module
+ * env: all
+ */
+
+/* typescript
+ * export declare function isEqual(val: any, other: any): boolean;
+ */
+
+_('isFn has keys');
+
+exports = function(a, b) {
+    return eq(a, b);
+};
+
+function deepEq(a, b, aStack, bStack) {
+    const className = toString.call(a);
+    if (className !== toString.call(b)) return false;
+
+    switch (className) {
+        case '[object RegExp]':
+        case '[object String]':
+            return '' + a === '' + b;
+        case '[object Number]':
+            if (+a !== +a) return +b !== +b;
+            return +a === 0 ? 1 / +a === 1 / b : +a === +b;
+        case '[object Date]':
+        case '[object Boolean]':
+            return +a === +b;
+    }
+
+    const areArrays = className === '[object Array]';
+    if (!areArrays) {
+        if (typeof a != 'object' || typeof b != 'object') return false;
+
+        const aCtor = a.constructor;
+        const bCtor = b.constructor;
+        if (
+            aCtor !== bCtor &&
+            !(
+                isFn(aCtor) &&
+                aCtor instanceof aCtor &&
+                isFn(bCtor) &&
+                bCtor instanceof bCtor
+            ) &&
+            'constructor' in a &&
+            'constructor' in b
+        )
+            return false;
+    }
+    aStack = aStack || [];
+    bStack = bStack || [];
+    let length = aStack.length;
+    while (length--) if (aStack[length] === a) return bStack[length] === b;
+
+    aStack.push(a);
+    bStack.push(b);
+
+    if (areArrays) {
+        length = a.length;
+        if (length !== b.length) return false;
+        while (length--)
+            if (!eq(a[length], b[length], aStack, bStack)) return false;
+    } else {
+        const _keys = keys(a);
+        let key;
+        length = _keys.length;
+        if (keys(b).length !== length) return false;
+        while (length--) {
+            key = _keys[length];
+            if (!(has(b, key) && eq(a[key], b[key], aStack, bStack)))
+                return false;
+        }
+    }
+    aStack.pop();
+    bStack.pop();
+
+    return true;
+}
+
+function eq(a, b, aStack, bStack) {
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    if (a == null || b == null) return a === b;
+    if (a !== a) return b !== b;
+    const type = typeof a;
+    if (type !== 'function' && type !== 'object' && typeof b != 'object')
+        return false;
+
+    return deepEq(a, b, aStack, bStack);
+}

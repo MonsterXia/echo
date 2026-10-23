@@ -32,11 +32,10 @@ export function reloadVendor(root) {
     configureServer(server) {
       let timer
       const stamp = path.join(root, 'vendor/.build-stamp')
-      const licia = path.join(root, 'vendor/packages/licia') + path.sep
-      server.watcher.add([stamp, path.join(root, 'vendor/packages/licia')])
+      server.watcher.add(stamp)
       const changed = (file) => {
         const absolute = path.resolve(file)
-        if (absolute !== stamp && !(absolute.startsWith(licia) && absolute.endsWith('.js'))) return
+        if (absolute !== stamp) return
         clearTimeout(timer)
         timer = setTimeout(() => server.restart(true).catch(server.config.logger.error), 200)
       }
