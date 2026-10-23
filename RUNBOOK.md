@@ -57,7 +57,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[等待调查](docs/maintenance/M2-2-command-timeout.md)和[适配器](docs/maintenance/M2-2-cancellable-transport.md)后，[内存查询](docs/maintenance/M2-2-memory-deadline.md)与[屏幕查询](docs/maintenance/M2-2-screen-deadline.md)分别接入 10 秒和 15 秒截止；base.shell 及前序参数/deviceinfo 仍未限时，整个概览没有总截止，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[等待调查](docs/maintenance/M2-2-command-timeout.md)和[适配器](docs/maintenance/M2-2-cancellable-transport.md)后，[内存查询](docs/maintenance/M2-2-memory-deadline.md)与[屏幕查询](docs/maintenance/M2-2-screen-deadline.md)分别接入 10 秒和 15 秒截止；[握手兼容修复](docs/maintenance/M2-2-handshake-compat.md)已合并，支持 16/44 字节 hello；base.shell 及前序参数/deviceinfo 仍未限时，整个概览没有总截止，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 进行中 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 精确 PID/socket 发现、并发隔离和本地 HTTP 失败边界已有[合成回归与修复记录](docs/maintenance/M2-4-webview-discovery.md)；Pura 70 Pro / 5.1.0.150（API 17）及官方 Chrome 对照、空目标/断连恢复仍需真机验收。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；无线真机、物理断连重连及授权失败仍待验收。 |
@@ -305,10 +305,20 @@
 - 最终组合：通过普通 merge 同步已合并 #31 的 master `bd3e3c9`，无 rebase/force push，两个工作项记录均保留；全量 **221/221**、lint、build:main 通过。此后仅更新交接文档；仅在最终提交独立审查无阻断且五项 CI 通过后合并。
 - 前序参数/设备信息与后续屏幕查询仍未限时，服务启动保持原 hdckit 路径；终端/HiLog/投屏/写操作未迁移。协议严格度与预算需授权真机验收，M2-2 仍进行中。最终 SHA/PR/CI 由交付消息和 PR 正文承载，主对话完成独立 review、五项必需 CI 核验后统一合并；本分支不自行合并或操作设备。
 
+### M2-2 握手兼容修复
+
+- 2026-10-23 / Codex；基线 `8d1cfab`，独立分支 `codex/m2-handshake-compat`。主对话真机旧有限模块三次 4/2/2ms 在 handshake 拒绝，CLI 成功；脱敏 hello 长度 44、banner 匹配，定位为旧实现误限 16 字节。扩为仅 16/44，回复逐字节对齐锁定 hdckit，未知长度/截断仍拒绝，取消和端点不变；见[专报](docs/maintenance/M2-2-handshake-compat.md)。
+- 新接受用例修复前 1 通过/1 失败；适配器 42/42、44 字节实际内存链路 23/23，组合 65/65、全量 265/265、lint、单模块 strict TypeScript、build:main 通过。所有本分支网络测试仅随机回环合成数据。
+- 主对话 OS 临时诊断副本真机三次成功 162/158/162ms，仅作为诊断证据。正式候选 `f2e2f5ae091f28832fa642caacc39ea2f796a87a` 在 clean 工作树直接编译未修改的真实有限模块，单台授权手机内存读取三次成功 **170/159/178ms**；字段存在、total > 0、free <= total 且无明确错误，源码 SHA-256 见专报。未记录应用清单、原始 payload 或设备标识；仅验证有限模块与手机，不代表整个 getOverview、Electron IPC 或长期空闲验收。此次只补文档证据，不重复无关全量测试。
+- 手机由主对话独占；[PR #39](https://github.com/MonsterXia/scrcpy-harmony/pull/39) 最终 `3a08f8d` 经独立审查、正式候选手机复测及[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/39/checks)核验，由主对话合入 master `19c0d2b6df25c2b2ffe7fb4d03363bf90824bf9e`，本分支未自行合并/发布。#35 此后才通过普通 merge 同步并恢复。
+- 预算在负载下的校准、完整概览、断连恢复与长期空闲验收仍待办，M2-2 保持进行中。此前交接中的恰好 16 字节限制属于历史实现，以本轮源码和专报为准。
+
 ### M2-2 屏幕查询第二个有限接入
 
 - 2026-10-23 / Codex；基线 `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`，分支 `codex/m2-screen-deadline`。仅 getScreen 固定 hidumper 命令接入 finiteShell，独立 15 秒总预算给 RenderService 查询留出余量，尚未真机校准；复用共享端点及原前序启动路径，不迁移参数/deviceinfo、写操作或长连接。
 - 真实 getOverview/hdckit/finiteShell + 回环路径的屏幕专项先 13 失败/1 通过，接入后 14/14；抽取共用夹具，保留内存 23 项及环境端口语义，联合 37/37。五阶段截止、socket 释放、迟到输出、明确错误和再次刷新恢复通过；实际 15 秒截止约 15021ms。全量 264/264、lint、build:main 通过，详见[专项报告](docs/maintenance/M2-2-screen-deadline.md)。
+- #39 合入后普通 merge 同步 master `19c0d2b`，保留握手协议及真机证据；共享 overview-fixture 从 16 改为合成 44 字节 hello。适配器/内存/屏幕组合 **79/79**、全量 **279/279**、lint、build:main 通过，实际屏幕截止约 15020ms；没有修改已合并的 finiteShell 生产实现。PR #39 内存真机结果不作为屏幕或完整概览验收。
+- 主对话通过 TypeScript AST 提取未改 `getScreen` 及端点/预算声明，绑定真实 finiteShell 在单台授权手机读取三次，合法分辨率结果 **433/195/152ms**；未改实现或预算，未记录实际分辨率、设备 key 或原始输出。仅为源码函数提取+真机，不是完整 getOverview handler/Electron IPC 或长期空闲验收。源码哈希及 finiteShell 与 #39 同 Git blob、仅 CRLF/LF 导致本地哈希变化的证据见专报；此后只补文档，不重跑已通过的组合全量。
 - 内存与屏幕预算分别计时，整个概览仍无总截止；协议兼容、预算、长期空闲及真机监听释放待验收，M2-2 保持进行中。最终 SHA/PR/审查/五项 CI 由交付消息和 PR 页面核验；仅在最终提交独立审查无阻断且五项 CI 通过后由主对话合并，不自行合并或发布。未操作真实 HDC、真机/HAP，不采集内部应用信息。
 
 ### M3-3 用户与构建说明推进

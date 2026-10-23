@@ -54,7 +54,8 @@ async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = 
     const memoryProbe = index === 5
     const screenProbe = index === 7
     if (!(state.stall === 'handshake' && memoryProbe) && !(state.screenStall === 'handshake' && screenProbe)) {
-      const hello = Buffer.alloc(16); hello.write('OHOS HDC'); socket.write(frame(hello))
+      // Synthetic payload with the 44-byte length observed on a real server.
+      const hello = Buffer.alloc(44); hello.write('OHOS HDC'); socket.write(frame(hello))
     }
     let buffer = Buffer.alloc(0), handshaken = false
     socket.on('data', (chunk) => {
