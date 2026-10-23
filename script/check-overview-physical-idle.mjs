@@ -14,7 +14,7 @@ import os from 'node:os'
 import { setTimeout as delay } from 'node:timers/promises'
 import { performance } from 'node:perf_hooks'
 import { _electron as electron } from 'playwright-core'
-import { createResponseSummary } from './lib/hdc-response-summary.mjs'
+import { createResponseTrace } from './lib/hdc-response-trace.mjs'
 
 assert.ok(process.argv[2], 'Pass an evidence directory')
 const idleSeconds = Number(process.argv[3] || 600)
@@ -41,7 +41,7 @@ let droppedTraces = 0
 let blocked = 0, application, child, deadline
 const server = net.createServer(downstream => {
   const connectionId = ++nextConnectionId
-  let trace, summary, responseBuffer = Buffer.alloc(0)
+  let trace, responseTrace
   const elapsed = () => Math.round(performance.now() - traceStart)
   const upstream = net.connect({ host: '127.0.0.1', port: upstreamPort })
   // Only inspect allowlisted shell replies after the request was forwarded.
@@ -50,18 +50,7 @@ const server = net.createServer(downstream => {
     if (!trace) return
     trace.firstDataMs ??= elapsed() - trace.startedMs
     trace.lastDataMs = elapsed() - trace.startedMs
-    responseBuffer = Buffer.concat([responseBuffer, chunk])
-    while (responseBuffer.length >= 4) {
-      const size = responseBuffer.readUInt32BE(0)
-      if (size > 16 * 1024 * 1024) {
-        trace.invalidFraming = true
-        responseBuffer = Buffer.alloc(0)
-        downstream.destroy(); upstream.destroy(); return
-      }
-      if (responseBuffer.length < size + 4) return
-      summary.accept(responseBuffer.subarray(4, size + 4))
-      responseBuffer = responseBuffer.subarray(size + 4)
-    }
+    responseTrace.accept(chunk)
   })
   upstream.on('end', () => { if (trace) trace.upstreamEnded = true })
   upstream.on('error', () => { if (trace) trace.upstreamError = true })
@@ -69,8 +58,8 @@ const server = net.createServer(downstream => {
   upstream.on('close', () => {
     if (!trace) return
     Object.assign(trace, { closed: true, elapsedMs: elapsed() - trace.startedMs,
-      response: summary.result(), partialFrameAtClose: responseBuffer.length > 0 })
-    responseBuffer = Buffer.alloc(0)
+      ...responseTrace.result() })
+    responseTrace.disable()
   })
   for (const socket of [downstream, upstream]) {
     sockets.add(socket)
@@ -93,12 +82,16 @@ const server = net.createServer(downstream => {
       if (!commands.has(command)) { blocked++; downstream.destroy(); upstream.destroy(); return }
       counts[command.trim()]++
       if (command.startsWith('shell ')) {
-        if (trace) { blocked++; downstream.destroy(); upstream.destroy(); return }
-        summary = createResponseSummary(command)
-        trace = { connectionId, phase: report.phase || 'startup',
-          command: command.trim(), startedMs: elapsed(), closed: false, upstreamEnded: false }
-        if (commandTraces.length < 2000) commandTraces.push(trace)
-        else droppedTraces++
+        if (trace) {
+          trace.multipleCommands = true
+          responseTrace.disable()
+        } else {
+          responseTrace = createResponseTrace(command)
+          trace = { connectionId, phase: report.phase || 'startup',
+            command: command.trim(), startedMs: elapsed(), closed: false, upstreamEnded: false }
+          if (commandTraces.length < 2000) commandTraces.push(trace)
+          else droppedTraces++
+        }
       }
       upstream.write(frame)
     }
@@ -126,7 +119,7 @@ try {
     'src/main/lib/hdc/parameters.ts', 'src/renderer/main/components/overview/Overview.tsx',
     'src/renderer/main/store/index.ts', 'src/preload/main.ts',
     'dist/main/index.js', 'dist/preload/index.js', 'script/check-overview-physical-idle.mjs',
-    'script/lib/hdc-response-summary.mjs']
+    'script/lib/hdc-response-summary.mjs', 'script/lib/hdc-response-trace.mjs']
   const rendererRoot = path.join(root, 'dist/renderer')
   for (const entry of await readdir(rendererRoot, { recursive: true, withFileTypes: true })) {
     if (entry.isFile()) files.push(path.relative(root, path.join(entry.parentPath, entry.name)).replaceAll('\\', '/'))

@@ -61,6 +61,40 @@ test('requires bracketed six-digit codes and preserves target error priority', a
   }
 })
 
+test('echo probe matches production E000004 substring retries across every frame split', async () => {
+  const { createResponseSummary } = await loaded
+  for (const response of ['E000004', '[Fail] E000004', 'ready\nE000004', 'prefixE000004suffix', 'E0000044']) {
+    for (let split = 0; split <= response.length; split += 1) {
+      const summary = createResponseSummary('shell echo ready\n')
+      summary.accept(Buffer.from(response.slice(0, split)))
+      summary.accept(Buffer.alloc(0))
+      summary.accept(Buffer.from(response.slice(split)))
+      summary.accept(Buffer.from('SYNTHETIC_SECRET'))
+      assert.deepEqual(summary.result(), {
+        category: 'target-not-ready', bytes: Buffer.byteLength(response) + 16, frames: 4,
+      }, `${response} split ${split}`)
+      assert.equal(JSON.stringify(summary.result()).includes('SYNTHETIC_SECRET'), false)
+    }
+    const summary = createResponseSummary('shell echo ready\n')
+    for (const byte of Buffer.from(response)) summary.accept(Buffer.from([byte]))
+    assert.equal(summary.result().category, 'target-not-ready')
+  }
+})
+
+test('non-echo shell responses still require bracketed target-not-ready codes', async () => {
+  const { createResponseSummary } = await loaded
+  for (const command of [COMMAND, 'shell SP_daemon -deviceinfo', 'shell uname -a', 'shell cat /proc/meminfo', 'shell hidumper -s RenderService -a screen']) {
+    for (const [response, category] of [
+      ['E000004', 'output'], ['prefixE000004suffix', 'output'],
+      ['[Fail] E000004', 'command-error'], ['[E000004]', 'target-not-ready'],
+    ]) {
+      const summary = createResponseSummary(command)
+      for (const byte of Buffer.from(response)) summary.accept(Buffer.from([byte]))
+      assert.equal(summary.result().category, category)
+    }
+  }
+})
+
 test('echo readiness requires exactly ready with optional surrounding whitespace', async () => {
   const { createResponseSummary } = await loaded
   for (const value of ['ready', '\r\n ready\n', '\tready\r\n']) {

@@ -27,6 +27,9 @@ export function createResponseSummary(command) {
   if (!COMMANDS.has(command)) throw new TypeError('Unsupported diagnostic command')
   const shell = command.startsWith('shell ')
   const echo = command === 'shell echo ready\n'
+  // Echo readiness retries use includes('E000004') in the production transport.
+  // Ordinary shell output still requires brackets to avoid matching data values.
+  const targetMarker = echo ? 'E000004' : '[E000004]'
   let bytes = 0
   let frames = 0
   let failPosition = 0
@@ -48,8 +51,8 @@ export function createResponseSummary(command) {
       for (let index = 0; index < payload.length; index += 1) {
         const byte = payload[index]
         if (!targetNotReady) {
-          targetPosition = advance('[E000004]', targetPosition, byte)
-          if (targetPosition === 9) targetNotReady = true
+          targetPosition = advance(targetMarker, targetPosition, byte)
+          if (targetPosition === targetMarker.length) targetNotReady = true
         }
         if (!commandError) {
           failPosition = advance('[Fail]', failPosition, byte)
