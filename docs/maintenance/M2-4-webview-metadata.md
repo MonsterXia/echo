@@ -29,3 +29,5 @@
 ## 状态与下一步
 
 局部修复和本地验证已完成，最终提交的独立 OpenAI（GPT-6）Review 与五项必需 CI 待主对话安排，再决定合并。M2-4 保持进行中，真实 WebView/Chrome 对照、断连恢复和 DevTools 加载仍待授权验收。
+
+整合补充：初始 `61026be` 已获 [独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/51#pullrequestreview-5629990151)，但早期 CI 的既有响应追踪 GC 测试失败，不能将此前本地 430/430 等同首轮 CI 成功。修复该测试的 [#52](https://github.com/MonsterXia/scrcpy-harmony/pull/52) 已独立审查、五项 CI 通过并合入 master `b755306eb4e388053a0eab2f8ee7321b316793dd`；本分支普通 merge 同步，保留双方 RUNBOOK，WebView 实现和测试均未变。同步后 WebView 与响应诊断组合 41/41、全量 431/431、lint 通过；最终候选仍需增量独审及重新运行的五项 CI。本轮无设备访问。
