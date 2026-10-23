@@ -439,3 +439,10 @@
 - [#46 枚举参数有限读取](https://github.com/MonsterXia/scrcpy-harmony/pull/46)最终 `55f6679` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/46#pullrequestreview-5629063710)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/46/checks)通过后合并为 `e0c95ba`。独立相关回归 54/54、有限传输 42/42，无共享子模块快照 54/54；单条参数命令实际约 10013ms 截止并关闭连接，组合全量 393/393、lint 和构建通过。host listTargets/初始化仍无截止，不能声称整体枚举已限时。
 - 合入上述两项后，生产源码等同 `e0c95ba` 的检出 `5e1b8ca` 重新构建并复测真实概览 IPC/UI：7 次成功、1522–1808ms，内存/屏幕四个受控故障均恢复；单独归档于上述报告。这轮未重复物理拔插与 10 分钟空闲，不能把旧基线证据自动外推到新提交。并行作者和独立审查均未操作手机。
 - 下一步：优先定位物理重连前两轮的失败分类和累积等待；继续收集原复现时长及面板负载/监听释放证据。M2-2/M2-5 保持进行中，无线连接及授权失败待验收，M1-2/M1-3 仍受 bilibili HAP 缺失和图标权限边界限制。新增记录无设备标识、原始日志或内部应用信息，本轮不发布版本。
+
+### M2-2 / M2-3 主进程关窗与捕获监听审计
+
+- 2026-10-23 / Codex；基线 `4f514989`，独立分支 `codex/capture-close-lifecycle`。核对 renderer 销毁与真实窗口生命周期的既有边界，见[专项报告](docs/maintenance/M2-3-main-capture-close.md)。没有启动 Electron/HDC、连接设备或读取应用清单；所有传输和帧均为合成样本。
+- 最小修复：直接 destroy 绕过 close 时，模块级窗口引用原先不清空，重开会访问已销毁窗口。把引用清理及主窗恢复移到 closed，保留原 close 销毁行为。回归先为 2 通过/3 失败，修复后 5/5；布局组合 8/8，全量 398/398、lint 和 build:main 通过。事件来自替身，不替代实际 Electron 验收。
+- 捕获审计仍发现缺口：完成捕获关窗、迟到 start 回复和 stop 拒绝后均残留 1 个真实 UiDriver 监听；关窗未发 stop，重开可接收旧会话的合成帧。成功 stop 对照清零。`node script/audit-capture-close.cjs` 可重复观察；命令成功仅表示探测完成，不表示缺陷已修复。
+- 状态 / 下一步：M2-2/M2-3 保持进行中。主进程没有跨 renderer 的 owner/session/顺序协议，不能直接在 close 增加 stop 并声称安全停止；须另行设计旧 owner 与新捕获隔离、迟到启动补偿和停止失败语义。本 PR 仅窗口引用修复、证据和文档，最终独立审查、五项必需 CI 与合并由主对话负责，不自行合并或发布。
