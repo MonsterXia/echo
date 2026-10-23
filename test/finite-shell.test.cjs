@@ -23,11 +23,12 @@ function frame(data) {
   size.writeUInt32BE(value.length)
   return Buffer.concat([size, value])
 }
-function hello() {
-  const data = Buffer.alloc(16)
+function hello(size = 16) {
+  const data = Buffer.alloc(size)
   data.write('OHOS HDC')
   data.set([1, 2, 3, 4], 8)
   data.writeUInt32BE(123, 12)
+  if (size > 16) data.fill(0xa5, 16)
   return frame(data)
 }
 function load(filename, overrides = {}, ts = false, runtime = {}) {
@@ -50,7 +51,7 @@ async function bounded(promise, ms = 1500) {
 }
 function outcome(promise) { return promise.then((value) => ({ value }), (error) => ({ error })) }
 
-async function fixture(t, { greet = true, onCommand, connectStalls = false, writeStalls = false, fragmentReads = false } = {}) {
+async function fixture(t, { greet = true, greeting = hello(), onCommand, connectStalls = false, writeStalls = false, fragmentReads = false } = {}) {
   const clients = [], peers = [], commands = [], handshakes = [], heldWrites = []
   const timers = new Set(), controllers = []
   const accepted = deferred(), ready = deferred(), command = deferred(), writing = deferred()
@@ -75,7 +76,7 @@ async function fixture(t, { greet = true, onCommand, connectStalls = false, writ
         else socket.end(frame(text === READY ? 'ready\n' : 'value\n'))
       }
     })
-    if (greet) socket.write(hello())
+    if (greet) socket.write(greeting)
   })
   t.after(async () => {
     stopping = true
@@ -143,6 +144,74 @@ async function fixture(t, { greet = true, onCommand, connectStalls = false, writ
   return { run: (options = {}, cmd = 'echo synthetic', target = key) => run(target, cmd, {
     host: '127.0.0.1', port, timeoutMs: 2000, ...options,
   }), clients, peers, commands, handshakes, accepted, ready, command, writing, heldWrites, server, timers, controllers }
+}
+
+for (const size of [16, 44]) {
+  test(`accepts ${size}-byte hello and replies exactly as locked hdckit`, async (t) => {
+    const greeting = hello(size)
+    const f = await fixture(t, { greeting, fragmentReads: true })
+    assert.equal(await f.run(), 'value\n')
+    const { default: ChannelHandShake } = require(path.join(path.dirname(require.resolve('hdckit')), 'hdc/ChannelHandShake.js'))
+    const reference = new ChannelHandShake()
+    reference.deserialize(greeting.subarray(4)); reference.connectKey = key
+    assert.equal(reference.channelId, 123)
+    assert.equal(f.handshakes.length, 2)
+    for (const reply of f.handshakes) {
+      assert.equal(reply.length, 44)
+      assert.deepEqual(reply, reference.serialize())
+    }
+    assert.deepEqual(f.commands, [READY, COMMAND])
+    assert.ok(f.clients.every((s) => s.closed))
+  })
+}
+
+for (const size of [0, 8, 15, 17, 43, 45, 64]) {
+  test(`rejects unsupported ${size}-byte hello before sending any command`, async (t) => {
+    const payload = Buffer.alloc(size)
+    hello().subarray(4).copy(payload)
+    const f = await fixture(t, { greeting: frame(payload) })
+    const result = await outcome(f.run())
+    assert.equal(result.error?.code, 'HDC_COMMAND_PROTOCOL')
+    assert.equal(result.error.stage, 'handshake')
+    assert.deepEqual(f.handshakes, []); assert.deepEqual(f.commands, [])
+    assert.ok(f.clients.every((s) => s.closed))
+  })
+}
+
+for (const invalid of ['truncated-frame', 'wrong-banner']) {
+  test(`rejects 44-byte hello with ${invalid}`, async (t) => {
+    const f = await fixture(t, { greet: false })
+    const pending = outcome(f.run()), peer = await f.accepted.promise
+    const greeting = hello(44)
+    if (invalid === 'wrong-banner') greeting.write('BAD HDC!', 4)
+    peer.end(invalid === 'truncated-frame' ? greeting.subarray(0, 20) : greeting)
+    assert.equal((await pending).error?.code, 'HDC_COMMAND_PROTOCOL')
+    assert.ok(f.clients.every((s) => s.closed))
+    assert.deepEqual(f.handshakes, [])
+  })
+}
+
+for (const phase of ['ready', 'read']) {
+  for (const cancel of ['abort', 'timeout']) {
+    test(`44-byte hello retains ${phase} ${cancel} and resource cleanup`, async (t) => {
+      const f = await fixture(t, { greeting: hello(44), onCommand(socket, cmd) {
+        if (phase === 'ready' || cmd === COMMAND) return
+        socket.end(frame('ready\n'))
+      } })
+      const controller = new AbortController()
+      const pending = outcome(f.run({ signal: controller.signal, timeoutMs: cancel === 'timeout' ? 100 : 2000 }))
+      await (phase === 'ready' ? f.ready : f.command).promise
+      if (cancel === 'abort') controller.abort()
+      const result = await bounded(pending)
+      assert.equal(result.error?.code, cancel === 'abort' ? 'HDC_COMMAND_ABORTED' : 'HDC_COMMAND_TIMEOUT')
+      assert.equal(result.error.stage, phase)
+      assert.ok(f.clients.every((s) => s.closed))
+      assert.equal(f.timers.size, 0)
+      assert.equal(getEventListeners(controller.signal, 'abort').length, 0)
+      for (const c of f.controllers) assert.equal(getEventListeners(c.signal, 'abort').length, 0)
+      if (phase === 'ready') assert.ok(!f.commands.includes(COMMAND))
+    })
+  }
 }
 
 test('deadline destroys a silent handshake and rejects before returning to caller', { timeout: 4000 }, async (t) => {
