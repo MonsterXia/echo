@@ -7,7 +7,6 @@ import LunaToolbar, {
 } from 'luna-toolbar/react'
 import { useEffect, useRef, useState } from 'react'
 import { t } from 'common/util'
-import toEl from 'licia/toEl'
 import LunaDataGrid from 'luna-data-grid/react'
 import map from 'licia/map'
 import className from 'licia/className'
@@ -61,11 +60,13 @@ export default observer(function Webview() {
           : []
         if (!isCurrent()) return
         const rows = map(webviews, (webview: any) => {
-          const title = webview.faviconUrl
-            ? toEl(
-                `<span><img src="${webview.faviconUrl}" />${webview.title}</span>`,
-              )
-            : webview.title
+          let title = webview.title
+          if (webview.faviconUrl) {
+            title = document.createElement('span')
+            const icon = document.createElement('img')
+            icon.src = webview.faviconUrl
+            title.append(icon, document.createTextNode(webview.title))
+          }
 
           return {
             ...webview,
