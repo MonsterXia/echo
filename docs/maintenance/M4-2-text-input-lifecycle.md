@@ -36,6 +36,12 @@
 
 修正只移除夹具对共享图标源码的依赖，使用始终一致的展示适配层将 onClick/disabled/state 传给真实 LunaToolbarButton；生产 Toolbar、测试断言和工作流不变，没有缺文件时跳过或降级断言。在本工作树 ignored dist 内用原候选 `git archive` 创建不含子模块的源码快照，旧夹具复现相同 ENOENT；仅覆盖修正后的测试文件，同一快照专项 **14/14**、完整 **327/327** 通过（0 失败/取消/跳过/TODO）。快照使用本工作树的独立依赖；本机 Windows 验证不冒充 Ubuntu CI 通过，修订提交仍须最终五项 CI。此增量未重复 renderer 构建或修改生产代码，等待队列通知后再普通同步 master。
 
+### 合入 #43 后的整合验证
+
+主对话确认 `7f9e37e082bb2d399dc3ffb9a764cf82877ec77e` 已完成独立增量复审，专项 14/14 及禁止读取 src/share 的复验 14/14 通过，且该提交五项必需 CI 全部成功。随后按队列普通 merge 已合并 #43 的 master `16449d83c75a3deb28e81877bd54fd607a031094`，没有 rebase 或 force push，RUNBOOK 和架构记录自动合并且完整保留双方内容。
+
+合并后的完整 `npm test` **361/361**（包含文本 14 项、overview 新增 34 项），0 失败/取消/跳过/TODO；`npm run lint`、`npm run build:renderer` 通过，仍仅 Vite/Sass/eval/chunk 警告。文本 Toolbar 与专项测试相对 `7f9e37e` 未变；#43 的生产代码、测试与证据保留主干版本。此轮仅本地合成回归，没有操作 HDC/手机或执行主对话的真机脚本，不将 #43 的设备证据外推为文本输入验收。此后仅补整合交接文档；最终 SHA、增量 review 与五项 CI 以 [PR #42](https://github.com/MonsterXia/scrcpy-harmony/pull/42)及[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/42/checks)为准，不能沿用 `7f9e37e` 的 CI 宣称合并提交已通过。
+
 ## 边界与下一步
 
 - 已发送写入不被取消；切换目标仅隔离 UI 后续结果。底层无回复时当前按钮保持忙碌，不添加 Promise.race、超时重发或“已取消”提示，也不承诺输入是否已经到达设备。

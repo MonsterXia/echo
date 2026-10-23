@@ -13,7 +13,7 @@ import trim from 'licia/trim'
 import os from 'node:os'
 import process from 'node:process'
 import { shell } from './hdc/base'
-import { getTargetParameters } from './hdc/parameters'
+import { getTargetParameters, parseTargetParameters } from './hdc/parameters'
 import { runFiniteShell } from './hdc/finiteShell'
 import * as shellHdc from './hdc/shell'
 import * as base from './hdc/base'
@@ -48,6 +48,10 @@ if (HDC_ENDPOINT.port < 1 || HDC_ENDPOINT.port > 65535) {
 const MEMORY_TIMEOUT_MS = 10_000
 // Allow more headroom for RenderService work; still pending device calibration.
 const SCREEN_TIMEOUT_MS = 15_000
+// Separate conservative budgets for overview metadata, pending device calibration.
+const PARAMETERS_TIMEOUT_MS = 10_000
+const DEVICE_INFO_TIMEOUT_MS = 15_000
+const KERNEL_TIMEOUT_MS = 10_000
 
 const settingsStore = getSettingsStore()
 
@@ -110,13 +114,24 @@ function parameterString(value: unknown): string {
 }
 
 const getOverview: IpcGetOverview = async function (connectKey) {
-  const target = client.getTarget(connectKey)
-
-  const parameters = await getTargetParameters(target)
-  const [deviceInfo, kernelVersion] = await shell(connectKey, [
+  // Service startup remains owned by initialization/enumeration. An unavailable
+  // server rejects this request; never fall back to unbounded shell here.
+  const parameters = parseTargetParameters(
+    await runFiniteShell(connectKey, 'param get', {
+      ...HDC_ENDPOINT,
+      timeoutMs: PARAMETERS_TIMEOUT_MS,
+    })
+  )
+  const deviceInfo = await readOverviewInfo(
+    connectKey,
     'SP_daemon -deviceinfo',
+    DEVICE_INFO_TIMEOUT_MS
+  )
+  const kernelVersion = await readOverviewInfo(
+    connectKey,
     'uname -a',
-  ])
+    KERNEL_TIMEOUT_MS
+  )
 
   return {
     name: parameters['const.product.name'],
@@ -129,6 +144,21 @@ const getOverview: IpcGetOverview = async function (connectKey) {
     ...(await getMemory(connectKey)),
     ...(await getScreen(connectKey)),
   }
+}
+
+async function readOverviewInfo(
+  connectKey: string,
+  command: string,
+  timeoutMs: number
+) {
+  const output = await runFiniteShell(connectKey, command, {
+    ...HDC_ENDPOINT,
+    timeoutMs,
+  })
+  if (/^\s*(?:\[Fail\]|\[E\d{6}\]|error:)/im.test(output)) {
+    throw new Error('HDC device information command failed')
+  }
+  return trim(output)
 }
 
 async function getScreen(connectKey: string) {
@@ -159,8 +189,7 @@ async function getScreen(connectKey: string) {
 }
 
 async function getMemory(connectKey: string) {
-  // Earlier overview queries retain hdckit's server-start behavior. Do not fall
-  // back to unbounded shell or retry a failed memory request here.
+  // Do not fall back to unbounded shell or retry a failed memory request here.
   const memInfo = await runFiniteShell(connectKey, 'cat /proc/meminfo', {
     ...HDC_ENDPOINT,
     timeoutMs: MEMORY_TIMEOUT_MS,
