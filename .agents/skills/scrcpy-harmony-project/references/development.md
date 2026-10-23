@@ -91,6 +91,8 @@ npm start
 
 `test/screencast.test.cjs` 使用 Node 内置 `node:test`、`esbuild` 和 `node:vm` 加载真实 `ScreencastClient`。仅替换 Electron bridge、store、DOM Canvas 和图像加载边界，不需要启动 Electron、连接设备或准备 HDC 资源，也不依赖共享子模块实现。
 
+`test/screencast-window-lifecycle.test.cjs` 在 Electron 事件边界验证真实主进程窗口模块的关闭、直接销毁和重开。`node script/audit-capture-close.cjs` 额外运行真实捕获处理器及 hdckit start/stop/Emitter，输出合成关窗后监听残留和旧帧路由观测；这是诊断探针，命令成功不表示捕获停止已通过。两者不依赖 `src/share`、Electron runtime 或设备，范围和待办见 [主进程关窗审计](../../../../docs/maintenance/M2-3-main-capture-close.md)。
+
 当前 8 个用例覆盖：半尺寸帧到全尺寸触摸、请求 scale 与流尺寸不一致、全尺寸帧、请求 scale 改变而画面尚未改变、横竖屏尺寸更新、边缘释放的坐标夹取、首帧前无触摸、无效设备尺寸无触摸。用例数量可能随源码变化，以实际测试输出为准。
 
 `test/build.test.cjs` 在带空格及 `&` 的临时路径中运行真实构建脚本，以 npm 替身验证发行目录、资源复制、元数据和子构建失败时立即停止；它不替代实际 Vite 构建、安装包生成及安装启动检查。
