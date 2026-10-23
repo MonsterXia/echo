@@ -417,3 +417,10 @@
 
 - #39/#35 的手机证据严格限于有限模块内存读取、AST 原样屏幕函数读取；不外推为完整 Electron IPC、整个 getOverview、完整用户流程或长期空闲通过。归档不包含设备标识、原始设备内容或内部应用信息。
 - [#40 文本输入评估](https://github.com/MonsterXia/scrcpy-harmony/pull/40)已完成最终 `800951e` 的 OpenAI GPT-6 独立审查和[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)，合并为 `427e255`。这只完成能力评估；M4-2 的剪贴板、输入目标语义、结果未知处理、长度策略及授权真机验收仍待验证。
+
+### 2026-10-23 完整概览验收与并行修复合入汇总
+
+- [#43 概览剩余只读查询截止](https://github.com/MonsterXia/scrcpy-harmony/pull/43)最终候选 `b24597c` 已获 [OpenAI GPT-6 独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/43#pullrequestreview-5628639471)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/43/checks)成功后合并为 `16449d8`。独立回归 142/142，加三条新增命令的实钟超时/关闭/恢复 3/3；getTargets 和其他旧命令未迁移。
+- 主对话独占手机，对正式生产候选 `f48256a` 完整构建执行真实 Electron preload/IPC/getOverview/UI 验收：完整读取 13 次成功、1421–1719ms；五阶段明确错误和无回复共 10 场景全部清空、关闭连接并恢复，页面错误与越界请求为 0。[完整报告、脚本与脱敏证据](docs/maintenance/M2-2-overview-live.md)随 [#44](https://github.com/MonsterXia/scrcpy-harmony/pull/44)归档，最终独立复审和 [CI](https://github.com/MonsterXia/scrcpy-harmony/pull/44/checks)以该提交检查页为准。错误由隔离代理合成，未做物理拔插；不采集应用清单、设备标识或原始日志。
+- [#42 文本工具栏等待与结果隔离](https://github.com/MonsterXia/scrcpy-harmony/pull/42)最终候选 `3774ec4` 已获 [OpenAI GPT-6 独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/42#pullrequestreview-5628695843)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/42/checks)成功后合并为 `d2b4e93`。等待 IPC、通用失败反馈、防重入和旧目标结果隔离已修复；早期 CI 的无子模块夹具依赖已修正，独立专项及禁止共享源码读取的运行均 14/14，合并组合全量 361/361、lint、renderer 构建通过。未进行文本写入或剪贴板真机操作。
+- 下一步：M2-2 保持进行中，补物理断连、负载预算与原复现时长的空闲/资源趋势；M4-2 完整输入目标语义和剪贴板能力仍暂缓。M1-2/M1-3 继续保留 bilibili HAP 缺失与图标权限边界。本轮不发布新版本，不将受控故障或无设备回归外推为这些待办已完成。
