@@ -10,6 +10,8 @@
 
 后续 [M2-2 / M2-3 主进程关窗审计](M2-3-main-capture-close.md)记录窗口引用的小修复及仍未解决的捕获监听/所有权缺口；证据仅为真实主进程逻辑加合成 Electron/transport 边界，不是真机关窗或停止验收。
 
+该缺口的后续[捕获会话所有权修复](M2-3-capture-ownership.md)与[实际 Electron 无设备验收](M2-3-capture-electron.md)补充了本地退订、旧 owner 隔离、真实窗口/IPC 生命周期证据；永久不返回的设备队列和真机停止确认仍有明确保留边界。
+
 ## 备份范围与读取方式
 
 解除 fork 前归档了本仓库 8 个 PR、上游 28 个 Issue 和 5 个 PR，共 41 个条目。保存内容包括正文、讨论评论、PR 审查、行内线程解决状态、提交和文件信息，以及 7 个附件；两个仓库当时均未启用 GitHub Discussions。

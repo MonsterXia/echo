@@ -25,7 +25,7 @@
 - `script/audit-capture-close.cjs` 已升级为当前本地释放回归探针：关窗/迟到/stop 拒绝/直接销毁监听均为 0，旧会话帧进入新窗口为 0。成功只证明合成边界；旧审计报告中的非零结果属于其基线历史。
 - 父对话独立实施[真实 Electron 无设备验收](M2-3-capture-electron.md)。初版暴露真实事件顺序为 BrowserWindow closed 先于 WebContents destroyed，closed 时尚有监听；已在原 destroy 处理器之前绑定 close 退订，并用 closed 覆盖直接 destroy，保留 WebContents destroyed 兜底。替身事件顺序随真实证据修正。真实验收的源码哈希、结果及边界见该报告和 JSON，不把先前版本的哈希作为最终候选。
 
-本地全套测试、lint、三个构建和最终组合数量见本轮 RUNBOOK 记录及 PR；构建保留既有 Vite CJS/Sass 弃用、Licia eval 和 chunk 大小警告，不等同于全项目类型检查。
+整合 master `913cd7f` 后，本地全量 **451/451**；禁止 Node `fs.readFileSync` 读取 `src/share` 后，窗口/会话/handler/renderer/坐标/布局专项 **60/60**，合成探针输出保持全 0。lint、main/preload/renderer 三个构建通过；保留既有 Vite CJS/Sass 弃用、Licia eval 和 chunk 大小警告，不等同于全项目类型检查。实际 Electron 45.0.0 的八项也在格式化后的最终生产源码上重跑通过，归档 JSON 中四个源文件哈希经现场核对。
 
 ## 未验证与下一步
 

@@ -484,3 +484,10 @@
 - 仅调整测试：隔离子进程临时观察实际 16MiB 分配后立即恢复分配函数，分别记录 Buffer 与底层 ArrayBuffer 的 WeakRef；最多 20 轮事件循环/GC 检查两者可回收，跨轮次释放 `deref()` 的临时保活。停用后的 8 个 8MiB 输入亦验证对象和 backing storage 可回收，解析器仍保持存活。取消瞬时全局计数断言，没有扩大允许保留的数据量或删除释放覆盖。
 - `node --test test/hdc-response-trace.test.cjs test/hdc-response-summary.test.cjs`：18/18；独立重复 30 轮全部通过（540 项测试）。故障注入分别强持有 partial Buffer、其 backing ArrayBuffer、后续输入 Buffer；三个子进程均在相应 20 轮回收断言以 exit 1 失败，30 轮共 90 次负对照均被捕获。`git diff --check` 通过；全程合成数据、Node 内置依赖，无设备/HDC/HAP 访问。
 - 下一步：父对话补已有依赖环境的组合全量验证、独立审查和 Ubuntu CI。当前只证明对象引用可释放，不声称进程 RSS 立即下降、真机长期无泄漏或 M2-2/M2-5 完成；本分支不合并或发布。
+
+### 2026-10-23 捕获修复整合与并行任务合入证据
+
+- 捕获实现分支普通 merge `913cd7ff1996ca10dda740fca434a3e0416ae19f`，只在 RUNBOOK 追加位置冲突并完整保留双方记录；整合父对话真实 Electron 验收脚本。最终组合全量 **451/451**，禁止共享源码读取的捕获专项 **60/60**，lint 及 main/preload/renderer 构建通过；当前本地释放探针各监听/旧帧计数均 0。格式化后的生产源码在实际 Electron 45.0.0 八项检查全部通过，已更新脱敏 JSON 的实际源文件哈希。只验证无设备与 Electron 生命周期，不外推手机捕获停止，M2-2/M2-3 保持进行中。
+- [#52 GC 回归稳定性](https://github.com/MonsterXia/scrcpy-harmony/pull/52)最终候选 `547147eff0466dd7cfc8c375fd1bc9ae09e4e417` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/52#pullrequestreview-5630067210)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/52/checks)成功后由主对话合并为 `b755306eb4e388053a0eab2f8ee7321b316793dd`。仅测试和记录变更，不证明 RSS 或真机长期无泄漏。
+- [#51 WebView 元数据展示](https://github.com/MonsterXia/scrcpy-harmony/pull/51)同步 #52 后的最终 `9a1d726` 已获 [OpenAI（GPT-6）增量独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/51#pullrequestreview-5630129811)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/51/checks)全部成功，主对话合并为 `913cd7ff1996ca10dda740fca434a3e0416ae19f`。早期 CI 失败仍保留在原条目；M2-4 真机 WebView/Chrome 对照与断连恢复继续待验收。
+- 捕获修复本身的最终独立审查与五项 CI 待 PR 核验，不沿用 #51/#52 的检查替代；本分支不自行合并或发布，未操作手机/HAP/应用清单。
