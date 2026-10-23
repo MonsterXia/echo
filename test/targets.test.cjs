@@ -29,7 +29,9 @@ async function loadTargets(client) {
       if (id === 'share/common/log') return () => logger
       if (id === 'share/main/lib/window') return { sendTo() {} }
       if (id === './store') return { getSettingsStore: () => ({ get: () => '' }) }
-      if (id === './hdc/parameters') return { getTargetParameters: (target) => target.getParameters() }
+      // Projection-only fixture: wire parsing and deadlines run in loopback suites.
+      if (id === './hdc/parameters') return { parseTargetParameters: (parameters) => parameters }
+      if (id === './hdc/finiteShell') return { runFiniteShell: (key) => client.readParameters(key) }
       if (id.startsWith('./hdc/')) return { init() {} }
       if (id.startsWith('node:') || id.startsWith('licia/') || id === 'fs-extra') return require(id)
       throw new Error(`Unexpected import: ${id}`)
@@ -50,12 +52,10 @@ const parameters = (version = 'PSN-AL00 7.0.0.109(SP6C00E105R3P3)') => ({
 })
 const clientFor = (entries) => ({
   listTargets: async () => Object.keys(entries),
-  getTarget(key) {
-    return { getParameters: async () => {
-      const entry = entries[key]
-      if (entry instanceof Error) throw entry
-      return entry
-    } }
+  async readParameters(key) {
+    const entry = entries[key]
+    if (entry instanceof Error) throw entry
+    return entry
   },
 })
 
@@ -71,10 +71,10 @@ test('a failed device does not hide healthy devices or change their order', asyn
   assert.ok(logs.some(({ level, args }) => level === 'warn' && args.includes('broken') && args.includes(error)))
 })
 
-test('a synchronous target lookup failure is isolated too', async () => {
+test('a synchronous parameter read failure is isolated too', async () => {
   const client = clientFor({ good: parameters(), gone: parameters() })
-  const lookup = client.getTarget
-  client.getTarget = (key) => {
+  const lookup = client.readParameters
+  client.readParameters = (key) => {
     if (key === 'gone') throw new Error('target disappeared')
     return lookup(key)
   }
