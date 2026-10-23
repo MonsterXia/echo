@@ -57,7 +57,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[适配器](docs/maintenance/M2-2-cancellable-transport.md)和[握手修复](docs/maintenance/M2-2-handshake-compat.md)后，概览内存/屏幕已有截止；[剩余元数据读取](docs/maintenance/M2-2-overview-deadlines.md)把 param/SP_daemon/uname 分别接入 10/15/10 秒预算，五条读取分别计时，没有统一概览截止。[完整 IPC 与恢复验收](docs/maintenance/M2-2-overview-live.md)已通过手机读取及 10 个合成故障场景；getTargets、其他 base.shell 和流式命令未迁移，长期空闲、物理断连及负载仍待验收。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[适配器](docs/maintenance/M2-2-cancellable-transport.md)和[握手修复](docs/maintenance/M2-2-handshake-compat.md)后，概览内存/屏幕已有截止；[剩余元数据读取](docs/maintenance/M2-2-overview-deadlines.md)把 param/SP_daemon/uname 分别接入 10/15/10 秒预算，五条读取分别计时，没有统一概览截止。[完整 IPC 与恢复验收](docs/maintenance/M2-2-overview-live.md)已通过手机读取及 10 个合成故障场景；本轮[枚举参数读取](docs/maintenance/M2-2-target-deadlines.md)接入逐设备 10 秒预算，host listTargets/初始化仍未限时，没有整个枚举统一截止；其他 base.shell 和流式命令未迁移，长期空闲、物理断连及负载仍待验收。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 进行中 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 精确 PID/socket 发现、并发隔离和 HTTP 失败边界见[发现专项](docs/maintenance/M2-4-webview-discovery.md)；renderer 卸载/隐藏后的迟到结果、失败恢复及选中目标更新已补[真实组件回归](docs/maintenance/M2-4-webview-lifecycle.md)。Pura 70 Pro / 5.1.0.150（API 17）及官方 Chrome 对照、空目标/断连恢复仍需真机验收。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；[端口弹窗读取生命周期](docs/maintenance/M2-5-port-mapping-lifecycle.md)已补隐藏读取、拒绝与迟到结果的真实组件回归。无线真机、物理断连重连及授权失败仍待验收。 |
@@ -327,6 +327,13 @@
 - 首批专项旧实现 32 失败/1 通过，接入后通过；补服务拒连/恢复后专项 34/34，含内存/屏幕/枚举组合 99/99，全量 347/347、lint、build:main 通过。合成回环覆盖三条命令五阶段截止、明确错误、截断/reset、socket 关闭及下一次恢复，不将基线真机结果直接归属本候选。
 - 代码候选 `f48256a` 由主对话完成隔离完整 build / Electron45 / 真实 preload→IPC→getOverview→UI 真机复测：完整 IPC 13 次成功 1421–1719ms；五条查询明确错误/无响应共 10 场景均清空旧详情、结束 spinner、故障命令单次发送、后续查询不启动、socket 关闭并恢复 UI/IPC，页面错误和越界命令均 0。无响应总耗时 10035/15608/11045/11604/16657ms，含前置步骤。注入故障不等于物理断连；仅只读设备，无写入或内部应用采集，完整脚本/JSON 由主对话另立 PR 归档，见专报。
 - 手机和 `script/check-overview-live.mjs` 由主对话独占，本分支未操作；候选后仅补文档。最终独立审查及五项必需 CI 按 PR 最终 SHA 核验后由主对话合并；预算校准、物理断连和长期空闲仍待验收，M2-2 保持进行中。
+
+### M2-2 逐设备枚举参数有限读取
+
+- 2026-10-23 / Codex；基线 `0bcbcca`，分支 `codex/m2-target-parameter-deadline`。仅 getTargets 的每设备 param get 复用 finiteShell、共享 parser/端点及 10 秒预算，保持并发、原列表顺序和单设备失败隔离；host listTargets、初始化和服务启动路径不变，没有整个枚举统一截止，见[专报](docs/maintenance/M2-2-target-deadlines.md)。
+- 旧 ready/read 无响应回归 2/2 失败；新专项 13/13、枚举/刷新组合 54/54、全量 374/374、lint、build:main 通过。独立 git archive 无子模块检出中同组 54/54 通过。五阶段截止、socket/timer 释放、明确错误、截断/reset、全部失败及下次恢复均为合成回环验证。
+- 普通 merge 同步已合并 #45 的 master `b918e2b`，保留端口弹窗生命周期与本轮枚举记录；组合全量 393/393、lint、build:main、build:renderer 通过。本轮枚举生产源码及专项测试未改，不将独立 `0bcbcca` 手机基线的重连现象归因于本次迁移。
+- 无真机/HDC 操作；主对话独占的物理断连与十分钟概览空闲验证另行归档，不外推为本候选参数传输验收。最终 PR/SHA 由主对话独立审查并核验五项必需 CI 后合并，本分支不自行合并/发布；host 等待、多设备真机、负载预算仍待后续，M2-2 保持进行中。
 
 ### M3-3 用户与构建说明推进
 
