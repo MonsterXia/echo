@@ -332,6 +332,7 @@
 
 - 2026-10-23 / Codex；基线 `0bcbcca`，分支 `codex/m2-target-parameter-deadline`。仅 getTargets 的每设备 param get 复用 finiteShell、共享 parser/端点及 10 秒预算，保持并发、原列表顺序和单设备失败隔离；host listTargets、初始化和服务启动路径不变，没有整个枚举统一截止，见[专报](docs/maintenance/M2-2-target-deadlines.md)。
 - 旧 ready/read 无响应回归 2/2 失败；新专项 13/13、枚举/刷新组合 54/54、全量 374/374、lint、build:main 通过。独立 git archive 无子模块检出中同组 54/54 通过。五阶段截止、socket/timer 释放、明确错误、截断/reset、全部失败及下次恢复均为合成回环验证。
+- 普通 merge 同步已合并 #45 的 master `b918e2b`，保留端口弹窗生命周期与本轮枚举记录；组合全量 393/393、lint、build:main、build:renderer 通过。本轮枚举生产源码及专项测试未改，不将独立 `0bcbcca` 手机基线的重连现象归因于本次迁移。
 - 无真机/HDC 操作；主对话独占的物理断连与十分钟概览空闲验证另行归档，不外推为本候选参数传输验收。最终 PR/SHA 由主对话独立审查并核验五项必需 CI 后合并，本分支不自行合并/发布；host 等待、多设备真机、负载预算仍待后续，M2-2 保持进行中。
 
 ### M3-3 用户与构建说明推进
