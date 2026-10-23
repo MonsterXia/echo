@@ -138,6 +138,8 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 
 `.github/workflows/sourcery-quota-comments.yml` 在默认分支监听 PR 顶层评论的 `issue_comment.created/edited`。只有 `sourcery-ai[bot]`（Bot 类型）且整段正文匹配已确认的额度耗尽模板时才删除；匹配限定本仓库账号、Sourcery billing 链接和 `rate_limit_hit`，金额与等待时长可变。普通审查、指南、混合正文、其他作者、Issue 和未知模板均保留。
 
-工作流不 checkout、不执行 PR 代码，只授予任务 `issues: write`；通过 `context.payload` 读取正文，删除前重新读取并核对作者、正文、评论 ID 和所属 PR。404 视为已删除，权限/其他错误使任务失败。事件发生于默认分支部署前的评论不回溯清理，未知新模板需先确认再更新；GET 与 DELETE 之间仍存在 GitHub API 不提供条件删除导致的短暂竞态。
+工作流不 checkout、不执行 PR 代码，只授予任务 `pull-requests: write`；通过 `context.payload` 读取正文，删除前重新读取并核对作者、正文、评论 ID 和所属 PR。PR 评论删除需要 PR 写权限；仅有 `issues: write` 的旧配置曾在实际运行中返回 403。404 视为已删除，权限/其他错误使任务失败。自动事件只检查触发它的单条评论，不扫描全库。
 
-`node --test test/sourcery-quota-comments.test.cjs` 直接执行 workflow 中的真实 JavaScript，只替换 GitHub I/O，覆盖删除、保留、陈旧事件与错误处理。测试不发布模拟评论，也不冒充机器人。上线状态查看 Actions 的 `Remove Sourcery quota notices`；真实删除验收以未来匹配事件的运行记录为准。
+历史提示可在默认分支手动运行同一 workflow，输入单个 `comment_id`。入口校验 ID、所属仓库与 PR，再执行相同的完整模板匹配及删除前复核；不会因手动触发而放宽删除规则。使用 `gh workflow run sourcery-quota-comments.yml --ref master -f comment_id=<ID>` 或 Actions 页面运行。未知新模板需先确认再更新；GET 与 DELETE 之间仍存在 GitHub API 不提供条件删除导致的短暂竞态。
+
+`node --test test/sourcery-quota-comments.test.cjs` 直接执行 workflow 中的真实 JavaScript，只替换 GitHub I/O，覆盖事件/手动入口、删除、保留、陈旧事件与错误处理。测试不发布模拟评论，也不冒充机器人。上线状态查看 Actions 的 `Remove Sourcery quota notices`；权限验收须使用实际 Actions 运行及评论不存在的证据，不能仅以单测通过或 workflow active 代替。

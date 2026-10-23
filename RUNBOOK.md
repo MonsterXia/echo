@@ -372,3 +372,10 @@
 - 合入方式：单独文档 PR，等待最终提交的 test、lint、Windows x64、macOS arm64/x64 五项必需 CI 通过并检查审查讨论后合入；PR 与最终 CI 证据以该 PR 页面为准。
 - 下一步：按现有用户指南完成真机流程与 macOS 人工走读；本次不执行设备操作，也不将文档检查或无设备测试作为真机验收。
 - 合入前按用户要求审查原工作区三处未提交代码：资源脚本只对常量路径增加白名单，未改变实际路径；主窗口全局阻断非白名单明文 WebSocket；WebView 点击处理强制将部分 WS 目标改为 WSS。独立审查及无联网路径/URL 复核确认这些补丁无需合并，后两者引入未经需求支持的连接策略变化。已按用户授权仅撤销这三处代码补丁，文档 PR 不包含它们。
+
+### Sourcery 清理权限修复与真实运行验收
+
+- 2026-10-23 / Codex；用户反馈新额度评论仍保留。[失败运行 39954302726](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39954302726) 已触发并匹配模板，DELETE 返回 403 `Resource not accessible by integration`；旧令牌只有 Issues 写权限，累计观察到 7 条未清理提示。
+- 改为任务级 `pull-requests: write`，保持无 checkout、无 PR 代码执行和完整正文白名单。增加仅默认分支可用的单评论 ID 手动入口，用相同筛选规则补清历史记录并验证实际 Actions 令牌；自动事件仍只处理触发评论，没有定时或全量扫描任务。
+- 回归测试先复现旧权限契约和缺失手动入口的失败，修复后专项 46/46 通过，涵盖正常/混合审查保留、跨仓库与普通 Issue 排除、非法 ID、非默认分支、过期正文及 403/404。
+- 状态 / 下一步：本地实现与专项验证完成；本修复 PR 的最终 CI、合并和实际删除验收以 PR 页面及[运行记录](https://github.com/MonsterXia/scrcpy-harmony/actions/workflows/sourcery-quota-comments.yml)为准。合入后使用真实积压评论验证 Actions 删除和正常评论保持不变，未取得运行证据前不标记真实删除成功。
