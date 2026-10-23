@@ -14,6 +14,7 @@ import os from 'node:os'
 import { setTimeout as delay } from 'node:timers/promises'
 import { performance } from 'node:perf_hooks'
 import { _electron as electron } from 'playwright-core'
+import { createResponseTrace } from './lib/hdc-response-trace.mjs'
 
 assert.ok(process.argv[2], 'Pass an evidence directory')
 const idleSeconds = Number(process.argv[3] || 600)
@@ -27,15 +28,39 @@ assert.ok(Number.isInteger(upstreamPort) && upstreamPort > 0 && upstreamPort < 6
 const report = { startedAt: new Date().toISOString(), idleRequestedSeconds: idleSeconds,
   sourceCommit: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8', windowsHide: true }).trim(),
   scope: 'Human physical USB unplug/replug, real overview IPC/UI, measured idle interval; no synthetic faults or device writes',
-  passed: false, reads: [], resources: [], observedErrorCategories: [] }
+  passed: false, reads: [], resources: [], observedErrorCategories: [], phaseTimeline: [] }
 const commands = new Set(['alive', 'list targets', 'fport ls', 'shell echo ready\n',
   'shell param get', 'shell SP_daemon -deviceinfo', 'shell uname -a',
   'shell cat /proc/meminfo', 'shell hidumper -s RenderService -a screen'])
 const counts = Object.fromEntries([...commands].map(command => [command.trim(), 0]))
 const sockets = new Set()
+const traceStart = performance.now()
+const commandTraces = []
+let nextConnectionId = 0
+let droppedTraces = 0
 let blocked = 0, application, child, deadline
 const server = net.createServer(downstream => {
+  const connectionId = ++nextConnectionId
+  let trace, responseTrace
+  const elapsed = () => Math.round(performance.now() - traceStart)
   const upstream = net.connect({ host: '127.0.0.1', port: upstreamPort })
+  // Only inspect allowlisted shell replies after the request was forwarded.
+  // The hello and tracker payloads may contain identifiers and are never saved.
+  upstream.on('data', chunk => {
+    if (!trace) return
+    trace.firstDataMs ??= elapsed() - trace.startedMs
+    trace.lastDataMs = elapsed() - trace.startedMs
+    responseTrace.accept(chunk)
+  })
+  upstream.on('end', () => { if (trace) trace.upstreamEnded = true })
+  upstream.on('error', () => { if (trace) trace.upstreamError = true })
+  downstream.on('error', () => { if (trace) trace.downstreamError = true })
+  upstream.on('close', () => {
+    if (!trace) return
+    Object.assign(trace, { closed: true, elapsedMs: elapsed() - trace.startedMs,
+      ...responseTrace.result() })
+    responseTrace.disable()
+  })
   for (const socket of [downstream, upstream]) {
     sockets.add(socket)
     socket.on('close', () => sockets.delete(socket))
@@ -56,12 +81,25 @@ const server = net.createServer(downstream => {
       const command = frame.subarray(4).toString()
       if (!commands.has(command)) { blocked++; downstream.destroy(); upstream.destroy(); return }
       counts[command.trim()]++
+      if (command.startsWith('shell ')) {
+        if (trace) {
+          trace.multipleCommands = true
+          responseTrace.disable()
+        } else {
+          responseTrace = createResponseTrace(command)
+          trace = { connectionId, phase: report.phase || 'startup',
+            command: command.trim(), startedMs: elapsed(), closed: false, upstreamEnded: false }
+          if (commandTraces.length < 2000) commandTraces.push(trace)
+          else droppedTraces++
+        }
+      }
       upstream.write(frame)
     }
   })
 })
 async function phase(name) {
   report.phase = name
+  report.phaseTimeline.push({ phase: name, elapsedMs: Math.round(performance.now() - traceStart) })
   await writeFile(path.join(output, 'progress.json'), JSON.stringify({ phase: name, at: new Date().toISOString() }) + '\n')
   console.log(name)
 }
@@ -80,7 +118,8 @@ try {
   const files = ['src/main/lib/hdc.ts', 'src/main/lib/hdc/finiteShell.ts',
     'src/main/lib/hdc/parameters.ts', 'src/renderer/main/components/overview/Overview.tsx',
     'src/renderer/main/store/index.ts', 'src/preload/main.ts',
-    'dist/main/index.js', 'dist/preload/index.js', 'script/check-overview-physical-idle.mjs']
+    'dist/main/index.js', 'dist/preload/index.js', 'script/check-overview-physical-idle.mjs',
+    'script/lib/hdc-response-summary.mjs', 'script/lib/hdc-response-trace.mjs']
   const rendererRoot = path.join(root, 'dist/renderer')
   for (const entry of await readdir(rendererRoot, { recursive: true, withFileTypes: true })) {
     if (entry.isFile()) files.push(path.relative(root, path.join(entry.parentPath, entry.name)).replaceAll('\\', '/'))
@@ -265,11 +304,17 @@ try {
 } finally {
   if (child?.exitCode === null) await application.close().catch(() => child.kill())
   clearTimeout(deadline)
-  for (const socket of sockets) socket.destroy()
+  const closedSockets = [...sockets].map(socket => new Promise(resolve => {
+    socket.once('close', resolve)
+    socket.destroy()
+  }))
+  await Promise.all(closedSockets)
   if (server.listening) await new Promise(resolve => server.close(resolve))
   assert.equal(path.dirname(profile), temporaryRoot)
   await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 })
   report.commands = counts
+  report.commandTraces = commandTraces
+  report.droppedCommandTraces = droppedTraces
   report.blockedCommandCount = blocked
   await mkdir(output, { recursive: true })
   await writeFile(path.join(output, 'report.json'), JSON.stringify(report, null, 2) + '\n')

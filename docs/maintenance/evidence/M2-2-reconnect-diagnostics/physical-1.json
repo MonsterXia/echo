@@ -1,0 +1,1627 @@
+{
+  "startedAt": "2026-10-23T14:06:08.128Z",
+  "idleRequestedSeconds": 60,
+  "sourceCommit": "4f514989ac2e7e2a0f03788286bd2441fb386e5b",
+  "scope": "Human physical USB unplug/replug, real overview IPC/UI, measured idle interval; no synthetic faults or device writes",
+  "passed": true,
+  "reads": [
+    {
+      "phase": "before-unplug",
+      "ok": true,
+      "elapsedMs": 2041,
+      "sameDevice": true,
+      "descriptiveValid": true,
+      "resolutionValid": true,
+      "memoryValid": true
+    },
+    {
+      "phase": "after-reconnect",
+      "ok": true,
+      "elapsedMs": 1424,
+      "sameDevice": true,
+      "descriptiveValid": true,
+      "resolutionValid": true,
+      "memoryValid": true
+    },
+    {
+      "phase": "after-idle",
+      "ok": true,
+      "elapsedMs": 1643,
+      "sameDevice": true,
+      "descriptiveValid": true,
+      "resolutionValid": true,
+      "memoryValid": true
+    },
+    {
+      "phase": "after-idle-refresh",
+      "ok": true,
+      "elapsedMs": 1650,
+      "sameDevice": true,
+      "descriptiveValid": true,
+      "resolutionValid": true,
+      "memoryValid": true
+    }
+  ],
+  "resources": [
+    {
+      "elapsedMs": 3,
+      "trackerPollCount": 0,
+      "proxySocketCount": 2,
+      "processes": [
+        {
+          "type": "Browser",
+          "cpuPercent": 0,
+          "workingSetKiB": 118996,
+          "privateKiB": 78760
+        },
+        {
+          "type": "GPU",
+          "cpuPercent": 0,
+          "workingSetKiB": 69760,
+          "privateKiB": 17528
+        },
+        {
+          "type": "Utility",
+          "cpuPercent": 0,
+          "workingSetKiB": 52656,
+          "privateKiB": 11352
+        },
+        {
+          "type": "Tab",
+          "cpuPercent": 0,
+          "workingSetKiB": 120352,
+          "privateKiB": 54500
+        }
+      ]
+    },
+    {
+      "elapsedMs": 30007,
+      "trackerPollCount": 30,
+      "proxySocketCount": 2,
+      "processes": [
+        {
+          "type": "Browser",
+          "cpuPercent": 0.006340102908762643,
+          "workingSetKiB": 119480,
+          "privateKiB": 78760
+        },
+        {
+          "type": "GPU",
+          "cpuPercent": 0.00031932843127043973,
+          "workingSetKiB": 70028,
+          "privateKiB": 17584
+        },
+        {
+          "type": "Utility",
+          "cpuPercent": 0.0002401733961099792,
+          "workingSetKiB": 52812,
+          "privateKiB": 11452
+        },
+        {
+          "type": "Tab",
+          "cpuPercent": 0.00010894248946394896,
+          "workingSetKiB": 120516,
+          "privateKiB": 54592
+        }
+      ]
+    },
+    {
+      "elapsedMs": 60012,
+      "trackerPollCount": 60,
+      "proxySocketCount": 2,
+      "processes": [
+        {
+          "type": "Browser",
+          "cpuPercent": 0.005690039271415019,
+          "workingSetKiB": 119980,
+          "privateKiB": 79632
+        },
+        {
+          "type": "GPU",
+          "cpuPercent": 0.00011768764384554529,
+          "workingSetKiB": 70028,
+          "privateKiB": 17584
+        },
+        {
+          "type": "Utility",
+          "cpuPercent": 0.00009060907394510292,
+          "workingSetKiB": 52812,
+          "privateKiB": 11452
+        },
+        {
+          "type": "Tab",
+          "cpuPercent": 0.000021246266322798206,
+          "workingSetKiB": 118864,
+          "privateKiB": 54592
+        }
+      ]
+    }
+  ],
+  "observedErrorCategories": [
+    {
+      "phase": "READY_UNPLUG_USB",
+      "category": "HDC parameter command failed"
+    }
+  ],
+  "phaseTimeline": [
+    {
+      "phase": "READY_UNPLUG_USB",
+      "elapsedMs": 7661
+    },
+    {
+      "phase": "DISCONNECTED_VERIFIED_RECONNECT_USB",
+      "elapsedMs": 256739
+    },
+    {
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "elapsedMs": 289151
+    },
+    {
+      "phase": "IDLE_STARTED",
+      "elapsedMs": 297658
+    },
+    {
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "elapsedMs": 357671
+    },
+    {
+      "phase": "PASSED",
+      "elapsedMs": 362871
+    }
+  ],
+  "hashes": {
+    "src/main/lib/hdc.ts": "94731798fbf586c363204ce8c445c8e5865dd205f32e4663da3b2820f6903451",
+    "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639",
+    "src/main/lib/hdc/parameters.ts": "b9319755450d0166398e8dcf9729e7c7b0abe67601352e6c3a9b87134a989cb9",
+    "src/renderer/main/components/overview/Overview.tsx": "118143a47230a0c7dc1eeab32507c71fe69aac404b96ce75febc635dff816a10",
+    "src/renderer/main/store/index.ts": "f585c45786845b796823b1dea901f9bf425231965b7229b375094e573f012511",
+    "src/preload/main.ts": "fae2c895154881244edd845e2726bfac24fae6338b1e3558b4bcb0c8f172c0fb",
+    "dist/main/index.js": "67b5230ecec479a29ddd4b4d0aac7542478399865fc709b5ad5da22d7e5236c8",
+    "dist/preload/index.js": "e7b03481fc23ab5e3d355dfc62fb53e255d4b97fcfb417d81256a8df6d62fb9c",
+    "script/check-overview-physical-idle.mjs": "a669ee55aa82d0fb3887d3a41cebd52b745f066ebdc7fb64614e0cf1391c9727",
+    "script/lib/hdc-response-summary.mjs": "fcdef98cb6a6381ec03ad5b5b1af846ddf7113c5699ae1769fbaefe10a13e87f",
+    "dist/renderer/index.html": "10cd6253c896eff12f8d76b17b37f764a00d4a4a96269a0aa2f1077dca9b7bbf",
+    "dist/renderer/assets/app-Bq1a6kil.css": "883a1f81aabbfc831c51976010c56eb226ceae233675af20b46f07731ff67810",
+    "dist/renderer/assets/app-BQT0fg73.js": "c4fa94590c92e138de758dfe21ccba1dcf37b4931db874362558505002606bab",
+    "dist/renderer/assets/App-Br9lMoR8.js": "838ace83e0f9bd3c3dccd28eaa950ea6af17594afcfde623d1c9d3b7940439fe",
+    "dist/renderer/assets/App-BSrh4QD_.css": "5de268b7056bb5d6ef5e4d2fabfcaf846f8cbc813139c852fd6e450103a46fc7",
+    "dist/renderer/assets/App-CGQq3r8r.js": "f99267af1401b2ead87ee9fcc4d26e805270c1d414d6ef748e67b10ade990c38",
+    "dist/renderer/assets/App-D9Zb92Mr.js": "44066e3033084343c9b2f520e7e93f69bc71addcf47acc3dcf9ce4048e7a4902",
+    "dist/renderer/assets/App-DMlEgHFO.css": "66603e7d2347c1a53919476186fe6d5bd7b1684917306a0867b55836715ac6d0",
+    "dist/renderer/assets/App-DplwvdpB.css": "b33f86390076f3dbe676232b1e02f2a838503e75c33575e038027fbacc039aa1",
+    "dist/renderer/assets/App-Dv4EM9LZ.js": "f79b58379536bf5de8bee46b9f8cee80c95429dfa96b4a6412fe81a371c693c7",
+    "dist/renderer/assets/App-IFHVt93n.css": "9e7afb065f58e9dfbc0b347f4f1da3ae32d8faa49e3c0eb1750ab3bba2d5ac87",
+    "dist/renderer/assets/App-o3hzah0p.css": "e125074fa6ae983a172c6e56fdad688725e74d7c996cfcaf18b7dcf885b76cf9",
+    "dist/renderer/assets/App-ofjc29B-.js": "c804329c2c99dc55bf07d8992e47ddc23cd0912993e907ef5986bf1107ac175e",
+    "dist/renderer/assets/default-icon-BEowIRRb.png": "567c7c0c7a321ca180e010ad880f0f7519f6d351ac2b9665e2ee710e7cfe7778",
+    "dist/renderer/assets/download-XpMSNvRi.js": "1fe0a9d203f5b64b1f867ed241c122c2ba5cf6144a054fe54b819737b8006dd0",
+    "dist/renderer/assets/icon-RRtXdow_.png": "d4b1d795632a8763f4c8ec9f69b9e294b82f845f15ccadc3aa1f3a89ef82ad63",
+    "dist/renderer/assets/MiSans-Regular-BjbB2O6q.ttf": "6aa32ded55e110a95be10080e0c322f2382681cd581c5cbb24f4fd4ce96fbb08",
+    "dist/renderer/assets/randomBytes-CBSbc5y2.js": "2537a1b03335f5683eefee6bc9a6f970970c5bab6b6dcac28a4ab6ba71d4dcab",
+    "dist/renderer/assets/react-BZER0MTC.js": "55d3565f2d7f412061dfb65358f6a914f33a96e3f70578ebab21364084cfb8b5",
+    "dist/renderer/assets/theme-WsJORR6T.js": "3308d22c37035809494a2d6337f48f3dfc1f65cea2a506357067891a318fcc37",
+    "dist/renderer/assets/toBool-DZa0Z_Wl.js": "275c860f28168009088b8f6115d66901038616fc52c035b3bec9db7c12438f8e",
+    "dist/renderer/assets/xterm-CAlEo7AM.js": "35aaf5a8d8ec9912b6e157d16704dba18b4f77b56f747c2612d981c744078516",
+    "dist/renderer/assets/xterm-DYP7pi_n.css": "7c5a01f382f76539fc9b4db6b18e18a7035741845fd14968c5cdc0a7e373d817"
+  },
+  "runtime": {
+    "packaged": false,
+    "electron": "45.0.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "phase": "PASSED",
+  "disconnected": {
+    "observedByTracker": true,
+    "selectionCleared": true,
+    "oldDetailsRemoved": true,
+    "ipcTargetsEmpty": true
+  },
+  "disconnectedOverview": {
+    "rejected": true,
+    "elapsedMs": 10
+  },
+  "reconnected": {
+    "sameDevice": true,
+    "observedByTracker": true,
+    "automaticUiRecovered": true,
+    "manualRefreshUsed": false
+  },
+  "idleElapsedMs": 60012,
+  "idleTrackerPolls": 60,
+  "idleOperationCountsUnchanged": true,
+  "afterIdleUiRecovered": true,
+  "pageErrorCount": 0,
+  "commands": {
+    "alive": 1,
+    "list targets": 367,
+    "fport ls": 0,
+    "shell echo ready": 41,
+    "shell param get": 12,
+    "shell SP_daemon -deviceinfo": 7,
+    "shell uname -a": 7,
+    "shell cat /proc/meminfo": 7,
+    "shell hidumper -s RenderService -a screen": 7
+  },
+  "commandTraces": [
+    {
+      "connectionId": 3,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 477,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 70,
+      "lastDataMs": 70,
+      "elapsedMs": 82,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 4,
+      "phase": "startup",
+      "command": "shell param get",
+      "startedMs": 562,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 116,
+      "lastDataMs": 119,
+      "elapsedMs": 137,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 3
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 5,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 737,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 88,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 6,
+      "phase": "startup",
+      "command": "shell param get",
+      "startedMs": 828,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 106,
+      "lastDataMs": 109,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 3
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 7,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 952,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 68,
+      "lastDataMs": 68,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 8,
+      "phase": "startup",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 1029,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 759,
+      "lastDataMs": 759,
+      "elapsedMs": 1182,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 9,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 2215,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 66,
+      "lastDataMs": 66,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 10,
+      "phase": "startup",
+      "command": "shell uname -a",
+      "startedMs": 2292,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 111,
+      "lastDataMs": 111,
+      "elapsedMs": 123,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 12,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 2312,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 58,
+      "lastDataMs": 58,
+      "elapsedMs": 73,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 13,
+      "phase": "startup",
+      "command": "shell param get",
+      "startedMs": 2387,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 77,
+      "lastDataMs": 80,
+      "elapsedMs": 84,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 5
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 14,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 2418,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 43,
+      "lastDataMs": 43,
+      "elapsedMs": 51,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 15,
+      "phase": "startup",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 2472,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 52,
+      "lastDataMs": 52,
+      "elapsedMs": 66,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 16,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 2541,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 73,
+      "lastDataMs": 73,
+      "elapsedMs": 91,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 17,
+      "phase": "startup",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 2634,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 119,
+      "lastDataMs": 120,
+      "elapsedMs": 139,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 18,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 2817,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 66,
+      "lastDataMs": 66,
+      "elapsedMs": 82,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 19,
+      "phase": "startup",
+      "command": "shell param get",
+      "startedMs": 2902,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 109,
+      "lastDataMs": 114,
+      "elapsedMs": 123,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 5
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 20,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 3028,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 69,
+      "lastDataMs": 69,
+      "elapsedMs": 90,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 21,
+      "phase": "startup",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 3121,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 387,
+      "lastDataMs": 387,
+      "elapsedMs": 788,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 22,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 3913,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 76,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 23,
+      "phase": "startup",
+      "command": "shell uname -a",
+      "startedMs": 3993,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 101,
+      "lastDataMs": 101,
+      "elapsedMs": 119,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 24,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 4115,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 91,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 25,
+      "phase": "startup",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 4208,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 70,
+      "lastDataMs": 70,
+      "elapsedMs": 76,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 26,
+      "phase": "startup",
+      "command": "shell echo ready",
+      "startedMs": 4288,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 69,
+      "lastDataMs": 69,
+      "elapsedMs": 91,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 27,
+      "phase": "startup",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 4382,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 109,
+      "lastDataMs": 110,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 30,
+      "phase": "READY_UNPLUG_USB",
+      "command": "shell echo ready",
+      "startedMs": 256730,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 1,
+      "lastDataMs": 2,
+      "elapsedMs": 3,
+      "response": {
+        "category": "command-error",
+        "bytes": 116,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 31,
+      "phase": "READY_UNPLUG_USB",
+      "command": "shell param get",
+      "startedMs": 256736,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 0,
+      "lastDataMs": 1,
+      "elapsedMs": 2,
+      "response": {
+        "category": "command-error",
+        "bytes": 116,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 34,
+      "phase": "DISCONNECTED_VERIFIED_RECONNECT_USB",
+      "command": "shell echo ready",
+      "startedMs": 287870,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 1,
+      "lastDataMs": 2,
+      "elapsedMs": 3,
+      "response": {
+        "category": "target-not-ready",
+        "bytes": 190,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 35,
+      "phase": "DISCONNECTED_VERIFIED_RECONNECT_USB",
+      "command": "shell echo ready",
+      "startedMs": 288886,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 78,
+      "lastDataMs": 78,
+      "elapsedMs": 90,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 36,
+      "phase": "DISCONNECTED_VERIFIED_RECONNECT_USB",
+      "command": "shell param get",
+      "startedMs": 288980,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 98,
+      "lastDataMs": 101,
+      "elapsedMs": 122,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 5
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 37,
+      "phase": "DISCONNECTED_VERIFIED_RECONNECT_USB",
+      "command": "shell echo ready",
+      "startedMs": 289109,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 63,
+      "lastDataMs": 63,
+      "elapsedMs": 71,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 38,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell param get",
+      "startedMs": 289184,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 108,
+      "lastDataMs": 112,
+      "elapsedMs": 119,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 7
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 39,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 289306,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 64,
+      "lastDataMs": 64,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 40,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 289384,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 721,
+      "lastDataMs": 721,
+      "elapsedMs": 1173,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 42,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 289883,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 52,
+      "lastDataMs": 52,
+      "elapsedMs": 74,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 43,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell param get",
+      "startedMs": 289959,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 79,
+      "lastDataMs": 82,
+      "elapsedMs": 94,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 6
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 44,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 290560,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 37,
+      "lastDataMs": 37,
+      "elapsedMs": 54,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 45,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell uname -a",
+      "startedMs": 290616,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 98,
+      "lastDataMs": 98,
+      "elapsedMs": 106,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 46,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 290724,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 59,
+      "lastDataMs": 59,
+      "elapsedMs": 73,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 47,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 290800,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 59,
+      "lastDataMs": 59,
+      "elapsedMs": 76,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 48,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 290878,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 64,
+      "lastDataMs": 64,
+      "elapsedMs": 76,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 49,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 290957,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 111,
+      "lastDataMs": 112,
+      "elapsedMs": 122,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 50,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 291227,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 62,
+      "lastDataMs": 62,
+      "elapsedMs": 70,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 51,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell param get",
+      "startedMs": 291300,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 56,
+      "lastDataMs": 58,
+      "elapsedMs": 74,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 5
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 52,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 291377,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 41,
+      "lastDataMs": 41,
+      "elapsedMs": 60,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 53,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 291439,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 322,
+      "lastDataMs": 322,
+      "elapsedMs": 696,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 54,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 292138,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 60,
+      "lastDataMs": 60,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 55,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell uname -a",
+      "startedMs": 292216,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 96,
+      "lastDataMs": 96,
+      "elapsedMs": 106,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 56,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 292325,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 57,
+      "lastDataMs": 57,
+      "elapsedMs": 77,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 57,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 292404,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 60,
+      "lastDataMs": 60,
+      "elapsedMs": 74,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 58,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell echo ready",
+      "startedMs": 292480,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 60,
+      "lastDataMs": 60,
+      "elapsedMs": 77,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 59,
+      "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 292560,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 77,
+      "lastDataMs": 78,
+      "elapsedMs": 88,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 60,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 357676,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 88,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 61,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell param get",
+      "startedMs": 357766,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 108,
+      "lastDataMs": 110,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 5
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 62,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 357889,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 63,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 357966,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 394,
+      "lastDataMs": 394,
+      "elapsedMs": 776,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 64,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 358745,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 58,
+      "lastDataMs": 58,
+      "elapsedMs": 76,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 65,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell uname -a",
+      "startedMs": 358824,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 107,
+      "lastDataMs": 107,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 66,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 358948,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 66,
+      "lastDataMs": 66,
+      "elapsedMs": 73,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 67,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 359024,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 62,
+      "lastDataMs": 62,
+      "elapsedMs": 77,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 68,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 359103,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 69,
+      "lastDataMs": 69,
+      "elapsedMs": 89,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 69,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 359194,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 108,
+      "lastDataMs": 109,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 70,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 359332,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 66,
+      "lastDataMs": 66,
+      "elapsedMs": 78,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 71,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell param get",
+      "startedMs": 359412,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 103,
+      "lastDataMs": 106,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 3
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 72,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 359537,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 73,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 73,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 359613,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 401,
+      "lastDataMs": 401,
+      "elapsedMs": 820,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 74,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 360437,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 60,
+      "lastDataMs": 60,
+      "elapsedMs": 74,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 75,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell uname -a",
+      "startedMs": 360514,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 103,
+      "lastDataMs": 103,
+      "elapsedMs": 123,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 76,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 360640,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 74,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 77,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 360717,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 74,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 78,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 360794,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 77,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 79,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 360873,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 118,
+      "lastDataMs": 119,
+      "elapsedMs": 137,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 80,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 361156,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 73,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 81,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell param get",
+      "startedMs": 361232,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 102,
+      "lastDataMs": 105,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 41537,
+        "frames": 3
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 82,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 361357,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 83,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell SP_daemon -deviceinfo",
+      "startedMs": 361436,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 392,
+      "lastDataMs": 392,
+      "elapsedMs": 793,
+      "response": {
+        "category": "output",
+        "bytes": 553,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 84,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 362232,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 63,
+      "lastDataMs": 63,
+      "elapsedMs": 75,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 85,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell uname -a",
+      "startedMs": 362310,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 103,
+      "lastDataMs": 103,
+      "elapsedMs": 121,
+      "response": {
+        "category": "output",
+        "bytes": 94,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 86,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 362433,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 57,
+      "lastDataMs": 57,
+      "elapsedMs": 76,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 87,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell cat /proc/meminfo",
+      "startedMs": 362512,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 65,
+      "lastDataMs": 65,
+      "elapsedMs": 75,
+      "response": {
+        "category": "output",
+        "bytes": 1913,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 88,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell echo ready",
+      "startedMs": 362590,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 67,
+      "lastDataMs": 67,
+      "elapsedMs": 74,
+      "response": {
+        "category": "echo-ready",
+        "bytes": 6,
+        "frames": 1
+      },
+      "partialFrameAtClose": false
+    },
+    {
+      "connectionId": 89,
+      "phase": "IDLE_FINISHED_VERIFYING",
+      "command": "shell hidumper -s RenderService -a screen",
+      "startedMs": 362666,
+      "closed": true,
+      "upstreamEnded": true,
+      "firstDataMs": 117,
+      "lastDataMs": 118,
+      "elapsedMs": 136,
+      "response": {
+        "category": "output",
+        "bytes": 1019,
+        "frames": 2
+      },
+      "partialFrameAtClose": false
+    }
+  ],
+  "droppedCommandTraces": 0,
+  "blockedCommandCount": 0
+}
