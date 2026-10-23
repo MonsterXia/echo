@@ -34,11 +34,20 @@ async function run(context, options = {}) {
   }).join('\n')
   assert.ok(!script.includes('${{'), 'untrusted event data must not be interpolated')
   const calls = []
+  let reads = 0
   const github = { rest: { issues: {
     async getComment(args) {
       calls.push(['get', args])
+      reads++
       if (options.getError) throw options.getError
+      if (context.eventName === 'workflow_dispatch' && reads === 1) {
+        return { data: options.initial || fixture().payload.comment }
+      }
       return { data: options.current || structuredClone(context.payload.comment) }
+    },
+    async get(args) {
+      calls.push(['issue', args])
+      return { data: options.issue || fixture().payload.issue }
     },
     async deleteComment(args) {
       calls.push(['delete', args])
@@ -49,6 +58,81 @@ async function run(context, options = {}) {
   await new AsyncFunction('github', 'context', 'core', script)(github, context, { info() {} })
   return calls
 }
+
+test('PR comment deletion requests pull-requests write without other write scopes', () => {
+  const yaml = fs.readFileSync(workflowPath, 'utf8').replace(/\r\n/g, '\n')
+  const permissions = yaml.match(/^    permissions:\n((?:      .+\n)+)/m)?.[1]
+  assert.equal(permissions, '      pull-requests: write\n')
+  assert.match(yaml, /^permissions: \{\}$/m)
+  assert.doesNotMatch(yaml, /actions\/checkout|\n  schedule:/)
+  assert.match(yaml, /workflow_dispatch:/)
+})
+
+function manualFixture(input = '6342925060') {
+  const context = fixture()
+  context.eventName = 'workflow_dispatch'
+  context.ref = 'refs/heads/master'
+  context.payload = { repository: { default_branch: 'master' }, inputs: { comment_id: input } }
+  return context
+}
+
+test('manual cleanup fetches one comment, verifies its PR, then rechecks before deletion', async () => {
+  const comment = fixture().payload.comment
+  assert.deepEqual(await run(manualFixture(), { current: comment }), [
+    ['get', { owner: 'MonsterXia', repo: 'scrcpy-harmony', comment_id: comment.id }],
+    ['issue', { owner: 'MonsterXia', repo: 'scrcpy-harmony', issue_number: 31 }],
+    ['get', { owner: 'MonsterXia', repo: 'scrcpy-harmony', comment_id: comment.id }],
+    ['delete', { owner: 'MonsterXia', repo: 'scrcpy-harmony', comment_id: comment.id }],
+  ])
+})
+
+for (const input of ['', '0', '-1', '1e3', '1; echo injected', '9007199254740992']) {
+  test(`manual cleanup rejects invalid ID ${JSON.stringify(input)}`, async () => {
+    await assert.rejects(run(manualFixture(input)), /Invalid comment ID/)
+  })
+}
+
+test('manual cleanup does not run from a non-default branch', async () => {
+  const context = manualFixture()
+  context.ref = 'refs/heads/untrusted'
+  assert.deepEqual(await run(context), [])
+})
+
+for (const [name, change] of Object.entries({
+  'normal review': c => { c.body = 'issue (bug_risk): Close the socket.' },
+  'quota plus review': c => { c.body += '\nReview finding: socket leak.' },
+  'human author': c => { c.user = { login: 'MonsterXia', type: 'User' } },
+  'foreign repository': c => { c.issue_url = 'https://api.github.com/repos/other/repo/issues/31' },
+})) {
+  test(`manual cleanup preserves ${name}`, async () => {
+    const initial = fixture().payload.comment
+    change(initial)
+    const calls = await run(manualFixture(), { initial, current: initial })
+    assert.ok(calls.some(([method]) => method === 'get'))
+    assert.ok(calls.every(([method]) => method !== 'delete'))
+  })
+}
+
+test('manual cleanup preserves an ordinary Issue comment', async () => {
+  const calls = await run(manualFixture(), { issue: { number: 31 } })
+  assert.deepEqual(calls.map(([method]) => method), ['get', 'issue'])
+})
+
+test('manual cleanup preserves a comment changed after the initial read', async () => {
+  const current = fixture().payload.comment
+  current.body += '\nReview: actual finding.'
+  const calls = await run(manualFixture(), { current })
+  assert.deepEqual(calls.map(([method]) => method), ['get', 'issue', 'get'])
+})
+
+test('manual cleanup tolerates an already deleted comment', async () => {
+  const calls = await run(manualFixture(), { getError: Object.assign(new Error('Not Found'), { status: 404 }) })
+  assert.deepEqual(calls.map(([method]) => method), ['get'])
+})
+
+test('manual cleanup reports GitHub permission failures', async () => {
+  await assert.rejects(run(manualFixture(), { getError: Object.assign(new Error('Forbidden'), { status: 403 }) }), /Forbidden/)
+})
 
 for (const action of ['created', 'edited']) {
   test(`deletes the observed quota-only template on ${action}`, async () => {

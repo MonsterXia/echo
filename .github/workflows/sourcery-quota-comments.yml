@@ -1,21 +1,30 @@
 name: Remove Sourcery quota notices
+run-name: Sourcery quota cleanup ${{ github.event.comment.id || inputs.comment_id }}
 
 on:
   issue_comment:
     types: [created, edited]
+  workflow_dispatch:
+    inputs:
+      comment_id:
+        description: Existing PR comment ID to check with the same quota-only rules
+        required: true
+        type: string
 
 permissions: {}
 
 jobs:
   remove-quota-notice:
     if: >-
-      github.event.issue.pull_request &&
+      (github.event_name == 'workflow_dispatch' &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request &&
       github.event.comment.user.login == 'sourcery-ai[bot]' &&
-      github.event.comment.user.type == 'Bot'
+      github.event.comment.user.type == 'Bot')
     runs-on: ubuntu-latest
     timeout-minutes: 2
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       # No checkout: never execute code from the PR with a write token.
       - name: Delete only a verified quota-only notice
@@ -23,9 +32,39 @@ jobs:
         with:
           script: |
             const { payload } = context;
-            if (context.eventName !== 'issue_comment' ||
-                !['created', 'edited'].includes(payload.action) ||
-                !payload.issue?.pull_request) return;
+            let eventComment;
+            let issueNumber;
+            if (context.eventName === 'workflow_dispatch') {
+              if (context.ref !== 'refs/heads/' + payload.repository?.default_branch) return;
+              const input = payload.inputs?.comment_id;
+              if (typeof input !== 'string' || !/^[1-9]\d*$/.test(input) ||
+                  !Number.isSafeInteger(Number(input))) throw new Error('Invalid comment ID');
+              try {
+                const { data: comment } = await github.rest.issues.getComment({
+                  ...context.repo, comment_id: Number(input),
+                });
+                if (comment.id !== Number(input)) return;
+                const prefix = 'https://api.github.com/repos/' + context.repo.owner +
+                  '/' + context.repo.repo + '/issues/';
+                if (!comment.issue_url?.startsWith(prefix)) return;
+                const number = comment.issue_url.slice(prefix.length);
+                if (!/^[1-9]\d*$/.test(number) || !Number.isSafeInteger(Number(number))) return;
+                const { data: issue } = await github.rest.issues.get({
+                  ...context.repo, issue_number: Number(number),
+                });
+                if (!issue.pull_request) return;
+                eventComment = comment;
+                issueNumber = Number(number);
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                core.info('Comment already absent; nothing to delete.');
+                return;
+              }
+            } else if (context.eventName === 'issue_comment' &&
+                ['created', 'edited'].includes(payload.action) && payload.issue?.pull_request) {
+              eventComment = payload.comment;
+              issueNumber = payload.issue.number;
+            } else return;
 
             // Full-body allowlist of the observed notification, not keyword matching.
             // Unknown templates and any appended review content are left untouched.
@@ -36,7 +75,7 @@ jobs:
               String.raw`connection=github&owner=MonsterXia&from_surface=github_bot&intent=rate_limit_hit\) to get a review now\.$`
             );
             const issueUrl = 'https://api.github.com/repos/' + context.repo.owner +
-              '/' + context.repo.repo + '/issues/' + payload.issue.number;
+              '/' + context.repo.repo + '/issues/' + issueNumber;
             function isQuotaNotice(comment) {
               return comment?.user?.login === 'sourcery-ai[bot]' &&
                 comment.user.type === 'Bot' &&
@@ -45,8 +84,10 @@ jobs:
                 quotaNotice.test(comment.body.replace(/\r\n/g, '\n').trim());
             }
 
-            const eventComment = payload.comment;
-            if (!isQuotaNotice(eventComment)) return;
+            if (!isQuotaNotice(eventComment)) {
+              core.info('Comment does not match quota-only notice; preserved.');
+              return;
+            }
             const params = { ...context.repo, comment_id: eventComment.id };
             try {
               const { data: current } = await github.rest.issues.getComment(params);
@@ -55,7 +96,7 @@ jobs:
                   current.body !== eventComment.body || !isQuotaNotice(current)) return;
               await github.rest.issues.deleteComment(params);
               core.info('Deleted Sourcery quota notice ' + current.id +
-                ' on PR #' + payload.issue.number);
+                ' on PR #' + issueNumber);
             } catch (error) {
               if (error.status !== 404) throw error;
               core.info('Comment already absent; nothing to delete.');
