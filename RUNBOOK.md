@@ -16,7 +16,7 @@
 
 当前恢复节点：**1.0.3 已发布**，以 `8087ac8` 为依赖源码迁移前功能基线，tag 固定至实际构建提交 `417e78f`。三平台发行已完成，源码迁移在独立分支进行；状态、证据和下一步见 [1.0.3 发布记录](docs/releases/1.0.3.md)。本次发布不改变下列真机待验收项的状态。
 
-2026-10-24：[依赖源码迁移](docs/maintenance/dependency-sources.md)进行中，开发版 1.0.4-dev.0。18 个本地包及共享源码可在本仓修改和编译；包含用户追加的应用 author → MonsterXia，仅影响应用发布元数据，保留第三方署名。[PR #55](https://github.com/MonsterXia/scrcpy-harmony/pull/55) 初版五项 CI 通过后，按用户长期二次适配要求补齐 Licia 原始源码、测试及本地生成链；该最终方案需重新完成干净安装、打包开发验证与 CI，独立复核已无阻塞发现。
+2026-10-24：[依赖源码迁移](docs/maintenance/dependency-sources.md)实现与验证完成，交付 [PR #55](https://github.com/MonsterXia/scrcpy-harmony/pull/55)，开发版 1.0.4-dev.0。18 个本地包及共享源码可在本仓修改和编译；按用户长期二次适配要求补齐 Licia 原始源码、测试及本地生成链。最终源码五项 CI、干净安装、Windows 打包启动、源码修改后的开发验证均通过，独立复核无阻塞发现。应用 author/EXE CompanyName 为 MonsterXia，第三方署名保留。应用 457 项回归通过，Licia 两种模式各 606 项通过、同样 4 项外部夹具测试 pending；下一步按二次适配需求补回归及既有真机验收，本轮不发布迁移版。
 
 - [x] 触控坐标映射修复已通过 [本仓库 PR #1](https://github.com/MonsterXia/scrcpy-harmony/pull/1) 合入；对应 [上游 PR #33](https://github.com/liriliri/echo/pull/33)。报告机型的剩余回归见阶段 2。
 - [x] 项目导航、锁文件、Electron 45、Windows 构建及三个平台 CI 已通过本仓库 PR #2–#7 合入，详情见来源索引。

@@ -28,10 +28,10 @@ Transitive package resolution must stay local; stale compiled output must not ma
 
 ### Task 2: Validation and documentation
 
-- [ ] Run clean npm ci, verify local resolution and no selected package registry URLs; package and smoke-test Windows, then required three-platform CI.
+- [x] Run clean npm ci, verify local resolution and no selected package registry URLs; package and smoke-test Windows, then required three-platform CI.
 - [x] Update README languages, user/build guides, project skill references and workflows to remove submodule setup; document remaining binary/toolchain network requirements.
 - [x] Record release/migration evidence, source ownership and next steps in RUNBOOK/SOURCES and vendor README.
-- [ ] Request fresh whole-branch review, resolve findings, publish PR and record actual CI results without marking missing device checks complete.
+- [x] Request fresh whole-branch review, resolve findings, publish PR and record actual CI results without marking missing device checks complete.
 
 ## Ledger
 
@@ -41,4 +41,4 @@ Transitive package resolution must stay local; stale compiled output must not ma
 - Design builder check: no important unanswered questions. User selected suggested scope; native implementation follows existing authorization.
 - Source preflight: all compared Luna runtime TS from npm source maps match published gitHead sources. CSS maps contain processed CSS despite SCSS labels; compare generated styles separately.
 - Independent whole-branch review: all 1,155 imported hashes and 16 normalized CSS selector sets verified against originals. Fixed icon font attribute prefixes; fixed watch-time missing output by publishing successful compiler output without deleting the entire directory. No unresolved important findings.
-- Local verification: 456 tests, lint, full build, Windows packaging/runtime/metadata smoke, and an actual Luna SCSS edit observed in the live development renderer. A clean independent clone completed npm ci --offline --no-audit using the existing npm cache, rebuilt all local packages and passed all five migration tests. Required PR CI remains pending.
+- Final verification: 457 application tests; Licia production and isolated fallback modes each passed 606 cases with four explicit fixture exclusions. All 458 JS ASTs and 459 normalized declarations match published output. A fresh independent clone installed from the existing npm cache and ran the complete suite. Lint/full build/Windows packaging and runtime smoke passed; Luna and Licia edits were observed in the live development renderer. Final source CI 39989387028 passed all five required checks. Independent review and fallback follow-up found no blocking issues. Evidence and limitations are recorded in docs/maintenance/dependency-sources.md.

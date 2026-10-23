@@ -22,7 +22,7 @@ npm run build
 npm run pack -- --no-publish
 ```
 
-`npm ci` 的 postinstall 编译本地包；使用 `--ignore-scripts` 安装后，手动运行 `build:vendor`。三个 `build:*`、`test` 和 `dev` 入口会先准备源码产物。`npm run dev` 监听 HDC/Licia/Luna 的原始源码与样式；成功重编译后刷新 renderer 的依赖缓存。主进程/preload 改动仍需重启 Electron。不要同时在同一检出运行会重写生成目录的 build/test/dev，使用独立检出并行验证。
+`npm ci` 的 postinstall 编译本地包；使用 `--ignore-scripts` 安装后，手动运行 `build:vendor`。三个 `build:*`、`test` 和 `dev` 入口会先准备源码产物。`npm run dev` 监听 HDC/Licia/Luna 的原始源码与样式；成功重编译后刷新 renderer 的依赖缓存。等编译和 Vite 重启就绪再加载窗口；renderer 的 HMR 当前关闭，需要手动刷新，主进程/preload 改动需重启 Electron。不要同时在同一检出运行会重写生成目录的 build/test/dev，使用独立检出并行验证。
 
 Licia 的实现、依赖与类型均修改 `src/<模块>.js`，不要修改包根目录的生成文件；新增模块会自动进入对应环境的入口索引。`npm run test:licia -- cloneDeep` 可重建并运行单模块上游测试；`npm test` 同时运行应用回归及可独立运行的上游 Node 测试。完整维护流程、4 项外部夹具测试排除和浏览器测试边界见 [Licia 维护说明](packages/licia/MAINTENANCE.md)。
 

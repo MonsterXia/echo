@@ -8,7 +8,7 @@
 2. 同步文件中的 `/* typescript ... */` 类型片段和 `test/<名称>.js`。只改运行实现而不检查类型、测试，仍可能造成接口不一致。
 3. 在仓库根目录运行 `npm run test:licia -- <名称>`；兼容分支使用 `npm run test:licia -- --fallback <名称>`。提交前运行 `npm test`、lint 和应用构建。
 
-`npm run build:vendor` 生成包根目录的 CommonJS JS、`.d.ts`、`node.js`/`browser.js` 及类型入口。这些文件不提交，也不应手改。`npm run dev` 监听 `src/` 并自动重编译；主进程使用的模块改变后仍需重启 Electron。
+`npm run build:vendor` 生成包根目录的 CommonJS JS、`.d.ts`、`node.js`/`browser.js` 及类型入口。这些文件不提交，也不应手改。`npm run dev` 监听 `src/` 并自动重编译；等待编译和 Vite 重启就绪后，手动刷新 renderer，主进程使用的模块改变后重启 Electron。
 
 新增模块需要合法标识符文件名、`module` 元信息及 `typescript` 块；`env: all` 展开为 Node、浏览器和小程序，其他环境使用空格分隔。入口索引从原始模块自动生成，无需修改 `upstream/index.json`。原有原生全局对象的类型块可以为空；缺失依赖、无效 JS 或声明语法会使构建失败，并保留上一次有效输出。此语法校验不是完整类型检查。
 

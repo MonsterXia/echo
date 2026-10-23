@@ -1,6 +1,6 @@
 # 依赖源码迁移（2026-10-24）
 
-状态：**进行中**。先发布的 [1.0.3 恢复节点](../releases/1.0.3.md) 已完成；迁移分支为 `codex/vendor-dependencies`，源码开发版 1.0.4-dev.0。
+状态：**实现与验证完成**，交付 [PR #55](https://github.com/MonsterXia/scrcpy-harmony/pull/55)（最终合并状态及检查见 PR）。先发布的 [1.0.3 恢复节点](../releases/1.0.3.md) 已完成；迁移分支为 `codex/vendor-dependencies`，源码开发版 1.0.4-dev.0。
 
 ## 实现
 
@@ -20,7 +20,9 @@
 - 干净独立 clone 验证通过：在无 node_modules/生成产物的检出中执行 `npm ci --offline --no-audit`，使用已有 npm 缓存安装 597 个包并自动重编译 18 个本地包；5 项迁移测试再次通过，链接均位于该检出内。此结果不代表空缓存的工具链/二进制可以离线安装。
 - 初版 [PR #55 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39985794320) 五项全部通过；该轮还未包含用户随后选择的 Licia 原始源码生成方案。
 - Licia 补充验证：458 个生成 JS 的规范化 AST（忽略格式/位置和等价属性键写法）与原 npm 包一致，459 个类型声明规范化后相同；生产和隔离 fallback 模式各通过 606 项上游 Node 用例，各有相同 4 项外部夹具测试 pending。原始浏览器/manual 测试保留但未自动运行。
-- Licia 独立审查：456 个模块的环境/测试选择与上游索引一致，920 个新增原始文件哈希一致；fallback 隔离生成方案已复核，无阻塞发现。应用回归现为 457 项，全部通过；lint 与完整构建再次通过。最终源码方案的干净安装、打包开发验证及 PR CI 待补齐。
+- Licia 独立审查：456 个模块的环境/测试选择与上游索引一致，920 个新增原始文件哈希一致；fallback 隔离生成方案已复核，无阻塞发现。应用回归现为 457 项，全部通过；lint 与完整构建再次通过。
+- 最终 `75ca7bf` 源码方案在新的独立 clone 中通过 `npm ci --offline --no-audit`（已有缓存，安装 650 个包），完整 `npm test` 为应用 457/457、Licia 两种模式各 606 通过/4 pending。Windows NSIS 重新打包及隔离运行检查通过；Licia `src/trim.js` 的临时标记经自动编译在实际开发 renderer 中读取成功，随后恢复原文件。首次在依赖优化尚未稳定时启动窗口曾超时，等待服务就绪后验证通过；开发流程须等待编译完成和 Vite 重启就绪，再刷新窗口/重启 Electron。
+- [最终源码五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39989387028) 全部通过：test、lint、windows-package、macos-package-arm64、macos-package-x64。后三项包含实际安装包安装、启动、设置页、IPC 和包内元数据/许可证检查。
 - 原始真机、无线和长期运行待验收状态不变。未声称完整类型检查、完全离线构建、签名或公证通过。可选 lsla 资产生成器不在正常 build 路径，本轮未迁移。
 
-下一步：完成剩余检查和 PR，记录链接与真实结果后再标记迁移完成。使用方法和源码维护规则见 [vendor README](../../vendor/README.md)，详细设计和执行记录见 [计划](../superpowers/plans/2026-10-23-dependency-sources.md)。
+下一步：按实际二次适配需求修改仓内原始源码，并为行为变化补回归；原有真机、无线及长期运行待办继续按 RUNBOOK 验收。本轮不发布迁移版，v1.0.3 保持恢复节点。使用方法和源码维护规则见 [vendor README](../../vendor/README.md)，详细设计和执行记录见 [计划](../superpowers/plans/2026-10-23-dependency-sources.md)。
