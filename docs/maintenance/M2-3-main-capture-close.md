@@ -52,5 +52,6 @@ node script/audit-capture-close.cjs
 - 额外在 Node `fs.readFileSync` 边界禁止 `src/share` 读取后，窗口/handler/renderer 生命周期组合 29/29，诊断探针输出保持一致；此检查不替代最终 CI。
 - `npm run build:main`：通过；保留现有 Vite CJS API 弃用警告。未声称完整类型检查或安装打包通过。
 - 本轮未修改 `uitest.ts`、HDC/finiteShell、Overview、renderer 生命周期、依赖和物理设备验收脚本。最终提交独立审查及五项必需 CI 由主对话核验后决定合并；本分支不合并或发布。
+- 整合前普通 merge 同步已合入 #48 的 master `ec1ab37dffd7854ed14b1025f7ecbe4f61731f14`，仅 RUNBOOK 追加位置冲突并保留双方全部条目。窗口/handler/renderer 生命周期及布局专项 32/32，组合全量 407/407、lint 通过，审计探针观测保持一致。此次同步带入上游 Overview 改动，本任务未自行修改该模块；投屏生产修复与原候选相同，等待最终 head 的增量独审和 CI。
 
 下一步应另立主进程捕获所有权设计：确定 owner 与窗口代次、同设备请求顺序、销毁时的本地退订、迟到 start 的补偿以及 stop 拒绝/无回复的状态。设计必须证明旧 owner 不能停止或向新 owner 投帧，并区分本地回调解除与设备停止确认。然后补实际 Electron 关窗/崩溃/重开无设备检查及授权设备停止验收。本报告不自动启动这项协议改造。

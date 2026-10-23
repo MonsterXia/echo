@@ -446,3 +446,10 @@
 - 最小修复：直接 destroy 绕过 close 时，模块级窗口引用原先不清空，重开会访问已销毁窗口。把引用清理及主窗恢复移到 closed，保留原 close 销毁行为。回归先为 2 通过/3 失败，修复后 5/5；布局组合 8/8，全量 398/398、lint 和 build:main 通过。事件来自替身，不替代实际 Electron 验收。
 - 捕获审计仍发现缺口：完成捕获关窗、迟到 start 回复和 stop 拒绝后均残留 1 个真实 UiDriver 监听；关窗未发 stop，重开可接收旧会话的合成帧。成功 stop 对照清零。`node script/audit-capture-close.cjs` 可重复观察；命令成功仅表示探测完成，不表示缺陷已修复。
 - 状态 / 下一步：M2-2/M2-3 保持进行中。主进程没有跨 renderer 的 owner/session/顺序协议，不能直接在 close 增加 stop 并声称安全停止；须另行设计旧 owner 与新捕获隔离、迟到启动补偿和停止失败语义。本 PR 仅窗口引用修复、证据和文档，最终独立审查、五项必需 CI 与合并由主对话负责，不自行合并或发布。
+- 整合前普通 merge 同步 #48 已合入的 master `ec1ab37`；仅 RUNBOOK 追加位置冲突，保留双方记录。投屏生产改动不变，组合专项 32/32、全量 407/407、lint 通过，合成捕获探针输出不变；最终候选的增量独审和五项 CI 见 [PR #49](https://github.com/MonsterXia/scrcpy-harmony/pull/49)。
+
+### 2026-10-23 M2-2 概览 renderer 读取生命周期
+
+- 真实 Overview/React/MobX/Luna 组件回归确认同 tick 重入重复请求、卸载/断连后旧失败通知，以及 StrictMode 废弃读取覆盖当前结果；新增 9 项在修复前全部按预期断言失败。仅修改 Overview 的请求会话和失效检查，当前失败继续清空详情、释放 loading 并允许手动重试。App 已有按 target key 重挂载保护；不把组件边界缺陷认定为前两轮物理重连失败的原因。
+- 修复后专项 10/10（含既有失败刷新回归，运行时未初始化 src/share），全量 402/402，lint 和 renderer 构建通过；构建保留现有 Vite/Sass、licia eval 和 chunk 警告。[专项报告](docs/maintenance/M2-2-overview-lifecycle.md)记录复现、测试边界和下一步。全程合成数据，无 HDC/手机访问、设备应用清单采集或发布。
+- 下一步：完成最终提交的 OpenAI（GPT-6）独立审查和五项必需 CI，再由主对话合并。M2-2 继续进行中，物理失败分类、原复现时长空闲及负载预算仍待验证。
