@@ -1,0 +1,85 @@
+{
+  "startedAt": "2026-10-23T13:32:44.650Z",
+  "idleRequestedSeconds": 600,
+  "sourceCommit": "0bcbcca71a59b1b52b6f1e60e154ae51338f126e",
+  "scope": "Human physical USB unplug/replug, real overview IPC/UI, measured idle interval; no synthetic faults or device writes",
+  "passed": false,
+  "reads": [
+    {
+      "phase": "before-unplug",
+      "ok": true,
+      "elapsedMs": 1689,
+      "sameDevice": true,
+      "descriptiveValid": true,
+      "resolutionValid": true,
+      "memoryValid": true
+    }
+  ],
+  "resources": [],
+  "hashes": {
+    "src/main/lib/hdc.ts": "1b58619612063375a363918ee722ae89d9277a9fe7ce1fb1b9691d129abb443d",
+    "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639",
+    "src/main/lib/hdc/parameters.ts": "b9319755450d0166398e8dcf9729e7c7b0abe67601352e6c3a9b87134a989cb9",
+    "src/renderer/main/components/overview/Overview.tsx": "118143a47230a0c7dc1eeab32507c71fe69aac404b96ce75febc635dff816a10",
+    "src/renderer/main/store/index.ts": "f585c45786845b796823b1dea901f9bf425231965b7229b375094e573f012511",
+    "src/preload/main.ts": "fae2c895154881244edd845e2726bfac24fae6338b1e3558b4bcb0c8f172c0fb",
+    "dist/main/index.js": "5816f55a376fda84ac41125ec018075e2f143c9d20b29d9bc13454592904ac6f",
+    "dist/preload/index.js": "e7b03481fc23ab5e3d355dfc62fb53e255d4b97fcfb417d81256a8df6d62fb9c",
+    "script/check-overview-physical-idle.mjs": "ef575dfd362287ac5cf522f894229981fea092ddb11bbc7189be218cee8a9582",
+    "dist/renderer/index.html": "dd66883291bc079c2eee232b7934b20677415516550c18e472b85546020b1641",
+    "dist/renderer/assets/App-ActogLwy.js": "3795ec26949aea292565f5a5cc3926abcb35877531d35c74ee31b712584078c3",
+    "dist/renderer/assets/app-Bq1a6kil.css": "883a1f81aabbfc831c51976010c56eb226ceae233675af20b46f07731ff67810",
+    "dist/renderer/assets/App-BSrh4QD_.css": "5de268b7056bb5d6ef5e4d2fabfcaf846f8cbc813139c852fd6e450103a46fc7",
+    "dist/renderer/assets/App-BW6oOqdc.js": "f2038a56a8ec18d8db16f6a3eaddbaf85ba93cb3130b4b45bb80bbea1378f42e",
+    "dist/renderer/assets/app-Cby5nV3z.js": "9f7ba480d11e2d299ce7b389779f7f2fa5d595e844c53e22e8aed175edfcf0ba",
+    "dist/renderer/assets/App-CI_l7VNa.js": "046da2b5a32315a0bb947ac7aaf36c0431cfbe75d3ffef83e1a2d039835d7f7a",
+    "dist/renderer/assets/App-DMlEgHFO.css": "66603e7d2347c1a53919476186fe6d5bd7b1684917306a0867b55836715ac6d0",
+    "dist/renderer/assets/App-DplwvdpB.css": "b33f86390076f3dbe676232b1e02f2a838503e75c33575e038027fbacc039aa1",
+    "dist/renderer/assets/App-DY0a-iwn.js": "8c0fb7716f063a3f6c16fa7d624238d25b88bf5b2c4a6e4744df74b249bd4801",
+    "dist/renderer/assets/App-IFHVt93n.css": "9e7afb065f58e9dfbc0b347f4f1da3ae32d8faa49e3c0eb1750ab3bba2d5ac87",
+    "dist/renderer/assets/App-o3hzah0p.css": "e125074fa6ae983a172c6e56fdad688725e74d7c996cfcaf18b7dcf885b76cf9",
+    "dist/renderer/assets/App-WwCzclLf.js": "84234ceaeb0be36c798868e6e3c71653bf944e83296ecd424bb664adbce554c5",
+    "dist/renderer/assets/default-icon-BEowIRRb.png": "567c7c0c7a321ca180e010ad880f0f7519f6d351ac2b9665e2ee710e7cfe7778",
+    "dist/renderer/assets/download-CJ2CHhFO.js": "ab1c750272dbf040a5d6ea37af5f452760604359dadb7edea2080130c53432a0",
+    "dist/renderer/assets/icon-RRtXdow_.png": "d4b1d795632a8763f4c8ec9f69b9e294b82f845f15ccadc3aa1f3a89ef82ad63",
+    "dist/renderer/assets/MiSans-Regular-BjbB2O6q.ttf": "6aa32ded55e110a95be10080e0c322f2382681cd581c5cbb24f4fd4ce96fbb08",
+    "dist/renderer/assets/randomBytes-emuhDO77.js": "4c1e05db4a13d2357776ab4b04ece85864ca28ba1a14cb7c16d02cf892b8553d",
+    "dist/renderer/assets/react-hHe-AAPt.js": "ab0af3bc54d409b7c0a527c14a69677b58ed3f1a1b47da906f7bc778d267e417",
+    "dist/renderer/assets/theme-O4QRD_WW.js": "40f482b3fed9e00b03b7722a1920f1afc879ea12dd5d7f8e7a671cdf082b241c",
+    "dist/renderer/assets/toBool-BUoCVlMc.js": "228c9e7a8fb32c3a119f1355c36c4dc9137edd7b7f9efb19ebd844098b2db90f",
+    "dist/renderer/assets/xterm-BNxZwc_N.js": "ec152d6a5cf73d8d0ba7cffd0de5ebde7c35d03c2a772cb9cdf45e6a8f5f36c3",
+    "dist/renderer/assets/xterm-DYP7pi_n.css": "7c5a01f382f76539fc9b4db6b18e18a7035741845fd14968c5cdc0a7e373d817"
+  },
+  "runtime": {
+    "packaged": false,
+    "electron": "45.0.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "phase": "RECONNECTED_VERIFYING_AUTOMATIC_UI",
+  "disconnected": {
+    "observedByTracker": true,
+    "selectionCleared": true,
+    "oldDetailsRemoved": true,
+    "ipcTargetsEmpty": true
+  },
+  "disconnectedOverview": {
+    "rejected": true,
+    "elapsedMs": 9
+  },
+  "errorClass": "Error",
+  "failureLine": "74",
+  "failure": "Verification assertion/runtime failed; private values and raw errors omitted",
+  "commands": {
+    "alive": 1,
+    "list targets": 97,
+    "fport ls": 2,
+    "shell echo ready": 21,
+    "shell param get": 9,
+    "shell SP_daemon -deviceinfo": 3,
+    "shell uname -a": 3,
+    "shell cat /proc/meminfo": 3,
+    "shell hidumper -s RenderService -a screen": 2
+  },
+  "blockedCommandCount": 0
+}
