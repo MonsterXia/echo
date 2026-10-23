@@ -132,6 +132,7 @@ Canvas pointer 事件
 - 客户端在同一 renderer 内按设备将 stop/start 串行化（包含旧客户端销毁与新客户端启动），并用启动代次丢弃迟到结果；本次启动未出图时五秒重试（包括 stop/start 拒绝），停止阶段不接收帧。`ready` 仍只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，再排队停止捕获；已发出的 IPC 不能撤销，若 bridge 请求不返回，设备端清理仍不能保证。
 - `loadImage(url, signal?)` 清理图片处理器并支持取消；客户端在 finally 中释放 Blob URL。无设备生命周期回归见 `test/screencast-lifecycle.test.cjs`，真实捕获和原应用问题的验收边界见 `docs/maintenance/M2-3-recovery.md`。
 - `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
+- 文本按钮在 prompt 与发送期间用同步标记防重入，并等待 `main.inputText`、消费拒绝及显示通用错误。target 对象替换或卸载使旧会话失效，旧 prompt 不再发送、旧结果不通知或解锁新会话；这不取消已发送写入。底层不返回时保持忙碌，不自动重发；仍为单行输入和原 UiDriver 坐标语义。回归见 `test/text-input-toolbar.test.cjs`。
 
 ## UI 和生成文件
 

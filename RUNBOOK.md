@@ -87,7 +87,7 @@
 | ID | 来源 | 评估与验收方向 |
 | --- | --- | --- |
 | M4-1 | [#25](https://github.com/liriliri/echo/issues/25)：音频转发 | **暂缓（评估已记录，能力待验证）**：官方 AVScreenCapture 与 HarmonyOS API 26.0.0 新内录接口是候选，尚未建立普通调试授权下可分发的实际链路；权限/版本矩阵、架构缺口、同步/延迟/恢复范围及解除条件见 [能力评估](docs/maintenance/M4-1-audio.md)。未操作设备、未实现功能。 |
-| M4-2 | [#23](https://github.com/liriliri/echo/issues/23)：电脑复制文本到设备 | 已完成静态与无设备评估，待能力验证、未验收；固定坐标、单行入口和 UI 失败反馈存在缺口。先验证目标语义与结果未知策略，再另立实现任务，见[报告](docs/maintenance/M4-2-text-input.md)。 |
+| M4-2 | [#23](https://github.com/liriliri/echo/issues/23)：电脑复制文本到设备 | 整体能力待验证、未验收；直接粘贴继续暂缓，固定坐标/单行入口不变。仅现有按钮等待、拒绝反馈、防重入及旧结果隔离已完成无设备回归、待最终审查，见[修复记录](docs/maintenance/M4-2-text-input-lifecycle.md)和[能力评估](docs/maintenance/M4-2-text-input.md)。 |
 | M4-3 | [#15](https://github.com/liriliri/echo/issues/15)：文件下载 | **暂缓（评估已记录，路径权限与传输生命周期待验证）**：官方 file recv 与现有截图接收可作基础，日志路径仍受设备策略限制；文件选择、取消、同名保护、完整性与恢复缺口及解除条件见 [能力评估](docs/maintenance/M4-3-file-download.md)。未连接设备、未收取文件、未实现功能。 |
 | M4-4 | [#32](https://github.com/liriliri/echo/issues/32)：连接后手机息屏 | 验证息屏后捕获与输入是否继续可用；区分熄屏、锁屏和黑屏效果，确定用户唤醒及断连恢复行为。 |
 | M4-5 | [#16](https://github.com/liriliri/echo/issues/16)：与 AYA 合并、跨平台及多实例 | 先分别确定产品范围、平台和多设备需求；当前共享启动模块有单实例限制，不能将移除该限制视为完整多实例支持。 |
@@ -355,6 +355,13 @@
 - 本轮仅报告与本项 RUNBOOK 更新；没有生产代码修改、设备/HAP 操作、系统剪贴板访问或发布。M4-2 保持待能力验证、未验收。下一步先确认输入目标、结果未知与长度策略，再安排独立实现和授权真机验收。
 - 初评提交 `aa8ab6e` 已由主对话以 OpenAI GPT-6 署名独立审查，无阻断；源码、primary 引用和附录哈希已核对，审查未重复探针。随后按队列普通 merge master `2465cb343e60a0e6059036b6962a776409e3f7fd`，完整保留 M4-3 及其他任务记录；核对文本工具栏、投屏客户端、类型/preload、uitest handler、share 子模块与依赖文件均未变。仅做文档差异/引用检查，未重复全量测试或探针。
 - 最终 SHA、增量独立复审、五项必需 CI 与合并状态以 [PR #40](https://github.com/MonsterXia/scrcpy-harmony/pull/40)及其[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)为准；初评审查不替代同步后的最终核验，由主对话统一审查整合，本分支不自行合并。
+
+### M4-2 现有文本按钮异步修复
+
+- 2026-10-23 / Codex；从包含指定 `427e255` 的最新 master `a2ed5f8eeb45e027f639e92d12f9b0140cfdff7d` 建立独立分支 `codex/text-input-lifecycle`，复用本任务隔离工作树及其独立依赖/输出。仅修复已有文本按钮，不新增剪贴板、多行或坐标功能，详见[修复报告](docs/maintenance/M4-2-text-input-lifecycle.md)。
+- prompt/发送期间同步防重入并禁用按钮，await bridge、消费拒绝并显示通用错误；取消/空串不发送。target 对象替换和卸载使旧会话失效，旧 prompt 不发送、旧结果不通知或解锁当前操作；不自动重发，不声称取消已发写入。
+- 真实组件/React/MobX/共享图标/LunaToolbar 加受控桥接回归：旧实现 10 失败/4 通过，修复后 14/14；全量 327/327、lint、renderer 构建通过。未操作 Electron/HDC/手机或真实剪贴板，没有主进程、UiDriver、共享子模块或协议变更。
+- 整体 M4-2 保持待能力验证、未验收，直接粘贴仍暂缓；无回复时保持忙碌，目标语义、真实设备与跨平台反馈另行验收。PR/最终 SHA/CI 由交付消息与 PR 页面承载，主对话 OpenAI（GPT-6）独审及五项必需 CI 通过后决定合并，本分支不合并或发布。
 
 ### M4-3 文件下载能力评估交接
 
