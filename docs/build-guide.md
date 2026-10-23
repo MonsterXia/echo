@@ -4,13 +4,13 @@
 
 ## 范围与准备
 
-本指南于 2026-10-23 对照 master `1f05c37` 核对。公开发行版仍为 [v1.0.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.2)，tag 固定到 `1c545a7702547d8c53e31bcbfe7d76febc326cba`；master 的包版本同为 1.0.2，但包含[未发行的功能修复](user-guide.md#版本与支持范围)。构建时应记录完整提交号。
+当前源码为依赖迁移后的 1.0.4-dev.0；公开恢复版为 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3)，实际构建提交 `417e78ff9a4f99bc0d3a68080b9ceb11810d1d09`。迁移源码与公开恢复版的依赖布局不同，构建时应记录提交号。
 
 Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)；同步主干前独立检出的依赖安装、全量测试、lint、三个模块构建，以及同步后的文档核对见[复核记录](maintenance/M3-3-release-guide.md)，没有重复下载设备资源或重做完整打包。macOS 命令仍与工作流一致，但没有 macOS 本机人工走读；[1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的构建、打包及安装启动结果是历史自动化证据。
 
-准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取 npm 依赖、子模块、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
+准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取 通用 npm 工具链、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
 
-在独立目录执行以下操作，保留本仓库锁文件和固定子模块提交。不要共用其他任务的可写 `node_modules`、`dist` 或 `release`。
+在独立目录执行以下操作，保留本仓库锁文件及 vendor 源码。不要共用其他任务的可写 `node_modules`、`dist` 或 `release`。
 
 ## 获取源码与锁定依赖
 
@@ -20,14 +20,14 @@ Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)�
 git clone https://github.com/MonsterXia/scrcpy-harmony.git
 cd scrcpy-harmony
 git rev-parse HEAD
-git submodule update --init --recursive
-git submodule status
 node --version
 npm --version
 npm ci --no-audit --no-fund
 ```
 
-`src/share` 是必需的共享 Electron 代码；`src/renderer/icon` 提供图标源。子模块状态行首 `-` 表示尚未初始化，`+` 表示与仓库固定提交不同。GitHub 的源码 ZIP 不包含子模块内容，建议使用 Git clone。若需要基于公开 1.0.2 的源码构建，在子模块初始化和安装前执行 `git checkout v1.0.2`，再用 `git rev-parse HEAD` 核对上述源提交；master 含未发行改动，即使包版本仍显示 1.0.2 也不等于发行版。切回旧 tag 不保证重新构建的安装包与已发布文件逐字节相同，设备资源来源限制见下一节。
+`src/share` 和 `src/renderer/icon` 现在都是本仓普通目录，源码 ZIP 也包含它们。HDC、Licia 和 Luna 源码位于 `vendor/packages`，不再从 npm 下载这些包；`npm ci` 的 postinstall 会编译本地依赖。如果使用了 `--ignore-scripts`，先执行 `npm run build:vendor`。修改源码后可重新执行此命令，`npm run build`、`npm test` 和 `npm run dev` 也会准备本地编译产物，详见[本地依赖维护](../vendor/README.md)。
+
+恢复公开 v1.0.3 时请在独立目录检出 `v1.0.3`，然后执行 `git submodule update --init --recursive` 与该 tag 的构建流程；该版本仍需要外部依赖。不要在有未保存修改的迁移目录直接切回旧 tag。
 
 使用 `npm ci` 按 `package-lock.json` 安装；不要为了绕过安装错误删除锁文件或运行依赖升级命令。
 
@@ -76,13 +76,13 @@ npm run pack -- --no-publish
 | `release/<版本>/Scrcpy Harmony-<版本>-win-x64.exe` | Windows NSIS 安装包 |
 | `release/<版本>/Scrcpy Harmony-<版本>-mac-<架构>.dmg` | macOS 原生架构安装包 |
 
-本地文件名含空格，公开 v1.0.2 的安装包名使用连字符；不要据此误判缺包。该 Release 的 `latest.yml`、`latest-mac.yml`、`latest-x64-mac.yml` 分别对应 Windows x64、macOS arm64、macOS x64；`release-validation.json` 与 `SHA256SUMS.txt` 记录已发布文件的名称、大小或校验值，不应拿它们校验不同提交生成的本地包。打包按当前系统/Node 架构生成，请在目标平台的原生架构环境执行。`--no-publish` 禁止发布，打包完成不等于已经签名、公证或通过真机验收。
+本地文件名含空格，公开 v1.0.3 的安装包名使用连字符；不要据此误判缺包。该 Release 的 `latest.yml`、`latest-mac.yml`、`latest-x64-mac.yml` 分别对应 Windows x64、macOS arm64、macOS x64；`release-validation.json` 与 `SHA256SUMS.txt` 记录已发布文件的名称、大小或校验值，不应拿它们校验不同提交生成的本地包。打包按当前系统/Node 架构生成，请在目标平台的原生架构环境执行。`--no-publish` 禁止发布，打包完成不等于已经签名、公证或通过真机验收。
 
-未配置签名凭据的本地验证可先设置 `CSC_IDENTITY_AUTO_DISCOVERY=false`（PowerShell：`$env:CSC_IDENTITY_AUTO_DISCOVERY = 'false'`；macOS：`export CSC_IDENTITY_AUTO_DISCOVERY=false`）。不要把空字符串设为 `CSC_LINK`：它可能被解释为证书路径。正式签名/公证和发布另按[发行记录](releases/1.0.2.md)处理。
+未配置签名凭据的本地验证可先设置 `CSC_IDENTITY_AUTO_DISCOVERY=false`（PowerShell：`$env:CSC_IDENTITY_AUTO_DISCOVERY = 'false'`；macOS：`export CSC_IDENTITY_AUTO_DISCOVERY=false`）。不要把空字符串设为 `CSC_LINK`：它可能被解释为证书路径。正式签名/公证和发布另按[发行记录](releases/1.0.3.md)处理。
 
 ## 开发启动
 
-先完成依赖、子模块和设备资源准备。**先正常退出已安装的 Scrcpy Harmony 和其他使用同一配置的开发实例**，再在仓库根目录打开两个终端，避免同时写入相同配置文件；不需要为此终止共享 HDC 服务。
+先完成本地依赖编译、共享源码和设备资源准备。**先正常退出已安装的 Scrcpy Harmony 和其他使用同一配置的开发实例**，再在仓库根目录打开两个终端，避免同时写入相同配置文件；不需要为此终止共享 HDC 服务。
 
 ```text
 # 终端 1：监听 main/preload 构建，启动 renderer 开发服务
@@ -107,7 +107,7 @@ React 页面使用 preload 注入的全局 `main`，经 Electron IPC 调用主�
 | 失败 | 检查方式 |
 | --- | --- |
 | Node engine 不符合要求 | 检查实际 `node --version` 与 npm 所在终端的 PATH，使用满足要求的 Node 22 环境 |
-| 找不到 `share/*` | `git submodule update --init --recursive`，检查固定提交是否检出，不能靠创建空目录解决 |
+| 找不到 `share/*` | 检查当前源码是否完整，恢复 `src/share` 跟踪文件；只有 v1.0.3 及更早 tag 使用子模块初始化 |
 | Windows 找不到 Bash / curl / unzip | 使用上方显式 Git Bash 命令并核对工具路径；PowerShell 自带的命令不能代替脚本所需的全部工具 |
 | 资源复制失败或 EPERM | 停止重建，退出本检出启动的应用并确认资源是否被占用；共享 HDC 服务可能仍在使用文件，先协调占用方，不要批量杀 HDC 或其他任务进程 |
 | `npm start` 缺少 main 文件 / 开发页面空白 | 等待 `npm run dev` 首次编译成功，检查 8080 端口、preload 编译和终端错误 |

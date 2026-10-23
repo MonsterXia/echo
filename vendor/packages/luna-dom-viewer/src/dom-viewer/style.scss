@@ -1,0 +1,125 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-dom-viewer {
+  padding: 0 0 0 12px;
+  cursor: default;
+  list-style: none;
+  min-width: 100%;
+  @include component(true);
+  & {
+    font-size: #{$font-size-s-m}px;
+    font-family: $font-family-code;
+  }
+  ul {
+    display: inline-block;
+  }
+}
+
+.toggle {
+  min-width: 12px;
+  margin-left: -12px;
+}
+
+.icon-caret-right,
+.icon-caret-down {
+  position: absolute !important;
+  font-size: 12px !important;
+}
+
+.tree-item {
+  min-width: 200px;
+  line-height: 16px;
+  min-height: 16px;
+  position: relative;
+  z-index: 10;
+  outline: none;
+  &.selected,
+  &:hover {
+    .selection {
+      display: block;
+    }
+  }
+  .icon-caret-down {
+    display: none;
+  }
+  &.expanded {
+    .icon-caret-down {
+      display: inline-block;
+    }
+    .icon-caret-right {
+      display: none;
+    }
+  }
+}
+
+.attribute-value {
+  word-break: break-all;
+  &.attribute-underline {
+    text-decoration: underline;
+  }
+}
+
+.selection {
+  position: absolute;
+  display: none;
+  left: -10000px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.children {
+  margin: 0;
+  overflow-x: visible;
+  overflow-y: visible;
+  padding-left: 15px;
+}
+
+@each $theme in ('light', 'dark') {
+  $dark: $theme == 'dark';
+  .theme-#{$theme} {
+    @if $dark {
+      color: #e8eaed;
+    }
+    .icon-caret-down,
+    .icon-caret-right {
+      color: #9aa0a6;
+    }
+    .html-tag,
+    .tag-name {
+      color: if($dark, #5db0d7, #881280);
+    }
+    .attribute-name {
+      color: if($dark, #9bbbdc, #994500);
+    }
+    .attribute-value {
+      color: if($dark, #f29766, #1a1aa6);
+    }
+    .html-comment {
+      color: if($dark, #898989, #236e25);
+    }
+    .tree-item {
+      &:hover {
+        .selection {
+          background: if($dark, #083c69, #e8eaed);
+        }
+      }
+      &.selected {
+        .selection {
+          background: if($dark, #454545, #e0e0e0);
+        }
+      }
+      &.selected:focus {
+        .selection {
+          background: if($dark, #073d69, #cfe8fc);
+        }
+      }
+    }
+    .text-node {
+      word-break: break-all;
+      @include code-color($theme);
+    }
+  }
+}

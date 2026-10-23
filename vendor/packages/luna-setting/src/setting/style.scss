@@ -1,0 +1,260 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-setting {
+  min-width: 320px;
+  @include component(true);
+}
+
+.item {
+  &.selected:focus {
+    outline: 1px solid;
+  }
+  .title {
+    line-height: 1.4em;
+    font-weight: 600;
+  }
+  .description,
+  &.item-markdown {
+    line-height: 1.4em;
+    * {
+      margin: 0;
+    }
+    strong {
+      font-weight: 600;
+    }
+    a {
+      background-color: transparent;
+      text-decoration: none;
+    }
+  }
+  .description,
+  .control {
+    font-size: #{$font-size-s-m}px;
+  }
+  .description {
+    margin-bottom: 8px;
+  }
+  .control {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.item-title,
+.item-checkbox,
+.item-select,
+.item-input,
+.item-button,
+.item-markdown,
+.item-number {
+  padding: 10px;
+}
+
+.item-title {
+  font-weight: 600;
+  &.level-1 {
+    font-size: 18px;
+  }
+  &.level-2 {
+    font-size: 16px;
+  }
+  &.level-3 {
+    font-size: 14px;
+  }
+}
+
+.item-input {
+  &.disabled {
+    input {
+      opacity: 0.6;
+    }
+  }
+  input {
+    @include input();
+    width: 100%;
+  }
+}
+
+.item-number {
+  &.disabled {
+    input,
+    .range-container {
+      opacity: 0.6;
+    }
+    .range-container input {
+      opacity: 1;
+    }
+  }
+  input[type='number'] {
+    @include input();
+    width: 200px;
+    padding: 2px;
+  }
+  .range-container {
+    flex: 2;
+    position: relative;
+    top: 1px;
+    .range-track {
+      height: 4px;
+      width: 100%;
+      padding: 0 10px;
+      position: absolute;
+      left: 0;
+      top: 4px;
+      .range-track-bar {
+        border-radius: 2px;
+        overflow: hidden;
+        width: 100%;
+        height: 4px;
+        .range-track-progress {
+          height: 100%;
+          width: 50%;
+        }
+      }
+    }
+    input {
+      -webkit-appearance: none;
+      background: transparent;
+      height: 4px;
+      width: 100%;
+      position: relative;
+      top: -3px;
+      margin: 0 auto;
+      outline: none;
+      border-radius: 2px;
+    }
+    input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      position: relative;
+      top: 0px;
+      z-index: 1;
+      width: 16px;
+      border: none;
+      height: 16px;
+      border-radius: 10px;
+      border: 1px solid;
+    }
+  }
+}
+
+.item-checkbox {
+  &.disabled {
+    .control {
+      opacity: 0.6;
+    }
+  }
+  input {
+    @include checkbox();
+    align-self: flex-start;
+    flex-shrink: 0;
+  }
+  label {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    * {
+      margin: 0;
+    }
+  }
+}
+
+.item-select {
+  &.disabled {
+    .select {
+      opacity: 0.6;
+    }
+  }
+  .select {
+    @include select();
+    select {
+      width: 300px;
+    }
+  }
+}
+
+.item-button {
+  button {
+    @include button();
+  }
+}
+
+.item-separator {
+  border-bottom: 1px solid;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    .item {
+      &:hover,
+      &.selected {
+        @include theme-var(background-color, color-fill-secondary, $theme);
+      }
+      &.selected:focus {
+        @include theme-var(outline-color, color-primary, $theme);
+      }
+      .description,
+      &.item-markdown {
+        a {
+          @include theme-var(color, color-primary, $theme);
+        }
+      }
+    }
+    .item-separator {
+      @include theme-var(border-color, color-border, $theme);
+    }
+    .item-input {
+      input {
+        @include input-theme($theme);
+      }
+    }
+    .item-checkbox {
+      input {
+        @include checkbox-theme($theme);
+      }
+    }
+    .item-select {
+      .select {
+        @include select-theme($theme);
+      }
+    }
+    .item-button {
+      button {
+        @include button-theme($theme);
+      }
+    }
+    .item-number {
+      input[type='number'] {
+        @include input-theme($theme);
+      }
+      .range-container {
+        .range-track {
+          .range-track-bar {
+            @include theme-var(background-color, color-border, $theme);
+            .range-track-progress {
+              @include theme-var(background-color, color-primary, $theme);
+            }
+          }
+        }
+        input::-webkit-slider-thumb {
+          @include theme-var(border-color, color-border, $theme);
+          @if ($theme == 'light') {
+            background: radial-gradient(
+              circle at center,
+              #eee 0,
+              #eee 15%,
+              #fff 22%,
+              #fff 100%
+            );
+          } @else {
+            background: radial-gradient(
+              circle at center,
+              #aaa 0,
+              #aaa 15%,
+              #ccc 22%,
+              #ccc 100%
+            );
+          }
+        }
+      }
+    }
+  }
+}

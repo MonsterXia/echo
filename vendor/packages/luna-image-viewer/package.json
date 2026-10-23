@@ -1,0 +1,31 @@
+{
+  "name": "luna-image-viewer",
+  "version": "1.1.0",
+  "description": "Single image viewer",
+  "main": "cjs/image-viewer/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/image-viewer/index.js",
+  "exports": {
+    ".": "./esm/image-viewer/index.js",
+    "./css": "./luna-image-viewer.css",
+    "./luna-image-viewer.css": "./luna-image-viewer.css",
+    "./package.json": "./package.json",
+    "./react": "./esm/image-viewer/react.js"
+  },
+  "private": true
+}

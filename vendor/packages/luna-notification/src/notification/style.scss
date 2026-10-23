@@ -1,0 +1,102 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-notification {
+  position: relative;
+  padding: 20px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  @include component(true);
+  &.full {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.item {
+  display: flex;
+  border: 1px solid;
+  padding: 10px 16px;
+  align-items: center;
+}
+
+.lower {
+  margin-top: 16px;
+}
+
+.upper {
+  margin-bottom: 16px;
+}
+
+.icon-container {
+  margin-right: 8px;
+  color: #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  line-height: 16px;
+  &.info {
+    .icon {
+      position: relative;
+      top: -2px;
+      font-size: 12px;
+    }
+  }
+  &.success {
+    .icon {
+      position: relative;
+      top: -1px;
+      font-size: 12px;
+    }
+  }
+  &.warning {
+    position: relative;
+    top: -2px;
+    .icon {
+      font-size: 14px;
+    }
+  }
+  &.error {
+    position: relative;
+    top: -1px;
+    .icon {
+      font-size: 14px;
+    }
+  }
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    .item {
+      @include theme-vars(
+        (
+          border-color: color-border,
+          box-shadow: box-shadow,
+          color: color-text,
+          background-color: color-bg-container,
+        ),
+        $theme
+      );
+    }
+    .icon-container {
+      &.info {
+        @include theme-var(background-color, color-info, $theme);
+      }
+      &.success {
+        @include theme-var(background-color, color-success, $theme);
+      }
+      &.warning {
+        @include theme-var(color, color-warning, $theme);
+      }
+      &.error {
+        @include theme-var(color, color-error, $theme);
+      }
+    }
+  }
+}

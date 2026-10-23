@@ -1,0 +1,9 @@
+{
+  "name": "dom-viewer",
+  "version": "1.8.4",
+  "description": "Dom tree navigator",
+  "luna": {
+    "icon": true,
+    "react": true
+  }
+}

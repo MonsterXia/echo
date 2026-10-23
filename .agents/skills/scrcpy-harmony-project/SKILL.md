@@ -9,7 +9,7 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 
 ## 快速定位
 
-这是单包 Electron 应用，不是原生 scrcpy C/Java 服务端，也不是独立 Web 服务。核心依赖是 React、MobX、Luna UI、Licia 和 `hdckit`。
+这是单包 Electron 应用，不是原生 scrcpy C/Java 服务端，也不是独立 Web 服务。核心依赖是 React、MobX，以及 `vendor/packages/` 中本地维护的 Luna UI、Licia 和 `hdckit`，详见 `vendor/README.md`。
 
 | 要处理的内容 | 优先入口 |
 | --- | --- |
@@ -30,7 +30,7 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 ## 关键约束
 
 - 设备调用链为 renderer 的全局 `main` → preload `invoke` → 主进程 `handleEvent` → `hdckit`。新增接口时一并检查类型、桥接和处理器；事件名称需两端一致。
-- `share/*` 来自 `src/share` Git 子模块；缺少这些文件时先查子模块状态。`common/*` 对应 `src/common`，两者都是 Vite 别名。
+- `share/*` 来自本仓库跟踪的 `src/share`；图标源 `src/renderer/icon` 也为普通目录。v1.0.3 及更早 tag 才需要初始化子模块。`common/*` 对应 `src/common`，两者都是 Vite 别名。
 - 投屏 JPEG 帧尺寸、CSS 显示尺寸和设备触摸尺寸是三个坐标空间。触摸使用 `getDisplaySize()` 的结果，不用请求的 `scale` 反推。
 - 主窗口切换标签后，已访问面板仍挂载；异步任务和监听的清理不能只依赖标签切换。设备切换另有按 target key 重建机制。
 - UI 延续 MobX + `observer`、Luna 组件、SCSS Modules；文案通过 `common/util.ts` 的 `t()` 和 `src/common/langs/zh-CN.json`。
@@ -38,4 +38,4 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 
 ## 使用与维护
 
-先确认当前工作目录和 `git status --short`，按表定位源码。需要构建时再检查依赖、子模块和资源。新增知识只记录稳定的职责、链路及真实限制；不把本次任务日志、临时环境缺失或未经验证的推测写成永久规则。
+先确认当前工作目录和 `git status --short`，按表定位源码。需要构建时再检查本地依赖编译产物、共享源码和资源。新增知识只记录稳定的职责、链路及真实限制；不把本次任务日志、临时环境缺失或未经验证的推测写成永久规则。

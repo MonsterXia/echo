@@ -10,7 +10,6 @@
 
 ```powershell
 git status --short
-git submodule status
 node --version
 npm --version
 Test-Path node_modules
@@ -18,16 +17,15 @@ Test-Path resources/hdc
 Test-Path resources/uitestkit_sdk
 ```
 
-两个子模块由 `.gitmodules` 声明：`src/share`（electron-share）、`src/renderer/icon`（icon-share）。`git submodule status` 行首 `-` 表示未初始化；目录存在也可能是空目录。完整应用构建需要共享代码，重新生成图标需要图标源。
+`src/share` 与 `src/renderer/icon` 已由固定上游快照转为普通跟踪目录；来源见 `vendor/manifest.json`。只有检出 v1.0.3 或更早 tag 才需要按该版本指南初始化子模块。
 
-仓库要求 Node >=22.12.0，CI 使用 Node 22。`package-lock.json` 随仓库跟踪，日常安装使用 `npm ci`；更改依赖时使用 `npm install` 并同时提交锁文件。Electron 固定为 45.0.0，标题栏依赖使用兼容它的 4.4.1 系列。
+仓库要求 Node >=22.12.0，CI 使用 Node 22。`package-lock.json` 随仓库跟踪，日常安装使用 `npm ci`，postinstall 自动编译本地 HDC/Luna；更改依赖时使用 `npm install` 并同时提交锁文件。Electron 固定为 45.0.0，标题栏依赖使用兼容它的 4.4.1 系列。
 
 ## 首次准备与启动
 
 需要实际启动/构建时，在仓库根目录执行：
 
 ```powershell
-git submodule update --init --recursive
 npm ci
 npm run init
 ```
@@ -56,11 +54,12 @@ npm start
 
 | 命令 | 作用 / 前提 |
 | --- | --- |
+| `npm run build:vendor` | 从本仓 TS/SCSS 编译 HDC/Luna；不联网、不运行上游安装脚本；不等于完整类型检查 |
 | `npm test` | Node test runner 执行 `test/*.test.cjs`，需要已安装 npm 依赖 |
-| `npm run lint` | ESLint 检查 `src` 下 ts/tsx；可能包含已初始化的共享子模块 |
-| `npm run build:main` | Vite 将主进程打为 `dist/main/index.js`，需要共享子模块 |
-| `npm run build:preload` | Vite 将 preload 打为 `dist/preload/index.js`，需要共享子模块 |
-| `npm run build:renderer` | Vite 编译 UI 到 `dist/renderer`，需要共享子模块 |
+| `npm run lint` | ESLint 检查 `src` 下 ts/tsx；包括内置共享代码 |
+| `npm run build:main` | Vite 将主进程打为 `dist/main/index.js`，预先编译本地依赖并使用内置共享源码 |
+| `npm run build:preload` | Vite 将 preload 打为 `dist/preload/index.js`，预先编译本地依赖并使用内置共享源码 |
+| `npm run build:renderer` | Vite 编译 UI 到 `dist/renderer`，预先编译本地依赖并使用内置共享源码 |
 | `npm run build` | 顺序执行以上三项，再复制图标及设备资源，生成发行目录内的 package.json，并在 dist 内执行 npm 安装 |
 | `npm run pack -- --no-publish` | 使用已经准备好的 dist，经 electron-builder 输出安装包到 `release/<version>/`，用于本地和 CI 验证并禁止发布 |
 | `npm run gen:theme` / `npm run gen:icon` | 重新生成主题或图标；详见架构参考的生成文件说明 |
@@ -110,13 +109,13 @@ npm start
 
 单测没有验证真实 JPEG 解码、Canvas 渲染、IPC 传输、HDC 连接或 UiDriver 的设备兼容性。真机投屏验收可覆盖：首次出图、点击/拖动/边缘释放、缩放和旋转、切换/断开设备、关闭重开窗口。仅改其中一项时按影响范围选择验收。
 
-依赖、子模块或设备不齐时，明确记录未能执行的检查及原因，避免把环境缺失归为业务代码失败，也不声称未运行的检查已通过。
+依赖、共享源码或设备不齐时，明确记录未能执行的检查及原因，避免把环境缺失归为业务代码失败，也不声称未运行的检查已通过。
 
 ## 打包与 CI
 
 `.github/workflows/ci.yml` 对目标为 `master` 的所有 PR、master push 和手动触发运行独立的 `test`、`lint`、`windows-package`、`macos-package-arm64`、`macos-package-x64` 检查。`test`、`lint` 使用 Ubuntu、Node 22 和 `npm ci`，不下载 Electron 二进制或设备资源，也不需要初始化子模块。没有路径过滤，文档 PR 同样会产生检查结果；检查名用于 master 分支保护，重命名前需同步更新 GitHub 设置。
 
-`windows-package` 使用标准 Windows runner 和 Node 22，初始化子模块并执行 npm ci → 下载设备资源（显式指定 Git Bash）→ build → pack → 验证非空的 NSIS x64 安装包、应用程序、app.asar、HDC 和 uitestkit 文件 → 安装与启动检查。通过 `npm run pack -- --no-publish` 禁止发布，不使用签名 secrets，也不上传安装包 artifact；任务超时为 20 分钟。
+`windows-package` 使用标准 Windows runner 和 Node 22，执行 npm ci（含本地依赖编译） → 下载设备资源（显式指定 Git Bash）→ build → pack → 验证非空的 NSIS x64 安装包、应用程序、app.asar、HDC 和 uitestkit 文件 → 安装与启动检查。通过 `npm run pack -- --no-publish` 禁止发布，不使用签名 secrets，也不上传安装包 artifact；任务超时为 20 分钟。
 
 `script/check-windows-install.ps1` 仅允许在 GitHub 托管 Windows runner 上运行：静默安装到包含空格的临时目录（限时 120 秒），再执行 `script/smoke-app.mjs`。NSIS 可能替换同 app ID 的已有安装，因此不要在开发机上绕过此限制。启动脚本使用锁定版本的 `playwright-core` 驱动已安装的 Electron，无需下载额外浏览器；检查实际 exe/app.asar 路径、版本、隔离用户目录、主窗口可见性、React 初始化、preload/设备枚举 IPC、设置页、页面异常及正常退出。启动检查整体限时 90 秒，失败输出进程日志；CI 最后停止 HDC 服务。
 
@@ -124,7 +123,7 @@ npm start
 
 `macos-package-arm64` 和 `macos-package-x64` 使用标准 `macos-15` 与 `macos-15-intel` runner，分别在原生架构上完成依赖安装、资源下载、build 和 DMG 打包。两个任务固定相同系统版本，避免 latest 标签自动切换系统。`script/check-macos-install.mjs` 挂载 DMG，将 `.app` 复制到临时目录后卸载镜像，验证包内资源和可执行权限，再运行共享的启动检查。此检查校验实际架构，使用隔离用户配置并在退出后清理配置及 HDC 服务；只读仓库权限、不发布、不上传 artifact、不使用签名或公证 secrets。它不验证 Developer ID 签名、公证或从互联网下载后的 Gatekeeper 放行。
 
-`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 是手动产物构建（workflow_dispatch），矩阵与 CI 对齐为 `windows-latest` x64、`macos-15` arm64、`macos-15-intel` x64，并核验 Node 实际架构。顺序为 checkout（含子模块）→ npm ci → 下载资源（Windows 显式 Git Bash）→ build → pack --no-publish → 使用现有安装脚本验收实际安装包 → 记录签名和 SHA-256 → 上传 artifact。任一安装启动检查失败时不上传该平台 artifact。产物附带 `verification-win-x64.json` 或 `verification-mac-<arch>.txt`，记录源 SHA、运行链接、安装启动结果和系统签名检查；macOS 另外记录 Gatekeeper 与 stapler 退出码。信任检查失败如实记录，不把未签名包可启动等同于签名/公证通过。该 workflow 不创建 GitHub Release，真机及用户从互联网下载后的信任体验仍需单独验收。
+`script/pack.mjs` 配置 Windows NSIS exe 和 macOS dmg；读取 dist 内的包元数据及资源。`.github/workflows/build.yml` 是手动产物构建（workflow_dispatch），矩阵与 CI 对齐为 `windows-latest` x64、`macos-15` arm64、`macos-15-intel` x64，并核验 Node 实际架构。顺序为 checkout → npm ci（含本地依赖编译） → 下载资源（Windows 显式 Git Bash）→ build → pack --no-publish → 使用现有安装脚本验收实际安装包 → 记录签名和 SHA-256 → 上传 artifact。任一安装启动检查失败时不上传该平台 artifact。产物附带 `verification-win-x64.json` 或 `verification-mac-<arch>.txt`，记录源 SHA、运行链接、安装启动结果和系统签名检查；macOS 另外记录 Gatekeeper 与 stapler 退出码。信任检查失败如实记录，不把未签名包可启动等同于签名/公证通过。该 workflow 不创建 GitHub Release，真机及用户从互联网下载后的信任体验仍需单独验收。
 
 Electron 45 的 macOS 最低系统要求为 macOS 13；升级后需在目标平台验证安装包及设备功能，单测和 lint 不代表完整运行兼容性。
 

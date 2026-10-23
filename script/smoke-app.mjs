@@ -3,8 +3,10 @@ import { execFileSync } from 'node:child_process'
 import { mkdtemp, readFile, realpath, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { pathToFileURL, fileURLToPath } from 'node:url'
 import { _electron as electron } from 'playwright-core'
+import { vendorNotices } from './lib/vendor-notices.mjs'
+import { createHash } from 'node:crypto'
 
 assert.ok(['win32', 'darwin'].includes(process.platform), 'Unsupported smoke check platform')
 assert.ok(process.argv[2], 'Pass the installed application executable path')
@@ -91,6 +93,22 @@ try {
   assert.equal(runtime.version, pkg.version)
   assert.equal(runtime.electron, pkg.devDependencies.electron)
   assert.equal(runtime.arch, process.arch)
+
+  const packagedMetadata = await application.evaluate(({ app }) => {
+    const fs = process.getBuiltinModule('fs')
+    const path = process.getBuiltinModule('path')
+    const crypto = process.getBuiltinModule('crypto')
+    const root = app.getAppPath()
+    const digest = (file) => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex')
+    return {
+      author: JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).author,
+      license: digest('LICENSE'),
+      notices: digest('THIRD_PARTY_NOTICES.txt'),
+    }
+  })
+  assert.equal(packagedMetadata.author, pkg.author)
+  assert.equal(packagedMetadata.license, createHash('sha256').update(await readFile(new URL('../LICENSE', import.meta.url))).digest('hex'))
+  assert.equal(packagedMetadata.notices, createHash('sha256').update(await vendorNotices(path.dirname(fileURLToPath(new URL('../package.json', import.meta.url))))).digest('hex'))
 
   const expectedPage = pathToFileURL(
     path.join(resourcesDir, 'app.asar/renderer/index.html')

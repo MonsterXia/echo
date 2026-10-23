@@ -1,0 +1,30 @@
+{
+  "name": "luna-notification",
+  "version": "0.3.3",
+  "description": "Show notifications",
+  "main": "cjs/notification/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/notification/index.js",
+  "exports": {
+    ".": "./esm/notification/index.js",
+    "./css": "./luna-notification.css",
+    "./luna-notification.css": "./luna-notification.css",
+    "./luna-notification.js": "./luna-notification.js",
+    "./package.json": "./package.json"
+  }
+}

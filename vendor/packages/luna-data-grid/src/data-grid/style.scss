@@ -1,0 +1,153 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-data-grid {
+  position: relative;
+  border: 1px solid;
+  overflow: hidden;
+  outline: none;
+  @include component();
+  & {
+    font-size: #{$font-size-s-m}px;
+  }
+
+  table {
+    width: 100%;
+    min-height: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    padding: 1px 4px;
+    border-left: 1px solid;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  th {
+    font-weight: normal;
+    border-bottom: 1px solid;
+    text-align: left;
+    position: relative;
+    &.sortable {
+      padding-right: #{$padding-s-m}px;
+    }
+    .icon-caret-down,
+    .icon-caret-up {
+      font-size: 12px;
+      position: absolute;
+      display: none;
+      top: 6px;
+      right: 2px;
+    }
+  }
+
+  td {
+    height: 20px;
+    cursor: default;
+    user-select: text;
+  }
+
+  &:focus {
+    .node.selectable.selected {
+      color: #fff;
+    }
+  }
+}
+
+.header-container,
+.data-container {
+  overflow: hidden;
+}
+
+.header-container {
+  height: 21px;
+}
+
+.data-container {
+  overflow-y: auto;
+  position: relative;
+}
+
+.data-space {
+  min-height: 100%;
+}
+
+.data {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.filler-row {
+  td {
+    height: auto;
+  }
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  z-index: 500;
+  touch-action: none;
+  cursor: col-resize;
+}
+
+.resizing {
+  cursor: col-resize !important;
+  .luna-data-grid * {
+    cursor: col-resize !important;
+  }
+}
+
+@each $theme in ('light', 'dark') {
+  $selected-row-divider: if(
+    sass($theme == 'light'):
+      rgba(0, 0, 0, 0.14)
+      ;
+      else:
+      rgba(255, 255, 255, 0.14),
+  );
+
+  .theme-#{$theme} {
+    @include theme-var(border-color, color-border, $theme);
+    th,
+    td {
+      @include theme-var(border-color, color-border, $theme);
+    }
+    th {
+      @include theme-var(background-color, color-fill-secondary, $theme);
+      &.sortable {
+        &:hover {
+          @include theme-var(background-color, color-fill, $theme);
+        }
+      }
+    }
+    .data-container {
+      .node.selected,
+      .node.selectable:hover {
+        background-color: if(sass($theme == 'light'): #ddd; else: #393939);
+      }
+      .node.selected + .node.selected td {
+        border-top: 1px solid $selected-row-divider;
+      }
+      tr:nth-child(even) {
+        background-color: if(sass($theme == 'light'): #f2f7fd; else: #0b2544);
+      }
+    }
+    &:focus {
+      .node.selectable.selected {
+        @include theme-var(background-color, color-primary, $theme);
+      }
+      .node.selectable.selected + .node.selectable.selected td {
+        border-top-color: rgba(255, 255, 255, 0.35);
+      }
+    }
+  }
+}

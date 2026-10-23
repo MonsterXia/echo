@@ -1,0 +1,30 @@
+{
+  "name": "luna-drag-selector",
+  "version": "0.1.0",
+  "description": "Drag selector for selecting multiple items",
+  "main": "cjs/drag-selector/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/drag-selector/index.js",
+  "exports": {
+    ".": "./esm/drag-selector/index.js",
+    "./css": "./luna-drag-selector.css",
+    "./luna-drag-selector.css": "./luna-drag-selector.css",
+    "./package.json": "./package.json"
+  },
+  "private": true
+}

@@ -1,0 +1,34 @@
+{
+  "name": "luna-icon-list",
+  "version": "0.2.12",
+  "description": "Show list of icons and their names",
+  "main": "cjs/icon-list/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/icon-list/index.js",
+  "peerDependencies": {
+    "luna-drag-selector": "^0.1.0"
+  },
+  "exports": {
+    ".": "./esm/icon-list/index.js",
+    "./css": "./luna-icon-list.css",
+    "./luna-icon-list.css": "./luna-icon-list.css",
+    "./package.json": "./package.json",
+    "./react": "./esm/icon-list/react.js"
+  },
+  "private": true
+}

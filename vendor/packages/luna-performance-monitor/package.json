@@ -1,0 +1,31 @@
+{
+  "name": "luna-performance-monitor",
+  "version": "1.2.2",
+  "description": "Realtime counter used for displaying cpu, fps metrics",
+  "main": "cjs/performance-monitor/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/performance-monitor/index.js",
+  "exports": {
+    ".": "./esm/performance-monitor/index.js",
+    "./css": "./luna-performance-monitor.css",
+    "./luna-performance-monitor.css": "./luna-performance-monitor.css",
+    "./package.json": "./package.json",
+    "./react": "./esm/performance-monitor/react.js"
+  },
+  "private": true
+}

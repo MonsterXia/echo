@@ -63,13 +63,13 @@ Report other problems through [Issues](https://github.com/MonsterXia/scrcpy-harm
 The project uses Electron, React, and TypeScript. You need **Node.js 22.12.0 or later** and Git. The resource download script also requires `curl` and `unzip`; on Windows, these tools can be provided by Git Bash.
 
 ```sh
-git clone --recurse-submodules https://github.com/MonsterXia/scrcpy-harmony.git
+git clone https://github.com/MonsterXia/scrcpy-harmony.git
 cd scrcpy-harmony
 npm ci
 npm run init
 ```
 
-`npm run init` downloads HDC and uitestkit resources. For an existing checkout, run `git submodule update --init --recursive` first to initialize any missing submodules.
+`npm ci` installs the toolchain and compiles local HDC/Luna packages. Licia, HDC, Luna, shared Electron code and icon sources are tracked in this repository; current source builds need no submodule checkout. `npm run init` still downloads HDC and uitestkit device resources. See [local dependency maintenance](vendor/README.md) to edit and rebuild these sources. The published v1.0.3 recovery tag retains the old dependency/submodule structure.
 
 Start the development build in one terminal:
 

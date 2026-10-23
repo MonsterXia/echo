@@ -1,0 +1,30 @@
+{
+  "name": "luna-virtual-list",
+  "version": "0.1.1",
+  "description": "Vertical list with virtual scrolling",
+  "main": "cjs/virtual-list/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/virtual-list/index.js",
+  "exports": {
+    ".": "./esm/virtual-list/index.js",
+    "./css": "./luna-virtual-list.css",
+    "./luna-virtual-list.css": "./luna-virtual-list.css",
+    "./package.json": "./package.json"
+  },
+  "private": true
+}

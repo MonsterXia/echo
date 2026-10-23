@@ -15,7 +15,7 @@ const config = {
   directories: {
     output: `../release/${pkg.version}`,
   },
-  files: ['main', 'preload', 'renderer'],
+  files: ['main', 'preload', 'renderer', 'LICENSE', 'THIRD_PARTY_NOTICES.txt'],
   extraResources: {
     from: 'resources',
     to: './',

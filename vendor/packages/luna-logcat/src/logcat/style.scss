@@ -1,0 +1,121 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+@use '../share/theme' as theme;
+@use 'sass:meta';
+@use 'sass:map';
+
+.luna-logcat {
+  unicode-bidi: embed;
+  position: relative;
+  line-height: #{$line-height-l-g}em;
+  border: 1px solid;
+  white-space: pre;
+  overflow: hidden;
+  @include component();
+  & {
+    user-select: text;
+    font-family: $font-family-code;
+  }
+  &.wrap-long-lines {
+    white-space: pre-wrap;
+    word-break: break-all;
+    .message {
+      display: inline;
+    }
+  }
+}
+
+.entry {
+  padding-left: #{$padding-x-x-s}px;
+  font-size: #{$font-size-s-m}px;
+}
+
+.date,
+.pid,
+.tag,
+.package,
+.priority {
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.message {
+  display: inline-block;
+}
+
+.wrap-long-lines .message {
+  display: inline;
+}
+
+.date {
+  margin-right: #{$margin-x-x-s}px;
+}
+
+.pid {
+  width: 100px;
+  text-align: center;
+}
+
+.tag,
+.package {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 150px;
+}
+
+.priority {
+  padding: 0 #{$padding-x-s}px;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    @include theme-var(border-color, color-border, $theme);
+    .W {
+      .priority {
+        @include theme-var(background-color, color-warning-text, $theme);
+      }
+      .message {
+        @include theme-var(color, color-warning-text, $theme);
+      }
+    }
+
+    .E {
+      .priority {
+        @include theme-var(background-color, color-error-text, $theme);
+      }
+      .message {
+        @include theme-var(color, color-error-text, $theme);
+      }
+    }
+
+    .D {
+      .priority {
+        @include theme-var(background-color, color-success-text, $theme);
+      }
+    }
+
+    .I {
+      .priority {
+        @include theme-var(background-color, color-info-text, $theme);
+      }
+    }
+
+    $colors: 'blue', 'purple', 'cyan', 'green', 'magenta', 'pink', 'red',
+      'orange', 'yellow', 'volcano', 'geekblue', 'gold', 'lime';
+
+    $theme-variables: meta.module-variables(theme);
+    @each $color in $colors {
+      @for $i from 6 through 10 {
+        .color-#{$color}-#{$i} {
+          $variable-name: if(
+            $theme == 'dark',
+            #{$color}-#{$i}-dark,
+            #{$color}-#{$i}
+          );
+          color: map.get($theme-variables, $variable-name);
+        }
+      }
+    }
+  }
+}

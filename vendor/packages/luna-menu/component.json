@@ -1,0 +1,8 @@
+{
+  "name": "menu",
+  "version": "0.2.0",
+  "description": "Simple menu",
+  "luna": {
+    "icon": true
+  }
+}
