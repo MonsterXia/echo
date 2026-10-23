@@ -31,7 +31,7 @@
 3. `src/preload/index.ts` 暴露全局 `main`、`preload`、`node`，并声明其 TypeScript 类型。其中 `main` 合并共享模块与本项目接口。
 4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享子模块。这里没有 React Router。
 
-主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口关闭会销毁自身并重新显示主窗口；相关代码在 `src/main/window/screencast.ts`。
+主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口在 `close` 中销毁自身，在 `closed` 中释放单例引用并重新显示主窗口，使直接 destroy 路径也能清理；相关代码在 `src/main/window/screencast.ts`。这不等于停止设备捕获：主进程尚未绑定捕获与窗口所有权，边界和无设备证据见 [关窗捕获审计](../../../../docs/maintenance/M2-3-main-capture-close.md)。
 
 ## IPC 边界
 

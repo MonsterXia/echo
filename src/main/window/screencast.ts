@@ -42,6 +42,10 @@ export function showWin() {
 
   win.on('close', () => {
     win?.destroy()
+  })
+
+  // destroy() can bypass close; release the singleton on actual destruction.
+  win.on('closed', () => {
     win = null
     const mainWin = window.getWin('main')
     if (mainWin) {
