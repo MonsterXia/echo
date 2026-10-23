@@ -1,0 +1,12 @@
+{
+  "name": "setting",
+  "version": "2.0.2",
+  "description": "Settings panel",
+  "dependencies": {
+    "micromark": "^3.1.0"
+  },
+  "luna": {
+    "install": true,
+    "react": true
+  }
+}

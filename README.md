@@ -35,11 +35,11 @@ macOS requires **version 13 or later**. Linux installers are not currently avail
 
 Installers include HDC and the required device resources; Node.js is not needed for normal use. See the [user guide](docs/user-guide.md) for detailed installation and connection steps.
 
-**The 1.0.2 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.2 release report](docs/releases/1.0.2.md) for installation and launch results, signing status, and checksum files.
+**The 1.0.3 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.3 release report](docs/releases/1.0.3.md) for installation and launch results, signing status, and checksum files.
 
 If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
 
-The public **1.0.2** release does not include subsequent fixes on `master`, such as device enumeration isolation, per-app metadata read error handling, and app name fallbacks. Source builds currently also report version 1.0.2, so include the commit SHA when reporting a problem with a source build.
+The public **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It is the recovery version before dependency source migration. The current source development version is **1.0.4-dev.0**, which has not been released. Include the commit SHA when reporting a problem with a source build.
 
 ## Quick start
 
@@ -58,18 +58,33 @@ The app uses its bundled HDC by default. To use another version, specify the exe
 
 Report other problems through [Issues](https://github.com/MonsterXia/scrcpy-harmony/issues) or **Help → Report Issue** (帮助 → 报告问题) in the app menu. Include the app version, desktop operating system, device model, HarmonyOS/HDC versions, reproduction steps, and expected and actual behavior. Remove device identifiers and personal information before uploading logs or screenshots.
 
+## Repository structure
+
+| Path | Maintained content |
+| --- | --- |
+| `src/main/`, `src/preload/` | Electron main process, device operations and IPC bridge |
+| `src/renderer/`, `src/common/` | React windows, shared application types, translations and themes |
+| `src/share/`, `src/renderer/icon/` | Shared Electron code and icon sources, tracked as ordinary directories |
+| `vendor/packages/hdckit/src/` | Original HDC client TypeScript |
+| `vendor/packages/licia/src/`, `vendor/packages/licia/test/` | Original Licia modules, embedded types and upstream tests |
+| `vendor/packages/luna-*/src/` | Luna component TypeScript/React wrappers, styles and per-version shared code |
+| `script/`, `test/`, `.github/workflows/` | Local generators, application regression tests, builds and CI |
+| `build/`, `docs/` | Tracked application icons and project documentation |
+
+`dist/`, `release/`, `resources/` and dependency build outputs are generated or downloaded. Edit the original sources rather than `node_modules` or generated files. See the [repository guide](docs/repository-guide.md) for the source/output map and build flow.
+
 ## Local development
 
 The project uses Electron, React, and TypeScript. You need **Node.js 22.12.0 or later** and Git. The resource download script also requires `curl` and `unzip`; on Windows, these tools can be provided by Git Bash.
 
 ```sh
-git clone --recurse-submodules https://github.com/MonsterXia/scrcpy-harmony.git
+git clone https://github.com/MonsterXia/scrcpy-harmony.git
 cd scrcpy-harmony
 npm ci
 npm run init
 ```
 
-`npm run init` downloads HDC and uitestkit resources. For an existing checkout, run `git submodule update --init --recursive` first to initialize any missing submodules.
+`npm ci` installs the toolchain and compiles local HDC/Licia/Luna packages. Licia, HDC, Luna, shared Electron code and icon sources are tracked in this repository; current source builds need no submodule checkout. `npm run init` still downloads HDC and uitestkit device resources. See [local dependency maintenance](vendor/README.md) to edit and rebuild these sources. The published v1.0.3 recovery tag retains the old dependency/submodule structure.
 
 Start the development build in one terminal:
 
@@ -77,13 +92,25 @@ Start the development build in one terminal:
 npm run dev
 ```
 
-Once the initial main-process and preload builds finish, launch the app in a second terminal:
+Once local dependencies, the main process and preload have compiled and Vite is ready, launch the app in a second terminal:
 
 ```sh
 npm start
 ```
 
-The app depends on the Electron main process; the Vite page cannot run as a standalone browser app. Restart the app after changing the main process or preload code.
+The app depends on the Electron main process; the Vite page cannot run as a standalone browser app. Dependency source changes are compiled automatically. Wait for compilation and any Vite restart, then reload the renderer manually (HMR is disabled). Restart Electron after changing main-process or preload code, including dependencies they use.
+
+### Editing local dependencies
+
+HDC and Luna are compiled from their original TypeScript/styles. Licia is generated from original JavaScript modules containing dependency and type definitions; edit its matching upstream tests as well. Existing package imports such as `hdckit`, `licia/trim` and `luna-setting` resolve to local `file:` dependencies.
+
+```sh
+npm run build:vendor
+npm run test:licia -- cloneDeep
+npm run test:licia -- --fallback cloneDeep
+```
+
+The first command rebuilds all 18 local packages without fetching their sources. The other commands test one Licia module against production and fallback implementations. See [dependency maintenance](vendor/README.md) and the [Licia workflow](vendor/packages/licia/MAINTENANCE.md) for source ownership, generated files and upstream updates.
 
 Common validation and packaging commands:
 
@@ -94,7 +121,9 @@ npm run build
 npm run pack -- --no-publish
 ```
 
-Installers are written to `release/<version>/`. See the [build guide](docs/build-guide.md) for setup from a clean checkout and Windows shell configuration, and the [maintainer development and validation reference](.agents/skills/scrcpy-harmony-project/references/development.md) for validation scripts and CI details.
+`npm test` runs application regressions and both Licia Node test modes; four fixture-dependent Licia cases are explicitly skipped in each mode. Browser-only/manual upstream tests, full type checking and real-device acceptance remain separate. Installers are written to `release/<version>/`, with license notices included. The general toolchain and native device/packaging resources still require installation or download.
+
+See the [build guide](docs/build-guide.md) for a clean checkout, Windows shell configuration and troubleshooting, and the [maintainer reference](.agents/skills/scrcpy-harmony-project/references/development.md) for validation scripts and CI details.
 
 ## Origins and maintenance
 
@@ -104,6 +133,8 @@ Core dependencies include [hdckit](https://github.com/liriliri/hdckit) (HDC clie
 
 - [User guide](docs/user-guide.md): Installation, debugging authorization, device selection, screencasting, text input, and log export.
 - [Build guide](docs/build-guide.md): Set up a clean checkout, build, and launch Electron on Windows/macOS.
+- [Repository guide](docs/repository-guide.md): Source layout, generated outputs and the local build flow.
+- [Dependency maintenance](vendor/README.md): Modify local packages, preserve provenance and update upstream snapshots.
 - [Maintenance plan](RUNBOOK.md): Progress, acceptance criteria, and next steps.
 - [Maintenance sources](docs/maintenance/SOURCES.md): Upstream issues, pull requests, and archive index.
 - [Changelog](CHANGELOG.md): Release changes and version history.

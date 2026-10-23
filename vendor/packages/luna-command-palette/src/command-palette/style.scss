@@ -1,0 +1,78 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-command-palette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 10px;
+  overflow: hidden;
+  @include component(true);
+}
+
+.body {
+  max-width: 100%;
+  box-shadow: $box-shadow;
+  font-size: 12px;
+}
+
+.input {
+  box-sizing: border-box;
+  outline: none;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid;
+  padding: 10px 4px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  li {
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    .title {
+      flex: 1;
+      overflow: hidden;
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    .body {
+      @include theme-var(background-color, color-bg-container, $theme);
+    }
+
+    .input {
+      @include theme-var(background-color, color-bg-container, $theme);
+      @include theme-var(border-color, color-border, $theme);
+      @include theme-var(color, color-text, $theme);
+    }
+
+    .list {
+      li {
+        &:hover {
+          @include theme-var(background-color, color-fill-secondary, $theme);
+        }
+        &.active {
+          @include theme-var(color, color-white, $theme);
+          @include theme-var(background-color, color-primary, $theme);
+        }
+      }
+    }
+  }
+}

@@ -13,8 +13,16 @@ function fixture(t) {
     fs.mkdirSync(path.join(root, dir), { recursive: true })
     fs.writeFileSync(path.join(root, dir, 'fixture.txt'), dir)
   }
+  fs.writeFileSync(path.join(root, 'LICENSE'), 'application license fixture')
+  fs.mkdirSync(path.join(root, 'vendor/packages/example'), { recursive: true })
+  fs.writeFileSync(path.join(root, 'vendor/packages/example/LICENSE'), 'upstream license fixture')
+  fs.writeFileSync(path.join(root, 'vendor/manifest.json'), JSON.stringify({
+    packages: [{ name: 'example', version: '1.0.0', repository: 'https://example.test/source', gitHead: 'fixture' }],
+    sharedSources: [],
+  }))
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({
     name: 'scrcpy-harmony', version: '1.0.1', main: 'dist/main/index.js',
+    author: 'MonsterXia',
     scripts: { build: 'unused' },
     devDependencies: { electron: '45.0.0', vite: '5.4.21' },
   }))
@@ -52,6 +60,9 @@ test('build prepares a runnable distribution without requiring a shell', (t) => 
   assert.equal(result.status, 0, result.stderr)
   const pkg = JSON.parse(fs.readFileSync(path.join(f.root, 'dist/package.json')))
   assert.equal(pkg.main, 'main/index.js')
+  assert.equal(pkg.author, 'MonsterXia')
+  assert.equal(fs.readFileSync(path.join(f.root, 'dist/LICENSE'), 'utf8'), 'application license fixture')
+  assert.match(fs.readFileSync(path.join(f.root, 'dist/THIRD_PARTY_NOTICES.txt'), 'utf8'), /upstream license fixture/)
   assert.deepEqual(pkg.devDependencies, { electron: '45.0.0' })
   assert.deepEqual(pkg.scripts, { start: 'electron main/index.js' })
   for (const dir of ['main', 'preload', 'renderer']) {

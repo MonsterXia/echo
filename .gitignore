@@ -2,3 +2,10 @@ node_modules/
 dist/
 release/
 resources/
+vendor/packages/hdckit/dist/
+vendor/packages/luna-*/cjs/
+vendor/packages/luna-*/esm/
+vendor/packages/luna-*/luna-*.css
+vendor/.build-stamp
+vendor/packages/licia/*.js
+vendor/packages/licia/*.d.ts

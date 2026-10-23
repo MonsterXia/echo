@@ -1,0 +1,66 @@
+@use '../share/mixin' as *;
+
+.luna-split-pane {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  @include component(true);
+  &.horizontal {
+    flex-direction: row;
+    & > .resizer {
+      width: 4px;
+      top: 0;
+      bottom: 0;
+      cursor: col-resize;
+    }
+  }
+  &.vertical {
+    flex-direction: column;
+    & > .resizer {
+      height: 4px;
+      left: 0;
+      right: 0;
+      cursor: row-resize;
+    }
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.resizer {
+  position: absolute;
+  z-index: 500;
+  touch-action: none;
+  transition: background-color 0.2s;
+}
+
+.resizing-horizontal {
+  cursor: col-resize !important;
+  .luna-split-pane * {
+    cursor: col-resize !important;
+  }
+}
+
+.resizing-vertical {
+  cursor: row-resize !important;
+  .luna-split-pane * {
+    cursor: row-resize !important;
+  }
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    .resizer.active,
+    .resizer:hover {
+      @include theme-var(background-color, color-primary, $theme);
+    }
+  }
+}

@@ -1,0 +1,47 @@
+@use '../share/mixin' as *;
+
+.luna-image-viewer {
+  overflow: hidden;
+  touch-action: none;
+  border: 1px solid;
+  position: relative;
+  @include component();
+}
+
+.image {
+  height: auto;
+  margin: 15px auto;
+  width: auto;
+  display: block;
+}
+
+.ratio {
+  background-color: rgba(0, 0, 0, 80%);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 12px;
+  height: 20px;
+  left: 50%;
+  line-height: 20px;
+  margin-left: -25px;
+  margin-top: -10px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  width: 50px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  &.show {
+    opacity: 1;
+  }
+}
+
+.image-transition {
+  transition: all 0.3s;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    @include theme-var(border-color, color-border, $theme);
+  }
+}

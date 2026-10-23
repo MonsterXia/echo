@@ -1,0 +1,12 @@
+{
+  "name": "data-grid",
+  "version": "2.1.1",
+  "description": "Grid for displaying datasets",
+  "luna": {
+    "react": true,
+    "icon": true,
+    "dependencies": [
+      "menu"
+    ]
+  }
+}

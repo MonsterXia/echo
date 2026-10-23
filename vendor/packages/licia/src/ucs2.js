@@ -1,0 +1,81 @@
+/* UCS-2 encoding and decoding.
+ *
+ * ### encode
+ *
+ * Create a string using an array of code point values.
+ *
+ * |Name  |Desc                |
+ * |------|--------------------|
+ * |arr   |Array of code points|
+ * |return|Encoded string      |
+ *
+ * ### decode
+ *
+ * Create an array of code point values using a string.
+ *
+ * |Name  |Desc                |
+ * |------|--------------------|
+ * |str   |Input string        |
+ * |return|Array of code points|
+ */
+
+/* example
+ * ucs2.encode([0x61, 0x62, 0x63]); // -> 'abc'
+ * ucs2.decode('abc'); // -> [0x61, 0x62, 0x63]
+ * '𝌆'.length; // -> 2
+ * ucs2.decode('𝌆').length; // -> 1
+ */
+
+/* module
+ * env: all
+ */
+
+/* typescript
+ * export declare const ucs2: {
+ *     encode(arr: number[]): string;
+ *     decode(str: string): number[];
+ * };
+ */
+
+_('chunk map');
+
+// https://mathiasbynens.be/notes/javascript-encoding
+exports = {
+    encode(arr) {
+        // https://stackoverflow.com/questions/22747068/is-there-a-max-number-of-arguments-javascript-functions-can-accept
+        if (arr.length < 32768) {
+            return String.fromCodePoint.apply(String, arr);
+        }
+
+        return map(chunk(arr, 32767), nums =>
+            String.fromCodePoint.apply(String, nums)
+        ).join('');
+    },
+    decode(str) {
+        const ret = [];
+
+        let i = 0;
+        const len = str.length;
+
+        while (i < len) {
+            const c = str.charCodeAt(i++);
+
+            // A high surrogate
+            if (c >= 0xd800 && c <= 0xdbff && i < len) {
+                const tail = str.charCodeAt(i++);
+                // nextC >= 0xDC00 && nextC <= 0xDFFF
+                if ((tail & 0xfc00) === 0xdc00) {
+                    // C = (H - 0xD800) * 0x400 + L - 0xDC00 + 0x10000
+                    ret.push(((c & 0x3ff) << 10) + (tail & 0x3ff) + 0x10000);
+                } else {
+                    ret.push(c);
+                    i--;
+                }
+            } else {
+                ret.push(c);
+            }
+        }
+
+        return ret;
+    }
+};

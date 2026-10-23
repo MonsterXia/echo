@@ -1,0 +1,78 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-menu {
+  position: absolute;
+  padding: 4px 0;
+  box-shadow: $box-shadow;
+  border: 1px solid;
+  padding: 4px 0;
+  z-index: 4000;
+  overflow-y: auto;
+  border-radius: #{$border-radius}px;
+  @include component();
+}
+
+.glass-pane {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 3000;
+}
+
+.item {
+  display: flex;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  padding: 2px 7px 2px 8px;
+  white-space: nowrap;
+  width: 100%;
+  font-size: 12px;
+  &.disabled {
+    pointer-events: none;
+  }
+  .icon-check,
+  .icon-caret-right {
+    font-size: 12px;
+    position: relative;
+  }
+  .icon-check {
+    top: 1px;
+    margin-right: 5px;
+  }
+  .icon-caret-right {
+    margin-left: auto;
+    padding-left: 10px;
+    top: 1px;
+  }
+}
+
+.separator {
+  height: 1px;
+  margin: 5px 1px;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    @include theme-var(border-color, color-border, $theme);
+    .item {
+      &.active {
+        @include theme-vars(
+          (
+            background-color: color-primary,
+            color: color-white,
+          ),
+          $theme
+        );
+      }
+      &.disabled {
+        @include theme-var(color, color-text-disabled, $theme);
+      }
+    }
+    .separator {
+      @include theme-var(background-color, color-border, $theme);
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Preserve the exact imported source bytes recorded in vendor/manifest.json.
+vendor/** -text

@@ -14,6 +14,10 @@
 
 ## 备份范围与读取方式
 
+2026-10-24 [依赖源码迁移](dependency-sources.md)的上游版本、gitHead、归档与导入文件哈希见 [vendor/manifest.json](../../vendor/manifest.json)；18 个包的 LICENSE 与原始 package.json 随源码保存。共享源码保留原固定提交来源，不再依赖子模块下载。
+
+迁移后的日常入口为中英文 README、[仓库结构指南](../repository-guide.md)、[构建指南](../build-guide.md)和 [Licia 维护说明](../../vendor/packages/licia/MAINTENANCE.md)。这些文档随当前源码维护；下列上游归档、旧版本发行及验收记录保留其当时的目录和命令，不作为当前构建步骤。
+
 后续依赖迁移前恢复节点见 [1.0.3 发布记录](../releases/1.0.3.md)：功能基线 `8087ac8`，发布完成后以固定 tag、三平台安装包及校验清单恢复。该节点与下述解除 fork 历史备份分别保留。
 
 解除 fork 前归档了本仓库 8 个 PR、上游 28 个 Issue 和 5 个 PR，共 41 个条目。保存内容包括正文、讨论评论、PR 审查、行内线程解决状态、提交和文件信息，以及 7 个附件；两个仓库当时均未启用 GitHub Discussions。

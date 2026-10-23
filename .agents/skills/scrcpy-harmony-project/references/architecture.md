@@ -6,7 +6,7 @@
 
 `package.json` 的包名为 `scrcpy-harmony`、产品名为 `Scrcpy Harmony`，仓库目录名为 `scrcpy-harmony`。项目基于上游 `liriliri/echo`，由 MonsterXia 独立维护，2026-10-21 已解除 GitHub fork 关系；仓库、反馈和发布入口指向 `MonsterXia/scrcpy-harmony`。保留原作者和许可证；应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装，用户数据采用新的产品名目录，旧配置保留且不自动迁移。操作当前 Git 远端时仍使用 `git remote -v` 核对。
 
-共享子模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。不要直接修改子模块内的更新器。检查更新仍由共享模块发起；发现更新后 renderer 提示并打开本仓库 Releases 页面，不自动下载或安装。
+共享模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。更新源覆盖仍由本项目 `updater.ts` 负责。检查更新仍由共享模块发起；发现更新后 renderer 提示并打开本仓库 Releases 页面，不自动下载或安装。
 
 | 路径 | 职责 |
 | --- | --- |
@@ -16,20 +16,34 @@
 | `src/renderer/screencast/` | 独立投屏窗口、Canvas 和输入控制 |
 | `src/renderer/lib/` | 跨业务窗口辅助方法，如 HAP 安装、store 序列化 |
 | `src/common/` | 应用类型、国际化和主题 |
-| `src/share/` | `electron-share` 子模块：窗口、IPC、日志、公共页面及组件 |
-| `src/renderer/icon/` | `icon-share` 子模块：图标生成源 |
-| `script/` | 下载运行资源、构建发行目录和打安装包 |
+| `src/share/` | 由固定 `electron-share` 快照内置：窗口、IPC、日志、公共页面及组件 |
+| `src/renderer/icon/` | 由固定 `icon-share` 快照内置：图标生成源 |
+| `vendor/packages/` | 本地维护的 HDC/Licia/Luna 源码；npm file 依赖，编译入口 `script/build-vendor.mjs` |
+| `script/` | 本地依赖生成、上游测试适配、资源下载、发行构建与验收 |
 | `build/` | 已跟踪的应用图标资源；不是可随意删除的构建产物 |
-| `test/` | Node 内置测试：投屏坐标、构建编排、更新源与设备枚举隔离/字段兼容 |
+| `test/` | Node 应用回归：设备与窗口生命周期、IPC、构建、更新及依赖生成；Licia 上游测试另在其包内 |
 | `RUNBOOK.md`、`docs/maintenance/` | 分阶段维护、验收与来源索引 |
 | `dist/`、`release/`、`resources/` | 被忽略的编译输出、安装包和下载资源 |
+
+## 本地依赖与构建职责
+
+应用仍使用原包名导入，根 `package.json` 通过 `file:vendor/packages/*` 指向 18 个本地包。`src/share` 和 `src/renderer/icon` 为普通跟踪目录；旧子模块初始化仅适用于 v1.0.3 及更早 tag。
+
+- `script/build-vendor.mjs`：统一编译入口、源码监听与成功完成标记。
+- `script/lib/vendor-build.mjs`：HDC/Luna TypeScript 转译、声明、Luna 样式及图标选择器前缀；调用 Licia 生成器。
+- `script/lib/licia-build.mjs`：从原始模块提取依赖和类型，生成 CommonJS、声明及环境入口。
+- `script/lib/vendor-vite.mjs`：本地 CommonJS 支持、Licia 浏览器预打包及依赖重编译后的 Vite 重启。
+- `script/lib/vendor-notices.mjs`：汇总来源和许可证；`script/build.mjs` 将其与应用 LICENSE 放入发行目录。
+- `script/test-licia.mjs`：原始 Node 用例选择、临时夹具及隔离 fallback 测试。
+
+原始文件、生成产物及命令的对应关系见[仓库结构指南](../../../../docs/repository-guide.md)，二次适配规则见 [vendor README](../../../../vendor/README.md)。原生 HDC/uitestkit 仍由资源脚本下载；内置 hdckit 源码不包含原生 HDC 的编译工程。
 
 ## 启动和页面
 
 1. `share/main` 先注册 ready 处理并初始化共享语言、主题、IPC 和更新监听；`src/main/index.ts` 的 ready 处理随后覆盖本项目更新源，再初始化共享 terminal、HDC，显示主窗口并初始化菜单。
 2. `src/main/window/main.ts` 创建名为 `main` 的窗口，注册主/设置 store IPC 和投屏窗口入口。
 3. `src/preload/index.ts` 暴露全局 `main`、`preload`、`node`，并声明其 TypeScript 类型。其中 `main` 合并共享模块与本项目接口。
-4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享子模块。这里没有 React Router。
+4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享模块。这里没有 React Router。
 
 主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口在 `close` 中销毁自身，在 `closed` 中释放单例引用并重新显示主窗口；close/closed 都会先失效捕获 owner、解除本地监听，覆盖 WebContents destroyed 晚于 closed 的真实事件顺序。设备停止仍需异步确认，见 [捕获会话所有权](../../../../docs/maintenance/M2-3-capture-ownership.md)。
 
@@ -60,7 +74,7 @@ React 组件 / MobX store
 | `shellData` | 发给主窗口的 sessionId 与终端文本 |
 | `hilogEntry` | 发给主窗口的 hilogId 与日志条目 |
 
-增加事件时检查订阅者按设备或会话 ID 过滤，以及退出/切换时的取消订阅。`share` 的 IPC 和窗口内部机制需在子模块初始化后查看，不能仅凭调用点推断。
+增加事件时检查订阅者按设备或会话 ID 过滤，以及退出/切换时的取消订阅。`share` 的 IPC 和窗口内部机制直接查看本仓源码，不能仅凭调用点推断。
 
 ## 功能定位
 
@@ -144,5 +158,5 @@ Canvas pointer 事件
 - 使用 React 函数组件、`mobx-react-lite` 的 `observer`、Luna React 封装和局部 `.module.scss`；CSS Modules 配置为 `camelCaseOnly`。
 - `src/common/util.ts` 初始化国际化；目前 `en-US` 与 `zh-CN` 都指向同一中文字典，不应假设已有独立英文翻译文件。
 - 主题源是 `src/common/theme.json`，`npm run gen:theme` 生成 `src/renderer/theme.scss` 与 `src/common/theme.ts`。
-- 图标配置是 `src/renderer/icon.json`，图标源在 icon 子模块，`npm run gen:icon` 生成 `src/renderer/icon.css`。
+- 图标配置是 `src/renderer/icon.json`，图标源在本仓 `src/renderer/icon`，`npm run gen:icon` 生成 `src/renderer/icon.css`。
 - Prettier 配置为无分号、单引号、80 列；避免为局部任务运行全仓库重写格式。

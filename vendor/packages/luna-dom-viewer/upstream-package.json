@@ -1,0 +1,31 @@
+{
+  "name": "luna-dom-viewer",
+  "version": "1.8.4",
+  "description": "Dom tree navigator",
+  "main": "cjs/dom-viewer/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/dom-viewer/index.js",
+  "exports": {
+    ".": "./esm/dom-viewer/index.js",
+    "./css": "./luna-dom-viewer.css",
+    "./luna-dom-viewer.css": "./luna-dom-viewer.css",
+    "./luna-dom-viewer.js": "./luna-dom-viewer.js",
+    "./package.json": "./package.json",
+    "./react": "./esm/dom-viewer/react.js"
+  }
+}

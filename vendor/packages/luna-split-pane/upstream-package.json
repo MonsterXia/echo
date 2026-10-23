@@ -1,0 +1,32 @@
+{
+  "name": "luna-split-pane",
+  "version": "0.4.1",
+  "description": "A component for creating resizable split panes",
+  "main": "cjs/split-pane/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/split-pane/index.js",
+  "exports": {
+    ".": "./esm/split-pane/index.js",
+    "./css": "./luna-split-pane.css",
+    "./luna-split-pane.css": "./luna-split-pane.css",
+    "./luna-split-pane.js": "./luna-split-pane.js",
+    "./package.json": "./package.json",
+    "./react": "./esm/split-pane/react.js",
+    "./vue": "./esm/split-pane/vue.js"
+  }
+}

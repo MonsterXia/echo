@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import { execFileSync } from 'node:child_process'
+import { vendorNotices } from './lib/vendor-notices.mjs'
 
 const npmCli = process.env.npm_execpath
 if (!npmCli) {
@@ -30,6 +31,8 @@ runNpm('run', 'build:renderer')
 await fs.copy('build', 'dist/build')
 await fs.copy('resources/hdc', 'dist/resources/hdc')
 await fs.copy('resources/uitestkit_sdk', 'dist/resources/uitestkit_sdk')
+await fs.copy('LICENSE', 'dist/LICENSE')
+await fs.writeFile('dist/THIRD_PARTY_NOTICES.txt', await vendorNotices(process.cwd()))
 process.chdir('dist')
 
 await fs.writeJson('package.json', pkg, {

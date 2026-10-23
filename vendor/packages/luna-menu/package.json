@@ -1,0 +1,30 @@
+{
+  "name": "luna-menu",
+  "version": "0.2.0",
+  "description": "Simple menu",
+  "main": "cjs/menu/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/menu/index.js",
+  "exports": {
+    ".": "./esm/menu/index.js",
+    "./css": "./luna-menu.css",
+    "./luna-menu.css": "./luna-menu.css",
+    "./package.json": "./package.json"
+  },
+  "private": true
+}

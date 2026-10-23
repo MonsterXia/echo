@@ -1,0 +1,11 @@
+{
+  "name": "logcat",
+  "version": "0.6.3",
+  "description": "Android logcat viewer",
+  "luna": {
+    "react": true,
+    "dependencies": [
+      "virtual-list"
+    ]
+  }
+}

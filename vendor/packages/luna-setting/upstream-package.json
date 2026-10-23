@@ -1,0 +1,32 @@
+{
+  "name": "luna-setting",
+  "version": "2.0.2",
+  "description": "Settings panel",
+  "main": "cjs/setting/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0",
+    "micromark": "^3.1.0"
+  },
+  "module": "esm/setting/index.js",
+  "exports": {
+    ".": "./esm/setting/index.js",
+    "./css": "./luna-setting.css",
+    "./luna-setting.css": "./luna-setting.css",
+    "./luna-setting.js": "./luna-setting.js",
+    "./package.json": "./package.json",
+    "./react": "./esm/setting/react.js"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "luna-command-palette",
+  "version": "0.3.1",
+  "description": "Command palette",
+  "main": "cjs/command-palette/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liriliri/luna.git"
+  },
+  "keywords": [
+    "ui"
+  ],
+  "author": "redhoodsu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liriliri/luna/issues"
+  },
+  "homepage": "https://github.com/liriliri/luna#readme",
+  "dependencies": {
+    "licia": "^1.46.0"
+  },
+  "module": "esm/command-palette/index.js",
+  "exports": {
+    ".": "./esm/command-palette/index.js",
+    "./css": "./luna-command-palette.css",
+    "./luna-command-palette.css": "./luna-command-palette.css",
+    "./package.json": "./package.json",
+    "./react": "./esm/command-palette/react.js"
+  },
+  "private": true
+}

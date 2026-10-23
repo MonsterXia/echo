@@ -1,0 +1,37 @@
+@use '../share/mixin' as *;
+@use '../share/theme' as *;
+
+.luna-performance-monitor {
+  border: 1px solid;
+  width: 100%;
+  padding: 5px;
+  @include component();
+}
+
+.header {
+  font-size: #{$font-size}px;
+  margin-bottom: 5px;
+  color: $color-text;
+}
+
+.value {
+  float: right;
+}
+
+.chart {
+  box-sizing: border-box;
+  border: 1px solid;
+  width: 100%;
+}
+
+@each $theme in ('light', 'dark') {
+  .theme-#{$theme} {
+    @include theme-var(border-color, color-border, $theme);
+    .title {
+      @include theme-var(color, color-text, $theme);
+    }
+    .chart {
+      @include theme-var(border-color, color-border, $theme);
+    }
+  }
+}

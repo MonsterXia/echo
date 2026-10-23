@@ -1,0 +1,9 @@
+{
+  "name": "split-pane",
+  "version": "0.4.1",
+  "description": "A component for creating resizable split panes",
+  "luna": {
+    "react": true,
+    "vue": true
+  }
+}

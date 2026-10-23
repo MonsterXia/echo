@@ -21,6 +21,9 @@ if ($installerProcess.ExitCode -ne 0) {
 if (!(Test-Path -LiteralPath $executable -PathType Leaf)) {
   throw "Installed executable is missing: $executable"
 }
+if ((Get-Item -LiteralPath $executable).VersionInfo.CompanyName -ne $pkg.author) {
+  throw 'Installed executable CompanyName does not match the application author'
+}
 
 try {
   node script/smoke-app.mjs $executable

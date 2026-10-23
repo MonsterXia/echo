@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react'
 import fs from 'fs-extra'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import { commonjsInclude, browserVendorImports, reloadVendor } from './script/lib/vendor-vite.mjs'
+
+export { commonjsInclude }
 
 export const alias = {
   common: path.resolve(__dirname, 'src/common'),
@@ -14,8 +17,10 @@ export default defineConfig(async (): Promise<UserConfig> => {
   const pkg = await fs.readJSON(path.resolve(__dirname, 'package.json'))
   return {
     base: '',
-    plugins: [react()],
+    plugins: [react(), reloadVendor(__dirname)],
+    optimizeDeps: { include: browserVendorImports(__dirname) },
     build: {
+      commonjsOptions: { include: commonjsInclude },
       outDir: 'dist/renderer',
       rollupOptions: {
         input: {
