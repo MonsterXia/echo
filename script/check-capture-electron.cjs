@@ -15,8 +15,14 @@ if (!process.versions.electron) {
     windowsHide: true,
   })
   const reportPath = path.join(dir, 'report.json')
-  if (fs.existsSync(reportPath)) process.stdout.write(fs.readFileSync(reportPath))
-  else console.error('Electron lifecycle check did not produce a report.')
+  if (fs.existsSync(reportPath)) {
+    // First-time Electron installation may print bootstrap messages to stdout.
+    // Persist the child's structured report directly, never a redirected log.
+    const report = fs.readFileSync(reportPath, 'utf8')
+    JSON.parse(report)
+    if (process.argv[3]) fs.writeFileSync(path.resolve(process.argv[3]), report)
+    process.stdout.write(report)
+  } else console.error('Electron lifecycle check did not produce a report.')
   process.exitCode = run.status === 0 ? 0 : 1
 } else {
   const assert = require('node:assert/strict')

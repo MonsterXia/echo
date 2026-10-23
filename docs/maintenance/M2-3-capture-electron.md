@@ -4,7 +4,9 @@
 
 ## 检查边界
 
-`node script/check-capture-electron.cjs [源码检出目录]` 使用实际 BrowserWindow、WebContents、主 frame 与 ipcMain/ipcRenderer。加载生产 `screencast.ts`、`uitest.ts`、`captureSessions.ts`、`captureDriver.ts`，保留安装版 hdckit 捕获及 Emitter 方法。仅替换窗口工厂/页面、缓存与设备传输边界；所有设备回复及帧字节均为合成数据。验证页通过真实 IPC 调用捕获处理器，不加载产品 preload、React 投屏页面或执行 JPEG 解码。
+`node script/check-capture-electron.cjs [源码检出目录] [结果 JSON 路径]` 使用实际 BrowserWindow、WebContents、主 frame 与 ipcMain/ipcRenderer。加载生产 `screencast.ts`、`uitest.ts`、`captureSessions.ts`、`captureDriver.ts`，保留安装版 hdckit 捕获及 Emitter 方法。仅替换窗口工厂/页面、缓存与设备传输边界；所有设备回复及帧字节均为合成数据。验证页通过真实 IPC 调用捕获处理器，不加载产品 preload、React 投屏页面或执行 JPEG 解码。
+
+归档使用 `node script/check-capture-electron.cjs . docs/maintenance/evidence/M2-3-capture-electron/result.json`，直接复制子进程的结构化报告。首次安装 Electron 可能向 stdout 打印下载提示，不能将整个 stdout 重定向后当作 JSON 证据。
 
 验证用驱动只在测试边界替换传输和初始化停止，并通过公共 on/off 观察捕获监听。脚本使用隔离临时 Electron 配置和隐藏窗口，不启动 HDC。JSON 只包含固定检查结果、事件顺序及实际加载源码的 SHA-256；不采集设备标识、图像或原始应用日志。
 
