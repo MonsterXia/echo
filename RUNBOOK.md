@@ -24,6 +24,8 @@
 - [x] PR #8 的 [CI 运行](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39611929271) 中，test、lint、Windows、macOS arm64/x64 打包安装启动检查全部通过。这不代表签名、公证、真机兼容性或线上更新已验收。
 - [x] 2026-10-21 备份 PR、Issue、讨论、附件与 Git 历史后解除 fork。仓库仍为 `MonsterXia/scrcpy-harmony`，现有 8 个 PR 在解除后保留；原作者与 AGPL-3.0 许可证保留。
 
+2026-10-24 文档同步：按当前源码更新中英文 README、构建指南、项目 skill 与维护参考，新增[仓库结构指南](docs/repository-guide.md)，明确原始源码、生成产物及 Licia 两种测试模式。文档相对链接和 npm 命令引用已核对，验证范围见[迁移记录](docs/maintenance/dependency-sources.md)；历史发行记录保留原版本布局。后续修改构建入口或依赖源码职责时同步这些入口，真机待验收状态不变。
+
 ## 阶段 0：维护入口与首次独立发布
 
 目标：确保反馈入口可用，并建立可验证的独立发行流程。当前阶段状态：**已完成**。

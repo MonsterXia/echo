@@ -25,4 +25,10 @@
 - [最终源码五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39989387028) 全部通过：test、lint、windows-package、macos-package-arm64、macos-package-x64。后三项包含实际安装包安装、启动、设置页、IPC 和包内元数据/许可证检查。
 - 原始真机、无线和长期运行待验收状态不变。未声称完整类型检查、完全离线构建、签名或公证通过。可选 lsla 资产生成器不在正常 build 路径，本轮未迁移。
 
+## 当前结构文档同步
+
+按用户追加要求，已同步中英文 README、构建指南、CHANGELOG、项目 skill 及架构/开发参考，并新增[仓库结构指南](../repository-guide.md)。说明包含原始源码与生成产物对应关系、18 个本地包的构建入口、Licia 生产/fallback 测试、开发刷新步骤和外部资源边界。RUNBOOK、来源索引及 vendor README 已串联这些入口；历史发行与验收记录保留原提交语境。
+
+文档检查：核对修改文档中的相对文件链接及 `npm run` 命令是否存在，`git diff --check` 通过；按 package.json、构建脚本、Vite 适配和当前目录复核说明。这次追加改动仅涉及文档，未将它视作新增运行时或真机验收；PR 必需 CI 以最终提交的检查为准。
+
 下一步：按实际二次适配需求修改仓内原始源码，并为行为变化补回归；原有真机、无线及长期运行待办继续按 RUNBOOK 验收。本轮不发布迁移版，v1.0.3 保持恢复节点。使用方法和源码维护规则见 [vendor README](../../vendor/README.md)，详细设计和执行记录见 [计划](../superpowers/plans/2026-10-23-dependency-sources.md)。

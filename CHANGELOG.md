@@ -3,6 +3,8 @@
 ## 1.0.4-dev.0（未发布）
 
 * 将锁定版本的 hdckit、Licia、16 个 Luna 包及共享 Electron/图标源码纳入本仓维护，统一编译本地 TS/样式，减少小众包及子模块下载需求。
+* Licia 保留原始模块、内嵌依赖/类型定义、上游测试及生成规则参考；本地生成运行包，并验证生产与 fallback 两种 Node 实现。
+* 按迁移后的目录更新中英文 README、构建与维护参考，新增[仓库结构指南](docs/repository-guide.md)，说明源码入口、生成产物和二次适配流程。
 * 应用 author 发布元数据改为 MonsterXia；保留第三方作者与许可证，并将许可声明打入发行包。
 * v1.0.3 保留为迁移前恢复版本，迁移验证进度见 [记录](docs/maintenance/dependency-sources.md)。
 

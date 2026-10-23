@@ -1,5 +1,7 @@
 # 本地依赖源码
 
+[仓库结构](../docs/repository-guide.md) · [构建指南](../docs/build-guide.md) · [迁移验证记录](../docs/maintenance/dependency-sources.md)
+
 本次迁移以已发布的 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3) 为恢复节点。当前源码开发版为 1.0.4-dev.0，不是另一个已发布 Release。
 
 ## 修改与编译
@@ -24,7 +26,7 @@ npm run pack -- --no-publish
 
 `npm ci` 的 postinstall 编译本地包；使用 `--ignore-scripts` 安装后，手动运行 `build:vendor`。三个 `build:*`、`test` 和 `dev` 入口会先准备源码产物。`npm run dev` 监听 HDC/Licia/Luna 的原始源码与样式；成功重编译后刷新 renderer 的依赖缓存。等编译和 Vite 重启就绪再加载窗口；renderer 的 HMR 当前关闭，需要手动刷新，主进程/preload 改动需重启 Electron。不要同时在同一检出运行会重写生成目录的 build/test/dev，使用独立检出并行验证。
 
-Licia 的实现、依赖与类型均修改 `src/<模块>.js`，不要修改包根目录的生成文件；新增模块会自动进入对应环境的入口索引。`npm run test:licia -- cloneDeep` 可重建并运行单模块上游测试；`npm test` 同时运行应用回归及可独立运行的上游 Node 测试。完整维护流程、4 项外部夹具测试排除和浏览器测试边界见 [Licia 维护说明](packages/licia/MAINTENANCE.md)。
+Licia 的实现、依赖与类型均修改 `src/<模块>.js`，不要修改包根目录的生成文件；新增模块会自动进入对应环境的入口索引。`npm run test:licia -- cloneDeep` 可重建并运行单模块上游测试；`npm run test:licia -- --fallback cloneDeep` 在隔离目录测试兼容实现。`npm test` 同时运行应用回归及上述两种模式的全部可用 Node 测试。完整维护流程、4 项外部夹具测试排除和浏览器测试边界见 [Licia 维护说明](packages/licia/MAINTENANCE.md)。
 
 TypeScript 编译使用 `noCheck` 生成模块与声明，不是完整类型检查。Luna 保留每个锁定版本自己的共享源码，防止不同发布日期的组件被无意混成同一版本。应用使用的包入口、React 和 CSS 导入保留；未使用的预打包浏览器 UMD 入口不再提供。
 

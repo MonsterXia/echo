@@ -1,14 +1,14 @@
 # Scrcpy Harmony 构建指南
 
-[返回中文 README](../README_ZH.md) · [用户指南](user-guide.md) · [维护者开发与验证参考](../.agents/skills/scrcpy-harmony-project/references/development.md)
+[返回中文 README](../README_ZH.md) · [仓库结构](repository-guide.md) · [用户指南](user-guide.md) · [维护者开发与验证参考](../.agents/skills/scrcpy-harmony-project/references/development.md)
 
 ## 范围与准备
 
 当前源码为依赖迁移后的 1.0.4-dev.0；公开恢复版为 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3)，实际构建提交 `417e78ff9a4f99bc0d3a68080b9ceb11810d1d09`。迁移源码与公开恢复版的依赖布局不同，构建时应记录提交号。
 
-Windows x64 的历史干净构建、打包证据见 [M3-3](maintenance/M3-3.md)；同步主干前独立检出的依赖安装、全量测试、lint、三个模块构建，以及同步后的文档核对见[复核记录](maintenance/M3-3-release-guide.md)，没有重复下载设备资源或重做完整打包。macOS 命令仍与工作流一致，但没有 macOS 本机人工走读；[1.0.2 发行 Build](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39723571596)中两个原生 macOS runner 的构建、打包及安装启动结果是历史自动化证据。
+当前布局的干净检出、完整测试、本地 Windows 打包启动和三平台 CI 证据见[依赖源码迁移记录](maintenance/dependency-sources.md)。macOS 由原生 arm64/x64 runner 验证构建、DMG 安装与启动；没有新增 macOS 本机人工走读或真机验收。迁移前的 [M3-3](maintenance/M3-3.md)及[复核记录](maintenance/M3-3-release-guide.md)保留为历史记录，不作为当前目录和命令的操作入口。
 
-准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取 通用 npm 工具链、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
+准备 Git、Node.js **22.12.0 或更新版本**及 npm（CI 使用 Node 22）。Windows 需 Git for Windows 提供的 Git Bash、curl、unzip；macOS 需可用的 Bash、curl、unzip。构建需要联网获取通用 npm 工具链、HDC/uitestkit 和打包所需 Electron 资源。资源脚本只有 Windows/macOS 分支，没有 Linux 设备资源流程；Linux 上的 test/lint CI 不等于支持 Linux 桌面安装包。
 
 在独立目录执行以下操作，保留本仓库锁文件及 vendor 源码。不要共用其他任务的可写 `node_modules`、`dist` 或 `release`。
 
@@ -64,7 +64,9 @@ npm run build
 npm run pack -- --no-publish
 ```
 
-`build` 顺序编译 main、preload、renderer，复制设备资源与图标到 `dist`，写入发行包元数据，再在 `dist` 中执行 npm 安装；它不是纯离线编译。不要单独运行 `node script/build.mjs`，脚本需要 `npm run build` 提供的 npm 入口。三个 `build:*` 命令只转译对应模块，不完成资源复制和发行目录准备。
+`npm test` 先编译本地依赖，再执行应用回归及 Licia 生产/fallback 两种 Node 测试模式。每种 Licia 模式有同样 4 项外部夹具用例明确 pending；上游浏览器/manual 测试不在此流程中。单模块可运行 `npm run test:licia -- cloneDeep`，或追加 `--fallback cloneDeep` 检查兼容实现；详见 [Licia 维护说明](../vendor/packages/licia/MAINTENANCE.md)。
+
+`build` 顺序执行 main、preload、renderer 构建；每个入口通过 prebuild 先生成本地依赖。随后复制设备资源、图标及许可证到 `dist`，写入发行包元数据，再在 `dist` 中执行 npm 安装；它不是纯离线编译。不要单独运行 `node script/build.mjs`，脚本需要 `npm run build` 提供的 npm 入口。三个 `build:*` 命令不完成资源复制和发行目录准备。依赖源码与生成目录的对应关系见[仓库结构指南](repository-guide.md)。
 
 预期输出：
 
@@ -73,6 +75,7 @@ npm run pack -- --no-publish
 | `dist/main/index.js` | Electron 主进程 |
 | `dist/preload/index.js`、`dist/renderer/index.html` | 桥接与 UI |
 | `dist/resources/hdc/`、`dist/resources/uitestkit_sdk/` | 本机设备资源 |
+| `dist/LICENSE`、`dist/THIRD_PARTY_NOTICES.txt` | 应用许可证与本地依赖来源/授权声明，随安装包分发 |
 | `release/<版本>/Scrcpy Harmony-<版本>-win-x64.exe` | Windows NSIS 安装包 |
 | `release/<版本>/Scrcpy Harmony-<版本>-mac-<架构>.dmg` | macOS 原生架构安装包 |
 
@@ -85,7 +88,7 @@ npm run pack -- --no-publish
 先完成本地依赖编译、共享源码和设备资源准备。**先正常退出已安装的 Scrcpy Harmony 和其他使用同一配置的开发实例**，再在仓库根目录打开两个终端，避免同时写入相同配置文件；不需要为此终止共享 HDC 服务。
 
 ```text
-# 终端 1：监听 main/preload 构建，启动 renderer 开发服务
+# 终端 1：编译并监听本地依赖、main/preload，启动 renderer 服务
 npm run dev
 ```
 
@@ -108,11 +111,13 @@ React 页面使用 preload 注入的全局 `main`，经 Electron IPC 调用主�
 | --- | --- |
 | Node engine 不符合要求 | 检查实际 `node --version` 与 npm 所在终端的 PATH，使用满足要求的 Node 22 环境 |
 | 找不到 `share/*` | 检查当前源码是否完整，恢复 `src/share` 跟踪文件；只有 v1.0.3 及更早 tag 使用子模块初始化 |
+| 找不到 hdckit/Luna/Licia 生成文件 | 确认 `vendor/packages` 原始文件完整，运行 `npm run build:vendor`；使用 `npm ci --ignore-scripts` 后尤其需要手动生成 |
+| 本地依赖修改未生效 | 修改原始 `src`，不要修改生成文件；等 `build:vendor` 完成与 Vite 重启就绪，刷新 renderer 或重启 Electron，不要并行运行 build/test/dev |
 | Windows 找不到 Bash / curl / unzip | 使用上方显式 Git Bash 命令并核对工具路径；PowerShell 自带的命令不能代替脚本所需的全部工具 |
 | 资源复制失败或 EPERM | 停止重建，退出本检出启动的应用并确认资源是否被占用；共享 HDC 服务可能仍在使用文件，先协调占用方，不要批量杀 HDC 或其他任务进程 |
 | `npm start` 缺少 main 文件 / 开发页面空白 | 等待 `npm run dev` 首次编译成功，检查 8080 端口、preload 编译和终端错误 |
 | macOS 打包证书路径错误 | 检查是否遗留空 `CSC_LINK`；没有凭据的验证不要填写空证书路径，非空真实签名配置按自身发布流程保留 |
 
-`npm test` 使用无设备替身，lint 检查源码，Vite 成功只表示构建通过，均不能替代真机投屏、输入和连接验收；项目没有独立 `typecheck` script。
+`npm test` 无需真机：应用回归替换设备等外部边界，Licia 测试运行本地生成模块并使用临时目录夹具。lint 检查源码，Vite 成功只表示构建通过，均不能替代真机投屏、输入和连接验收；项目没有独立 `typecheck` script。
 
 CI 的五项检查为 `test`、`lint`、`windows-package`、`macos-package-arm64`、`macos-package-x64`。打包检查会在临时 runner 中安装并启动应用；不要在开发机绕过 `script/check-windows-install.ps1` 的 CI 限制，它可能替换已有安装。macOS 安装检查也只应在隔离环境运行，会启动设备层并清理 HDC。手动 Build 工作流验收安装包后上传 artifacts，不创建 Release；签名、公证、互联网下载后的信任提示和真机功能分别验收。更多脚本与 CI 说明见[维护者参考](../.agents/skills/scrcpy-harmony-project/references/development.md)。

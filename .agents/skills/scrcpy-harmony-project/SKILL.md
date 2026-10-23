@@ -5,7 +5,7 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 
 # Scrcpy Harmony 项目基础
 
-用于本仓库的持久项目上下文。代码路径均相对仓库根目录，参考文档链接相对本 skill。内容依据 2026-10-21 的源码整理；源码与文档不一致时，以当前源码为准并修正文档。
+用于本仓库的持久项目上下文。代码路径均相对仓库根目录，参考文档链接相对本 skill。目录与构建说明已按 2026-10-24 依赖源码迁移更新；源码与文档不一致时，以当前源码为准并修正文档。
 
 ## 快速定位
 
@@ -19,11 +19,13 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 | 主窗口功能与状态 | `src/renderer/main/App.tsx`、`src/renderer/main/components/`、`src/renderer/main/store/` |
 | 投屏、触摸坐标 | `src/renderer/screencast/lib/ScreencastClient.ts`、`src/main/lib/hdc/uitest.ts` |
 | 构建、资源、打包 | `package.json`、`vite*.ts`、`script/` |
+| 本地依赖二次适配 | `vendor/README.md`、`vendor/packages/*/src/`、`script/lib/` |
 
 ## 按需读取
 
 - 修改功能、追踪 IPC、理解状态或投屏：读 [架构与代码导航](references/architecture.md) 的相关章节。
 - 配置环境、运行验证、启动或打包：读 [开发与验证](references/development.md)。
+- 查看迁移后目录与源码/产物对应关系：读 [仓库结构指南](../../../docs/repository-guide.md)。
 - 分阶段修复与交接：读仓库根目录 [RUNBOOK](../../../RUNBOOK.md)；上游报告与 PR 的历史状态见 [来源记录](../../../docs/maintenance/SOURCES.md)。
 - 普通小改只读对应入口及其直接依赖；以上导航不足时再扩大搜索。
 

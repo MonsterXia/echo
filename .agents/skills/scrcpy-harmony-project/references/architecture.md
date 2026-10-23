@@ -19,11 +19,24 @@
 | `src/share/` | 由固定 `electron-share` 快照内置：窗口、IPC、日志、公共页面及组件 |
 | `src/renderer/icon/` | 由固定 `icon-share` 快照内置：图标生成源 |
 | `vendor/packages/` | 本地维护的 HDC/Licia/Luna 源码；npm file 依赖，编译入口 `script/build-vendor.mjs` |
-| `script/` | 下载运行资源、构建发行目录和打安装包 |
+| `script/` | 本地依赖生成、上游测试适配、资源下载、发行构建与验收 |
 | `build/` | 已跟踪的应用图标资源；不是可随意删除的构建产物 |
-| `test/` | Node 内置测试：投屏坐标、构建编排、更新源与设备枚举隔离/字段兼容 |
+| `test/` | Node 应用回归：设备与窗口生命周期、IPC、构建、更新及依赖生成；Licia 上游测试另在其包内 |
 | `RUNBOOK.md`、`docs/maintenance/` | 分阶段维护、验收与来源索引 |
 | `dist/`、`release/`、`resources/` | 被忽略的编译输出、安装包和下载资源 |
+
+## 本地依赖与构建职责
+
+应用仍使用原包名导入，根 `package.json` 通过 `file:vendor/packages/*` 指向 18 个本地包。`src/share` 和 `src/renderer/icon` 为普通跟踪目录；旧子模块初始化仅适用于 v1.0.3 及更早 tag。
+
+- `script/build-vendor.mjs`：统一编译入口、源码监听与成功完成标记。
+- `script/lib/vendor-build.mjs`：HDC/Luna TypeScript 转译、声明、Luna 样式及图标选择器前缀；调用 Licia 生成器。
+- `script/lib/licia-build.mjs`：从原始模块提取依赖和类型，生成 CommonJS、声明及环境入口。
+- `script/lib/vendor-vite.mjs`：本地 CommonJS 支持、Licia 浏览器预打包及依赖重编译后的 Vite 重启。
+- `script/lib/vendor-notices.mjs`：汇总来源和许可证；`script/build.mjs` 将其与应用 LICENSE 放入发行目录。
+- `script/test-licia.mjs`：原始 Node 用例选择、临时夹具及隔离 fallback 测试。
+
+原始文件、生成产物及命令的对应关系见[仓库结构指南](../../../../docs/repository-guide.md)，二次适配规则见 [vendor README](../../../../vendor/README.md)。原生 HDC/uitestkit 仍由资源脚本下载；内置 hdckit 源码不包含原生 HDC 的编译工程。
 
 ## 启动和页面
 
