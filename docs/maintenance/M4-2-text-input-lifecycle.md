@@ -17,7 +17,7 @@
 
 ## 无设备验证
 
-使用真实 Toolbar.tsx、React hooks、MobX observer、共享 ToolbarIcon 和锁定 LunaToolbar React 封装。替身仅限 prompt、main.inputText、通知输出、store 输入及无关截图/全屏依赖；通过真实按钮事件和注册回调驱动，显式控制 Promise 完成顺序。没有运行 Electron、HDC 或手机，没有读取系统剪贴板；全部字符串与目标标识均为合成数据。
+使用真实 Toolbar.tsx、React hooks、MobX observer 和锁定 LunaToolbar React 封装。共享 ToolbarIcon 的纯展示转发用测试适配层连接真实 LunaToolbarButton，不依赖子模块检出；其余替身为 prompt、main.inputText、通知输出、store 输入及无关截图/全屏依赖。通过真实按钮事件和注册回调驱动，显式控制 Promise 完成顺序。没有运行 Electron、HDC 或手机，没有读取系统剪贴板；全部字符串与目标标识均为合成数据。
 
 | 检查 | 结果 |
 | --- | --- |
@@ -29,6 +29,12 @@
 | Git 差异 | 生产改动仅现有 Toolbar；未改主进程、preload、锁文件、共享子模块或协议 |
 
 测试对可控 bridge Promise 附加测试层拒绝清理，避免基线遗漏处理时留下测试 runner 孤儿；生产 callback 的等待和最终 resolve/reject、实际发送次数/参数与通知输出分别断言，不把测试层清理当成产品已处理失败。未声称完成真实 IPC、真实通知视觉或真机文本输入验收。
+
+### CI 首轮失败与夹具修正
+
+初稿 `9b0ca91` 在本地初始化了子模块，测试直接读取共享 ToolbarIcon；[CI test job](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39957786775/job/120427839492)的 checkout 未启用 submodules，加载 `src/share/renderer/components/ToolbarIcon.tsx` 报 ENOENT，结果为 313 项通过、一个测试文件加载失败。这是新增夹具对检出条件的错误假设，不是基础设施瞬态，也不是 14 项新用例已在 CI 运行。
+
+修正只移除夹具对共享图标源码的依赖，使用始终一致的展示适配层将 onClick/disabled/state 传给真实 LunaToolbarButton；生产 Toolbar、测试断言和工作流不变，没有缺文件时跳过或降级断言。在本工作树 ignored dist 内用原候选 `git archive` 创建不含子模块的源码快照，旧夹具复现相同 ENOENT；仅覆盖修正后的测试文件，同一快照专项 **14/14**、完整 **327/327** 通过（0 失败/取消/跳过/TODO）。快照使用本工作树的独立依赖；本机 Windows 验证不冒充 Ubuntu CI 通过，修订提交仍须最终五项 CI。此增量未重复 renderer 构建或修改生产代码，等待队列通知后再普通同步 master。
 
 ## 边界与下一步
 

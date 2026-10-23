@@ -62,9 +62,6 @@ function load(file, mocks, globals = {}) {
   )
   return module.exports.default
 }
-const ToolbarIcon = load('src/share/renderer/components/ToolbarIcon.tsx', {
-  'luna-toolbar/react': widgets,
-})
 function deferred() {
   let resolve, reject
   const promise = new Promise((yes, no) => {
@@ -77,9 +74,10 @@ function deferred() {
   return { promise, resolve, reject }
 }
 
-// Actual Toolbar, React hooks, MobX observer, shared icon and installed Luna
-// widgets. Only prompt/IPC/notification boundaries and unrelated capture APIs
-// are substituted. No Electron, clipboard or device access.
+// Actual Toolbar, React hooks, MobX observer and installed Luna widgets.
+// The shared icon's presentation-only forwarding is adapted below so this
+// fixture also runs in CI's checkout without submodules. Prompt/IPC/notification
+// boundaries and unrelated capture APIs are controlled; no device access.
 async function fixture(
   t,
   { strict = false, target = { key: 'synthetic-a' } } = {},
@@ -98,7 +96,11 @@ async function fixture(
       'luna-toolbar/react': widgets,
       'share/renderer/components/ToolbarIcon': (props) => {
         if (props.icon === 'text') onClick = props.onClick
-        return React.createElement(ToolbarIcon, props)
+        return React.createElement(
+          widgets.LunaToolbarButton,
+          { onClick: props.onClick, disabled: props.disabled, state: props.state },
+          React.createElement('span', { className: `icon-${props.icon}` }),
+        )
       },
       'luna-modal': {
         prompt: () => {
