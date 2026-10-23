@@ -470,3 +470,17 @@
 - 四项新增缺陷回归先全部失败，修复后监听/旧帧投递均为 0；继续覆盖 stop 拒绝/不返回、跨 renderer/设备隔离、其他监听保持、非法 sender 和代次。方案、停止结果 stopped/released/obsolete 语义与边界见[实现报告](docs/maintenance/M2-3-capture-ownership.md)。原探针已升级为当前回归；报告不把本地释放当作远端停止。
 - 父对话真实 Electron 无设备检查揭示 closed 早于 webContents destroyed，已按真实失败将释放提前到 BrowserWindow close/closed；[脚本、报告和哈希](docs/maintenance/M2-3-capture-electron.md)随本 PR 整合。未连接手机、读取 HAP/应用清单或运行 HDC，所有传输均为合成。
 - 状态 / 下一步：仅完成局部无设备逻辑和 Electron 生命周期边界；M2-2/M2-3 保持进行中。无回复时同设备保持等待，不强制放行新捕获；真实手机停止/投屏、原始应用、长期资源趋势仍待验收。最终候选独立审查、五项必需 CI 与合并由父对话负责，本分支不合并或发布。
+
+### 2026-10-23 M2-4 WebView 目标元数据展示
+
+- 真实组件及 Luna grid 回归确认带 favicon 的 title/faviconUrl 经 HTML 拼接解析，标题标签/实体改变显示且图标引号可产生额外属性。基线新增专项 1 通过/5 失败；只将 Webview 的该展示路径改为 DOM 元素、src 属性和文本节点分别构建，保留原图标 URL 语义，不扩展到浏览器 URL 安全策略。[专项报告](docs/maintenance/M2-4-webview-metadata.md)记录证据和边界。
+- 修复后新增 6/6，生命周期组合 23/23，禁止共享源码读取时 23/23，全量 430/430、lint、renderer 构建通过；保留现有构建警告。全程合成标题/URL，无脚本执行、外部图片加载、设备/HAP 或真实应用信息访问。
+- 下一步：最终提交独立 OpenAI（GPT-6）审查及五项必需 CI 后由主对话决定合并；M2-4 仍进行中，真实 WebView/Chrome 对照、断连恢复和 DevTools 加载未验收，不发布版本。
+- [PR #51](https://github.com/MonsterXia/scrcpy-harmony/pull/51) 初始候选 `61026be` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/51#pullrequestreview-5629990151)，但早期 Ubuntu CI 被既有响应追踪 GC 测试阻塞，不能将本地通过写成首轮 CI 成功。[#52](https://github.com/MonsterXia/scrcpy-harmony/pull/52) 最终 `547147e` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/52#pullrequestreview-5630067210)，[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/52/checks)通过后合并为 `b755306eb4e388053a0eab2f8ee7321b316793dd`；本分支普通 merge 同步该修复，保留双方 RUNBOOK 记录，WebView 生产改动和专项测试不变。组合专项 41/41、全量 431/431、lint 通过；最终 head 的增量独审和五项 CI 待确认。
+
+### 2026-10-23 响应追踪 GC 回归稳定性
+
+- 基线 `e52021a`；[#51 的 Ubuntu Node 22.23.3 测试日志](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/39972289079/job/120477822545)显示：响应追踪测试在 `disable()` 后单次 GC 的 `arrayBuffers < baseline + 1MiB` 断言失败。Windows Node 22.21.1 原测试 17/17 通过，未在本机复现该偶发失败。进程级 backing-store 计数不能独自证明解析器仍保留引用，没有证据要求修改生产模块。
+- 仅调整测试：隔离子进程临时观察实际 16MiB 分配后立即恢复分配函数，分别记录 Buffer 与底层 ArrayBuffer 的 WeakRef；最多 20 轮事件循环/GC 检查两者可回收，跨轮次释放 `deref()` 的临时保活。停用后的 8 个 8MiB 输入亦验证对象和 backing storage 可回收，解析器仍保持存活。取消瞬时全局计数断言，没有扩大允许保留的数据量或删除释放覆盖。
+- `node --test test/hdc-response-trace.test.cjs test/hdc-response-summary.test.cjs`：18/18；独立重复 30 轮全部通过（540 项测试）。故障注入分别强持有 partial Buffer、其 backing ArrayBuffer、后续输入 Buffer；三个子进程均在相应 20 轮回收断言以 exit 1 失败，30 轮共 90 次负对照均被捕获。`git diff --check` 通过；全程合成数据、Node 内置依赖，无设备/HDC/HAP 访问。
+- 下一步：父对话补已有依赖环境的组合全量验证、独立审查和 Ubuntu CI。当前只证明对象引用可释放，不声称进程 RSS 立即下降、真机长期无泄漏或 M2-2/M2-5 完成；本分支不合并或发布。
