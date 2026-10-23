@@ -34,3 +34,10 @@
 renderer 没有取消已发出 IPC 的接口。隐藏、设备切换及 StrictMode cleanup 只使旧结果失效，并阻止其继续下一阶段；恢复后的新查询可与尚未完成的旧 IPC 同时存在。主进程 singleton 还可能合并同设备/PID 的在途请求，所以新 renderer 调用不保证底层重新发起独立发现。活动轮次内仍是串行轮询；本改动不承诺 main/HDC 在途操作取消或整个发现链路有总截止。main 侧 shell/forward 仍按前轮报告保留边界。
 
 自动化未验证真实 WebView socket、转发、调试窗口加载、浏览器打开、布局外观或官方 Chrome 对照。后续在授权应用开启 Web 调试的设备上验证：空目标、进程重启、切换前台应用、切换标签/设备、断连重连及 URL 更新后的打开行为；继续保留原报告 Pura 70 Pro / API 17 等兼容验收。M2-4 不标为完成。
+
+## 2026-10-23 主干同步复验
+
+- PR #39 握手兼容与 PR #35 屏幕查询合入后，通过普通 merge 同步 `origin/master` 的 `1bfc1ab015ac4013f9c4663a984633300bc51f93`，没有变基或覆盖历史。RUNBOOK 中两项记录及其专项报告完整保留；M2-4 行继续保留 renderer 回归与真机待验收边界。
+- 合并无冲突，现有夹具无需兼容修改。`src/main/`、适配器/内存/屏幕测试和共用 overview 夹具与该 master 一致；Webview.tsx 及其生命周期测试与此前已审查的 `594c45b` 一致，没有新增生产实现改动。
+- 组合运行 `webview-lifecycle`、`webviews`、`finite-shell`、`memory-deadline`、`screen-deadline` 五个测试文件：**109/109** 通过。`npm test`：**296/296** 通过，0 跳过。`npm run lint`、`npm run build:renderer`、`npm run build:main` 均通过；构建仍有既有弃用/大 chunk 提示。
+- 本次未操作 HDC、手机或 HAP；主干握手及屏幕读取的真机证据不作为 WebView 真机验收。最终 SHA、增量审查、CI 和合并状态以 [PR #37](https://github.com/MonsterXia/scrcpy-harmony/pull/37) 及其[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/37/checks)为准，由主对话核验，本聊天不自行合并。
