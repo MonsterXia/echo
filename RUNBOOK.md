@@ -439,3 +439,9 @@
 - [#46 枚举参数有限读取](https://github.com/MonsterXia/scrcpy-harmony/pull/46)最终 `55f6679` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/46#pullrequestreview-5629063710)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/46/checks)通过后合并为 `e0c95ba`。独立相关回归 54/54、有限传输 42/42，无共享子模块快照 54/54；单条参数命令实际约 10013ms 截止并关闭连接，组合全量 393/393、lint 和构建通过。host listTargets/初始化仍无截止，不能声称整体枚举已限时。
 - 合入上述两项后，生产源码等同 `e0c95ba` 的检出 `5e1b8ca` 重新构建并复测真实概览 IPC/UI：7 次成功、1522–1808ms，内存/屏幕四个受控故障均恢复；单独归档于上述报告。这轮未重复物理拔插与 10 分钟空闲，不能把旧基线证据自动外推到新提交。并行作者和独立审查均未操作手机。
 - 下一步：优先定位物理重连前两轮的失败分类和累积等待；继续收集原复现时长及面板负载/监听释放证据。M2-2/M2-5 保持进行中，无线连接及授权失败待验收，M1-2/M1-3 仍受 bilibili HAP 缺失和图标权限边界限制。新增记录无设备标识、原始日志或内部应用信息，本轮不发布版本。
+
+### 2026-10-23 M2-2 概览 renderer 读取生命周期
+
+- 真实 Overview/React/MobX/Luna 组件回归确认同 tick 重入重复请求、卸载/断连后旧失败通知，以及 StrictMode 废弃读取覆盖当前结果；新增 9 项在修复前全部按预期断言失败。仅修改 Overview 的请求会话和失效检查，当前失败继续清空详情、释放 loading 并允许手动重试。App 已有按 target key 重挂载保护；不把组件边界缺陷认定为前两轮物理重连失败的原因。
+- 修复后专项 10/10（含既有失败刷新回归，运行时未初始化 src/share），全量 402/402，lint 和 renderer 构建通过；构建保留现有 Vite/Sass、licia eval 和 chunk 警告。[专项报告](docs/maintenance/M2-2-overview-lifecycle.md)记录复现、测试边界和下一步。全程合成数据，无 HDC/手机访问、设备应用清单采集或发布。
+- 下一步：完成最终提交的 OpenAI（GPT-6）独立审查和五项必需 CI，再由主对话合并。M2-2 继续进行中，物理失败分类、原复现时长空闲及负载预算仍待验证。

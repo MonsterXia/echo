@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import Style from './Overview.module.scss'
-import { JSX, useEffect, useState } from 'react'
+import { JSX, useEffect, useRef, useState } from 'react'
 import types from 'licia/types'
 import { notify } from 'share/renderer/lib/util'
 import { t } from 'common/util'
@@ -20,28 +20,46 @@ export default observer(function Overview() {
     useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [overview, setOverview] = useState<types.PlainObj<string | number>>({})
+  const readSession = useRef<{ active: boolean; pending: boolean } | null>(null)
 
   const { target } = store
 
   useEffect(() => {
+    const session = { active: true, pending: false }
+    readSession.current = session
+    setOverview({})
+    setIsLoading(false)
     refresh()
-  }, [])
+    return () => {
+      // IPC is not cancelled; abandoned reads must not update UI or notify.
+      session.active = false
+    }
+  }, [target])
 
   async function refresh() {
-    if (!target || isLoading) {
+    const session = readSession.current
+    if (!target || !session?.active || session.pending) {
       return
     }
+    const isCurrent = () => session.active && store.target === target
+    if (!isCurrent()) return
 
+    session.pending = true
+    setIsLoading(true)
     try {
-      setIsLoading(true)
       const overview = await main.getOverview(target.key)
-      setOverview(overview)
+      if (isCurrent()) setOverview(overview)
     } catch {
-      setOverview({})
-      notify(t('commonErr'), { icon: 'error' })
+      if (isCurrent()) {
+        setOverview({})
+        notify(t('commonErr'), { icon: 'error' })
+      }
+    } finally {
+      if (isCurrent()) {
+        session.pending = false
+        setIsLoading(false)
+      }
     }
-
-    setIsLoading(false)
   }
 
   let content: JSX.Element | null = null
