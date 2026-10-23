@@ -129,41 +129,76 @@ test('summary never exposes target, command or response text', async () => {
   assert.deepEqual(trace.result(), result('output', Buffer.byteLength(secret), 1, { partialFrameAtClose: true }))
 })
 
-test('disable releases the partial frame and oversized streams retain no later chunks', () => {
+function runCollectionProbe(retain = '') {
   const script = `
     import assert from 'node:assert/strict';
     import { createResponseTrace } from ${JSON.stringify(moduleUrl)};
+    const retain = ${JSON.stringify(retain)};
+    const retained = [];
+    async function assertCollected(references, label) {
+      // WeakRef.deref() keeps its target alive until this job ends. Advance the
+      // event loop before each GC, and allow bounded retries for deferred work.
+      for (let attempt = 0; attempt < 20; attempt++) {
+        await new Promise(setImmediate);
+        global.gc();
+        await new Promise(setImmediate);
+        if (references.every(reference => reference.deref() === undefined)) return;
+      }
+      assert.fail(label + ' remained reachable after 20 GC turns');
+    }
     const max = 16 * 1024 * 1024;
     const trace = createResponseTrace('shell param get');
     const header = Buffer.alloc(4);
     header.writeUInt32BE(max);
-    global.gc();
-    const baseline = process.memoryUsage().arrayBuffers;
-    trace.accept(header);
+    const partialReferences = [];
+    const allocate = Buffer.allocUnsafe;
+    // Observe the actual parser allocation in this isolated child, then restore
+    // the allocator. Track backing storage too, so a retained view also fails.
+    Buffer.allocUnsafe = function(size) {
+      const buffer = allocate(size);
+      if (size === max) {
+        partialReferences.push(new WeakRef(buffer), new WeakRef(buffer.buffer));
+        if (retain === 'partial-buffer') retained.push(buffer);
+        if (retain === 'partial-backing') retained.push(buffer.buffer);
+      }
+      return buffer;
+    };
+    try { trace.accept(header); } finally { Buffer.allocUnsafe = allocate; }
+    assert.equal(partialReferences.length, 2, 'expected the real 16 MiB parser allocation');
     trace.accept(Buffer.from('partial'));
-    assert.ok(process.memoryUsage().arrayBuffers >= baseline + max);
     trace.disable();
-    await new Promise(setImmediate);
-    global.gc();
-    assert.ok(process.memoryUsage().arrayBuffers < baseline + 1024 * 1024);
+    await assertCollected(partialReferences, 'partial frame');
+    assert.equal(trace.result().parsingDisabled, true);
     const oversized = createResponseTrace('shell param get');
     header.writeUInt32BE(max + 1);
     oversized.accept(header);
     for (let i = 0; i < 8; i++) {
       let chunk = Buffer.alloc(8 * 1024 * 1024, 120);
-      const weak = new WeakRef(chunk);
+      const references = [new WeakRef(chunk), new WeakRef(chunk.buffer)];
       oversized.accept(chunk);
+      if (retain === 'late-chunk') retained.push(chunk);
       chunk = null;
-      await new Promise(setImmediate);
-      global.gc();
-      assert.equal(weak.deref(), undefined);
+      await assertCollected(references, 'oversized input');
     }
     assert.deepEqual(oversized.result(), {
       response: { category: 'empty-output', bytes: 0, frames: 0 },
       partialFrameAtClose: false, invalidFraming: true, parsingDisabled: true,
     });
-    assert.ok(process.memoryUsage().arrayBuffers < baseline + 1024 * 1024);
+    assert.equal(retained.length, 0);
   `
-  const child = spawnSync(process.execPath, ['--expose-gc', '--input-type=module', '-e', script], { encoding: 'utf8', timeout: 30000 })
+  return spawnSync(process.execPath, ['--expose-gc', '--input-type=module', '-e', script], { encoding: 'utf8', timeout: 30000 })
+}
+
+test('disable releases the partial frame and oversized streams retain no later chunks', () => {
+  const child = runCollectionProbe()
   assert.equal(child.status, 0, child.stderr || child.error?.message)
+})
+
+test('collection checks fail when a partial frame, backing storage or later chunk is retained', () => {
+  for (const retained of ['partial-buffer', 'partial-backing', 'late-chunk']) {
+    const child = runCollectionProbe(retained)
+    assert.equal(child.status, 1, child.stderr || child.error?.message)
+    const label = retained === 'late-chunk' ? 'oversized input' : 'partial frame'
+    assert.ok(child.stderr.includes(`${label} remained reachable after 20 GC turns`), child.stderr)
+  }
 })
