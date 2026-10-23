@@ -470,6 +470,7 @@
 - 四项新增缺陷回归先全部失败，修复后监听/旧帧投递均为 0；继续覆盖 stop 拒绝/不返回、跨 renderer/设备隔离、其他监听保持、非法 sender 和代次。方案、停止结果 stopped/released/obsolete 语义与边界见[实现报告](docs/maintenance/M2-3-capture-ownership.md)。原探针已升级为当前回归；报告不把本地释放当作远端停止。
 - 父对话真实 Electron 无设备检查揭示 closed 早于 webContents destroyed，已按真实失败将释放提前到 BrowserWindow close/closed；[脚本、报告和哈希](docs/maintenance/M2-3-capture-electron.md)随本 PR 整合。未连接手机、读取 HAP/应用清单或运行 HDC，所有传输均为合成。
 - 状态 / 下一步：仅完成局部无设备逻辑和 Electron 生命周期边界；M2-2/M2-3 保持进行中。无回复时同设备保持等待，不强制放行新捕获；真实手机停止/投屏、原始应用、长期资源趋势仍待验收。最终候选独立审查、五项必需 CI 与合并由父对话负责，本分支不合并或发布。
+- 交付见 [PR #53](https://github.com/MonsterXia/scrcpy-harmony/pull/53)。实现候选 `4b62a1e` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/53#pullrequestreview-5630332932)，无阻塞发现；独立相关 60/60 与额外三项合成交错通过，整合全量 451/451、lint、三个构建及实际 Electron 8/8 均有归档证据。随后仅补本交接链接；最终提交仍须独立增量复审并通过[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/53/checks)才可合并，实际合入状态及提交以 PR 页面为准。此子项的实施和无设备验证完成，阶段的真机与长期验收边界不变。
 
 ### 2026-10-23 M2-4 WebView 目标元数据展示
 
