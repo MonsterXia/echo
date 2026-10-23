@@ -12,7 +12,7 @@
 
 ## 固定基线与证据
 
-- 仓库：fetch 后的 master `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`；独立 worktree，分支 `codex/m4-3-file-download`。下列本地源码引用均在该基线核对。
+- 仓库：初评基线为 fetch 后的 master `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`；独立 worktree，分支 `codex/m4-3-file-download`。整合前普通 merge 同步 master `a8fea7c7831887e7072cb0a193edf31dba7a2f84`，再次核对下列本地源码事实；截图接收、相关 UI/IPC、锁定依赖及共享对话框未变。新合入的概览有限屏幕查询与握手兼容改进不改变 file recv 子进程路径及本报告结论。
 - [锁文件](../../package-lock.json)中 hdckit 为 **0.12.1**。从 npm 官方 registry 下载[发布包](https://registry.npmjs.org/hdckit/-/hdckit-0.12.1.tgz)，仅解包阅读，未安装或执行；SHA-512 与锁文件完全一致：`fM/7cafsKWh2ZHm91E0mMusZBRRorlmAs9euvJTWtDpSJnbHPQW0YCPBbp6pxzG6tH+UF1/iOhjPXDVK490Txw==`。
 - [npm 版本元数据](https://registry.npmjs.org/hdckit/0.12.1)的 gitHead 为 `f9196ba9bff030c7f155cea5bfb7ddf07aa1b40e`；对应 [file.ts](https://github.com/liriliri/hdckit/blob/f9196ba9bff030c7f155cea5bfb7ddf07aa1b40e/src/hdc/command/file.ts) 与 [ExecCommand.ts](https://github.com/liriliri/hdckit/blob/f9196ba9bff030c7f155cea5bfb7ddf07aa1b40e/src/hdc/ExecCommand.ts)已交叉核对发布包。能力判断以发布包 `dist/hdc/Target.d.ts`、`Target.js`、`command/file.js`、`ExecCommand.js` 为准，不以最新 master 替代锁定版本。
 - **H1**：[Huawei 当前 HDC 官方指南](https://developer.huawei.com/consumer/cn/doc/doccenter-capabilities/hdc)，本轮读取渲染正文；页面显示更新时间 2026-09-20 19:26。核对文件接收、版本配套、HiLog 命令示例及 E005004/E005102/E005008。

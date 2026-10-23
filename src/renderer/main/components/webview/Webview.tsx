@@ -26,43 +26,66 @@ export default observer(function Webview() {
   const dataGridRef = useRef<DataGrid>(null)
   const [filter, setFilter] = useState('')
 
-  const { target } = store
+  const connectKey = store.target?.key
+  const active = store.panel === 'webview'
 
   useEffect(() => {
     let destroyed = false
+    let timeout: ReturnType<typeof setTimeout> | undefined
+    let previousPid = 0
+
+    function clear() {
+      setTopBundle({ name: '', pid: 0 })
+      setWebviews([])
+      setSelected(null)
+      previousPid = 0
+    }
+
+    clear()
+    if (!connectKey || !active) return
+
+    // IPC cannot be cancelled here. Abandoned passes must not continue or
+    // publish results after the panel/device changes, including before cleanup.
+    const isCurrent = () =>
+      !destroyed &&
+      store.target?.key === connectKey &&
+      store.panel === 'webview'
 
     async function getWebviews() {
-      if (target) {
-        if (store.panel === 'webview') {
-          try {
-            const topBundle = await main.getTopBundle(target.key)
-            setTopBundle(topBundle)
-            if (topBundle.pid) {
-              const webviews = await main.getWebviews(target.key, topBundle.pid)
-              setWebviews(
-                map(webviews, (webview: any) => {
-                  const title = webview.faviconUrl
-                    ? toEl(
-                        `<span><img src="${webview.faviconUrl}" />${webview.title}</span>`
-                      )
-                    : webview.title
-
-                  return {
-                    ...webview,
-                    title,
-                  }
-                })
+      if (!isCurrent()) return
+      try {
+        const topBundle = await main.getTopBundle(connectKey)
+        if (!isCurrent()) return
+        const webviews = topBundle.pid
+          ? await main.getWebviews(connectKey, topBundle.pid)
+          : []
+        if (!isCurrent()) return
+        const rows = map(webviews, (webview: any) => {
+          const title = webview.faviconUrl
+            ? toEl(
+                `<span><img src="${webview.faviconUrl}" />${webview.title}</span>`,
               )
-            } else {
-              setWebviews([])
-            }
-          } catch {
-            // ignore
+            : webview.title
+
+          return {
+            ...webview,
+            title,
           }
-        }
+        })
+        const sameProcess = previousPid === topBundle.pid
+        setTopBundle(topBundle)
+        setWebviews(rows)
+        setSelected((selected) =>
+          sameProcess && selected
+            ? rows.find((row) => row.id === selected.id) || null
+            : null,
+        )
+        previousPid = topBundle.pid
+      } catch {
+        if (isCurrent()) clear()
       }
-      if (!destroyed) {
-        setTimeout(getWebviews, 2000)
+      if (isCurrent()) {
+        timeout = setTimeout(getWebviews, 2000)
       }
     }
 
@@ -70,8 +93,9 @@ export default observer(function Webview() {
 
     return () => {
       destroyed = true
+      clearTimeout(timeout)
     }
-  }, [])
+  }, [connectKey, active])
 
   useWindowResize(() => dataGridRef.current?.fit())
 
@@ -104,6 +128,7 @@ export default observer(function Webview() {
         />
       </LunaToolbar>
       <LunaDataGrid
+        key={topBundle.pid}
         onSelect={async (node) => setSelected(node.data)}
         onDeselect={() => setSelected(null)}
         className={Style.webviews}
