@@ -16,7 +16,8 @@
 - Windows 打包及隔离配置启动通过：主窗口、设置页、IPC、实际 app.asar 内 author/许可证/第三方声明均校验，EXE CompanyName 为 MonsterXia；开发机未运行安装器。
 - 开发服务器实际运行通过；临时修改本仓 Luna SCSS 后，自动编译生成的样式在 Electron renderer 生效，随后恢复原文件。
 - 独立审查完成：1,155 个导入文件哈希与 manifest 一致，16 个 Luna CSS 的选择器集合与原 npm 包一致，两份共享源码与固定提交一致（检出换行差异除外）。已修复图标字体属性选择器未加前缀，以及重编译删除目录导致开发监听 ENOENT 两项问题；无遗留重要发现。
-- 待验证：最终干净 npm ci、PR 的五项必需 CI。
+- 干净独立 clone 验证通过：在无 node_modules/生成产物的检出中执行 `npm ci --offline --no-audit`，使用已有 npm 缓存安装 597 个包并自动重编译 18 个本地包；5 项迁移测试再次通过，链接均位于该检出内。此结果不代表空缓存的工具链/二进制可以离线安装。
+- 待验证：PR 的五项必需 CI。
 - 原始真机、无线和长期运行待验收状态不变。未声称完整类型检查、完全离线构建、签名或公证通过。可选 lsla 资产生成器不在正常 build 路径，本轮未迁移。
 
 下一步：完成剩余检查和 PR，记录链接与真实结果后再标记迁移完成。使用方法和源码维护规则见 [vendor README](../../vendor/README.md)，详细设计和执行记录见 [计划](../superpowers/plans/2026-10-23-dependency-sources.md)。
