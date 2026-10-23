@@ -1,0 +1,250 @@
+{
+  "startedAt": "2026-10-23T13:01:07.685Z",
+  "sourceCommit": "f48256a11a4d5d6fb9d79bce0134c71469166e70",
+  "scope": "Real phone, full overview preload/IPC and UI; synthetic transport errors/stalls; no physical disconnection or device writes",
+  "passed": true,
+  "successes": [
+    {
+      "elapsedMs": 1719,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1565,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1589,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1609,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1553,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1593,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1580,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1557,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1605,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1421,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1537,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1563,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1549,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    }
+  ],
+  "failures": [
+    {
+      "stage": "param get",
+      "mode": "error",
+      "elapsedMs": 218,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "param get",
+      "mode": "stall",
+      "elapsedMs": 10035,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "SP_daemon -deviceinfo",
+      "mode": "error",
+      "elapsedMs": 314,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "SP_daemon -deviceinfo",
+      "mode": "stall",
+      "elapsedMs": 15608,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "uname -a",
+      "mode": "error",
+      "elapsedMs": 1326,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "uname -a",
+      "mode": "stall",
+      "elapsedMs": 11045,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "cat /proc/meminfo",
+      "mode": "error",
+      "elapsedMs": 1337,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "cat /proc/meminfo",
+      "mode": "stall",
+      "elapsedMs": 11604,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "hidumper -s RenderService -a screen",
+      "mode": "error",
+      "elapsedMs": 1854,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "hidumper -s RenderService -a screen",
+      "mode": "stall",
+      "elapsedMs": 16657,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    }
+  ],
+  "hashes": {
+    "src/main/lib/hdc.ts": "1b58619612063375a363918ee722ae89d9277a9fe7ce1fb1b9691d129abb443d",
+    "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639",
+    "src/main/lib/hdc/parameters.ts": "b9319755450d0166398e8dcf9729e7c7b0abe67601352e6c3a9b87134a989cb9",
+    "src/renderer/main/components/overview/Overview.tsx": "118143a47230a0c7dc1eeab32507c71fe69aac404b96ce75febc635dff816a10",
+    "src/preload/main.ts": "fae2c895154881244edd845e2726bfac24fae6338b1e3558b4bcb0c8f172c0fb",
+    "dist/main/index.js": "5816f55a376fda84ac41125ec018075e2f143c9d20b29d9bc13454592904ac6f",
+    "dist/preload/index.js": "e7b03481fc23ab5e3d355dfc62fb53e255d4b97fcfb417d81256a8df6d62fb9c",
+    "script/check-overview-live.mjs": "7fc168f399f7909519faeff09944aed9d890be9c7289c2a684c8fb02c4e50061",
+    "dist/renderer/index.html": "6dff6b1328371ecd8fa081f512ab419e1f2c77e58d8ce8bc21eef58b9ca9339e",
+    "dist/renderer/assets/App-B2Yihg7H.js": "bc5976eff0bb969e2d48a026cacbedb0f2b408db87e4616b66d543352a943764",
+    "dist/renderer/assets/App-BoK6EVGt.js": "12c25ba15378b407551c3659a825d919e6d9cc522b770726c6215aba25eda9c6",
+    "dist/renderer/assets/app-Bq1a6kil.css": "883a1f81aabbfc831c51976010c56eb226ceae233675af20b46f07731ff67810",
+    "dist/renderer/assets/App-BSrh4QD_.css": "5de268b7056bb5d6ef5e4d2fabfcaf846f8cbc813139c852fd6e450103a46fc7",
+    "dist/renderer/assets/App-BWU1b91X.js": "a57b46246051f788ad7a168f94358dfbf5e4a67a01ebf713897c0a893a573505",
+    "dist/renderer/assets/app-CyX3vNb3.js": "7ccb8804cdaabafe3fb88e40ff19cf99efee3baf68d2d7f19f083be13f7b6b67",
+    "dist/renderer/assets/App-DMlEgHFO.css": "66603e7d2347c1a53919476186fe6d5bd7b1684917306a0867b55836715ac6d0",
+    "dist/renderer/assets/App-DplwvdpB.css": "b33f86390076f3dbe676232b1e02f2a838503e75c33575e038027fbacc039aa1",
+    "dist/renderer/assets/App-DqqrEF0M.js": "8312e83bd7397dbfa83e4c46684589fbfac26fca63c515d07818a2b5fff827ad",
+    "dist/renderer/assets/App-DRCbXrvW.js": "d08a041be05e1b6efa0c554b3531a6d1311d8e5fd93a7bb8683a4bb3e8776191",
+    "dist/renderer/assets/App-IFHVt93n.css": "9e7afb065f58e9dfbc0b347f4f1da3ae32d8faa49e3c0eb1750ab3bba2d5ac87",
+    "dist/renderer/assets/App-o3hzah0p.css": "e125074fa6ae983a172c6e56fdad688725e74d7c996cfcaf18b7dcf885b76cf9",
+    "dist/renderer/assets/default-icon-BEowIRRb.png": "567c7c0c7a321ca180e010ad880f0f7519f6d351ac2b9665e2ee710e7cfe7778",
+    "dist/renderer/assets/download-DDEjlUxP.js": "22d55c1100251df4625303569fa89cb5d340c07e263d51a600b81c7fdd98261c",
+    "dist/renderer/assets/icon-RRtXdow_.png": "d4b1d795632a8763f4c8ec9f69b9e294b82f845f15ccadc3aa1f3a89ef82ad63",
+    "dist/renderer/assets/MiSans-Regular-BjbB2O6q.ttf": "6aa32ded55e110a95be10080e0c322f2382681cd581c5cbb24f4fd4ce96fbb08",
+    "dist/renderer/assets/randomBytes-Cubipjqz.js": "c4af3881ff0db40cee526c11dcf8782cf4f66eaaddcd6fda9a1d86829e6072d8",
+    "dist/renderer/assets/react-Dr2eY41j.js": "de1cc1d16bb631a0b7a9ec9c6bd3bdddf587f2b362a4a6a4d01cfac95bd9aaa7",
+    "dist/renderer/assets/theme-COTayXBL.js": "322ff1a75f18854d89d73ce5c401917da423d80c853838422b2d33b6149a41cb",
+    "dist/renderer/assets/toBool-EdRq0xmc.js": "b1529c68d83aded021f15a2dcb35b0c5d160002d3b2c7a60fe455edbc0b622e3",
+    "dist/renderer/assets/xterm-Brpm5XoW.js": "e8ac0d4cda678c30efbffa89fc712ec55ceca22749a00ce6288bc786fe3f5947",
+    "dist/renderer/assets/xterm-DYP7pi_n.css": "7c5a01f382f76539fc9b4db6b18e18a7035741845fd14968c5cdc0a7e373d817"
+  },
+  "runtime": {
+    "packaged": false,
+    "electron": "45.0.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "initialUiValid": true,
+  "lastClearedFields": {
+    "descriptive": true,
+    "processor": true,
+    "memory": true
+  },
+  "pageErrorCount": 0,
+  "commands": {
+    "alive": 1,
+    "list targets": 113,
+    "fport ls": 1,
+    "shell echo ready": 152,
+    "shell param get": 36,
+    "shell SP_daemon -deviceinfo": 32,
+    "shell uname -a": 30,
+    "shell SP_daemon -deviceinfo\necho \"echo_separator\"\nuname -a": 0,
+    "shell cat /proc/meminfo": 28,
+    "shell hidumper -s RenderService -a screen": 26
+  },
+  "blockedCommandCount": 0
+}
