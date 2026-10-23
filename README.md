@@ -35,11 +35,11 @@ macOS requires **version 13 or later**. Linux installers are not currently avail
 
 Installers include HDC and the required device resources; Node.js is not needed for normal use. See the [user guide](docs/user-guide.md) for detailed installation and connection steps.
 
-**The 1.0.2 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.2 release report](docs/releases/1.0.2.md) for installation and launch results, signing status, and checksum files.
+**The 1.0.3 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.3 release report](docs/releases/1.0.3.md) for installation and launch results, signing status, and checksum files.
 
 If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
 
-The public **1.0.2** release does not include subsequent fixes on `master`, such as device enumeration isolation, per-app metadata read error handling, and app name fallbacks. Source builds currently also report version 1.0.2, so include the commit SHA when reporting a problem with a source build.
+The public **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It is the recovery version before dependency source migration. Include the commit SHA when reporting a problem with a source build.
 
 ## Quick start
 
