@@ -57,7 +57,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[等待调查](docs/maintenance/M2-2-command-timeout.md)和[适配器](docs/maintenance/M2-2-cancellable-transport.md)后，已将[概览内存查询](docs/maintenance/M2-2-memory-deadline.md)单独接入 10 秒截止；base.shell 及概览前后其他查询仍未限时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[等待调查](docs/maintenance/M2-2-command-timeout.md)和[适配器](docs/maintenance/M2-2-cancellable-transport.md)后，已将[概览内存查询](docs/maintenance/M2-2-memory-deadline.md)单独接入 10 秒截止；真机发现 44 字节 hello 被拒绝，独立推进[握手兼容修复](docs/maintenance/M2-2-handshake-compat.md)。base.shell 及概览前后其他查询仍未限时，不是已确认的空闲卡死根因，原始真机验收仍待办。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 进行中 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 精确 PID/socket 发现、并发隔离和本地 HTTP 失败边界已有[合成回归与修复记录](docs/maintenance/M2-4-webview-discovery.md)；Pura 70 Pro / 5.1.0.150（API 17）及官方 Chrome 对照、空目标/断连恢复仍需真机验收。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；无线真机、物理断连重连及授权失败仍待验收。 |
@@ -304,6 +304,13 @@
 - 交付 [PR #32](https://github.com/MonsterXia/scrcpy-harmony/pull/32)；主对话对 `2e7cd3e` 的[独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/32#pullrequestreview-5615722771)确认 P2 已修复，独立 45/45 通过，无剩余阻断；最终组合审查、SHA 和合并状态见 PR 页面，五项必需 CI 见[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/32/checks)。
 - 最终组合：通过普通 merge 同步已合并 #31 的 master `bd3e3c9`，无 rebase/force push，两个工作项记录均保留；全量 **221/221**、lint、build:main 通过。此后仅更新交接文档；仅在最终提交独立审查无阻断且五项 CI 通过后合并。
 - 前序参数/设备信息与后续屏幕查询仍未限时，服务启动保持原 hdckit 路径；终端/HiLog/投屏/写操作未迁移。协议严格度与预算需授权真机验收，M2-2 仍进行中。最终 SHA/PR/CI 由交付消息和 PR 正文承载，主对话完成独立 review、五项必需 CI 核验后统一合并；本分支不自行合并或操作设备。
+
+### M2-2 握手兼容修复
+
+- 2026-10-23 / Codex；基线 `8d1cfab`，独立分支 `codex/m2-handshake-compat`。主对话真机旧有限模块三次 4/2/2ms 在 handshake 拒绝，CLI 成功；脱敏 hello 长度 44、banner 匹配，定位为旧实现误限 16 字节。扩为仅 16/44，回复逐字节对齐锁定 hdckit，未知长度/截断仍拒绝，取消和端点不变；见[专报](docs/maintenance/M2-2-handshake-compat.md)。
+- 新接受用例修复前 1 通过/1 失败；适配器 42/42、44 字节实际内存链路 23/23，组合 65/65、全量 265/265、lint、单模块 strict TypeScript、build:main 通过。所有本分支网络测试仅随机回环合成数据。
+- 主对话 OS 临时诊断副本真机三次成功 162/158/162ms，字段布尔校验通过；这是诊断证据，不是最终候选 SHA 或完整概览验收。代码候选 `ba421be` 已交主对话复测，手机仍由主对话独占；最终候选真机结果、独立审查和五项必需 CI 按 PR 最终提交核验后才合并，本分支不自行合并/发布。
+- 屏幕截止 PR #35 暂停扩展，先完成握手修复再同步；预算在负载下的校准、完整概览、断连恢复与长期空闲验收仍待办，M2-2 保持进行中。此前交接中的恰好 16 字节限制属于历史实现，以本轮源码和专报为准。
 
 ### M3-3 用户与构建说明推进
 

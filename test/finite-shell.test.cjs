@@ -200,7 +200,7 @@ for (const phase of ['ready', 'read']) {
       } })
       const controller = new AbortController()
       const pending = outcome(f.run({ signal: controller.signal, timeoutMs: cancel === 'timeout' ? 100 : 2000 }))
-      await (phase === 'ready' ? f.ready : f.command).promise
+      await bounded((phase === 'ready' ? f.ready : f.command).promise)
       if (cancel === 'abort') controller.abort()
       const result = await bounded(pending)
       assert.equal(result.error?.code, cancel === 'abort' ? 'HDC_COMMAND_ABORTED' : 'HDC_COMMAND_TIMEOUT')
