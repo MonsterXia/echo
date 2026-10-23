@@ -75,6 +75,8 @@ npm start
 
 ## 测试范围与验收
 
+物理断连和空闲后概览验证使用 `node script/check-overview-physical-idle.mjs <证据目录> 600`（先完整 build）。按脚本阶段提示人工拔插 USB，检查真实 tracker/选择/详情清空与重连，再保持指定秒数无业务操作，记录正常 tracker 轮询及进程资源采样，最后验证 IPC 与实际刷新。报告分别标记自动恢复与一次手动刷新恢复；总通过不等于自动恢复稳定，必须并列保留失败轮次。脚本不模拟断连，不输出设备标识或原始日志；有限时长不替代原始长期空闲问题验收。边界与记录见 [物理断连及空闲报告](../../../../docs/maintenance/M2-2-physical-idle.md)。
+
 完整概览真机验收可在完整 build 后运行 `node script/check-overview-live.mjs <证据目录> --all-stages`。它在隔离 Electron 配置中保留真实 preload/IPC/getOverview/UI，通过只读命令白名单代理分别注入五阶段明确错误和无回复，验证详情清空、连接关闭及下一次恢复。省略 `--all-stages` 仅检查内存/屏幕。脚本需要一台已授权设备和已有 HDC 服务，不启动/停止服务或写入设备；报告只保留布尔结果、计数、耗时、源码及实际构建资产哈希。受控故障不等于物理断连、授权失败、负载或长期空闲验收，详见 [完整概览记录](../../../../docs/maintenance/M2-2-overview-live.md)。
 
 `test/targets.test.cjs` 通过现有 esbuild/VM 测试方式加载真实 `hdc.ts` 并调用其注册的 `getTargets` 处理器，只替换 HDC、Electron 和初始化副作用边界。覆盖逐设备失败、同步目标查找失败、版本格式/缺失值、显示字段归一化、空列表/全失败/枚举失败诊断及下一次刷新恢复。测试无需真机或共享子模块，不替代实际连接变化验证。
