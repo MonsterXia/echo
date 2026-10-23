@@ -30,20 +30,58 @@ export default observer(function PortMappingModal(props: IModalProps) {
       remote: string
     }[]
   >([])
+  const connectKey = store.target?.key
+  const { visible } = props
+  const refresh = useRef<() => Promise<void>>(async () => {})
 
   useEffect(() => {
-    refresh()
-  }, [])
+    let active = true
+    let requestId = 0
 
-  async function refresh() {
-    if (!store.target) {
+    function clear() {
       setData([])
-    } else if (portForwarding.current) {
-      setData(await main.listForwards(store.target.key))
-    } else {
-      setData(await main.listReverses(store.target.key))
+      setSelected(null)
     }
-  }
+
+    refresh.current = async () => {
+      if (
+        !active ||
+        !visible ||
+        !connectKey ||
+        store.target?.key !== connectKey
+      ) {
+        return
+      }
+      const id = ++requestId
+      const forwarding = portForwarding.current
+      const isCurrent = () =>
+        active &&
+        id === requestId &&
+        store.target?.key === connectKey &&
+        portForwarding.current === forwarding
+
+      // Rows and selection belong to one device/direction/read. IPC itself is
+      // not cancellable; only the latest visible session may publish its result.
+      clear()
+      try {
+        const rows = forwarding
+          ? await main.listForwards(connectKey)
+          : await main.listReverses(connectKey)
+        if (isCurrent()) setData(rows)
+      } catch {
+        if (isCurrent()) {
+          clear()
+          notify(t('commonErr'), { icon: 'error' })
+        }
+      }
+    }
+
+    clear()
+    refresh.current()
+    return () => {
+      active = false
+    }
+  }, [connectKey, visible])
 
   return createPortal(
     <LunaModal
@@ -57,7 +95,7 @@ export default observer(function PortMappingModal(props: IModalProps) {
             keyName="portForwarding"
             onChange={(val) => {
               portForwarding.current = val === 'forward'
-              refresh()
+              refresh.current()
             }}
             value={portForwarding.current ? 'forward' : 'reverse'}
             options={{
@@ -88,6 +126,7 @@ export default observer(function PortMappingModal(props: IModalProps) {
               }
               const l = normalizePort(local)
               const r = normalizePort(remote)
+              const refreshAfterWrite = refresh.current
               try {
                 if (portForwarding.current) {
                   await main.forward(store.target.key, l, r)
@@ -98,7 +137,7 @@ export default observer(function PortMappingModal(props: IModalProps) {
                 notify(t('commonErr'), { icon: 'error' })
                 return
               }
-              refresh()
+              refreshAfterWrite()
             }}
           >
             {t('add')}
@@ -111,25 +150,26 @@ export default observer(function PortMappingModal(props: IModalProps) {
               if (!store.target || !selected) {
                 return
               }
+              const refreshAfterWrite = refresh.current
               try {
                 if (portForwarding.current) {
                   await main.removeForward(
                     store.target.key,
                     selected.local,
-                    selected.remote
+                    selected.remote,
                   )
                 } else {
                   await main.removeReverse(
                     store.target.key,
                     selected.remote,
-                    selected.local
+                    selected.local,
                   )
                 }
               } catch {
                 notify(t('commonErr'), { icon: 'error' })
                 return
               }
-              refresh()
+              refreshAfterWrite()
             }}
             disabled={!store.target || !selected}
           />
@@ -137,7 +177,7 @@ export default observer(function PortMappingModal(props: IModalProps) {
           <ToolbarIcon
             icon="refresh"
             title={t('refresh')}
-            onClick={refresh}
+            onClick={() => refresh.current()}
             disabled={!store.target}
           />
         </LunaToolbar>
@@ -153,7 +193,7 @@ export default observer(function PortMappingModal(props: IModalProps) {
         />
       </div>
     </LunaModal>,
-    document.body
+    document.body,
   )
 })
 

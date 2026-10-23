@@ -101,6 +101,7 @@ React 组件 / MobX store
 - `src/renderer/lib/util.ts` 的 `setMainStore()` 将 MobX observable 转为普通 JS 值后传过 IPC。
 - `src/renderer/main/App.tsx` 的 `Panel` 第一次访问后一直保留子组件，通过透明度和 pointer-events 控制显示。隐藏不等于卸载；轮询等需检查是否在隐藏状态继续运行。
 - 主面板容器和投屏组件都使用设备 key 参与重建。投屏 store 监听 `changeMainStore`：target 为 null 时关窗，换设备时销毁旧客户端并创建新客户端。
+- `overview/PortMappingModal.tsx` 只在弹窗可见且有目标时读取映射；关闭/目标变更使旧读取失效，同一会话仅接受最后发起的当前方向结果。读取失败清空列表和选择并提示，恢复依赖手动刷新或重开；写入成功后的读取绑定原可见期，不取消已发送 IPC。
 - 新增主面板通常需要同时修改 `App.tsx`、`components/toolbar/Tabs.tsx`、语言字典，状态逻辑按需要放入 `store/`。
 
 ## 投屏与输入链路
