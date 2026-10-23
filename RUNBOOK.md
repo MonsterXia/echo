@@ -87,7 +87,7 @@
 | ID | 来源 | 评估与验收方向 |
 | --- | --- | --- |
 | M4-1 | [#25](https://github.com/liriliri/echo/issues/25)：音频转发 | **暂缓（评估已记录，能力待验证）**：官方 AVScreenCapture 与 HarmonyOS API 26.0.0 新内录接口是候选，尚未建立普通调试授权下可分发的实际链路；权限/版本矩阵、架构缺口、同步/延迟/恢复范围及解除条件见 [能力评估](docs/maintenance/M4-1-audio.md)。未操作设备、未实现功能。 |
-| M4-2 | [#23](https://github.com/liriliri/echo/issues/23)：电脑复制文本到设备 | 现有投屏工具栏已有文本输入；先复现复制/粘贴与该入口的差别，再定义快捷键、中文、多行输入和失败反馈。 |
+| M4-2 | [#23](https://github.com/liriliri/echo/issues/23)：电脑复制文本到设备 | 已完成静态与无设备评估，待能力验证、未验收；固定坐标、单行入口和 UI 失败反馈存在缺口。先验证目标语义与结果未知策略，再另立实现任务，见[报告](docs/maintenance/M4-2-text-input.md)。 |
 | M4-3 | [#15](https://github.com/liriliri/echo/issues/15)：文件下载 | **暂缓（评估已记录，路径权限与传输生命周期待验证）**：官方 file recv 与现有截图接收可作基础，日志路径仍受设备策略限制；文件选择、取消、同名保护、完整性与恢复缺口及解除条件见 [能力评估](docs/maintenance/M4-3-file-download.md)。未连接设备、未收取文件、未实现功能。 |
 | M4-4 | [#32](https://github.com/liriliri/echo/issues/32)：连接后手机息屏 | 验证息屏后捕获与输入是否继续可用；区分熄屏、锁屏和黑屏效果，确定用户唤醒及断连恢复行为。 |
 | M4-5 | [#16](https://github.com/liriliri/echo/issues/16)：与 AYA 合并、跨平台及多实例 | 先分别确定产品范围、平台和多设备需求；当前共享启动模块有单实例限制，不能将移除该限制视为完整多实例支持。 |
@@ -348,6 +348,14 @@
 - 本轮仅本报告与本条记录，不修改生产代码/依赖；不连接真机、不安装 HAP、不录音、不访问媒体。普通签名部署、SDK/设备能力、应用捕获策略与分发仍待验证；当前仅 bilibili 后续侧载范围不能授权安装采集伴侣。
 - 交付：[独立草稿 PR #24](https://github.com/MonsterXia/scrcpy-harmony/pull/24)，[CI 检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/24/checks)。独立审查已完成，发现的官方链接问题已修正，评估文档无未解决阻断项；核验范围见报告，CI 以当前提交检查页为准。下一步：维护者先处理 G1/G2 的产品范围、授权部署、目标 API/SDK 条件；满足后另立探针与实现任务，不自动合并或发布。
 
+### M4-2 文本输入能力评估交接
+
+- 2026-10-23 / Codex；基线 `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`，独立分支 `codex/m4-2-text-input`。已读上游 #23（正文/评论为空）、真实工具栏/桥接/主进程与锁定 UiDriver，以及 Electron 45/OpenHarmony 官方资料，见[评估报告](docs/maintenance/M4-2-text-input.md)。
+- 决定暂缓实现、先验证能力：现有路径使用 (0,0) 坐标，单行弹窗丢换行，toolbar 未等待/处理拒绝；主进程和 UiDriver 本身会等待并传播拒绝。七组合成文本通过真实封包保真检查；报告归档可重复脚本、版本和哈希，不将替身结果等同真实 IPC、剪贴板权限或设备通过。
+- 本轮仅报告与本项 RUNBOOK 更新；没有生产代码修改、设备/HAP 操作、系统剪贴板访问或发布。M4-2 保持待能力验证、未验收。下一步先确认输入目标、结果未知与长度策略，再安排独立实现和授权真机验收。
+- 初评提交 `aa8ab6e` 已由主对话以 OpenAI GPT-6 署名独立审查，无阻断；源码、primary 引用和附录哈希已核对，审查未重复探针。随后按队列普通 merge master `2465cb343e60a0e6059036b6962a776409e3f7fd`，完整保留 M4-3 及其他任务记录；核对文本工具栏、投屏客户端、类型/preload、uitest handler、share 子模块与依赖文件均未变。仅做文档差异/引用检查，未重复全量测试或探针。
+- 最终 SHA、增量独立复审、五项必需 CI 与合并状态以 [PR #40](https://github.com/MonsterXia/scrcpy-harmony/pull/40)及其[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)为准；初评审查不替代同步后的最终核验，由主对话统一审查整合，本分支不自行合并。
+
 ### M4-3 文件下载能力评估交接
 
 - 2026-10-23 / Codex；fetch 后基线 `8d1cfabbc683a2664fd5f12d2ce89bb61e47f6a8`，独立分支 `codex/m4-3-file-download`。只读核对上游 #15、当前官方 HDC 文档、锁定 hdckit 0.12.1 发布包与现有 UI/IPC，见 [专项报告](docs/maintenance/M4-3-file-download.md)。
@@ -372,3 +380,18 @@
 - 合入方式：单独文档 PR，等待最终提交的 test、lint、Windows x64、macOS arm64/x64 五项必需 CI 通过并检查审查讨论后合入；PR 与最终 CI 证据以该 PR 页面为准。
 - 下一步：按现有用户指南完成真机流程与 macOS 人工走读；本次不执行设备操作，也不将文档检查或无设备测试作为真机验收。
 - 合入前按用户要求审查原工作区三处未提交代码：资源脚本只对常量路径增加白名单，未改变实际路径；主窗口全局阻断非白名单明文 WebSocket；WebView 点击处理强制将部分 WS 目标改为 WSS。独立审查及无联网路径/URL 复核确认这些补丁无需合并，后两者引入未经需求支持的连接策略变化。已按用户授权仅撤销这三处代码补丁，文档 PR 不包含它们。
+
+### 2026-10-23 本轮合入汇总
+
+- 主对话已按顺序完成下列五个 PR 的最终提交独立审查（OpenAI GPT-6），并核验各自最终五项必需 CI：test、lint、windows-package、macos-package-arm64、macos-package-x64 全部成功后合并。以下为已交接证据汇总，未在 #40 重复运行测试或操作设备；最新主干为 `2465cb343e60a0e6059036b6962a776409e3f7fd`。
+
+| 已合并 PR | 最终候选与 CI | 已验证范围及保留状态 |
+| --- | --- | --- |
+| [#39 握手兼容](https://github.com/MonsterXia/scrcpy-harmony/pull/39) | `3a08f8d`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/39/checks) | 正式生产候选 `f2e2f5a` 的真实有限模块由主对话在授权手机读取内存三次，170/159/178ms；此后仅文档更新至最终候选。仅接受已核实的 16/44 字节 hello。M2-2 仍进行中，负载预算、断连恢复与长期空闲待验收。 |
+| [#35 有限屏幕查询](https://github.com/MonsterXia/scrcpy-harmony/pull/35) | `26142da`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/35/checks) | 主对话以 AST 原样提取 getScreen 及端点/预算声明，绑定真实 finiteShell，在授权手机三次成功，433/195/152ms。内存与屏幕预算分开，整个概览无总截止，M2-2 仍进行中。 |
+| [#37 WebView 生命周期](https://github.com/MonsterXia/scrcpy-harmony/pull/37) | `4001f4a`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/37/checks) | 同步 #39/#35 后组合全量 296/296，专项组合 109/109；隐藏/失败/切换与选择状态回归通过。M2-4 仍进行中，真实 WebView/Chrome 对照、断连恢复与 DevTools 加载待验收，现有 IPC 仍不可取消。 |
+| [#36 发行版与指南](https://github.com/MonsterXia/scrcpy-harmony/pull/36) | `b6b0242`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/36/checks) | 指南继续区分公开 v1.0.2 与 master，保留发行快照和构建边界；M3-3 仍待验收，真机用户流程与 macOS 人工走读另行安排。 |
+| [#38 文件下载评估](https://github.com/MonsterXia/scrcpy-harmony/pull/38) | `25a8f1c`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/38/checks) | M4-3 暂缓；基础 file recv 不证明日志路径可读，具体权限仍未知。先确定授权路径/版本，再另立传输与验收任务，未启动下载功能或设备操作。 |
+
+- #39/#35 的手机证据严格限于有限模块内存读取、AST 原样屏幕函数读取；不外推为完整 Electron IPC、整个 getOverview、完整用户流程或长期空闲通过。归档不包含设备标识、原始设备内容或内部应用信息。
+- [#40 文本输入评估](https://github.com/MonsterXia/scrcpy-harmony/pull/40)是本次待整合 PR，M4-2 仍待能力验证、暂缓实现。初评审查已完成；同步后的最终 review、五项 CI 与 merge 状态以[当前 PR](https://github.com/MonsterXia/scrcpy-harmony/pull/40)及[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)为准，不能提前记为完成。下一步由主对话对冻结 SHA 增量独审并核验五项 CI 后决定合入；输入目标语义、结果未知处理、长度策略和授权真机验收仍须另立任务。
