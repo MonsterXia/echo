@@ -1,0 +1,130 @@
+{
+  "startedAt": "2026-10-23T12:57:06.953Z",
+  "sourceCommit": "427e255f026d0b776969f6dc5d7bf4b2a9ab08c6",
+  "scope": "Real phone, full overview preload/IPC and UI; synthetic transport errors/stalls; no physical disconnection or device writes",
+  "passed": true,
+  "successes": [
+    {
+      "elapsedMs": 1531,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1399,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1431,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1594,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1495,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1535,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    },
+    {
+      "elapsedMs": 1561,
+      "descriptiveFields": true,
+      "resolutionValid": true,
+      "memoryValid": true,
+      "expectedKeys": true
+    }
+  ],
+  "failures": [
+    {
+      "stage": "cat /proc/meminfo",
+      "mode": "error",
+      "elapsedMs": 1342,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "cat /proc/meminfo",
+      "mode": "stall",
+      "elapsedMs": 11562,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "hidumper -s RenderService -a screen",
+      "mode": "error",
+      "elapsedMs": 1841,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    },
+    {
+      "stage": "hidumper -s RenderService -a screen",
+      "mode": "stall",
+      "elapsedMs": 16641,
+      "cleared": true,
+      "closed": true,
+      "recovered": true,
+      "requestCount": 1
+    }
+  ],
+  "hashes": {
+    "src/main/lib/hdc.ts": "4d9744fa49c887154cf876adc9cf1e964deab95fca6791fa457206305d85a771",
+    "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639",
+    "src/main/lib/hdc/parameters.ts": "e9ebb434017e0fe59aea617aa758342c155c434dcb1ceff9e451c1df528f8d20",
+    "src/renderer/main/components/overview/Overview.tsx": "118143a47230a0c7dc1eeab32507c71fe69aac404b96ce75febc635dff816a10",
+    "src/preload/main.ts": "fae2c895154881244edd845e2726bfac24fae6338b1e3558b4bcb0c8f172c0fb",
+    "dist/main/index.js": "00b848c37edafa03f5c4072676daf74f2137100756a61e84ff887c4e357d3369",
+    "dist/preload/index.js": "e7b03481fc23ab5e3d355dfc62fb53e255d4b97fcfb417d81256a8df6d62fb9c",
+    "script/check-overview-live.mjs": "ffdbed542fbae76fa978f42e727cd059d0eddef2563d663fa98d75fd4e562b82"
+  },
+  "runtime": {
+    "packaged": false,
+    "electron": "45.0.0",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "initialUiValid": true,
+  "lastClearedFields": {
+    "descriptive": true,
+    "memory": true
+  },
+  "pageErrorCount": 0,
+  "commands": {
+    "alive": 1,
+    "list targets": 54,
+    "fport ls": 1,
+    "shell echo ready": 64,
+    "shell param get": 18,
+    "shell SP_daemon -deviceinfo": 0,
+    "shell uname -a": 0,
+    "shell SP_daemon -deviceinfo\necho \"echo_separator\"\nuname -a": 16,
+    "shell cat /proc/meminfo": 16,
+    "shell hidumper -s RenderService -a screen": 14
+  },
+  "blockedCommandCount": 0
+}

@@ -57,7 +57,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M2-1 | 待验收 | [#26](https://github.com/liriliri/echo/issues/26)、[#27](https://github.com/liriliri/echo/issues/27)：触控坐标修复后的机型回归 | 记录 Mate 80 / HarmonyOS 6.1.0.117 或实际替代版本，以及 1920×1080 横屏设备；验证四角、中心、拖动、缩放、旋转和断开重连。已有修复不等于这些机型已通过。 |
-| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[适配器](docs/maintenance/M2-2-cancellable-transport.md)和[握手修复](docs/maintenance/M2-2-handshake-compat.md)后，概览内存/屏幕已有截止；本轮[剩余元数据读取](docs/maintenance/M2-2-overview-deadlines.md)把 param/SP_daemon/uname 分别接入 10/15/10 秒预算，五条读取分别计时，没有统一概览截止。getTargets、其他 base.shell 和流式命令未迁移；原始长期空闲根因及真机验收仍待办。 |
+| M2-2 | 进行中 | [#22](https://github.com/liriliri/echo/issues/22)：长时间空闲后卡死 | 先记录可复现的等待时间、设备和访问过的面板；采集主进程/renderer 日志、CPU/内存变化；修复后运行至少原复现时长，并检查切换设备、关闭投屏后的监听/定时器释放。[适配器](docs/maintenance/M2-2-cancellable-transport.md)和[握手修复](docs/maintenance/M2-2-handshake-compat.md)后，概览内存/屏幕已有截止；[剩余元数据读取](docs/maintenance/M2-2-overview-deadlines.md)把 param/SP_daemon/uname 分别接入 10/15/10 秒预算，五条读取分别计时，没有统一概览截止。[完整 IPC 与恢复验收](docs/maintenance/M2-2-overview-live.md)已通过手机读取及 10 个合成故障场景；getTargets、其他 base.shell 和流式命令未迁移，长期空闲、物理断连及负载仍待验收。 |
 | M2-3 | 进行中 | [#12](https://github.com/liriliri/echo/issues/12)：特定应用投屏卡死或闪退 | 对比普通应用与抖音，记录应用/系统版本及捕获日志；区分捕获接口错误、客户端异常和受保护内容限制；错误时界面可恢复，正常投屏不回退。无设备生命周期复现、修复及边界见 [恢复报告](docs/maintenance/M2-3-recovery.md)；原应用问题与真机行为未验证。 |
 | M2-4 | 进行中 | [#19](https://github.com/liriliri/echo/issues/19)：WebView 调试目标为空 | 精确 PID/socket 发现、并发隔离和 HTTP 失败边界见[发现专项](docs/maintenance/M2-4-webview-discovery.md)；renderer 卸载/隐藏后的迟到结果、失败恢复及选中目标更新已补[真实组件回归](docs/maintenance/M2-4-webview-lifecycle.md)。Pura 70 Pro / 5.1.0.150（API 17）及官方 Chrome 对照、空目标/断连恢复仍需真机验收。 |
 | M2-5 | 进行中 | [#13](https://github.com/liriliri/echo/issues/13)：网络调试连接 | 明确系统版本、HDC 版本、配对与连接前提，比较命令行和应用设备列表；验证 USB/网络连接、断连重连及失败提示，记录不支持的系统范围。[基线证据与步骤](docs/maintenance/M2-5.md)、[刷新失败修复与 USB 故障注入记录](docs/maintenance/M2-5-refresh-failure.md)已归档；无线真机、物理断连重连及授权失败仍待验收。 |
@@ -416,4 +416,11 @@
 | [#38 文件下载评估](https://github.com/MonsterXia/scrcpy-harmony/pull/38) | `25a8f1c`；[五项 CI 成功](https://github.com/MonsterXia/scrcpy-harmony/pull/38/checks) | M4-3 暂缓；基础 file recv 不证明日志路径可读，具体权限仍未知。先确定授权路径/版本，再另立传输与验收任务，未启动下载功能或设备操作。 |
 
 - #39/#35 的手机证据严格限于有限模块内存读取、AST 原样屏幕函数读取；不外推为完整 Electron IPC、整个 getOverview、完整用户流程或长期空闲通过。归档不包含设备标识、原始设备内容或内部应用信息。
-- [#40 文本输入评估](https://github.com/MonsterXia/scrcpy-harmony/pull/40)是本次待整合 PR，M4-2 仍待能力验证、暂缓实现。初评审查已完成；同步后的最终 review、五项 CI 与 merge 状态以[当前 PR](https://github.com/MonsterXia/scrcpy-harmony/pull/40)及[检查页](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)为准，不能提前记为完成。下一步由主对话对冻结 SHA 增量独审并核验五项 CI 后决定合入；输入目标语义、结果未知处理、长度策略和授权真机验收仍须另立任务。
+- [#40 文本输入评估](https://github.com/MonsterXia/scrcpy-harmony/pull/40)已完成最终 `800951e` 的 OpenAI GPT-6 独立审查和[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/40/checks)，合并为 `427e255`。这只完成能力评估；M4-2 的剪贴板、输入目标语义、结果未知处理、长度策略及授权真机验收仍待验证。
+
+### 2026-10-23 完整概览验收与并行修复合入汇总
+
+- [#43 概览剩余只读查询截止](https://github.com/MonsterXia/scrcpy-harmony/pull/43)最终候选 `b24597c` 已获 [OpenAI GPT-6 独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/43#pullrequestreview-5628639471)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/43/checks)成功后合并为 `16449d8`。独立回归 142/142，加三条新增命令的实钟超时/关闭/恢复 3/3；getTargets 和其他旧命令未迁移。
+- 主对话独占手机，对正式生产候选 `f48256a` 完整构建执行真实 Electron preload/IPC/getOverview/UI 验收：完整读取 13 次成功、1421–1719ms；五阶段明确错误和无回复共 10 场景全部清空、关闭连接并恢复，页面错误与越界请求为 0。[完整报告、脚本与脱敏证据](docs/maintenance/M2-2-overview-live.md)随 [#44](https://github.com/MonsterXia/scrcpy-harmony/pull/44)归档，最终独立复审和 [CI](https://github.com/MonsterXia/scrcpy-harmony/pull/44/checks)以该提交检查页为准。错误由隔离代理合成，未做物理拔插；不采集应用清单、设备标识或原始日志。
+- [#42 文本工具栏等待与结果隔离](https://github.com/MonsterXia/scrcpy-harmony/pull/42)最终候选 `3774ec4` 已获 [OpenAI GPT-6 独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/42#pullrequestreview-5628695843)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/42/checks)成功后合并为 `d2b4e93`。等待 IPC、通用失败反馈、防重入和旧目标结果隔离已修复；早期 CI 的无子模块夹具依赖已修正，独立专项及禁止共享源码读取的运行均 14/14，合并组合全量 361/361、lint、renderer 构建通过。未进行文本写入或剪贴板真机操作。
+- 下一步：M2-2 保持进行中，补物理断连、负载预算与原复现时长的空闲/资源趋势；M4-2 完整输入目标语义和剪贴板能力仍暂缓。M1-2/M1-3 继续保留 bilibili HAP 缺失与图标权限边界。本轮不发布新版本，不将受控故障或无设备回归外推为这些待办已完成。
