@@ -61,6 +61,7 @@ async function fixture({ scale = 1, width = 1084, height = 2412 } = {}) {
     testStore: { scale },
     testImage: { naturalWidth: 542, naturalHeight: 1206 },
     main: {
+      createCaptureSession: async () => 'coordinate-session',
       stopCaptureScreen: async () => {},
       startCaptureScreen: async () => {},
       getDisplaySize: async () => ({ width, height }),

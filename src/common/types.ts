@@ -39,24 +39,24 @@ export type IpcInputKey = (connectKey: string, keyCode: number) => Promise<void>
 export type IpcScreencap = (connectKey: string) => Promise<string>
 export type IpcGetBundles = (
   connectKey: string,
-  system?: boolean
+  system?: boolean,
 ) => Promise<string[]>
 export type IpcInstallBundle = (
   connectKey: string,
-  hap: string
+  hap: string,
 ) => Promise<void>
 export type IpcGetBundleInfos = (
   connectKey: string,
-  bundleNames: string[]
+  bundleNames: string[],
 ) => Promise<IBundleInfo[]>
 export type IpcStartBundle = (
   connectKey: string,
   bundleName: string,
-  ability: string
+  ability: string,
 ) => Promise<void>
 export type IpcStopBundle = (
   connectKey: string,
-  bundleName: string
+  bundleName: string,
 ) => Promise<void>
 export type IpcCleanBundleData = IpcStopBundle
 export type IpcCleanBundleCache = IpcStopBundle
@@ -76,12 +76,12 @@ export type IpcListReverses = IpcListForwards
 export type IpcForward = (
   connectKey: string,
   local: string,
-  remote: string
+  remote: string,
 ) => void
 export type IpcReverse = (
   connectKey: string,
   remote: string,
-  local: string
+  local: string,
 ) => void
 export type IpcRemoveForward = IpcForward
 export type IpcRemoveReverse = IpcReverse
@@ -95,8 +95,18 @@ export type IpcGetDisplaySize = (connectKey: string) => Promise<{
   width: number
   height: number
 }>
-export type IpcStartCaptureScreen = (connectKey: string, scale: number) => void
-export type IpcStopCaptureScreen = (connectKey: string) => void
+export type IpcCreateCaptureSession = (connectKey: string) => Promise<string>
+export type IpcStartCaptureScreen = (
+  sessionId: string,
+  scale: number,
+  generation: number,
+) => Promise<void>
+// stopped confirms this session's lease stop; released only frees an unused
+// token; obsolete means it was already invalidated. Neither latter confirms
+// device state, and a newer session may start after a confirmed stop.
+export type IpcStopCaptureScreen = (
+  sessionId: string,
+) => Promise<'stopped' | 'released' | 'obsolete'>
 export type IpcTouchDown = (connectKey: string, x: number, y: number) => void
 export type IpcTouchMove = IpcTouchDown
 export type IpcTouchUp = IpcTouchDown

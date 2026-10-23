@@ -1,37 +1,50 @@
-import { Client, UiDriver } from 'hdckit'
+import { Client } from 'hdckit'
 import each from 'licia/each'
-import * as window from 'share/main/lib/window'
 import {
   IpcDumpWindowHierarchy,
   IpcGetDisplaySize,
   IpcInputText,
-  IpcStartCaptureScreen,
-  IpcStopCaptureScreen,
   IpcTouchDown,
   IpcTouchMove,
   IpcTouchUp,
 } from 'common/types'
 import { getTargetStore, setTargetStore } from './base'
 import { handleEvent, resolveResources } from 'share/main/lib/util'
+import { CaptureUiDriver } from './captureDriver'
+import { initCaptureIpc } from './captureSessions'
 
 let client: Client
 
-async function getUiDriver(connectKey: string): Promise<UiDriver> {
+const initializingDrivers = new Map<string, Promise<CaptureUiDriver>>()
+
+async function getUiDriver(connectKey: string): Promise<CaptureUiDriver> {
   let uiDriver = getTargetStore(connectKey, 'uiDriver')
-  if (!uiDriver) {
+  if (uiDriver) return uiDriver
+  const pending = initializingDrivers.get(connectKey)
+  if (pending) return pending
+  const initializing = (async () => {
     const target = await client.getTarget(connectKey)
-    uiDriver = await target.createUiDriver(
+    uiDriver = new CaptureUiDriver(
+      target,
       resolveResources('uitestkit_sdk/uitest_agent_v1.1.0.so'),
-      '1.1.0'
+      '1.1.0',
     )
     await uiDriver.stop()
     setTargetStore(connectKey, 'uiDriver', uiDriver)
+    return uiDriver
+  })()
+  initializingDrivers.set(connectKey, initializing)
+  try {
+    return await initializing
+  } finally {
+    if (initializingDrivers.get(connectKey) === initializing) {
+      initializingDrivers.delete(connectKey)
+    }
   }
-  return uiDriver
 }
 
 const dumpWindowHierarchy: IpcDumpWindowHierarchy = async function (
-  connectKey
+  connectKey,
 ) {
   const uiDriver = await getUiDriver(connectKey)
   const layout = await uiDriver.captureLayout()
@@ -62,27 +75,6 @@ const getDisplaySize: IpcGetDisplaySize = async function (connectKey) {
   return uiDriver.getDisplaySize()
 }
 
-const startCaptureScreen: IpcStartCaptureScreen = async function (
-  connectKey,
-  scale
-) {
-  const uiDriver = await getUiDriver(connectKey)
-  await stopCaptureScreen(connectKey)
-  await uiDriver.startCaptureScreen(
-    function (image) {
-      window.sendTo('screencast', 'captureScreen', connectKey, image)
-    },
-    {
-      scale,
-    }
-  )
-}
-
-const stopCaptureScreen: IpcStopCaptureScreen = async function (connectKey) {
-  const uiDriver = await getUiDriver(connectKey)
-  await uiDriver.stopCaptureScreen()
-}
-
 const touchDown: IpcTouchDown = async function (connectKey, x, y) {
   const uiDriver = await getUiDriver(connectKey)
   await uiDriver.touchDown(x, y)
@@ -108,8 +100,7 @@ export function init(c: Client) {
 
   handleEvent('dumpWindowHierarchy', dumpWindowHierarchy)
   handleEvent('getDisplaySize', getDisplaySize)
-  handleEvent('startCaptureScreen', startCaptureScreen)
-  handleEvent('stopCaptureScreen', stopCaptureScreen)
+  initCaptureIpc(getUiDriver)
   handleEvent('touchDown', touchDown)
   handleEvent('touchMove', touchMove)
   handleEvent('touchUp', touchUp)

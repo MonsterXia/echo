@@ -6,7 +6,6 @@ import clamp from 'licia/clamp'
 import store from '../store'
 
 export default class ScreencastClient {
-  private static captureTasks = new Map<string, Promise<void>>()
   canvas = document.createElement('canvas')
   ctx = this.canvas.getContext('2d')!
   ready: Promise<void>
@@ -16,6 +15,9 @@ export default class ScreencastClient {
   private destroyed = false
   private generation = 0
   private captureTask: Promise<void> = Promise.resolve()
+  private sessionId?: string
+  private sessionPromise?: Promise<string>
+  private sessionReleased = false
   private retryTimer?: ReturnType<typeof setTimeout>
   private frameReceived = false
   private acceptingFrames = false
@@ -41,15 +43,15 @@ export default class ScreencastClient {
     this.imageAbort = new AbortController()
     this.frameReceived = false
     this.acceptingFrames = false
-    // Scale changes and retries share a queue: a late start must finish before
-    // the next stop/start (or final stop) can run.
+    // This queue coalesces local scale changes. The main process owns device
+    // serialization across all clients and renderer lifetimes.
     return this.queueCapture(async () => {
       if (!this.isCurrent(generation)) return
       try {
-        await main.stopCaptureScreen(this.connectKey)
+        const sessionId = await this.getSession()
         if (!this.isCurrent(generation)) return
         this.acceptingFrames = true
-        await main.startCaptureScreen(this.connectKey, store.scale)
+        await main.startCaptureScreen(sessionId, store.scale, generation)
       } catch (error) {
         console.error(error)
         if (this.isCurrent(generation)) {
@@ -75,18 +77,33 @@ export default class ScreencastClient {
     this.offPointerEvents()
     this.isTouching = false
     this.displaySize = null
-    this.queueCapture(() => main.stopCaptureScreen(this.connectKey))
+    this.releaseSession()
+  }
+  private getSession() {
+    if (!this.sessionPromise) {
+      this.sessionPromise = main.createCaptureSession(this.connectKey).then(
+        (id) => {
+          this.sessionId = id
+          if (this.destroyed) this.releaseSession()
+          return id
+        },
+        (error) => {
+          this.sessionPromise = undefined
+          throw error
+        },
+      )
+    }
+    return this.sessionPromise
+  }
+  private releaseSession() {
+    if (!this.sessionId || this.sessionReleased) return
+    this.sessionReleased = true
+    // Send immediately even while start is pending, so main can detach locally.
+    // It still waits for that start before sending the device stop command.
+    void main.stopCaptureScreen(this.sessionId).catch(console.error)
   }
   private queueCapture(operation: () => Promise<void>) {
-    // A replacement client for the same target must wait for the old final
-    // stop. Different targets remain independent; completed queues are removed.
-    const tasks = ScreencastClient.captureTasks
-    const previous = tasks.get(this.connectKey) || Promise.resolve()
-    const task = previous.then(operation).catch(console.error)
-    tasks.set(this.connectKey, task)
-    task.then(() => {
-      if (tasks.get(this.connectKey) === task) tasks.delete(this.connectKey)
-    })
+    const task = this.captureTask.then(operation).catch(console.error)
     this.captureTask = task
     return task
   }
@@ -187,16 +204,16 @@ export default class ScreencastClient {
     const percentageY = clamp(
       (clientY - canvasRect.y) / canvasRect.height,
       0,
-      1
+      1,
     )
 
     const pointerX = Math.min(
       Math.round(percentageX * displaySize.width),
-      displaySize.width - 1
+      displaySize.width - 1,
     )
     const pointerY = Math.min(
       Math.round(percentageY * displaySize.height),
-      displaySize.height - 1
+      displaySize.height - 1,
     )
 
     return { pointerX, pointerY }
@@ -204,20 +221,24 @@ export default class ScreencastClient {
   private bindEvent() {
     const { canvas } = this
 
-    this.offCaptureScreen = main.on('captureScreen', (connectKey, image) => {
-      if (
-        !this.destroyed &&
-        this.acceptingFrames &&
-        connectKey === this.connectKey &&
-        !this.isDrawing
-      ) {
-        // Do not let a later frame overtake a pending display-size lookup.
-        this.isDrawing = true
-        this.draw(image)
-          .catch(console.error)
-          .finally(() => (this.isDrawing = false))
-      }
-    })
+    this.offCaptureScreen = main.on(
+      'captureScreen',
+      (sessionId, generation, image) => {
+        if (
+          !this.destroyed &&
+          this.acceptingFrames &&
+          sessionId === this.sessionId &&
+          generation === this.generation &&
+          !this.isDrawing
+        ) {
+          // Do not let a later frame overtake a pending display-size lookup.
+          this.isDrawing = true
+          this.draw(image)
+            .catch(console.error)
+            .finally(() => (this.isDrawing = false))
+        }
+      },
+    )
 
     const onTouchStart = (e: PointerEvent) => {
       if (this.destroyed) return

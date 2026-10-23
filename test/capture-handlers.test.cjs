@@ -39,7 +39,7 @@ test('capture start handler waits for UiDriver stop before sending start and res
   const bytes = Buffer.from([1, 2, 3])
   h.driver.emit('message', 'synthetic-session', bytes)
   assert.deepEqual(h.frames, [
-    ['screencast', 'captureScreen', 'synthetic-target', bytes],
+    ['screencast', 'captureScreen', h.session(), 1, bytes],
   ])
 })
 
@@ -60,20 +60,23 @@ test('capture stop handler remains pending until UiDriver removes the frame call
   await flush()
   assert.equal(settled, false)
   h.driver.emit('message', 'synthetic-session', Buffer.from([1]))
-  assert.equal(h.frames.length, 1)
+  assert.equal(h.frames.length, 0)
   stop.resolve({})
   await operation
   h.driver.emit('message', 'synthetic-session', Buffer.from([2]))
-  assert.equal(h.frames.length, 1)
+  assert.equal(h.frames.length, 0)
 })
 
 for (const api of ['startCaptureScreen', 'stopCaptureScreen']) {
   test(`${api} handler propagates the real UiDriver transport rejection`, async () => {
     const failure = new Error(`synthetic ${api} failure`)
+    let fail = api === 'startCaptureScreen'
     const h = captureHandlers(async (_method, operation) => {
-      if (operation === api) throw failure
+      if (fail && operation === api) throw failure
       return {}
     })
+    if (api === 'stopCaptureScreen') await h.start()
+    fail = true
     await assert.rejects(
       api === 'startCaptureScreen' ? h.start() : h.stop(),
       (error) => error === failure,

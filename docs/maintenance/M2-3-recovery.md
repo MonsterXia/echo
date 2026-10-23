@@ -1,5 +1,7 @@
 # M2-3：无设备异常恢复与资源释放
 
+后续主进程工作见[捕获会话所有权修复](M2-3-capture-ownership.md)及[真实 Electron 无设备验收](M2-3-capture-electron.md)：新增 sender/session/generation 协议、跨 renderer 队列和本地退订。下文保留本轮历史范围及证据，其中旧 connectKey 帧协议与“不覆盖真实关窗”的描述不代表后续实现；真机停止与原应用验收仍未完成。
+
 日期：2026-10-22（Asia/Hong_Kong）。执行：Codex。M2-3 整体保持**进行中**；本子任务验证 renderer 客户端生命周期及主进程捕获处理器的异步契约，设备传输受控。
 
 ## 来源与隔离

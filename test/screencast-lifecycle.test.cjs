@@ -51,6 +51,7 @@ async function fixture(t, bridge = {}) {
     timers = new Map()
   const pointerListeners = new Map()
   let now = 0,
+    sessionCounter = 0,
     timerId = 0,
     urlId = 0,
     registrations = 0
@@ -100,13 +101,19 @@ async function fixture(t, bridge = {}) {
     document: { createElement: () => canvas },
     testStore: { scale: 1 },
     main: {
+      createCaptureSession: async (key) => {
+        calls.push('create')
+        return bridge.create
+          ? bridge.create(key)
+          : `client-session-${++sessionCounter}`
+      },
       stopCaptureScreen: async (key) => {
         calls.push('stop')
         return bridge.stop?.(key)
       },
-      startCaptureScreen: async (key, scale) => {
+      startCaptureScreen: async (key, scale, generation) => {
         calls.push(['start', scale])
-        return bridge.start?.(key, scale)
+        return bridge.start?.(key, scale, generation)
       },
       getDisplaySize: async () => {
         calls.push('size')
@@ -147,8 +154,11 @@ async function fixture(t, bridge = {}) {
       return instance
     },
     registrations: () => registrations,
-    frame(key = 'synthetic-target') {
-      for (const fn of listeners) fn(key, new Uint8Array([1, 2, 3]))
+    frame(
+      id = clients.at(-1).sessionId,
+      generation = clients.at(-1).generation,
+    ) {
+      for (const fn of listeners) fn(id, generation, new Uint8Array([1, 2, 3]))
     },
     async tick(ms) {
       now += ms
@@ -170,25 +180,26 @@ test('destroy cancels retry and unregisters bridge and canvas listeners once', a
   f.client.destroy()
   await flush()
   await f.tick(15000)
-  assert.deepEqual(f.calls, ['stop', ['start', 1], 'stop'])
+  assert.deepEqual(f.calls, ['create', ['start', 1], 'stop'])
   assert.equal(f.listeners.size, 0)
   assert.equal(f.pointerListeners.size, 0)
   assert.equal(f.timers.size, 0)
 })
 
-test('destroy during initial stop prevents late start', async (t) => {
+test('destroy during session creation releases the late session without starting', async (t) => {
   const stop = deferred()
-  const f = await fixture(t, { stop: () => stop.promise })
+  const f = await fixture(t, { create: () => stop.promise })
   await flush()
   f.client.destroy()
-  stop.resolve()
+  stop.resolve('late-session')
   await flush()
   await f.tick(10000)
   assert.equal(f.calls.filter(Array.isArray).length, 0)
   assert.equal(f.listeners.size, 0)
+  assert.equal(f.calls.at(-1), 'stop')
 })
 
-test('destroy waits for an in-flight start before final stop', async (t) => {
+test('destroy sends session stop immediately even when start is pending', async (t) => {
   const start = deferred()
   const f = await fixture(t, { start: () => start.promise })
   await flush()
@@ -197,7 +208,7 @@ test('destroy waits for an in-flight start before final stop', async (t) => {
   const callsBeforeCompletion = f.calls.length
   start.resolve()
   await flush()
-  assert.equal(f.calls.length, callsBeforeCompletion + 1)
+  assert.equal(f.calls.length, callsBeforeCompletion)
   assert.equal(f.calls.at(-1), 'stop')
   assert.equal(f.timers.size, 0)
 })
@@ -217,12 +228,12 @@ test('overlapping starts are serialized and latest scale wins without new listen
   assert.equal(starts, 1)
   first.resolve()
   await Promise.all([second, third])
-  assert.deepEqual(f.calls, ['stop', ['start', 1], 'stop', ['start', 0.25]])
+  assert.deepEqual(f.calls, ['create', ['start', 1], ['start', 0.25]])
   assert.equal(f.registrations(), 1)
   assert.equal(f.timers.size, 1)
 })
 
-for (const operation of ['stop', 'start']) {
+for (const operation of ['start']) {
   test(`${operation} rejection is handled and later retry recovers`, async (t) => {
     const f = await fixture(t)
     await flush()
@@ -387,15 +398,16 @@ test('same-target replacement waits for old capture cleanup before starting', as
   const pending = deferred()
   let active = false,
     starts = 0
-  const f = await fixture(t, {
-    stop: () => {
+  const handlers = captureHandlers(async (_method, api) => {
+    if (api === 'stopCaptureScreen') {
       active = false
-    },
-    start: async () => {
+    } else if (api === 'startCaptureScreen') {
       if (++starts === 1) await pending.promise
       active = true
-    },
+    }
+    return { sessionId: 'replacement-session' }
   })
+  const f = await fixture(t, handlers)
   await flush()
   f.client.destroy()
   const replacement = f.createClient()
@@ -411,17 +423,18 @@ test('same-target replacement waits for old capture cleanup before starting', as
   assert.equal(f.listeners.size, 1)
 })
 
-test('old stream frame during restart stop cannot suppress retry after start failure', async (t) => {
+test('old generation frame during restart cannot suppress retry after start failure', async (t) => {
   const f = await fixture(t)
   await flush()
   const stop = deferred()
-  f.context.main.stopCaptureScreen = () => stop.promise
+  const oldGeneration = f.client.generation
   f.context.main.startCaptureScreen = async () => {
+    await stop.promise
     throw new Error('synthetic start failure')
   }
   const restart = f.client.start()
   await flush()
-  f.frame()
+  f.frame(f.client.sessionId, oldGeneration)
   f.images.at(-1)?.onload()
   await flush()
   stop.resolve()
@@ -436,6 +449,35 @@ test('destroy retains the synchronous React effect cleanup return contract', asy
   assert.equal(f.client.destroy(), undefined)
 })
 
+test('session creation failure retries without reusing a rejected promise', async (t) => {
+  let creates = 0
+  const f = await fixture(t, {
+    create: async () => {
+      if (++creates === 1) throw new Error('document is navigating')
+      return 'new-document-session'
+    },
+  })
+  await flush()
+  assert.equal(f.errors.length, 1)
+  assert.equal(f.calls.filter(Array.isArray).length, 0)
+  await f.tick(5000)
+  assert.equal(creates, 2)
+  assert.deepEqual(f.calls.at(-1), ['start', 1])
+})
+
+test('frames must match both the current session and start generation', async (t) => {
+  const f = await fixture(t)
+  await flush()
+  await f.client.start()
+  f.frame('old-session', f.client.generation)
+  f.frame(f.client.sessionId, f.client.generation - 1)
+  assert.equal(f.images.length, 0)
+  f.frame()
+  f.images[0].onload()
+  await f.client.ready
+  assert.equal(f.painted.length, 1)
+})
+
 test('destroy waits through the main handler for UiDriver startup before final stop', async (t) => {
   const pending = deferred(),
     calls = []
@@ -445,18 +487,13 @@ test('destroy waits through the main handler for UiDriver startup before final s
   })
   const f = await fixture(t, handlers)
   await flush()
-  assert.deepEqual(calls, [
-    'stopCaptureScreen',
-    'stopCaptureScreen',
-    'startCaptureScreen',
-  ])
+  assert.deepEqual(calls, ['stopCaptureScreen', 'startCaptureScreen'])
   f.client.destroy()
   await flush()
-  assert.equal(calls.length, 3)
+  assert.equal(calls.length, 2)
   pending.resolve({ sessionId: 'synthetic-session' })
   await flush()
   assert.deepEqual(calls, [
-    'stopCaptureScreen',
     'stopCaptureScreen',
     'startCaptureScreen',
     'stopCaptureScreen',

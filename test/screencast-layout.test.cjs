@@ -19,7 +19,7 @@ const bundle = build({
         b.onResolve(
           {
             filter:
-              /^(electron|share\/main\/lib\/window|share\/main\/lib\/util|\.\.\/lib\/store)$/,
+              /^(electron|share\/main\/lib\/window|share\/main\/lib\/util|\.\.\/lib\/store|\.\.\/lib\/hdc\/captureSessions)$/,
           },
           (args) => ({ path: args.path, external: true }),
         )
@@ -45,6 +45,8 @@ async function open(area, restored) {
     exports: {},
     require(id) {
       switch (id) {
+        case '../lib/hdc/captureSessions':
+          return { registerCaptureWindow: () => () => {} }
         case 'electron':
           return { screen: { getDisplayMatching: () => ({ workArea: area }) } }
         case 'share/main/lib/window':
