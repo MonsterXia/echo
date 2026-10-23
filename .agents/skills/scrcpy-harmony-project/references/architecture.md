@@ -80,9 +80,9 @@ React 组件 / MobX store
 
 设备参数统一使用 `connectKey`（来自 `ITarget.key`）。`hdc/base.ts` 提供 shell、端口与按设备分组的运行时缓存；不要误认为它是持久化 store。
 
-`hdc/finiteShell.ts` 是有限命令适配器：调用方显式提供服务 IP/端口、总截止和可选 AbortSignal；模块独占 TCP socket，取消后 destroy 并等待本地 close，不管理共享 HDC 服务。`getOverview` 按顺序执行五条固定只读命令：`param get` 10 秒、`SP_daemon -deviceinfo` 15 秒、`uname -a` 10 秒、`cat /proc/meminfo` 10 秒、`hidumper -s RenderService -a screen` 15 秒。每条独立计时，没有统一概览截止；失败立即拒绝且不启动后续读取、不回退旧 shell。它们与 Hdc.createClient 共用显式端点：host 为 `127.0.0.1`，port 按锁定 factory 的规则从 `OHOS_HDC_SERVER_PORT` 解析一次，空值/非数字回退 8710，非法范围明确拒绝。概览不再自动启动 HDC 服务；初始化 tracker、getTargets 及其他 hdckit 调用保留原服务启动路径。base.shell、枚举、终端、HiLog、投屏未迁移。hello 仅接受 16 或已观察到的 44 字节，首八字节匹配 OHOS HDC，尾部不回显，回复为原 banner 12 字节及目标 32 字节。未知长度、截断和 16 MiB 输出超限继续拒绝；更多协议变体与预算校准仍需验证。详见 `docs/maintenance/M2-2-overview-deadlines.md`、`docs/maintenance/M2-2-handshake-compat.md` 及内存/屏幕历史报告。
+`hdc/finiteShell.ts` 是有限命令适配器：调用方显式提供服务 IP/端口、总截止和可选 AbortSignal；模块独占 TCP socket，取消后 destroy 并等待本地 close，不管理共享 HDC 服务。`getOverview` 按顺序执行五条固定只读命令：`param get` 10 秒、`SP_daemon -deviceinfo` 15 秒、`uname -a` 10 秒、`cat /proc/meminfo` 10 秒、`hidumper -s RenderService -a screen` 15 秒。每条独立计时，没有统一概览截止；失败立即拒绝且不启动后续读取、不回退旧 shell。它们与 Hdc.createClient 共用显式端点：host 为 `127.0.0.1`，port 按锁定 factory 的规则从 `OHOS_HDC_SERVER_PORT` 解析一次，空值/非数字回退 8710，非法范围明确拒绝。概览不再自动启动 HDC 服务；初始化 tracker、getTargets 的 host listTargets 及其他 hdckit 调用保留原服务启动路径。getTargets 在 host 列举完成后，对每设备 param get 并发使用同一有限模块和 10 秒预算；失败独立过滤，保留健康设备及原顺序，全部失败仍拒绝。整个枚举没有统一截止，host 列举及初始化本身仍未限时，详见 `docs/maintenance/M2-2-target-deadlines.md`。base.shell、终端、HiLog、投屏未迁移。hello 仅接受 16 或已观察到的 44 字节，首八字节匹配 OHOS HDC，尾部不回显，回复为原 banner 12 字节及目标 32 字节。未知长度、截断和 16 MiB 输出超限继续拒绝；更多协议变体与预算校准仍需验证。详见 `docs/maintenance/M2-2-overview-deadlines.md`、`docs/maintenance/M2-2-handshake-compat.md` 及内存/屏幕历史报告。
 
-`hdc/parameters.ts` 的 `getTargetParameters` 为设备枚举保留 hdckit 的公开 `Target.shell('param get')` / readAll / finally end 路径；同步 `parseTargetParameters` 供它和概览有限读取共用。解析前拒绝行首 `[Fail]`、`[E` 加六位数字 `]`、`error:` 等明确命令错误；合法参数值中的同名文本不算错误，缺少可选字段仍交给上层兼容处理。此层不修改服务生命周期，也没有限时化枚举或共享 shell。
+`hdc/parameters.ts` 的同步 `parseTargetParameters` 供枚举及概览有限读取共用；旧 `getTargetParameters` reader 导出保留，但这两个处理器不再经其读取。解析前拒绝行首 `[Fail]`、`[E` 加六位数字 `]`、`error:` 等明确命令错误；合法参数值中的同名文本不算错误，缺少可选字段仍交给上层兼容处理。解析层不修改服务生命周期或共享 shell。
 
 概览 `Overview.refresh()` 在读取失败后清空旧概览并提示错误，释放加载状态后允许再次刷新，避免将上次数据呈现为当前结果。
 
@@ -101,6 +101,7 @@ React 组件 / MobX store
 - `src/renderer/lib/util.ts` 的 `setMainStore()` 将 MobX observable 转为普通 JS 值后传过 IPC。
 - `src/renderer/main/App.tsx` 的 `Panel` 第一次访问后一直保留子组件，通过透明度和 pointer-events 控制显示。隐藏不等于卸载；轮询等需检查是否在隐藏状态继续运行。
 - 主面板容器和投屏组件都使用设备 key 参与重建。投屏 store 监听 `changeMainStore`：target 为 null 时关窗，换设备时销毁旧客户端并创建新客户端。
+- `overview/PortMappingModal.tsx` 只在弹窗可见且有目标时读取映射；关闭/目标变更使旧读取失效，同一会话仅接受最后发起的当前方向结果。读取失败清空列表和选择并提示，恢复依赖手动刷新或重开；写入成功后的读取绑定原可见期，不取消已发送 IPC。
 - 新增主面板通常需要同时修改 `App.tsx`、`components/toolbar/Tabs.tsx`、语言字典，状态逻辑按需要放入 `store/`。
 
 ## 投屏与输入链路

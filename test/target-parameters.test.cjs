@@ -27,7 +27,7 @@ function loadSource(file, imports, globals = {}) {
   vm.runInNewContext(code, {
     module, exports: module.exports, ...globals,
     require(id) {
-      if (id === './hdc/finiteShell') return { runFiniteShell() { throw new Error('Enumeration must not use finite memory transport') } }
+      if (id === './hdc/finiteShell') return imports[id]
       if (id === './hdc/parameters') return loadSource('src/main/lib/hdc/parameters.ts', {})
       if (Object.hasOwn(imports, id)) return imports[id]
       if (id.startsWith('licia/') || ['node:os', 'node:path', 'node:process', 'fs-extra',
@@ -119,6 +119,8 @@ async function fixture(t) {
   const logger = Object.fromEntries(['info', 'warn', 'error', 'debug'].map(
     (level) => [level, (...args) => logs.push({ level, args })]))
   const imports = {
+    './hdc/finiteShell': require('./helpers/loopback-finite.cjs')(server.address().port),
+    'node:process': { env: { OHOS_HDC_SERVER_PORT: String(server.address().port) } },
     hdckit: { createClient: () => {
       // Tracker polling/lifecycle is outside this fixture's manual-refresh scope.
       client.trackTargets = async () => ({ on() {} })

@@ -13,7 +13,7 @@ import trim from 'licia/trim'
 import os from 'node:os'
 import process from 'node:process'
 import { shell } from './hdc/base'
-import { getTargetParameters, parseTargetParameters } from './hdc/parameters'
+import { parseTargetParameters } from './hdc/parameters'
 import { runFiniteShell } from './hdc/finiteShell'
 import * as shellHdc from './hdc/shell'
 import * as base from './hdc/base'
@@ -48,7 +48,7 @@ if (HDC_ENDPOINT.port < 1 || HDC_ENDPOINT.port > 65535) {
 const MEMORY_TIMEOUT_MS = 10_000
 // Allow more headroom for RenderService work; still pending device calibration.
 const SCREEN_TIMEOUT_MS = 15_000
-// Separate conservative budgets for overview metadata, pending device calibration.
+// Separate conservative budgets for metadata reads, pending device calibration.
 const PARAMETERS_TIMEOUT_MS = 10_000
 const DEVICE_INFO_TIMEOUT_MS = 15_000
 const KERNEL_TIMEOUT_MS = 10_000
@@ -74,7 +74,12 @@ const getTargets: IpcGetTargets = async function () {
   const results = await Promise.all(
     connectKeys.map(async (connectKey) => {
       try {
-        const parameters = await getTargetParameters(client.getTarget(connectKey))
+        const parameters = parseTargetParameters(
+          await runFiniteShell(connectKey, 'param get', {
+            ...HDC_ENDPOINT,
+            timeoutMs: PARAMETERS_TIMEOUT_MS,
+          })
+        )
         const softwareVersion = parameters['const.product.software.version']
         // Accept bare versions and product prefixes; a build suffix is optional.
         const ohosVersion =
