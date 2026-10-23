@@ -12,7 +12,10 @@ const ROOT = path.resolve(__dirname, '../..')
 const KEY = 'SYNTHETIC_TARGET'
 const READY = 'shell echo ready\n'
 const MEMORY = 'shell cat /proc/meminfo'
-const INFO = 'shell SP_daemon -deviceinfo\necho "echo_separator"\nuname -a'
+const PARAM = 'shell param get'
+const INFO = 'shell SP_daemon -deviceinfo'
+const KERNEL = 'shell uname -a'
+const LEGACY_INFO = 'shell SP_daemon -deviceinfo\necho "echo_separator"\nuname -a'
 const SCREEN = 'shell hidumper -s RenderService -a screen'
 function frame(value) {
   const body = Buffer.isBuffer(value) ? value : Buffer.from(value)
@@ -42,7 +45,7 @@ async function bounded(promise, ms = 1200) {
 // Only TCP endpoints, Electron registration, tracker and other module init are
 // isolated. Every socket is remapped to this fixture's random loopback listener.
 async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = {}) {
-  const state = { stall: '', screenStall: '', screen: 'physical screen resolution: 1080x1920', mem: 'MemTotal: 8192 kB\nMemFree: 1024 kB\nMemAvailable: 3072 kB\n', requests: [], deadlines: [], heldWrites: [] }
+  const state = { earlyCommand: '', earlyStall: '', params: 'const.product.name = Synthetic\nconst.product.cpu.abilist = arm64\n', info: 'sn: SYNTHETIC\ndeviceTypeName: TestCPU\n', kernel: 'Linux synthetic #1', connectionStart: 0, stall: '', screenStall: '', screen: 'physical screen resolution: 1080x1920', mem: 'MemTotal: 8192 kB\nMemFree: 1024 kB\nMemAvailable: 3072 kB\n', requests: [], deadlines: [], heldWrites: [] }
   const clients = [], peers = [], handlers = new Map(), initOptions = []
   let stopping = false, sequence = 0
   const server = net.createServer({ allowHalfOpen: true }, (socket) => {
@@ -50,10 +53,11 @@ async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = 
     if (stopping) { socket.destroy(); return }
     peers.push(socket)
     const index = ++sequence
-    // Each overview has two preceding commands, each with ready + command.
-    const memoryProbe = index === 5
-    const screenProbe = index === 7
-    if (!(state.stall === 'handshake' && memoryProbe) && !(state.screenStall === 'handshake' && screenProbe)) {
+    // Each finite command uses its own ready and command connection.
+    const memoryProbe = index === 7
+    const screenProbe = index === 9
+    const earlyProbe = index === ({ [PARAM]: 1, [INFO]: 3, [KERNEL]: 5 }[state.earlyCommand])
+    if (!(state.earlyStall === 'handshake' && earlyProbe) && !(state.stall === 'handshake' && memoryProbe) && !(state.screenStall === 'handshake' && screenProbe)) {
       // Synthetic payload with the 44-byte length observed on a real server.
       const hello = Buffer.alloc(44); hello.write('OHOS HDC'); socket.write(frame(hello))
     }
@@ -67,13 +71,17 @@ async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = 
         const command = data.toString()
         state.requests.push(command)
         if (command === READY) {
+          if (state.earlyStall === 'ready' && earlyProbe) return
           if (state.stall === 'ready' && memoryProbe) return
           if (state.screenStall === 'ready' && screenProbe) return
           socket.end(frame('ready\n'))
-        } else if (command === 'shell param get') {
-          socket.end(frame('const.product.name = Synthetic\nconst.product.cpu.abilist = arm64\n'))
-        } else if (command === INFO) {
-          socket.end(frame('sn: SYNTHETIC\ndeviceTypeName: TestCPU\necho_separator\nLinux synthetic #1'))
+        } else if ([PARAM, INFO, KERNEL, LEGACY_INFO].includes(command)) {
+          const selected = command === state.earlyCommand || (command === LEGACY_INFO && [INFO, KERNEL].includes(state.earlyCommand))
+          if (selected && state.earlyStall === 'read') { socket.write(frame('partial output')); return }
+          if (selected && state.earlyStall === 'reset') { socket.resetAndDestroy(); return }
+          if (selected && state.earlyStall === 'truncated') { socket.end(Buffer.from([0, 0, 0, 5, 65])); return }
+          const output = { [PARAM]: state.params, [INFO]: state.info, [KERNEL]: state.kernel, [LEGACY_INFO]: state.info + '\necho_separator\n' + state.kernel }
+          socket.end(frame(output[command]))
         } else if (command === MEMORY) {
           if (state.stall === 'read') { socket.write(frame('MemTotal: 1 kB\n')); return }
           if (state.stall === 'reset') { socket.resetAndDestroy(); return }
@@ -107,11 +115,13 @@ async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = 
         assert.equal(stopping, false)
         assert.equal(options.host, '127.0.0.1')
         assert.equal(options.port, expectedPort)
-        if (state.screenStall === 'connect' && clients.length === 7) return this
+        const index = clients.length - state.connectionStart
+        if (state.earlyStall === 'connect' && index === ({ [PARAM]: 1, [INFO]: 3, [KERNEL]: 5 }[state.earlyCommand])) return this
+        if (state.screenStall === 'connect' && index === 9) return this
         return super.connect({ host: '127.0.0.1', port: address.port })
       }
       _write(data, encoding, callback) {
-        if (state.screenStall === 'send' && data.subarray(4).toString() === SCREEN) {
+        if ((state.earlyStall === 'send' && data.subarray(4).toString() === state.earlyCommand) || (state.screenStall === 'send' && data.subarray(4).toString() === SCREEN)) {
           state.heldWrites.push(callback); return
         }
         return super._write(data, encoding, callback)
@@ -153,8 +163,8 @@ async function fixture(t, { wallClock = false, envPort, expectedPort = 8710 } = 
   }
   for (const name of ['bundle', 'shell', 'port', 'uitest', 'hilog', 'webview']) imports[`./hdc/${name}`] = { init() {} }
   await load('src/main/lib/hdc.ts', imports).init()
-  return { state, clients, peers, initOptions, overview: () => handlers.get('getOverview')(KEY), input: () => handlers.get('inputKey')(KEY, 3) }
+  return { state, clients, peers, initOptions, server, overview: () => { sequence = 0; state.connectionStart = clients.length; return handlers.get('getOverview')(KEY) }, input: () => handlers.get('inputKey')(KEY, 3) }
 }
 
 
-module.exports = { fixture, outcome, bounded, frame, load, KEY, READY, MEMORY, INFO, SCREEN }
+module.exports = { fixture, outcome, bounded, frame, load, KEY, READY, MEMORY, PARAM, INFO, KERNEL, SCREEN }

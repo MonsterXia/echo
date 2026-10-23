@@ -5,17 +5,21 @@ import { Target } from 'hdckit'
 export async function getTargetParameters(target: Target) {
   const connection = await target.shell('param get')
   try {
-    const output = (await connection.readAll()).toString()
-    if (/^\s*(?:\[Fail\]|\[E\d{6}\]|error:)/im.test(output)) {
-      // Do not put the raw response (which may contain private data) in errors.
-      throw new Error('HDC parameter command failed')
-    }
-    const parameters: Record<string, string> = Object.create(null)
-    for (const match of output.matchAll(/^\s*([^\r\n]*?) = ([^\r\n]*)\r?$/gm)) {
-      parameters[match[1]] = match[2]
-    }
-    return parameters
+    return parseTargetParameters((await connection.readAll()).toString())
   } finally {
     connection.end()
   }
+}
+
+// Share parsing with finite overview reads without changing enumeration transport.
+export function parseTargetParameters(output: string): Record<string, string> {
+  if (/^\s*(?:\[Fail\]|\[E\d{6}\]|error:)/im.test(output)) {
+    // Do not put the raw response (which may contain private data) in errors.
+    throw new Error('HDC parameter command failed')
+  }
+  const parameters: Record<string, string> = Object.create(null)
+  for (const match of output.matchAll(/^\s*([^\r\n]*?) = ([^\r\n]*)\r?$/gm)) {
+    parameters[match[1]] = match[2]
+  }
+  return parameters
 }

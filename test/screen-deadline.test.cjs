@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const { fixture, outcome, bounded, frame, READY, MEMORY, INFO, SCREEN } = require('./helpers/overview-fixture.cjs')
+const { fixture, outcome, bounded, frame, READY, MEMORY, INFO, KERNEL, SCREEN } = require('./helpers/overview-fixture.cjs')
 
 for (const [screen, expected] of [
   ['physical screen resolution: 1080x1920\n', '1080x1920'],
@@ -12,9 +12,9 @@ for (const [screen, expected] of [
     const result = await f.overview()
     assert.equal(result.physicalResolution, expected)
     assert.equal(result.memTotal, 8388608)
-    assert.deepEqual(f.state.deadlines, [10000, 15000])
-    assert.deepEqual(f.state.requests, [READY, 'shell param get', READY, INFO, READY, MEMORY, READY, SCREEN])
-    assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 4)
+    assert.deepEqual(f.state.deadlines, [10000, 15000, 10000, 10000, 15000])
+    assert.deepEqual(f.state.requests, [READY, 'shell param get', READY, INFO, READY, KERNEL, READY, MEMORY, READY, SCREEN])
+    assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 10)
     assert.ok(f.clients.filter((s) => s.kind === 'finite').every((s) => s.closed))
   })
 }
@@ -26,8 +26,8 @@ for (const phase of ['connect', 'handshake', 'ready', 'send', 'read']) {
     assert.equal(result.error?.code, 'HDC_COMMAND_TIMEOUT')
     assert.equal(result.error.stage, phase)
     if (phase === 'send') assert.equal(f.state.heldWrites.length, 1, 'the screen write callback was held')
-    assert.ok(f.clients.slice(6).length > 0, 'screen transport was reached')
-    assert.ok(f.clients.slice(6).every((s) => s.closed), 'close before rejection')
+    assert.ok(f.clients.slice(8).length > 0, 'screen transport was reached')
+    assert.ok(f.clients.slice(8).every((s) => s.closed), 'close before rejection')
     assert.equal(f.state.requests.filter((cmd) => cmd === SCREEN).length, phase === 'read' ? 1 : 0)
     const count = f.clients.length
     if (phase !== 'connect') f.peers.at(-1).end(frame('physical resolution=9999x9999'))
@@ -45,7 +45,7 @@ for (const text of ['[Fail] screen denied', '[E000001] failed', 'error: failed']
     const result = await outcome(f.overview())
     assert.match(result.error?.message ?? '', /screen command failed/)
     assert.equal(f.state.requests.filter((cmd) => cmd === SCREEN).length, 1)
-    assert.ok(f.clients.slice(6).every((s) => s.closed))
+    assert.ok(f.clients.slice(8).every((s) => s.closed))
     f.state.screen = 'physical resolution=720x1280'
     assert.equal((await f.overview()).physicalResolution, '720x1280')
   })
@@ -57,7 +57,7 @@ for (const mode of ['reset', 'truncated']) {
     const result = await outcome(f.overview())
     assert.equal(result.error?.code, mode === 'reset' ? 'ECONNRESET' : 'HDC_COMMAND_PROTOCOL')
     assert.equal(f.state.requests.filter((cmd) => cmd === SCREEN).length, 1)
-    assert.ok(f.clients.slice(6).every((s) => s.closed))
+    assert.ok(f.clients.slice(8).every((s) => s.closed))
     f.state.screenStall = ''
     assert.equal((await f.overview()).physicalResolution, '1080x1920')
   })
@@ -71,5 +71,5 @@ test('screen fifteen-second total deadline expires on the real clock', { timeout
   assert.equal(result.error?.code, 'HDC_COMMAND_TIMEOUT')
   assert.equal(result.error.stage, 'read')
   assert.ok(elapsed >= 14900 && elapsed < 18000, `elapsed ${elapsed}`)
-  assert.ok(f.clients.slice(6).every((s) => s.closed))
+  assert.ok(f.clients.slice(8).every((s) => s.closed))
 })

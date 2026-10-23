@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict')
 const { test } = require('node:test')
-const { fixture, outcome, bounded, frame, load, KEY, READY, MEMORY, INFO, SCREEN } = require('./helpers/overview-fixture.cjs')
+const { fixture, outcome, bounded, frame, load, KEY, READY, MEMORY, INFO, KERNEL, SCREEN } = require('./helpers/overview-fixture.cjs')
 
 test('overview routes memory and screen through finite transport and retains memory/overview fields', async (t) => {
   const f = await fixture(t)
@@ -10,14 +10,14 @@ test('overview routes memory and screen through finite transport and retains mem
   assert.equal(result.name, 'Synthetic')
   assert.equal(result.kernelVersion, 'Linux synthetic ')
   assert.equal(result.physicalResolution, '1080x1920')
-  assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 4)
-  assert.deepEqual(f.state.deadlines, [10000, 15000])
+  assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 10)
+  assert.deepEqual(f.state.deadlines, [10000, 15000, 10000, 10000, 15000])
   assert.equal(f.initOptions[0].host, '127.0.0.1')
   assert.equal(f.initOptions[0].port, 8710)
-  assert.deepEqual(f.state.requests, [READY, 'shell param get', READY, INFO, READY, MEMORY, READY, SCREEN])
+  assert.deepEqual(f.state.requests, [READY, 'shell param get', READY, INFO, READY, KERNEL, READY, MEMORY, READY, SCREEN])
   await f.input()
   assert.deepEqual(f.state.requests.slice(-2), [READY, 'shell uinput -K -d 3 -u 3'])
-  assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 4)
+  assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 10)
 })
 
 for (const [envPort, expectedPort] of [
@@ -28,7 +28,7 @@ for (const [envPort, expectedPort] of [
     const f = await fixture(t, { envPort, expectedPort })
     assert.equal((await f.overview()).memTotal, 8388608)
     assert.equal(f.initOptions[0].port, expectedPort)
-    assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 4)
+    assert.equal(f.clients.filter((s) => s.kind === 'finite').length, 10)
   })
 }
 
