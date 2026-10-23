@@ -1,0 +1,35 @@
+{
+  "scope": "Actual Electron windows and IPC; synthetic transport and frame bytes; no device or HAP access",
+  "electron": "45.0.0",
+  "checks": {
+    "actualCloseDisposesListener": true,
+    "reopenedWindowRejectsOldFrames": true,
+    "oldStopCannotStopReplacement": true,
+    "reloadInvalidatesOldDocument": true,
+    "rendererCrashDisposesListener": true,
+    "lateStartCannotAttachToReplacement": true,
+    "failedStopDisposesLocallyAndBlocksUnsafeStart": true,
+    "directDestructionDisposesListener": true
+  },
+  "sources": {
+    "src/main/window/screencast.ts": "83f05859b06d715b4ac1912e947a04d9e154fe3139764d01073eb252e6cf7ece",
+    "src/main/lib/hdc/captureSessions.ts": "a57ebd393c46736682683776c146dee94c5a4b8f3a944d56f6ee6aedbbe68db2",
+    "src/main/lib/hdc/captureDriver.ts": "fa908d6823d43aa6685951cb64515b1e3e50e0a828427a7715b7b0dddece7c94",
+    "src/main/lib/hdc/uitest.ts": "7c393d01318c937f5868502d7354a45cac97079e4079a11fac19758366eefbb5"
+  },
+  "closeEvents": [
+    [
+      "closed",
+      0
+    ],
+    [
+      "close",
+      0
+    ],
+    [
+      "contents-destroyed",
+      0
+    ]
+  ],
+  "passed": true
+}

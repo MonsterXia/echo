@@ -31,7 +31,7 @@
 3. `src/preload/index.ts` 暴露全局 `main`、`preload`、`node`，并声明其 TypeScript 类型。其中 `main` 合并共享模块与本项目接口。
 4. `index.html` 加载 `src/renderer/main.tsx`。该入口按 URL 的 `page` 参数懒加载页面：默认主窗口，`screencast` 是投屏，`terminal`、`process`、`about` 来自共享子模块。这里没有 React Router。
 
-主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口在 `close` 中销毁自身，在 `closed` 中释放单例引用并重新显示主窗口，使直接 destroy 路径也能清理；相关代码在 `src/main/window/screencast.ts`。这不等于停止设备捕获：主进程尚未绑定捕获与窗口所有权，边界和无设备证据见 [关窗捕获审计](../../../../docs/maintenance/M2-3-main-capture-close.md)。
+主窗口关闭时，若投屏窗口可见则隐藏主窗口，否则退出应用。投屏窗口在 `close` 中销毁自身，在 `closed` 中释放单例引用并重新显示主窗口；close/closed 都会先失效捕获 owner、解除本地监听，覆盖 WebContents destroyed 晚于 closed 的真实事件顺序。设备停止仍需异步确认，见 [捕获会话所有权](../../../../docs/maintenance/M2-3-capture-ownership.md)。
 
 ## IPC 边界
 
@@ -46,6 +46,8 @@ React 组件 / MobX store
 
 请求类型集中在 `src/common/types.ts`。主进程设备处理器集中在 `src/main/lib/hdc/`，注册由 `src/main/lib/hdc.ts` 的 `init()` 串起；窗口类处理器在 `src/main/window/`。
 
+捕获的 create/start/stop 通道由 `hdc/captureSessions.ts` 直接注册 `ipcMain.handle`，保留并验证 Electron sender/senderFrame；不能套用会丢弃 event 的共享 handleEvent。投屏窗口须在 loadPage 前注册到会话管理器。
+
 注意 API 名不一定等于 channel 名：renderer 的 `main.dumpLayout()` 使用 `dumpWindowHierarchy` channel。排错时核对桥接字符串，而不只搜方法名。
 
 推送使用共享 `window.sendTo()` / `sendAll()`，renderer 通过 `main.on()` 订阅。常用事件：
@@ -54,7 +56,7 @@ React 组件 / MobX store
 | --- | --- |
 | `changeTarget` | HDC 设备增删后通知主窗口刷新设备列表 |
 | `changeMainStore` | 主 store 的 name/value 变更，投屏用它同步当前设备 |
-| `captureScreen` | 发给投屏窗口的 connectKey 与图像字节 |
+| `captureScreen` | 直发原 WebFrameMain 的 sessionId、generation 与图像字节 |
 | `shellData` | 发给主窗口的 sessionId 与终端文本 |
 | `hilogEntry` | 发给主窗口的 hilogId 与日志条目 |
 
@@ -108,10 +110,12 @@ React 组件 / MobX store
 
 ```text
 src/renderer/screencast/store.ts 创建 ScreencastClient(connectKey)
-  → main.startCaptureScreen(connectKey, scale)
-  → src/main/lib/hdc/uitest.ts 获取并按设备缓存 UiDriver
-  → UiDriver.startCaptureScreen 回调
-  → sendTo('screencast', 'captureScreen', connectKey, image)
+  → main.createCaptureSession(connectKey) 获取主进程生成的 token
+  → main.startCaptureScreen(sessionId, scale, generation)
+  → captureSessions.ts 校验原文档、按设备串行真实 stop/start
+  → uitest.ts 单次初始化并缓存 CaptureUiDriver
+  → UiDriver.startCaptureScreen 回调经可释放 CaptureScope
+  → 原 frame.send('captureScreen', sessionId, generation, image)
   → ScreencastClient.draw() 将 JPEG 解码绘制到 Canvas
 
 Canvas pointer 事件
@@ -120,9 +124,9 @@ Canvas pointer 事件
   → src/main/lib/hdc/uitest.ts → UiDriver
 ```
 
-`getUiDriver()` 加载资源 `uitestkit_sdk/uitest_agent_v1.1.0.so`，传给 `target.createUiDriver(..., '1.1.0')`。资源版本与调用参数需要保持匹配。
+`getUiDriver()` 将资源 `uitestkit_sdk/uitest_agent_v1.1.0.so` 和版本 `1.1.0` 传给 CaptureUiDriver（继承真实 UiDriver）构造器，按设备缓存并合并并发初始化。资源版本与调用参数需要保持匹配。
 
-`uitest.ts` 的 start/stop 捕获处理器必须等待 UiDriver 的异步方法完成，再结束 IPC；启动还须等待前置停止完成。否则 renderer 的串行队列只能等待提前完成的 handler，底层错误也不会传播给调用者。`test/capture-handlers.test.cjs` 保留实际 handler 和 UiDriver 方法，在传输边界验证完成时序及拒绝传播。
+`captureSessions.ts` 的每设备队列等待真实 UiDriver 操作完成，不因 renderer 消失或超时 race 提前放行。`CaptureUiDriver` 仅通过公共 on/off 精确管理自身捕获监听；关闭、导航、崩溃和 stop 请求立即本地退订，迟到启动完成后再补偿停止。stop 拒绝保留待确认 lease，下一 start 必须先成功 stop；不结算只阻塞该设备。stop 的 stopped/released/obsolete 分别表示本 lease 停止已确认、仅释放无 lease token、旧 token 已失效，不能混称设备已停。`test/capture-sessions.test.cjs` 与 handler 回归保留真实依赖方法验证这些边界。
 
 定位投屏问题时：
 
@@ -130,7 +134,7 @@ Canvas pointer 事件
 - 触摸映射：`getPointer()` 先按帧宽高比算 CSS 容器内的实际图像区域，再按百分比映射到 `getDisplaySize()` 返回的设备尺寸。请求 `scale` 与实际流缩放可能不同。
 - 首帧或帧尺寸变化时重新查询设备尺寸；尺寸必须是正整数。坐标上限为 width/height 减一。没有有效尺寸时不发送触摸。
 - `isDrawing` 让绘制和尺寸查询串行进行，期间新帧会跳过；它不是帧队列。改动时注意异步旧帧覆盖新状态。
-- 客户端在同一 renderer 内按设备将 stop/start 串行化（包含旧客户端销毁与新客户端启动），并用启动代次丢弃迟到结果；本次启动未出图时五秒重试（包括 stop/start 拒绝），停止阶段不接收帧。`ready` 仍只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，再排队停止捕获；已发出的 IPC 不能撤销，若 bridge 请求不返回，设备端清理仍不能保证。
+- 客户端用局部队列合并缩放，主进程提供跨 renderer 的设备顺序；帧须同时匹配 sessionId 与启动 generation。本次启动未出图或创建/start 拒绝后五秒重试，`ready` 只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，并立即发送 session stop 以便主进程本地失效；创建回复迟到时也释放 token。不能撤销已发送的设备请求，永不返回时仍不能确认远端停止。
 - `loadImage(url, signal?)` 清理图片处理器并支持取消；客户端在 finally 中释放 Blob URL。无设备生命周期回归见 `test/screencast-lifecycle.test.cjs`，真实捕获和原应用问题的验收边界见 `docs/maintenance/M2-3-recovery.md`。
 - `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
 - 文本按钮在 prompt 与发送期间用同步标记防重入，并等待 `main.inputText`、消费拒绝及显示通用错误。target 对象替换或卸载使旧会话失效，旧 prompt 不再发送、旧结果不通知或解锁新会话；这不取消已发送写入。底层不返回时保持忙碌，不自动重发；仍为单行输入和原 UiDriver 坐标语义。回归见 `test/text-input-toolbar.test.cjs`。

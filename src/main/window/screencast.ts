@@ -5,6 +5,7 @@ import once from 'licia/once'
 import { handleEvent } from 'share/main/lib/util'
 import { IpcGetStore, IpcSetStore } from 'share/common/types'
 import { IpcSetScreencastAlwaysOnTop } from 'common/types'
+import { registerCaptureWindow } from '../lib/hdc/captureSessions'
 
 const store = getScreencastStore()
 
@@ -25,6 +26,11 @@ export function showWin() {
     width: 500,
     height: 640,
   })
+  const releaseCapture = registerCaptureWindow(win.webContents)
+  // BrowserWindow closed may precede webContents destroyed. Detach locally
+  // before destroy on close, with closed as the direct-destroy fallback.
+  win.on('close', releaseCapture)
+  win.on('closed', releaseCapture)
 
   // The shared factory may restore bounds from a larger display. Constrain
   // the result in DIP, after restoration and before the window is shown.
@@ -68,7 +74,7 @@ const initIpc = once(() => {
   ))
   handleEvent('getScreencastStore', <IpcGetStore>((name) => store.get(name)))
   handleEvent('setScreencastAlwaysOnTop', <IpcSetScreencastAlwaysOnTop>((
-    alwaysOnTop
+    alwaysOnTop,
   ) => {
     if (win) {
       win.setAlwaysOnTop(alwaysOnTop)

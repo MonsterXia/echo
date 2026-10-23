@@ -3,6 +3,7 @@ import {
   IpcCleanBundleData,
   IpcCloseHilog,
   IpcCreateShell,
+  IpcCreateCaptureSession,
   IpcDumpWindowHierarchy,
   IpcForward,
   IpcGetBundleInfos,
@@ -74,11 +75,12 @@ export default Object.assign(mainObj, {
   showScreencast: invoke('showScreencast'),
   closeScreencast: invoke('closeScreencast'),
   setScreencastAlwaysOnTop: invoke<IpcSetScreencastAlwaysOnTop>(
-    'setScreencastAlwaysOnTop'
+    'setScreencastAlwaysOnTop',
   ),
   getScreencastStore: invoke<IpcGetStore>('getScreencastStore'),
   setScreencastStore: invoke<IpcSetStore>('setScreencastStore'),
   startCaptureScreen: invoke<IpcStartCaptureScreen>('startCaptureScreen'),
+  createCaptureSession: invoke<IpcCreateCaptureSession>('createCaptureSession'),
   getDisplaySize: invoke<IpcGetDisplaySize>('getDisplaySize'),
   stopCaptureScreen: invoke<IpcStopCaptureScreen>('stopCaptureScreen'),
   touchDown: invoke<IpcTouchDown>('touchDown'),

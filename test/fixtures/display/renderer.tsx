@@ -16,6 +16,7 @@ const calls: unknown[] = []
 let displaySize = { width: 1080, height: 2400 }
 Object.assign(window, {
   main: {
+    createCaptureSession: async () => 'display-session',
     stopCaptureScreen: async () => {},
     startCaptureScreen: async () => {},
     getDisplaySize: async () => displaySize,
@@ -64,7 +65,8 @@ createRoot(document.getElementById('app')!).render(<App />)
       source.toBlob(resolve, 'image/jpeg', 0.85),
     )
     events.get('captureScreen')(
-      'synthetic',
+      'display-session',
+      state.screencastClient.generation,
       new Uint8Array(await blob.arrayBuffer()),
     )
     await state.screencastClient.ready
