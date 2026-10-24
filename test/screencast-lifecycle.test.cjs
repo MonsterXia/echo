@@ -45,7 +45,9 @@ async function fixture(t, bridge = {}) {
   const calls = [],
     errors = [],
     images = [],
-    painted = []
+    painted = [],
+    blobs = [],
+    videoPreferences = []
   const listeners = new Set(),
     urls = new Set(),
     timers = new Map()
@@ -83,9 +85,11 @@ async function fixture(t, bridge = {}) {
     Uint8Array,
     Image,
     AbortController,
-    console: { error: (...args) => errors.push(args) },
+    ...bridge.codecs,
+    console: { error: (...args) => errors.push(args), warn() {} },
     URL: {
-      createObjectURL: () => {
+      createObjectURL: (blob) => {
+        blobs.push(blob)
         const url = `blob:synthetic-${++urlId}`
         urls.add(url)
         return url
@@ -111,8 +115,9 @@ async function fixture(t, bridge = {}) {
         calls.push('stop')
         return bridge.stop?.(key)
       },
-      startCaptureScreen: async (key, scale, generation) => {
+      startCaptureScreen: async (key, scale, generation, preferVideo) => {
         calls.push(['start', scale])
+        videoPreferences.push(preferVideo)
         return bridge.start?.(key, scale, generation)
       },
       getDisplaySize: async () => {
@@ -143,6 +148,8 @@ async function fixture(t, bridge = {}) {
     errors,
     images,
     painted,
+    blobs,
+    videoPreferences,
     listeners,
     urls,
     timers,
@@ -157,8 +164,10 @@ async function fixture(t, bridge = {}) {
     frame(
       id = clients.at(-1).sessionId,
       generation = clients.at(-1).generation,
+      bytes = new Uint8Array([1, 2, 3]),
+      metadata,
     ) {
-      for (const fn of listeners) fn(id, generation, new Uint8Array([1, 2, 3]))
+      for (const fn of listeners) fn(id, generation, bytes, metadata)
     },
     async tick(ms) {
       now += ms
@@ -171,6 +180,164 @@ async function fixture(t, bridge = {}) {
       await flush()
     },
   }
+}
+
+test('busy decoder retains only the newest frame and paints it without another arrival', async (t) => {
+  const f = await fixture(t)
+  await flush()
+  f.frame()
+  for (let i = 0; i < 100; i++) f.frame(undefined, undefined, new Uint8Array([i]))
+  assert.equal(f.images.length, 1, 'only one decode may run at a time')
+  assert.equal(f.urls.size, 1)
+  f.images[0].onload()
+  await flush()
+  assert.equal(f.images.length, 2, 'last queued frame must not be lost')
+  assert.deepEqual([...new Uint8Array(await f.blobs[1].arrayBuffer())], [99])
+  f.images[1].onload()
+  await flush()
+  assert.equal(f.painted.length, 2)
+  assert.equal(f.urls.size, 0)
+  assert.equal(f.images.length, 2, 'intermediate frames must not build a backlog')
+  assert.equal(f.client.getCaptureStats().codec, 'JPEG')
+  assert.equal(f.client.getCaptureStats().frames, 2, 'count painted images, not received packets')
+  const before = f.client.getCaptureStats().generation
+  await f.client.start()
+  assert.equal(f.client.getCaptureStats().codec, null)
+  assert.equal(f.client.getCaptureStats().frames, 0)
+  assert.ok(f.client.getCaptureStats().generation > before)
+  f.client.destroy()
+  assert.equal(f.client.getCaptureStats().frames, 0)
+})
+
+test('native transport retries H264 once, rejects stale errors, then bounds repeated failure with JPEG', async (t) => {
+  const f = await fixture(t, { codecs: { VideoDecoder: class {} } })
+  await flush()
+  assert.deepEqual(f.videoPreferences, [true])
+  const previous = f.client.generation
+  f.frame(undefined, previous, new Uint8Array(), { codec: 'error' })
+  f.frame(undefined, previous, new Uint8Array(), { codec: 'error' })
+  await flush()
+  assert.deepEqual(f.videoPreferences, [true, true])
+  f.frame(undefined, undefined, new Uint8Array(), { codec: 'error' })
+  await flush()
+  assert.deepEqual(f.videoPreferences, [true, true, false])
+  f.frame(undefined, previous)
+  assert.equal(f.images.length, 0)
+  f.frame()
+  f.images[0].onload()
+  await flush()
+  assert.equal(f.painted.length, 1)
+})
+
+test('one interrupted stream can resume painting H264 without switching to JPEG', async (t) => {
+  const f = await fixture(t, { codecs: {
+    VideoDecoder: class {
+      state = 'configured'
+      decodeQueueSize = 0
+      constructor(callbacks) { this.callbacks = callbacks }
+      configure() {}
+      decode() { this.callbacks.output({ displayWidth: 100, displayHeight: 200, close() {} }) }
+      close() { this.state = 'closed' }
+    },
+    EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+  } })
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array(), { codec: 'error' })
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  assert.equal(f.client.getCaptureStats().codec, null, 'configuration alone is not a painted video frame')
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
+  await flush()
+  await f.client.ready
+  assert.equal(f.client.getCaptureStats().codec, 'H.264')
+  assert.equal(f.client.getCaptureStats().frames, 1)
+  assert.deepEqual(f.videoPreferences, [true, true])
+  assert.equal(f.painted.length, 1)
+  assert.equal(f.images.length, 0)
+  await f.tick(6000)
+  assert.deepEqual(f.videoPreferences, [true, true], 'first video paint cancels the retry timer')
+})
+
+test('unsupported decoder still falls back immediately instead of retrying transport', async (t) => {
+  const f = await fixture(t, { codecs: { VideoDecoder: class {
+    state = 'unconfigured'
+    configure() { throw new Error('Unsupported codec') }
+    close() { this.state = 'closed' }
+  } } })
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
+  await flush()
+  assert.deepEqual(f.videoPreferences, [true, false])
+})
+
+test('configuration without a decoded first frame falls back to JPEG instead of restarting native forever', async (t) => {
+  const f = await fixture(t, { codecs: { VideoDecoder: class {} } })
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  await f.tick(5000)
+  assert.deepEqual(f.videoPreferences, [true, false])
+  await f.tick(5000)
+  assert.deepEqual(f.videoPreferences, [true, false, false])
+})
+
+test('video frames waiting on display lookup are bounded and released on destroy', async (t) => {
+  const size = deferred()
+  let callbacks
+  const f = await fixture(t, {
+    size: () => size.promise,
+    codecs: {
+      VideoDecoder: class {
+        state = 'configured'
+        decodeQueueSize = 0
+        constructor(value) { callbacks = value }
+        configure() {}
+        decode() {}
+        close() { this.state = 'closed' }
+      },
+      EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+    },
+  })
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
+  const frames = Array.from({ length: 3 }, () => ({ displayWidth: 100, displayHeight: 200, closed: 0, close() { this.closed++ } }))
+  frames.forEach(frame => callbacks.output(frame))
+  assert.deepEqual(frames.map(x => x.closed), [0, 1, 0])
+  f.client.destroy()
+  assert.deepEqual(frames.map(x => x.closed), [0, 1, 1])
+  size.resolve({ width: 100, height: 200 })
+  await flush()
+  assert.deepEqual(frames.map(x => x.closed), [1, 1, 1])
+  assert.equal(f.painted.length, 0)
+})
+
+test('decode failure still drains the newest queued frame', async (t) => {
+  const f = await fixture(t)
+  await flush()
+  f.frame()
+  f.frame()
+  f.images[0].onerror(new Error('synthetic bad JPEG'))
+  await flush()
+  assert.equal(f.images.length, 2)
+  f.images[1].onload()
+  await flush()
+  assert.equal(f.painted.length, 1)
+  assert.equal(f.urls.size, 0)
+})
+
+for (const action of ['destroy', 'start']) {
+  test(`${action} discards queued frames from the old capture generation`, async (t) => {
+    const f = await fixture(t)
+    await flush()
+    f.frame()
+    f.frame()
+    await f.client[action]()
+    await flush()
+    assert.equal(f.images.length, 1)
+    assert.equal(f.painted.length, 0)
+    assert.equal(f.urls.size, 0)
+  })
 }
 
 test('destroy cancels retry and unregisters bridge and canvas listeners once', async (t) => {

@@ -1,0 +1,32 @@
+{
+  "scope": "Current production app, live device, geometry and counters only",
+  "initialWindow": [
+    500,
+    640
+  ],
+  "viewport": [
+    803,
+    422
+  ],
+  "framePixels": [
+    2412,
+    1084
+  ],
+  "canvas": [
+    803,
+    360.875
+  ],
+  "container": [
+    803,
+    361
+  ],
+  "gap": [
+    0,
+    0.125
+  ],
+  "counts": {
+    "drawn": 377,
+    "h264": 377,
+    "jpeg": 0
+  }
+}

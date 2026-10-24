@@ -99,7 +99,7 @@ if (!process.versions.electron) {
         if (id === 'share/main/lib/window') return registry
         if (id === 'share/main/lib/util') return {
           handleEvent: (name, handler) => ipcMain.handle(name, (_event, ...args) => handler(...args)),
-          resolveResources: () => 'synthetic-resource-not-opened',
+          getUserDataPath: () => 'synthetic-cache-not-written', resolveResources: () => 'synthetic-resource-not-opened',
         }
         if (id === 'share/common/log') return () => ({ debug() {}, info() {}, warn() {}, error() {} })
         if (id === '../lib/store') return { getScreencastStore: () => ({}) }
@@ -107,6 +107,10 @@ if (!process.versions.electron) {
           getTargetStore: (key, name) => cache.get(`${key}:${name}`),
           setTargetStore: (key, name, value) => cache.set(`${key}:${name}`, value),
         }
+        if (id === './nativeVideo') return { NativeVideo: class {
+          async start() { return false }
+          async stop() {}
+        } }
         if (id.startsWith('.')) return load(path.resolve(path.dirname(file), `${id}.ts`))
         if (id.startsWith('licia/') || id.startsWith('node:')) return require(id)
         throw new Error('Unexpected dependency in no-device check')

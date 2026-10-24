@@ -76,6 +76,8 @@ npm start
 
 ## 测试范围与验收
 
+投屏性能验证脚本：`node script/check-native-video.cjs <报告.json>` 在真实 Electron 中使用生产 CaptureUiDriver/ScreencastClient 测量 H.264 输入/绘制，验证缩放重启和重开；`node script/check-screencast-stream.cjs <报告.json>` 对照 JPEG 原/修复 TCP 解析器。关闭主应用、只连接一台手机并保持动态画面；先运行 `npm run resources` 准备原生资源，H.264 探针与应用一样自动部署。可追加 `--without-preinstalled` 临时移走原有库以验证独立部署，脚本先写恢复记录，子进程 finally 与父进程超时恢复共用校验逻辑；恢复失败保留记录并报错。普通运行不移动原有库。两者只保存统计，不保存屏幕帧；复用的 HDC 转发不可被探针删除。无设备回归包括 native-video-protocol、native-video-stream、native-video-resources、native-video-archive、native-video-deployment、native-video-command、probe-backup、h264-decoder、uitest-stream、capture-sessions 和 screencast-lifecycle。实时采样不能替代长期性能/旋转/拔插验收，资源来源和兼容范围见 `docs/maintenance/native-video-deployment.md`，早期流接入记录见 `docs/maintenance/screencast-video-design.md`。
+
 本地依赖回归见 `test/vendor.test.cjs`；Licia 原始用例位于 `vendor/packages/licia/test/`，由 `script/test-licia.mjs` 选择 Node 适用模块，在临时目录运行。生产/fallback 两种模式均明确保留 4 项外部夹具测试为 pending；浏览器/manual 用例保留但不自动运行。修改流程、排除原因及生成器边界见 [Licia 维护说明](../../../../vendor/packages/licia/MAINTENANCE.md)，目录和构建职责见[仓库结构指南](../../../../docs/repository-guide.md)。
 
 物理断连和空闲后概览验证使用 `node script/check-overview-physical-idle.mjs <证据目录> 600`（先完整 build）。按脚本阶段提示人工拔插 USB，检查真实 tracker/选择/详情清空与重连，再保持指定秒数无业务操作，记录正常 tracker 轮询及进程资源采样，最后验证 IPC 与实际刷新。报告分别标记自动恢复与一次手动刷新恢复；总通过不等于自动恢复稳定，必须并列保留失败轮次。脚本不模拟断连，不输出设备标识或原始日志；有限时长不替代原始长期空闲问题验收。边界与记录见 [物理断连及空闲报告](../../../../docs/maintenance/M2-2-physical-idle.md)。
@@ -154,3 +156,9 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 历史提示可在默认分支手动运行同一 workflow，输入单个 `comment_id`。入口校验 ID、所属仓库与 PR，再执行相同的完整模板匹配及删除前复核；不会因手动触发而放宽删除规则。使用 `gh workflow run sourcery-quota-comments.yml --ref master -f comment_id=<ID>` 或 Actions 页面运行。未知新模板需先确认再更新；GET 与 DELETE 之间仍存在 GitHub API 不提供条件删除导致的短暂竞态。
 
 `node --test test/sourcery-quota-comments.test.cjs` 直接执行 workflow 中的真实 JavaScript，只替换 GitHub I/O，覆盖事件/手动入口、删除、保留、陈旧事件与错误处理。测试不发布模拟评论，也不冒充机器人。上线状态查看 Actions 的 `Remove Sourcery quota notices`；权限验收须使用实际 Actions 运行及评论不存在的证据，不能仅以单测通过或 workflow active 代替。
+
+## 投屏启动分段计时
+
+关闭现有投屏后运行 `node script/profile-screencast-start.cjs <report.json>`。探针调用生产控制/视频模块，记录准备到首个编码包的耗时；不含窗口加载和解码，真实 UI 首帧需另测。`SCREENCAST_PROBE_CACHE` 指向独立临时目录以检查跨进程兼容提示；`--reset-control` 主动重建控制服务，只在关闭其他 UITest 工具后使用。脚本遇到已有视频套接字拒绝执行；结束清理自己的副本、进程和新增转发。数据不保存屏幕及设备标识，最新证据见 `docs/maintenance/screencast-start-latency.md`。
+
+投屏准备探针支持 `--prepare`：仅建立待用服务，记录 `preparationReadyMs`、点击前取流次数、约 2 秒 CPU ticks，再记录请求至首个编码包时间。`--reset-control` 和独立 `SCREENCAST_PROBE_CACHE` 可测完全重建/无兼容记录路径；实际应用会对选中设备自动预热，需先等待其清理，避免争用。实际窗口首帧、60 秒 TTL、退出/重启及物理断连仍需分开验证。

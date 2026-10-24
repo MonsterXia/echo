@@ -126,7 +126,7 @@ export function init() {
   })
   handleEvent('relaunch', () => {
     app.relaunch()
-    app.exit()
+    app.quit()
   })
   handleEvent('openPath', <IpcOpenPath>((path: string) => {
     shell.openPath(path)

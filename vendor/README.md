@@ -32,6 +32,8 @@ TypeScript 编译使用 `noCheck` 生成模块与声明，不是完整类型检�
 
 ## 来源、许可证与更新
 
+本地 `hdckit/UiDriver.ts` 已修复 TCP 粘包消费及控制请求生命周期：RPC 默认 10 秒、捕获停止回复 3 秒、TCP 连接 3 秒截止，断开/超时结束全部等待并丢弃旧连接；采用递增请求 ID，禁止因未知回复自动重发输入。测试入口为 `test/uitest-stream.test.cjs`、`test/uitest-connection.test.cjs`，动机和真机边界见[首帧恢复记录](../docs/maintenance/screencast-first-frame-recovery.md)。这些是本地适配，不修改原始导入 manifest 哈希。
+
 `manifest.json` 记录 18 个包的版本、npm integrity、发布 gitHead、源码归档 SHA-256 与导入文件 SHA-256。Licia 从对应 gitHead 的原始模块、类型片段生成运行包，HDC/Luna 从原始 TS/样式编译。Licia 的上游生成规则参考文件保留在 `upstream/`，本仓以 `script/lib/licia-build.mjs` 适配，仅生成当前使用的包；不执行上游安装、发布或云测试脚本。其 `publishedFiles` 保留原 npm 产物哈希，供历史对照，生成文件本身不跟踪。`upstream-package.json` 是原始发布元数据；本地 `package.json` 只保留所需依赖及入口、移除上游构建脚本，并标记 private。
 
 HDC、Licia、Luna 的 MIT 原文和作者信息保留在各包 LICENSE。两份共享源码按原固定提交内置；这些上游快照没有独立 LICENSE 文件，manifest 如实记录，不虚构 MIT 授权。应用本身继续保留 AGPL-3.0 和历史署名。应用发布元数据 author 为 MonsterXia；此变更不覆盖第三方作者。完整构建将 LICENSE 和汇总 THIRD_PARTY_NOTICES.txt 放入发行包。
@@ -43,3 +45,7 @@ HDC、Licia、Luna 的 MIT 原文和作者信息保留在各包 LICENSE。两份
 这消除了上述 npm 包与两个 Git 子模块的下载需求；Electron、React、Vite、TypeScript、Sass/PostCSS 等通用工具链、execa/micromark 等普通依赖仍按锁文件安装。HDC 原生可执行文件、uitestkit 资源和 Electron/打包工具仍需准备或下载，不宣称全链路离线或逐字节可复现。可选的应用图标/主题重新生成脚本仍调用原来的 lsla，未纳入本次正常构建路径。
 
 恢复旧版本请用独立目录检出 v1.0.3 并初始化其子模块；或者直接安装该 Release 的已校验安装包。不要强制重置有未保存修改的迁移目录。
+
+控制初始化另已去除固定 2 秒等待：仅在自己新启动 daemon 后，以 3 秒预算尝试初始 Driver.create 握手；普通 RPC 不自动重发。应用层先用只读查询复用健康控制服务，仅初始失败时重建一次。动机及真机结果见[启动耗时记录](../docs/maintenance/screencast-start-latency.md)。
+
+共享主进程 IPC 的 relaunch 本地适配为 app.relaunch + app.quit，允许应用等待投屏预热/活动会话清理；原 app.exit 绕过生命周期。对应窗口退出语义和验证见[后台准备记录](../docs/maintenance/screencast-preparation.md)。原始导入 manifest 哈希仍只描述导入版本。

@@ -1,0 +1,239 @@
+{
+  "scope": "Production control/native startup to first encoded frame; excludes window and Chromium decode",
+  "stages": [
+    {
+      "name": "control: pidof uitest",
+      "atMs": 144,
+      "durationMs": 163
+    },
+    {
+      "name": "control: kill -9",
+      "atMs": 307,
+      "durationMs": 83
+    },
+    {
+      "name": "control reset",
+      "atMs": 144,
+      "durationMs": 247
+    },
+    {
+      "name": "control: pidof uitest",
+      "atMs": 390,
+      "durationMs": 116
+    },
+    {
+      "name": "control: cat /data/local/tmp/agent.so",
+      "atMs": 507,
+      "durationMs": 95
+    },
+    {
+      "name": "control: param set",
+      "atMs": 602,
+      "durationMs": 117
+    },
+    {
+      "name": "control: uitest start-daemon",
+      "atMs": 718,
+      "durationMs": 332
+    },
+    {
+      "name": "control ready",
+      "atMs": 390,
+      "durationMs": 1344
+    },
+    {
+      "name": "native: shell uname -m",
+      "atMs": 1734,
+      "durationMs": 158
+    },
+    {
+      "name": "native: shell param get const.product.software.version",
+      "atMs": 1769,
+      "durationMs": 131
+    },
+    {
+      "name": "native: shell uitest --version",
+      "atMs": 1755,
+      "durationMs": 366
+    },
+    {
+      "name": "compatibility inventory",
+      "atMs": 1734,
+      "durationMs": 390
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 2125,
+      "durationMs": 139
+    },
+    {
+      "name": "native: file",
+      "atMs": 2264,
+      "durationMs": 102
+    },
+    {
+      "name": "native: shell sha256sum /data/local/tmp/session.so",
+      "atMs": 2365,
+      "durationMs": 165
+    },
+    {
+      "name": "native: shell uitest start-daemon singleness --extension-name session.so -scale 1 -frameRate 60 -bitRate 8 -p 5011 -iFrameInterval 1000 -repeatInterval 100",
+      "atMs": 2530,
+      "durationMs": 383
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 2914,
+      "durationMs": 132
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 3148,
+      "durationMs": 128
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 3276,
+      "durationMs": 195
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 3573,
+      "durationMs": 141
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 3714,
+      "durationMs": 200
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 3914,
+      "durationMs": 210
+    },
+    {
+      "name": "native: shell rm -f /data/local/tmp/session.so",
+      "atMs": 4124,
+      "durationMs": 160
+    },
+    {
+      "name": "native: shell test ! -e /data/local/tmp/session.so && echo removed",
+      "atMs": 4284,
+      "durationMs": 139
+    },
+    {
+      "name": "native cleanup",
+      "atMs": 3914,
+      "durationMs": 510
+    },
+    {
+      "name": "native: file",
+      "atMs": 4423,
+      "durationMs": 90
+    },
+    {
+      "name": "native: shell sha256sum /data/local/tmp/session.so",
+      "atMs": 4513,
+      "durationMs": 180
+    },
+    {
+      "name": "native: shell uitest start-daemon singleness --extension-name session.so -scale 1 -frameRate 60 -bitRate 8 -p 5011 -iFrameInterval 1000 -repeatInterval 100",
+      "atMs": 4693,
+      "durationMs": 399
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 5092,
+      "durationMs": 117
+    },
+    {
+      "name": "native: shell cat /proc/net/unix",
+      "atMs": 5311,
+      "durationMs": 132
+    },
+    {
+      "name": "native: fport",
+      "atMs": 5445,
+      "durationMs": 52
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 5497,
+      "durationMs": 196
+    },
+    {
+      "name": "native: shell cat /proc/10604/stat",
+      "atMs": 5693,
+      "durationMs": 137
+    },
+    {
+      "name": "native: shell cat /proc/10604/stat",
+      "atMs": 7832,
+      "durationMs": 141
+    },
+    {
+      "name": "control ready",
+      "atMs": 7973,
+      "durationMs": 5
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 7977,
+      "durationMs": 191
+    },
+    {
+      "name": "native first encoded frame",
+      "atMs": 8168,
+      "durationMs": 162
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 8414,
+      "durationMs": 212
+    },
+    {
+      "name": "native: shell kill -9 10604",
+      "atMs": 8627,
+      "durationMs": 133
+    },
+    {
+      "name": "native: shell ps -ef",
+      "atMs": 8760,
+      "durationMs": 195
+    },
+    {
+      "name": "native: fport",
+      "atMs": 8955,
+      "durationMs": 56
+    },
+    {
+      "name": "native: shell rm -f /data/local/tmp/session.so",
+      "atMs": 9011,
+      "durationMs": 169
+    },
+    {
+      "name": "native: shell test ! -e /data/local/tmp/session.so && echo removed",
+      "atMs": 9180,
+      "durationMs": 117
+    },
+    {
+      "name": "native cleanup",
+      "atMs": 8334,
+      "durationMs": 963
+    },
+    {
+      "name": "native cleanup",
+      "atMs": 9297,
+      "durationMs": 0
+    }
+  ],
+  "preparationReadyMs": 5353,
+  "streamsBeforeClick": 0,
+  "idleSample": {
+    "durationMs": 2142,
+    "cpuTicks": 0
+  },
+  "codec": "h264",
+  "readyMs": 361,
+  "library": "libscrcpy_server_unix_6.6-20260418.z.so"
+}

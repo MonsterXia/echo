@@ -86,8 +86,50 @@
 | #7 | 已合并 | [ci: verify macOS packaging and startup on arm64 and Intel](https://github.com/MonsterXia/scrcpy-harmony/pull/7) |
 | #8 | 已合并 | [将应用更名为 Scrcpy Harmony 并建立独立发布入口](https://github.com/MonsterXia/scrcpy-harmony/pull/8) |
 
+## 本地性能专项
+
+2026-10-24 投屏低帧率专项的来源、原生接口参考与本机实测见[无 Java 视频记录](screencast-video-design.md)，最终[脱敏帧计数](screencast-native-video.json)。它是当前工作分支的证据，不代表已发布版本或其他设备兼容性。
+
+同日后续[原生库自动部署记录](native-video-deployment.md)补充官方归档来源、固定资源清单、独立审查处理及原库缺席验证；[部署后脱敏帧计数](screencast-native-deployment.json)对应正式上传的候选库，不沿用第一阶段预装库数字。
+
+用户实测后的[窗口比例适配记录](screencast-window-fit.md)包含默认黑边根因、首帧自动调整及[真机几何与计数](screencast-window-fit.json)，保留重启过程中停止请求挂起的独立边界。
+
+后续[首帧等待修复](screencast-first-frame-recovery.md)定位冗余 JPEG stop、控制服务隐式初始化和 TCP 未结算请求，记录故障回归及[最终真机打开/重开/缩放计数](screencast-first-frame-recovery.json)。
+
 ## 解除 fork 的核验
 
 解除前后仓库 ID 均为 `1426959270`；解除后 API 返回 `fork: false` 且不再包含 parent；master 保持为 `d672f8954d96ad3511527d074d312077fa8e4eee`，原有 8 个 PR 仍可访问。平台元数据可能丢失的事前警告，没有在这 8 个 PR 上发生。
 
 基线时本仓库无独立 Issue，Issues 功能关闭。该状态按归档快照保留；2026-10-21 已通过 M0-1 启用 Issues，并修正 GitHub About 与主页链接，当前验收结果见 [RUNBOOK](../../RUNBOOK.md#m0-1-验收记录)。
+
+## 2026-10-24 投屏初始化耗时证据
+
+[启动优化记录](screencast-start-latency.md)汇总真实分段探针、控制初始化并发失败记录和最终 Electron 可见首帧/FPS。基线约 10.93 秒；最终完全重建无缓存链路 5.59 秒，实际应用复用健康控制及兼容提示后首帧 2.33 秒。来源是本机生产模块、实际应用及已连接真机，不代表全新手机或其他固件已通过。
+
+## 2026-10-24 无缓存后台准备
+
+[后台准备与点击验收](screencast-preparation.md)：生产模块强制重建、独立缓存探针的准备时间/取流次数/CPU ticks，与实际 Electron 点击至 Canvas、TTL 清理、活动重启及 FPS 分开记录。最终应用点击 603 ms，后台准备耗时并未消失；当前固件实测，不外推为全部新手机秒开。
+
+## 2026-10-24 投屏工具栏交互
+
+[工具栏默认隐藏与毛玻璃修正](screencast-toolbar.md)记录用户两次截图反馈、展开/收起行为、定向测试和实际 Electron 几何验证。首版背景缺失曾影响可读性，不能仅凭布局检查当作视觉验收。
+
+工具栏记录后续补充整条面板统一玻璃层：用户指出前版底色过厚后修正透明度与模糊，实际 Electron 验证浅/深主题的面板背景、内部透明与图标色；不将此前行为测试记为再次执行。
+
+工具栏记录继续补充 2 秒自动收起、交互期间暂停、28 项定向测试及实际 Electron 事件验证；首轮原生输入复核差异亦保留。
+
+工具栏记录追加空闲入口隐藏与右上角唤起：30 项定向测试，实际 Electron 原生鼠标序列及隐藏时 Canvas 命中验证。
+
+工具栏记录新增 160ms 过渡的实际 Electron 中间透明度、快速反向切换、输入禁用与减少动态效果验收；保留首帧探针超时记录，未据此声明启动性能。
+
+工具栏记录继续追加用户箭头截图要求的左上角标题栏入口：portal 与局部 no-drag 热区、30 项回归、实际 Electron 鼠标序列/截图/窄窗口几何验证；macOS 与系统级拖窗仍待验收。
+
+同一记录补充分辨率选择框：实际 Electron 支持可样式化 select，深浅毛玻璃菜单截图与生产链路50%/100%尺寸切换已检查；提示 H.264 整数缩放档位的实际语义，未声称所有百分比均精确生效。
+
+后续精简为原画/流畅两个有效档位，记录旧配置映射、33项回归与实际应用两档尺寸切换；此前六个百分比是历史阶段，当前界面不再展示。
+
+工具栏记录追加实际格式/Canvas FPS显示的63项回归、真机采样对照、收起停采样和窄窗口验证；同时记录用户指出的重复箭头和垂直不齐根因及最终截图/控件中心一致证据。JPEG显示未在真机强制回退验收。
+
+## 2026-10-24 帧率参数与流中断恢复
+
+[帧率与意外降级记录](screencast-fps-tuning.md)及[脱敏统计](screencast-fps-tuning.json)分别保存原应用、独立编码流与更新后实际应用计数：原分辨率约 34→60 FPS。包含独立探针/应用时间重叠时失败与 JPEG 降级、一次原生重连修复、实际视频 TCP 中断后 2.695 秒恢复的证据，不外推为物理拔插或全部固件通过。参数参考官方 HOScrcpy API 文档固定 commit，桌面无 Java。

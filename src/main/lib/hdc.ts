@@ -31,6 +31,9 @@ import { app } from 'electron'
 import * as window from 'share/main/lib/window'
 import isMac from 'licia/isMac'
 import childProcess from 'node:child_process'
+import Emitter from 'licia/Emitter'
+
+export const deviceEvents = new Emitter()
 
 const logger = log('hdc')
 
@@ -61,6 +64,7 @@ const getTargets: IpcGetTargets = async function () {
   let connectKeys: string[]
   try {
     connectKeys = await client.listTargets()
+    deviceEvents.emit('targets', connectKeys)
   } catch (error) {
     logger.error('Failed to list HDC targets', error)
     throw new Error('Failed to list HDC targets')
@@ -281,7 +285,8 @@ export async function init() {
     bin = hdcPath
   }
 
-  app.on('before-quit', async () => {
+  app.on('before-quit', async (event) => {
+    if (event.defaultPrevented) return // preparation cleanup runs before HDC shutdown
     if (settingsStore.get('killHdcWhenExit')) {
       logger.info('kill hdc')
       await client.kill()
@@ -293,8 +298,8 @@ export async function init() {
     bin,
   })
   client.trackTargets().then((tracker) => {
-    tracker.on('add', onTargetChange)
-    tracker.on('remove', onTargetChange)
+    tracker.on('add', (key: string) => { deviceEvents.emit('add', key); onTargetChange() })
+    tracker.on('remove', (key: string) => { deviceEvents.emit('remove', key); onTargetChange() })
   })
   function onTargetChange() {
     logger.info('target change')

@@ -1,0 +1,49 @@
+{
+  "scope": "Actual production application, compatibility JSON temporarily withheld with original saved; visible Canvas and real draw counters only",
+  "final": {
+    "standbyObservedMs": 4386,
+    "codec": "h264",
+    "width": 2412,
+    "height": 1084,
+    "visibleMs": 603,
+    "scaleRestarts": [
+      {
+        "scale": "0.5",
+        "readyMs": 2867,
+        "width": 1206,
+        "height": 542,
+        "codec": "h264"
+      },
+      {
+        "scale": "1",
+        "readyMs": 2858,
+        "width": 2412,
+        "height": 1084,
+        "codec": "h264"
+      }
+    ],
+    "drawnFrames": 193,
+    "durationMs": 5001,
+    "drawnFps": 38.59
+  },
+  "expiry": {
+    "expiryObservedMs": 60343,
+    "preparedProcessesInitially": 1,
+    "forwardRemoved": true,
+    "filesRemoved": true,
+    "remainingOwnedProcesses": 0,
+    "afterExpiry": {
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084,
+      "visibleMs": 2048
+    }
+  },
+  "activeRestart": {
+    "previousFilesRemoved": true,
+    "previousForwardsRemoved": true,
+    "preparedProcesses": 1,
+    "preparedForwards": 1
+  },
+  "note": "Expiry and active restart were checked before the final additional standby process-ownership check; lifecycle policy unchanged."
+}

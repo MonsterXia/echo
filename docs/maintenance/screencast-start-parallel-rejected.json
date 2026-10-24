@@ -1,0 +1,52 @@
+{
+  "scope": "Production control/native startup to first encoded frame; excludes window and Chromium decode",
+  "stages": [
+    {
+      "name": "control: pidof uitest",
+      "atMs": 9,
+      "durationMs": 207
+    },
+    {
+      "name": "control: kill -9",
+      "atMs": 216,
+      "durationMs": 80
+    },
+    {
+      "name": "control reset",
+      "atMs": 9,
+      "durationMs": 287
+    },
+    {
+      "name": "control: pidof uitest",
+      "atMs": 341,
+      "durationMs": 117
+    },
+    {
+      "name": "native: shell uname -m",
+      "atMs": 296,
+      "durationMs": 181
+    },
+    {
+      "name": "native: shell param get const.product.software.version",
+      "atMs": 328,
+      "durationMs": 152
+    },
+    {
+      "name": "control: cat /data/local/tmp/agent.so",
+      "atMs": 458,
+      "durationMs": 83
+    },
+    {
+      "name": "control ready",
+      "atMs": 341,
+      "failed": true,
+      "durationMs": 208
+    },
+    {
+      "name": "native cleanup",
+      "atMs": 549,
+      "durationMs": 0
+    }
+  ],
+  "error": "read ECONNRESET"
+}

@@ -1,0 +1,65 @@
+{
+  "scope": "Final production app and real phone; cold open and two reopen cycles; no frames saved",
+  "rounds": [
+    {
+      "round": 1,
+      "firstFrameMs": 11007,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    },
+    {
+      "round": 2,
+      "firstFrameMs": 2388,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    },
+    {
+      "round": 3,
+      "firstFrameMs": 2488,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    }
+  ],
+  "preliminaryWithoutControlPreparation": [
+    {
+      "round": 1,
+      "firstFrameMs": 16852,
+      "codec": "jpeg",
+      "width": 1206,
+      "height": 542
+    },
+    {
+      "round": 2,
+      "firstFrameMs": 2302,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    },
+    {
+      "round": 3,
+      "firstFrameMs": 2492,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    }
+  ],
+  "scaleRestart": [
+    {
+      "scale": "0.5",
+      "readyMs": 2905,
+      "codec": "h264",
+      "width": 1206,
+      "height": 542
+    },
+    {
+      "scale": "1",
+      "readyMs": 2990,
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import path from 'path'
 import os from 'os'
 import normalizePath from 'licia/normalizePath.js'
 import isWindows from 'licia/isWindows.js'
+import { prepareNativeResources } from './native-video-resources.mjs'
 
 // hdc
 const hdcDir = resolve(__dirname, '../resources/hdc')
@@ -30,6 +31,9 @@ const uitestkitZipPath = resolve(uitestkitDir, 'uitestkit_sdk.zip')
 await $`curl -Lk ${uitestkitUrl} > ${uitestkitZipPath}`
 await $`unzip -o ${uitestkitZipPath} -d ${uitestkitDir}`
 await fs.remove(uitestkitZipPath)
+
+// Extract only pinned device binaries; no Java runtime or SDK classes.
+await prepareNativeResources()
 
 function resolve(...args) {
   return normalizePath(path.resolve(...args))

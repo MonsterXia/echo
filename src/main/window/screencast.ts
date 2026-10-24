@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from 'electron'
+import { BrowserWindow, ipcMain, screen } from 'electron'
 import * as window from 'share/main/lib/window'
 import { getScreencastStore } from '../lib/store'
 import once from 'licia/once'
@@ -69,6 +69,39 @@ export function closeWin() {
 }
 
 const initIpc = once(() => {
+  ipcMain.handle('fitScreencast', (event, frameWidth: number, frameHeight: number, verticalInset: number) => {
+    if (!win || event.sender !== win.webContents || event.senderFrame !== win.webContents.mainFrame) {
+      throw new Error('Window fitting requires the active screencast document')
+    }
+    if (![frameWidth, frameHeight].every(value => Number.isInteger(value) && value > 0 && value <= 16384) ||
+      !Number.isFinite(verticalInset) || verticalInset < 0 || verticalInset > 512) {
+      throw new Error('Invalid screencast dimensions')
+    }
+    if (win.isMaximized() || win.isFullScreen()) return
+    const bounds = win.getBounds()
+    const content = win.getContentBounds()
+    const area = screen.getDisplayMatching(bounds).workArea
+    const borderWidth = Math.max(0, bounds.width - content.width)
+    const chromeHeight = Math.max(0, bounds.height - content.height) + verticalInset
+    const ratio = frameWidth / frameHeight
+    // Preserve the user's approximate window area, then fit within this display.
+    // Frame pixels define only the ratio; window bounds and chrome are in DIP.
+    const videoArea = content.width * Math.max(1, content.height - verticalInset)
+    const videoWidth = Math.min(
+      Math.sqrt(videoArea * ratio),
+      Math.max(1, area.width - borderWidth),
+      Math.max(1, area.height - chromeHeight) * ratio,
+    )
+    const width = Math.min(area.width, Math.round(videoWidth + borderWidth))
+    const height = Math.min(area.height, Math.round(videoWidth / ratio + chromeHeight))
+    win.setMinimumSize(Math.min(320, width), Math.min(320, height))
+    win.setBounds({
+      x: Math.round(Math.max(area.x, Math.min(bounds.x + (bounds.width - width) / 2, area.x + area.width - width))),
+      y: Math.round(Math.max(area.y, Math.min(bounds.y + (bounds.height - height) / 2, area.y + area.height - height))),
+      width,
+      height,
+    })
+  })
   handleEvent('setScreencastStore', <IpcSetStore>(
     ((name, val) => store.set(name, val))
   ))

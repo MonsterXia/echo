@@ -33,6 +33,8 @@ npm ci --no-audit --no-fund
 
 ## 准备设备资源
 
+资源脚本也会下载固定版本的上游 HOScrcpy SDK 归档，使用 Node 内置能力校验 SHA-256 并只提取 6 个设备端 `.so` 到 `resources/native-video`。不执行 Java、不要求 JDK/JRE；JAR 不进入发行目录。只补充这组资源可运行 `node script/native-video-resources.mjs`，已有下载可用 `--archive <SDK归档路径>`，仍按固定摘要校验。完整构建要求这组资源和声明完整且未被修改，并仅复制清单内文件。来源及原样保留的上游许可见 `vendor/native-video/`。
+
 Windows PowerShell 中显式选择 Git Bash，避免 zx 调用不可用的 WSL Bash。以下路径适用于默认 Git for Windows 安装目录，安装在别处时替换路径：
 
 ```powershell

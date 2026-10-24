@@ -3,6 +3,123 @@ const { test } = require('node:test')
 const { screencastMain } = require('./helpers/screencast-main.cjs')
 const flush = () => new Promise((resolve) => setImmediate(resolve))
 const listeners = (h) => (h.driver._events.message || []).length
+
+test('application shutdown detaches frames immediately and waits for active capture cleanup', async () => {
+  const h = screencastMain()
+  h.show(); await h.start()
+  const stopping = deferred()
+  h.driver.stopCaptureScreen = () => stopping.promise
+  let done = false
+  const shutdown = h.shutdown().then(() => { done = true })
+  await flush()
+  assert.equal(listeners(h), 0)
+  assert.equal(done, false)
+  stopping.resolve()
+  await shutdown
+  assert.equal(done, true)
+})
+
+test('click during preparation joins the device queue and adopts the prepared service once', async () => {
+  const h = screencastMain()
+  const ready = deferred()
+  let probes = 0, starts = 0, discards = 0
+  h.driver.prepareNativeCapture = async () => { probes++; await ready.promise; return true }
+  h.driver.discardNativePreparation = async () => { discards++ }
+  h.driver.startOwnedCapture = async () => { starts++ }
+  h.driver.stopCaptureScreen = async () => {}
+  const preparing = h.prepare()
+  h.show()
+  const starting = h.start()
+  await flush()
+  assert.equal(starts, 0)
+  ready.resolve()
+  await Promise.all([preparing, starting])
+  await h.cancelPreparation()
+  assert.equal(probes, 1)
+  assert.equal(starts, 1)
+  assert.equal(discards, 0, 'expiry must not stop a promoted active stream')
+  assert.equal(await h.prepare(), false, 'active capture must not be probed again')
+  await h.stop()
+})
+
+test('cancel during preparation cleans late resources and failed cleanup blocks adoption', async () => {
+  const h = screencastMain()
+  const ready = deferred()
+  let valid = true, failCleanup = true, starts = 0
+  h.driver.prepareNativeCapture = async () => { await ready.promise; return true }
+  h.driver.discardNativePreparation = async () => { if (failCleanup) throw new Error('cleanup unconfirmed') }
+  h.driver.startOwnedCapture = async () => { starts++ }
+  const preparing = h.prepare(() => valid)
+  await flush()
+  valid = false
+  ready.resolve()
+  await assert.rejects(preparing, /cleanup unconfirmed/)
+  h.show()
+  await assert.rejects(h.start(), /cleanup unconfirmed/)
+  assert.equal(starts, 0)
+  failCleanup = false
+  await h.cancelPreparation()
+  await h.start()
+  assert.equal(starts, 1)
+  await h.stop()
+})
+
+test('control initialization reuses a responsive daemon without stopping it', async () => {
+  const h = screencastMain(async () => ({ result: { width: 100, height: 200 } }))
+  let stops = 0
+  h.driver.stop = async () => { stops++ }
+  await h.driver.initializeControl()
+  assert.equal(stops, 0)
+  assert.deepEqual(h.calls, ['getDisplaySize'])
+})
+
+test('control initialization rebuilds an unresponsive daemon once and propagates repeated failure', async () => {
+  let queries = 0, stops = 0
+  const h = screencastMain(async () => {
+    queries++
+    throw new Error('control unavailable')
+  })
+  h.driver.stop = async () => { stops++ }
+  await assert.rejects(h.driver.initializeControl(), /control unavailable/)
+  assert.equal(stops, 1)
+  assert.equal(queries, 2)
+})
+
+test('cold native start does not wait for an unrelated JPEG stop reply', async () => {
+  let prepared = false
+  const h = screencastMain(async (_method, api) => {
+    if (api === 'stopCaptureScreen') throw new Error('Unnecessary JPEG stop')
+    if (api === 'getDisplaySize') prepared = true
+    return { sessionId: 'session' }
+  })
+  let starts = 0
+  h.driver.nativeVideo = { async start() { assert.ok(prepared, 'prepare control before starting native capture'); starts++; return true }, async stop() {} }
+  h.show()
+  await h.start()
+  await h.stop()
+  await h.create()
+  await h.start()
+  assert.equal(starts, 2)
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 0)
+})
+
+test('failed JPEG fallback start remains uncertain until a real stop is acknowledged', async () => {
+  let failStop = true
+  const h = screencastMain(async (_method, api) => {
+    if (api === 'startCaptureScreen') throw new Error('JPEG start result unknown')
+    if (api === 'stopCaptureScreen' && failStop) throw new Error('JPEG stop unconfirmed')
+    return { sessionId: 'session' }
+  })
+  let nativeStarts = 0
+  h.driver.nativeVideo = { async start() { nativeStarts++; return false }, async stop() {} }
+  h.show()
+  await assert.rejects(h.start(), /JPEG start result unknown/)
+  await assert.rejects(h.start(), /JPEG stop unconfirmed/)
+  assert.equal(nativeStarts, 1)
+  failStop = false
+  await assert.rejects(h.start(), /JPEG start result unknown/)
+  assert.equal(nativeStarts, 2)
+})
 function deferred() {
   let resolve, reject
   const promise = new Promise((yes, no) => {
@@ -340,13 +457,15 @@ test('capture and display queries share a single pending UiDriver initialization
   await flush()
   assert.deepEqual(h.initialization(), {
     targetRequests: 1,
-    initializationStops: 1,
+    initializationStops: 0,
+    initializationQueries: 1,
   })
   initialized.resolve()
   await Promise.all([starting, display])
   assert.deepEqual(h.initialization(), {
     targetRequests: 1,
-    initializationStops: 1,
+    initializationStops: 0,
+    initializationQueries: 1,
   })
   await h.stop()
 })
@@ -365,4 +484,55 @@ test('failed UiDriver initialization releases singleflight for a later retry', a
   await h.start()
   assert.equal(h.initialization().targetRequests, 2)
   await h.stop()
+})
+
+test('native frames retain generation ownership and closing during start compensates stop', async () => {
+  const pending = deferred()
+  const h = screencastMain()
+  let receive, stops = 0
+  h.driver.nativeVideo = {
+    async start(_scale, callback) { receive = callback; return pending.promise },
+    async stop() { stops++ },
+  }
+  h.show()
+  const starting = h.start()
+  await flush()
+  receive({ data: Buffer.from([1]), timestamp: 42, config: false, keyFrame: true })
+  assert.equal(h.deliveries.length, 1)
+  assert.equal(h.deliveries[0].args[4].codec, 'h264')
+  h.close()
+  receive({ data: Buffer.from([2]), timestamp: 43 })
+  assert.equal(h.deliveries.length, 1)
+  pending.resolve(true)
+  await starting
+  await flush()
+  assert.equal(stops, 1)
+})
+
+test('native unavailable falls back to JPEG while explicit compatibility skips native', async () => {
+  const h = screencastMain()
+  let starts = 0
+  h.driver.nativeVideo = { async start() { starts++; return false }, async stop() {} }
+  h.show()
+  await h.start()
+  assert.equal(starts, 1)
+  assert.equal(listeners(h), 1)
+  await h.invoke('startCaptureScreen', [h.session(), 0.5, 2, false])
+  assert.equal(starts, 1)
+  assert.equal(listeners(h), 1)
+  await h.stop()
+})
+
+test('unconfirmed native cleanup blocks JPEG fallback and subsequent start', async () => {
+  const h = screencastMain()
+  let starts = 0
+  h.driver.nativeVideo = {
+    async start() { starts++; throw new Error('native cleanup unconfirmed') },
+    async stop() { throw new Error('native cleanup unconfirmed') },
+  }
+  h.show()
+  await assert.rejects(h.start(), /cleanup unconfirmed/)
+  await assert.rejects(h.invoke('startCaptureScreen', [h.session(), 0.5, 2, false]), /cleanup unconfirmed/)
+  assert.equal(starts, 1)
+  assert.equal(listeners(h), 0)
 })

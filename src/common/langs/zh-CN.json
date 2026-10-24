@@ -86,7 +86,12 @@
   "back": "返回",
   "alwaysOnTop": "置顶",
   "fullscreen": "全屏",
-  "scale": "投屏分辨率比例",
+  "scale": "画质",
+  "screencastOriginalScale": "原画",
+  "screencastSmoothScale": "流畅",
+  "screencastWaiting": "等待画面",
+  "screencastStatusHint": "当前实际绘制的格式与帧率，每秒更新。静止画面或停止出帧时 FPS 可能降低；这不是请求帧率或显示器刷新率。",
+  "screencastScaleHint": "原画：保留原分辨率，画面更清晰。流畅：宽高各减半，减轻传输和解码负担，画面清晰度会降低。切换画质不保证提高帧率。",
   "inputText": "输入文本",
   "hdcCli": "HDC 命令行接口",
   "hilog": "日志",
@@ -97,5 +102,7 @@
   "scrollToEnd": "滚动到底部",
   "restart": "重启",
   "pause": "暂停",
-  "resume": "继续"
+  "resume": "继续",
+  "showScreencastTools": "展开投屏工具",
+  "hideScreencastTools": "收起投屏工具"
 }

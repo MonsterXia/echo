@@ -80,12 +80,14 @@ function deferred() {
 // boundaries and unrelated capture APIs are controlled; no device access.
 async function fixture(
   t,
-  { strict = false, target = { key: 'synthetic-a' } } = {},
+  { strict = false, target = { key: 'synthetic-a' }, captureClient } = {},
 ) {
   const prompts = [],
     sends = [],
     notifications = []
-  const store = observable({ target, scale: 1, alwaysOnTop: false })
+  const store = observable({ target, scale: 1, alwaysOnTop: false, screencastClient: captureClient })
+  const timers = new Map()
+  let clock = 0, nextTimer = 0
   let onClick
   const Toolbar = load(
     'src/renderer/screencast/components/Toolbar.tsx',
@@ -117,6 +119,20 @@ async function fixture(
       'licia/download': {},
     },
     {
+      document,
+      performance: { now: () => clock },
+      setInterval: (fn, delay) => {
+        const id = ++nextTimer
+        timers.set(id, { fn, at: clock + delay, interval: delay })
+        return id
+      },
+      clearInterval: (id) => timers.delete(id),
+      setTimeout: (fn, delay) => {
+        const id = ++nextTimer
+        timers.set(id, { fn, at: clock + delay })
+        return id
+      },
+      clearTimeout: (id) => timers.delete(id),
       main: {
         inputText: (...args) => {
           const p = deferred()
@@ -150,13 +166,27 @@ async function fixture(
     ),
   )
   return {
+    container: document.body,
+    timers,
+    tick: async (ms) => {
+      clock += ms
+      await act(async () => {
+        for (const [id, timer] of timers) {
+          if (timer.at <= clock) {
+            if (timer.interval) timer.at = clock + timer.interval
+            else timers.delete(id)
+            timer.fn()
+          }
+        }
+      })
+    },
     prompts,
     sends,
     notifications,
     unmount,
-    button: () => container.querySelector('.icon-text').closest('button'),
+    button: () => document.body.querySelector('.icon-text').closest('button'),
     busy: () =>
-      container
+      document.body
         .querySelector('.icon-text')
         .closest('.luna-toolbar-item')
         .classList.contains('luna-toolbar-disabled'),
@@ -182,7 +212,115 @@ async function begin(f, text = '合成文本') {
   return { task }
 }
 
+test('capture status measures elapsed paint rate, resets on restart, and stops sampling when hidden', async (t) => {
+  let stats = { codec: null, frames: 0, generation: 1 }
+  const f = await fixture(t, { strict: true, captureClient: { getCaptureStats: () => ({ ...stats }) } })
+  const toggle = f.container.querySelector('[aria-controls]')
+  const status = () => f.container.querySelector('[data-capture-status]').textContent
+  const intervals = () => [...f.timers.values()].filter(timer => timer.interval).length
+  assert.equal(intervals(), 0)
+  await act(async () => { toggle.click(); toggle.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true })) })
+  assert.match(status(), /screencastWaiting/)
+  assert.equal(intervals(), 1)
+  stats = { codec: 'H.264', frames: 60, generation: 1 }
+  await f.tick(1000)
+  assert.match(status(), /H\.26460\.0 FPS/)
+  stats.frames += 40
+  await f.tick(2000)
+  assert.match(status(), /20\.0 FPS/)
+  await f.tick(1000)
+  assert.match(status(), /0\.0 FPS/)
+  stats = { codec: null, frames: 0, generation: 2 }
+  await f.tick(1000)
+  assert.match(status(), /screencastWaiting— FPS/)
+  stats = { codec: 'JPEG', frames: 10, generation: 2 }
+  await f.tick(1000)
+  assert.match(status(), /JPEG10\.0 FPS/)
+  await act(async () => toggle.click())
+  assert.equal(intervals(), 0)
+  stats.frames += 1000
+  await act(async () => toggle.click())
+  assert.match(status(), /JPEG— FPS/, 'reopening must not average time hidden')
+  await f.unmount()
+  assert.equal(f.timers.size, 0)
+})
+
+test('tools start hidden, reveal on demand and Escape restores focus without opening a prompt', async (t) => {
+  const f = await fixture(t)
+  const toggle = f.container.querySelector('[aria-controls="screencast-tools"]')
+  const panel = f.container.querySelector('#screencast-tools')
+  assert.equal(panel.hasAttribute('inert'), true)
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false')
+  await act(async () => toggle.click())
+  assert.equal(panel.hasAttribute('inert'), false)
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true')
+  f.button().focus()
+  await act(async () => f.button().dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true })))
+  assert.equal(panel.hasAttribute('inert'), true)
+  assert.equal(document.activeElement, toggle)
+  assert.equal(f.prompts.length, 0)
+  await act(async () => toggle.click())
+  await act(async () => toggle.click())
+  assert.equal(panel.hasAttribute('inert'), true)
+})
+
 for (const strict of [false, true]) {
+  test(`titlebar entry reveals the idle button without expanding tools; hiding does not block later use (strict=${strict})`, async (t) => {
+    const f = await fixture(t, { strict })
+    const toggle = f.container.querySelector('[aria-controls]')
+    const panel = f.container.querySelector('#screencast-tools')
+    const move = (inside) => act(async () => toggle.parentElement.dispatchEvent(new window.MouseEvent(inside ? 'mouseover' : 'mouseout', { bubbles: true, relatedTarget: document.body })))
+    await f.tick(1999)
+    assert.equal(toggle.dataset.visible, 'true')
+    await f.tick(1)
+    assert.equal(toggle.dataset.visible, 'false')
+    await move(false)
+    assert.equal(toggle.dataset.visible, 'false', 'other video regions do not reveal the button')
+    await move(true)
+    assert.equal(toggle.dataset.visible, 'true')
+    assert.equal(panel.hasAttribute('inert'), true, 'hover only reveals the entry')
+    await f.tick(5000)
+    assert.equal(toggle.dataset.visible, 'true', 'stationary pointer in titlebar entry keeps it visible')
+    await act(async () => toggle.click())
+    await move(false)
+    await f.tick(2000)
+    assert.equal(panel.hasAttribute('inert'), true)
+    assert.equal(toggle.dataset.visible, 'true', 'entry gets its own grace period after panel closes')
+    await f.tick(2000)
+    assert.equal(toggle.dataset.visible, 'false')
+    await act(async () => toggle.focus())
+    assert.equal(toggle.dataset.visible, 'true', 'keyboard focus can recover the hidden entry')
+    await f.unmount()
+    assert.equal(f.timers.size, 0)
+    await move(true)
+    assert.equal(f.timers.size, 0, 'unmounted portal cannot rearm timers')
+  })
+
+  test(`auto hides after leaving, cancels on return and cleans up timers (strict=${strict})`, async (t) => {
+    const f = await fixture(t, { strict })
+    const toggle = f.container.querySelector('[aria-controls="screencast-tools"]')
+    const panel = f.container.querySelector('#screencast-tools')
+    const enter = () => act(async () => toggle.dispatchEvent(new window.MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body })))
+    const leave = () => act(async () => toggle.dispatchEvent(new window.MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body })))
+    await enter()
+    await act(async () => toggle.click())
+    await f.tick(3000)
+    assert.equal(panel.hasAttribute('inert'), false, 'hovering keeps tools visible')
+    await leave()
+    await f.tick(1999)
+    assert.equal(panel.hasAttribute('inert'), false)
+    await enter()
+    await f.tick(1000)
+    assert.equal(panel.hasAttribute('inert'), false, 'return cancels the pending hide')
+    await leave()
+    await f.tick(2000)
+    assert.equal(panel.hasAttribute('inert'), true)
+    await act(async () => toggle.click())
+    assert.equal(f.timers.size, 1)
+    await f.unmount()
+    assert.equal(f.timers.size, 0)
+  })
+
   test(`waits for bridge and guards repeated clicks before rerender (strict=${strict})`, async (t) => {
     const f = await fixture(t, { strict })
     let task,
@@ -216,6 +354,51 @@ for (const strict of [false, true]) {
     await act(async () => f.prompts[1].resolve(null))
   })
 }
+
+test('auto hide waits for text prompt and send, then starts a fresh delay', async (t) => {
+  const f = await fixture(t)
+  await act(async () => f.container.querySelector('[aria-controls]').click())
+  const panel = f.container.querySelector('#screencast-tools')
+  let task
+  await act(async () => { task = f.invoke() })
+  await f.tick(5000)
+  assert.equal(panel.hasAttribute('inert'), false)
+  await act(async () => f.prompts[0].resolve('text'))
+  await f.tick(5000)
+  assert.equal(panel.hasAttribute('inert'), false)
+  await act(async () => { f.sends[0].resolve(); await task })
+  await f.tick(1999)
+  assert.equal(panel.hasAttribute('inert'), false)
+  await f.tick(1)
+  assert.equal(panel.hasAttribute('inert'), true)
+})
+
+test('select and keyboard focus protect editing; ordinary mouse button focus does not pin the toolbar', async (t) => {
+  const f = await fixture(t)
+  const toggle = f.container.querySelector('[aria-controls]')
+  const panel = f.container.querySelector('#screencast-tools')
+  await act(async () => { toggle.focus(); toggle.click() })
+  await f.tick(2000)
+  assert.equal(panel.hasAttribute('inert'), true, 'mouse focus on toggle must not defeat auto hide')
+  await act(async () => toggle.click())
+  const select = panel.querySelector('select')
+  await act(async () => select.focus())
+  await f.tick(5000)
+  assert.equal(panel.hasAttribute('inert'), false)
+  await act(async () => select.blur())
+  await f.tick(2000)
+  assert.equal(panel.hasAttribute('inert'), true)
+  await act(async () => {
+    toggle.focus()
+    toggle.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    toggle.click()
+  })
+  await f.tick(5000)
+  assert.equal(panel.hasAttribute('inert'), false)
+  await act(async () => toggle.blur())
+  await f.tick(2000)
+  assert.equal(panel.hasAttribute('inert'), true)
+})
 
 for (const text of [null, '']) {
   test(`cancel/empty does not send and releases the button (${JSON.stringify(text)})`, async (t) => {

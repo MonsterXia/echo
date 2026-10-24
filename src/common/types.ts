@@ -91,15 +91,27 @@ export type IpcGetTopBundle = (connectKey: string) => Promise<{
 }>
 export type IpcGetWebviews = (connectKey: string, pid: number) => Promise<any[]>
 export type IpcSetScreencastAlwaysOnTop = (alwaysOnTop: boolean) => void
+export type IpcFitScreencast = (
+  width: number,
+  height: number,
+  verticalInset: number,
+) => Promise<void>
 export type IpcGetDisplaySize = (connectKey: string) => Promise<{
   width: number
   height: number
 }>
 export type IpcCreateCaptureSession = (connectKey: string) => Promise<string>
+export interface CaptureFrameMetadata {
+  codec: 'h264' | 'error'
+  timestamp?: number
+  config?: boolean
+  keyFrame?: boolean
+}
 export type IpcStartCaptureScreen = (
   sessionId: string,
   scale: number,
   generation: number,
+  preferVideo?: boolean,
 ) => Promise<void>
 // stopped confirms this session's lease stop; released only frees an unused
 // token; obsolete means it was already invalidated. Neither latter confirms

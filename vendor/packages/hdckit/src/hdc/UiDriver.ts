@@ -5,10 +5,9 @@ import Target from './Target'
 import cmpVersion from 'licia/cmpVersion'
 import toNum from 'licia/toNum'
 import getPort from 'licia/getPort'
-import strHash from 'licia/strHash'
-import now from 'licia/now'
 import sleep from 'licia/sleep'
 import net, { Socket } from 'node:net'
+import { randomInt } from 'node:crypto'
 import Emitter from 'licia/Emitter'
 import singleton from 'licia/singleton'
 
@@ -26,7 +25,6 @@ export default class UiDriver extends Emitter {
   private port: number = 0
   private sdkVersion = SDK_VERSION
   private sdkPath = SDK_PATH
-  private triedStarting = false
   private captureScreenCallback: (sessionId: number, message: Buffer) => void =
     null
   constructor(target: Target, sdkPath?: string, sdkVersion?: string) {
@@ -40,6 +38,7 @@ export default class UiDriver extends Emitter {
     }
   }
   async start() {
+    let launched = false
     let uiTestPid = trim(await this.shell('pidof uitest'))
     const shouldUpdateSdk = await this.shouldUpdateSdk()
     if (!uiTestPid || shouldUpdateSdk) {
@@ -55,11 +54,12 @@ export default class UiDriver extends Emitter {
 
       if (!uiTestPid) {
         await this.shell('uitest start-daemon singleness')
-        await sleep(2000)
+        launched = true
       }
     }
 
     this.port = await this.forwardTcp(8012)
+    return launched
   }
   async stop() {
     if (this.connection) {
@@ -92,7 +92,7 @@ export default class UiDriver extends Emitter {
     this.on('message', this.captureScreenCallback)
   }
   async stopCaptureScreen() {
-    await this.send('Captures', 'stopCaptureScreen')
+    await this.send('Captures', 'stopCaptureScreen', {}, 3000)
     if (this.captureScreenCallback) {
       this.off('message', this.captureScreenCallback)
       this.captureScreenCallback = null
@@ -119,69 +119,61 @@ export default class UiDriver extends Emitter {
   private send = async (
     method: string,
     api: string,
-    args: any = {}
+    args: any = {},
+    timeout = 10000
   ): Promise<any> => {
-    try {
-      const connection = await this.getConnection()
-      const module = 'com.ohos.devicetest.hypiumApiHelper'
-      if (method === 'callHypiumApi') {
-        return connection.sendMessage({
-          module,
-          method,
-          params: {
-            api: `Driver.${api}`,
-            this: this.driverName,
-            args,
-            message_type: 'hypium',
-          },
-        })
-      }
-      return connection.sendMessage({
-        module,
-        method,
-        params: {
-          api,
-          args,
-        },
-      })
-    } catch (e) {
-      if (e.message === 'timeout' && !this.triedStarting) {
-        this.triedStarting = true
-        await this.stop()
-        return await this.send(method, api, args)
-      } else {
-        throw e
-      }
-    }
+    // A missing reply has an unknown device-side result. Never replay input
+    // or kill UITest here (the native video extension may share that process).
+    const connection = await this.getConnection()
+    const module = 'com.ohos.devicetest.hypiumApiHelper'
+    const params = method === 'callHypiumApi'
+      ? { api: `Driver.${api}`, this: this.driverName, args, message_type: 'hypium' }
+      : { api, args }
+    return connection.sendMessage({ module, method, params }, timeout)
   }
+
   private getConnection = singleton(async (): Promise<Connection> => {
     let { connection } = this
 
     if (!connection) {
-      await this.start()
-      connection = new Connection()
-      connection.setOnMessage((sessionId, message) => {
-        this.emit('message', sessionId, message)
-      })
-      await connection.connect(this.port)
-      connection.socket.on('end', () => {
-        this.connection = null
-      })
-      const { result } = await connection.sendMessage(
-        {
-          module: 'com.ohos.devicetest.hypiumApiHelper',
-          method: 'callHypiumApi',
-          params: {
-            api: 'Driver.create',
-            this: null,
-            args: [],
-            message_type: 'hypium',
-          },
-        },
-        1000
-      )
-      this.driverName = result
-      this.connection = connection
+      const launched = await this.start()
+      const deadline = Date.now() + 3000
+      // Only retry the read-only bootstrap handshake after our own launch.
+      // HDC may accept TCP before the device daemon is ready. User RPCs are
+      // never replayed and existing-server failures retain their normal path.
+      for (;;) {
+        connection = new Connection()
+        const candidate = connection
+        connection.setOnClose(() => {
+          if (this.connection === candidate) this.connection = null
+        })
+        connection.setOnMessage((sessionId, message) => {
+          this.emit('message', sessionId, message)
+        })
+        try {
+          await connection.connect(this.port, launched ? Math.max(1, Math.min(1000, deadline - Date.now())) : 3000)
+          const { result } = await connection.sendMessage(
+            {
+              module: 'com.ohos.devicetest.hypiumApiHelper',
+              method: 'callHypiumApi',
+              params: {
+                api: 'Driver.create',
+                this: null,
+                args: [],
+                message_type: 'hypium',
+              },
+            },
+            launched ? Math.max(1, Math.min(1000, deadline - Date.now())) : 1000
+          )
+          this.driverName = result
+          this.connection = connection
+          break
+        } catch (error) {
+          connection.end()
+          if (!launched || Date.now() >= deadline) throw error
+          await sleep(Math.min(50, deadline - Date.now()))
+        }
+      }
     }
 
     return connection
@@ -233,10 +225,15 @@ class Connection {
   socket!: Socket
   private onMessage: OnMessage
   private ended = false
+  private onClose?: () => void
+  private sequence = randomInt(0, 0x7fffffff)
+  private connectReject?: (error: Error) => void
+  private connectTimer?: ReturnType<typeof setTimeout>
+  private timers = new Map<number, ReturnType<typeof setTimeout>>()
   private resolves: Map<number, (value?: any) => void> = new Map()
   private rejects: Map<number, (reason?: any) => void> = new Map()
   private buffer: Buffer = Buffer.alloc(0)
-  connect(port: number) {
+  connect(port: number, timeout = 3000) {
     const socket = net.connect({
       host: '127.0.0.1',
       port,
@@ -246,38 +243,53 @@ class Connection {
     this.socket = socket
 
     return new Promise((resolve, reject) => {
-      socket.once('connect', async () => {
+      this.connectReject = reject
+      this.connectTimer = setTimeout(() => this.fail(new Error('UITest connection timed out')), timeout)
+      socket.once('connect', () => {
+        clearTimeout(this.connectTimer)
+        this.connectReject = undefined
+        if (this.ended) return
         socket.on('data', this.onData)
         resolve(null)
       })
-      socket.once('error', reject)
-      socket.once('end', () => {
-        this.ended = true
-        this.socket = null
-      })
+      socket.on('error', error => this.fail(error))
+      socket.once('end', () => this.fail(new Error('UITest connection ended')))
+      socket.once('close', () => this.fail(new Error('UITest connection closed')))
     })
   }
   setOnMessage(onMessage: OnMessage) {
     this.onMessage = onMessage
   }
+  setOnClose(onClose: () => void) {
+    this.onClose = onClose
+  }
   sendMessage(
     message: any,
-    timeout = 0
+    timeout = 10000
   ): Promise<{ sessionId: number; result: any }> {
+    if (this.ended) return Promise.reject(new Error('UITest connection closed'))
+    if (!Number.isFinite(timeout) || timeout <= 0 || timeout > 2147483647) {
+      return Promise.reject(new Error('Invalid UITest request timeout'))
+    }
     message = JSON.stringify(message)
-    const sessionId = strHash(now() + message)
+    // Identical commands in one clock tick must not overwrite pending requests.
+    const sessionId = ++this.sequence
+    if (sessionId > 0xffffffff) {
+      this.end()
+      return Promise.reject(new Error('UITest request IDs exhausted'))
+    }
     const sessionIdBuf = Buffer.alloc(4)
     sessionIdBuf.writeUInt32BE(sessionId, 0)
     return new Promise((resolve, reject) => {
       this.resolves.set(sessionId, resolve)
       this.rejects.set(sessionId, reject)
-      this.sendRawMessage(sessionIdBuf, Buffer.from(message))
-      if (timeout) {
-        setTimeout(() => {
-          reject(new Error('timeout'))
-          this.resolves.delete(sessionId)
-          this.rejects.delete(sessionId)
-        }, timeout)
+      this.timers.set(sessionId, setTimeout(() => {
+        this.fail(new Error('UITest request timed out'))
+      }, timeout))
+      try {
+        this.sendRawMessage(sessionIdBuf, Buffer.from(message))
+      } catch (error) {
+        this.fail(error instanceof Error ? error : new Error(String(error)))
       }
     })
   }
@@ -296,11 +308,25 @@ class Connection {
     this.socket.write(Buffer.concat(buffers))
   }
   end() {
-    if (this.socket) {
-      this.socket.end()
-    }
+    this.fail(new Error('UITest connection closed'))
+  }
+  private fail(error: Error) {
+    if (this.ended) return
+    this.ended = true
+    clearTimeout(this.connectTimer)
+    this.connectReject?.(error)
+    this.connectReject = undefined
+    for (const timer of this.timers.values()) clearTimeout(timer)
+    this.timers.clear()
+    for (const reject of this.rejects.values()) reject(error)
+    this.resolves.clear()
+    this.rejects.clear()
+    this.buffer = Buffer.alloc(0)
+    this.socket?.destroy()
+    this.onClose?.()
   }
   private onData = (data: Buffer) => {
+    if (this.ended) return
     let buffer = this.buffer
     buffer = Buffer.concat([buffer, data])
 
@@ -336,6 +362,8 @@ class Connection {
       const resolve = this.resolves.get(sessionId)
       const reject = this.rejects.get(sessionId)
       if (resolve) {
+        clearTimeout(this.timers.get(sessionId))
+        this.timers.delete(sessionId)
         try {
           const result = JSON.parse(message.toString())
           if (result.exception) {
@@ -353,7 +381,9 @@ class Connection {
         this.onMessage(sessionId, message)
       }
 
-      buffer = this.buffer.subarray(totalLength)
+      // Consume the merged input, including this data event. Using the old
+      // buffer here discards coalesced messages and partial next frames.
+      buffer = buffer.subarray(totalLength)
     }
 
     this.buffer = buffer
