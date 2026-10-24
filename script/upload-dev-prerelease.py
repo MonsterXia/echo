@@ -13,6 +13,7 @@ root = Path('verified-artifacts')
 out = Path('verified-assets')
 out.mkdir()
 files = [p for p in root.rglob('*') if p.is_file()]
+print('Artifact files:', [str(p) for p in files], flush=True)
 
 def digest(p, alg='sha256'):
     return hashlib.new(alg, p.read_bytes()).hexdigest()
