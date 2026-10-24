@@ -23,6 +23,46 @@ function fixture() {
   }
 }
 
+const sizeLimitBody = 'Sorry @MonsterXia, your pull request is larger than the review limit of 150,000 diff characters'
+
+for (const action of ['created', 'edited']) {
+  test(`deletes the observed PR size-limit notice on ${action}`, async () => {
+    const context = fixture()
+    context.payload.action = action
+    context.payload.comment.body = sizeLimitBody
+    assert.deepEqual((await run(context)).map(([method]) => method), ['get', 'delete'])
+  })
+}
+
+test('manual cleanup deletes the size-limit template with a different numeric limit', async () => {
+  const comment = fixture().payload.comment
+  comment.body = sizeLimitBody.replace('150,000', '200,000')
+  assert.deepEqual((await run(manualFixture(), { initial: comment, current: comment })).map(([method]) => method), ['get', 'issue', 'get', 'delete'])
+})
+
+for (const [name, change] of Object.entries({
+  'appended review': c => { c.body += '\n\nReview: fix the socket leak.' },
+  'quoted notice': c => { c.body = 'Review context:\n' + c.body },
+  'different recipient': c => { c.body = c.body.replace('@MonsterXia', '@someoneElse') },
+  'human author': c => { c.user = { login: 'MonsterXia', type: 'User' } },
+  'another bot': c => { c.user.login = 'other[bot]' },
+})) {
+  test(`preserves size-limit text with ${name}`, async () => {
+    const context = fixture()
+    context.payload.comment.body = sizeLimitBody
+    change(context.payload.comment)
+    assert.deepEqual(await run(context), [])
+  })
+}
+
+test('preserves size-limit comment edited into a review before deletion', async () => {
+  const context = fixture()
+  context.payload.comment.body = sizeLimitBody
+  const current = structuredClone(context.payload.comment)
+  current.body += '\nReview finding: socket leak.'
+  assert.deepEqual((await run(context, { current })).map(([method]) => method), ['get'])
+})
+
 async function run(context, options = {}) {
   // Execute the actual privileged workflow script, with only GitHub I/O replaced.
   const yaml = fs.readFileSync(workflowPath, 'utf8').replace(/\r\n/g, '\n')

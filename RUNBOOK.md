@@ -591,3 +591,10 @@
 - 展开工具栏显示实际H.264/JPEG和Canvas绘制FPS，每秒按实际间隔更新；首帧等待、generation重置、零帧及收起/卸载均处理，不添加捕获或IPC。状态与画质成组换行。
 - 定向63/63、lint、renderer构建通过。真机H.264显示约60 FPS与独立绘制统计60.31 FPS一致，后续内容变为约30 FPS时如实更新；JPEG显示经无设备生产客户端回归，未强制真机降级。原生鼠标稳定窗口序列验证2秒/4秒隐藏及停采样，320px布局可用，保留早期resize合成序列差异。详见[工具栏记录](docs/maintenance/screencast-toolbar.md)。
 - 按用户追加反馈修复Luna/Chromium双箭头叠加，统一28px高度与垂直中心；最终实际截图和几何核对一致。开发构建已打开；其他平台、长期性能与M2事项继续待验收，无提交或发布。
+
+### 2026-10-24 Sourcery PR 字符上限提示清理
+
+- 用户授权将 `Sorry @MonsterXia, your pull request is larger than the review limit of 150,000 diff characters` 也加入原超额度 Action；实际模板取自 PR #56 评论 `6386033835`。
+- 在原 `sourcery-quota-comments.yml` 的整段正文白名单中增加第二种模板，数字上限可变；共用原作者/PR 校验、删除前重新读取与手动单 ID 入口，没有新工作流或定时任务。正常审查、带附加意见的混合正文及未知模板保留。
+- 新增回归测试先在旧规则得到 4 项失败，再扩展规则后专项 55/55 通过；覆盖 created/edited、手动补清、不同上限、人类/其他 Bot/不同账号、混合正文及过期事件。`git diff --check` 通过。
+- 下一步：本修复 PR 五项必需 CI 全部通过后合入；用默认分支 Actions 实际补清已有同类提示，核对正常评论正文哈希。最终合并与真实删除证据记录于本修复 PR，未以本地单测替代上线验收。
