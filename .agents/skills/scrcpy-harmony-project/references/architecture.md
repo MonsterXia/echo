@@ -70,7 +70,7 @@ React 组件 / MobX store
 | --- | --- |
 | `changeTarget` | HDC 设备增删后通知主窗口刷新设备列表 |
 | `changeMainStore` | 主 store 的 name/value 变更，投屏用它同步当前设备 |
-| `captureScreen` | 直发原 WebFrameMain 的 sessionId、generation 与图像字节 |
+| `captureScreen` | 直发原 WebFrameMain 的 sessionId、generation、图像字节；H.264 附 codec/timestamp/config/keyFrame 元数据，运行错误用 codec=error |
 | `shellData` | 发给主窗口的 sessionId 与终端文本 |
 | `hilogEntry` | 发给主窗口的 hilogId 与日志条目 |
 
@@ -125,12 +125,13 @@ React 组件 / MobX store
 ```text
 src/renderer/screencast/store.ts 创建 ScreencastClient(connectKey)
   → main.createCaptureSession(connectKey) 获取主进程生成的 token
-  → main.startCaptureScreen(sessionId, scale, generation)
+  → main.startCaptureScreen(sessionId, scale, generation, preferVideo)
   → captureSessions.ts 校验原文档、按设备串行真实 stop/start
   → uitest.ts 单次初始化并缓存 CaptureUiDriver
-  → UiDriver.startCaptureScreen 回调经可释放 CaptureScope
-  → 原 frame.send('captureScreen', sessionId, generation, image)
-  → ScreencastClient.draw() 将 JPEG 解码绘制到 Canvas
+  → CaptureUiDriver 优先 NativeVideo；不可用则 UiDriver JPEG
+  → 回调经可释放 CaptureScope
+  → 原 frame.send('captureScreen', sessionId, generation, image, metadata?)
+  → H264Decoder/WebCodecs 或 JPEG loadImage → 共用 Canvas paint()
 
 Canvas pointer 事件
   → getPointer() 计算设备坐标
@@ -142,15 +143,25 @@ Canvas pointer 事件
 
 `captureSessions.ts` 的每设备队列等待真实 UiDriver 操作完成，不因 renderer 消失或超时 race 提前放行。`CaptureUiDriver` 仅通过公共 on/off 精确管理自身捕获监听；关闭、导航、崩溃和 stop 请求立即本地退订，迟到启动完成后再补偿停止。stop 拒绝保留待确认 lease，下一 start 必须先成功 stop；不结算只阻塞该设备。stop 的 stopped/released/obsolete 分别表示本 lease 停止已确认、仅释放无 lease token、旧 token 已失效，不能混称设备已停。`test/capture-sessions.test.cjs` 与 handler 回归保留真实依赖方法验证这些边界。
 
+`CaptureUiDriver` 的 native 冷启动不发无关 JPEG stop，先用只读 `getDisplaySize` 准备控制服务。JPEG 尝试发出即标记可能活动，stop 失败继续保留状态。`hdckit/UiDriver` 控制 RPC 默认 10 秒、JPEG stop 回复 3 秒、TCP 连接 3 秒、Driver.create 1 秒截止；断开/超时/主动关闭拒绝全部等待、销毁旧 socket，下次调用重新握手。未知结果命令不自动重发，不把超时当作停止确认。HDC shell/SDK 准备尚未全部有限化，不能将 RPC 截止外推为整个启动链路的总时限。证据见 `docs/maintenance/screencast-first-frame-recovery.md`。
+
+`nativeVideo.ts` 用现有 HDC 命令创建会话独占的原生扩展副本/进程/转发，以 Node 内置 HTTP/2 读 gRPC；`nativeVideoProtocol.ts` 负责 8 MiB 上限的消息拆包和 protobuf 字段。正式应用传入 `resources/native-video`，由 `nativeVideoResources.ts` 检查设备 ABI/UITest 版本及本地 ELF/SHA-256，再按清单上传候选库到随机会话名称、核对手机端 SHA-256 并启动；失败后确认清理才试下一个，通过 nativeVideoPreference.ts 在桌面持久化已成功候选提示，按设备、ABI、UITest、固件及资源清单隔离；缓存命中仍校验 ELF/哈希和实际握手，失效时清除并重探。不依赖或覆盖手机预装库，手机端不保留永久库缓存；仅未传资源目录的旧调用兼容原有库路径。停止优先调用 onEnd，再终止并核对本会话随机扩展名的进程，最后移除自己的转发和副本；HDC 错误或清理不确认时保留 lease。桌面无 Java 运行时。`H264Decoder.ts` 缓存 SPS/PPS、等待关键帧，解码队列积压时重建并等待下一关键帧；Canvas 只保留一个待绘制最新 VideoFrame，并关闭被替换的帧。缺失 WebCodecs 时请求 JPEG；视频流中断时每个 ScreencastClient 经原设备队列重连一次 H.264，再次流错误才单向回退 JPEG；真正解码失败仍立即回退，旧 generation 的错误被忽略。原生服务请求帧率为 120，实际速率受设备/内容限制，不能当作实际 120 FPS 承诺；同分辨率的当前设备帧率与中断恢复证据见 `docs/maintenance/screencast-fps-tuning.md`。准备、候选探测与流错误在主进程保留原因日志。新 driver 先用 initializeControl 验证和复用健康控制服务，失败才重建一次；前台 SDK 更新或初始恢复仍可能停止其他 UITest 实例；后台初始化及缓存 driver 准备重连禁止替换已有 daemon 的 SDK，也不执行失败 stop 恢复。自己的新 daemon 启动不再固定 sleep，而以 3 秒预算尝试初始握手，普通输入不重放。连续两次确认候选扩展已退出时快速结束套接字等待，活进程继续等待。设备版本查询必须排在控制准备之后，以免短暂 uitest --version 进程干扰 pidof 判断。详见 docs/maintenance/screencast-start-latency.md。
+
+`vendor/native-video/manifest.json` 固定官方 SDK 归档和六个 ARM64 候选库的版本、大小及哈希；`script/native-video-resources.mjs` 使用 Node 解压指定条目，`script/build.mjs` 只复制清单内原生库和来源/许可文件。构建和运行均不执行 Java，归档 JAR 不进入应用包。兼容范围与验收见 `docs/maintenance/native-video-deployment.md`。
+
 定位投屏问题时：
 
-- 帧解码入口：`src/renderer/screencast/lib/ScreencastClient.ts` 的 `draw()`；图像加载辅助在同目录 `util.ts`。实现使用 JPEG Blob 和 Canvas，不是 H.264/WebCodecs 管线。
+- 帧解码入口：`ScreencastClient.ts` 的 `videoFrame()` / `draw()`，共同进入 `paint()`；JPEG 只保留一张待解码最新帧。图像加载辅助在同目录 `util.ts`，视频解码在 `H264Decoder.ts`。性能与部署边界见 `docs/maintenance/screencast-video-design.md`。
 - 触摸映射：`getPointer()` 先按帧宽高比算 CSS 容器内的实际图像区域，再按百分比映射到 `getDisplaySize()` 返回的设备尺寸。请求 `scale` 与实际流缩放可能不同。
 - 首帧或帧尺寸变化时重新查询设备尺寸；尺寸必须是正整数。坐标上限为 width/height 减一。没有有效尺寸时不发送触摸。
 - `isDrawing` 让绘制和尺寸查询串行进行，期间新帧会跳过；它不是帧队列。改动时注意异步旧帧覆盖新状态。
 - 客户端用局部队列合并缩放，主进程提供跨 renderer 的设备顺序；帧须同时匹配 sessionId 与启动 generation。本次启动未出图或创建/start 拒绝后五秒重试，`ready` 只代表首次成功绘制。`destroy(): void` 清除重试、退订帧/指针监听、取消图片加载，并立即发送 session stop 以便主进程本地失效；创建回复迟到时也释放 token。不能撤销已发送的设备请求，永不返回时仍不能确认远端停止。
 - `loadImage(url, signal?)` 清理图片处理器并支持取消；客户端在 finally 中释放 Blob URL。无设备生命周期回归见 `test/screencast-lifecycle.test.cjs`，真实捕获和原应用问题的验收边界见 `docs/maintenance/M2-3-recovery.md`。
-- `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
+- `src/renderer/screencast/components/Screencast.tsx` 等首帧 ready 后挂载 Canvas，并处理拖入 HAP；`lib/fitWindow.ts` 观察实际帧比例和容器尺寸，首帧/比例变化时通过 preload 的 `fitScreencast` 报告尺寸及实测窗口界面占用。主进程 `window/screencast.ts` 只接受当前投屏主文档，按当前窗口面积、画面比例和显示器可用 DIP 空间调整窗口；最大化/全屏保持不动。相同比例的帧、分辨率档位和普通手动缩放不反复调整窗口。Canvas 的 CSS 尺寸始终按比例计算，低分辨率画面也可填满适配后的窗口，触摸仍使用真实画面矩形。卸载时取消尺寸观察与待执行回调。同目录的 `Toolbar.tsx` 提供缩放、按键、文本输入、PNG 导出、置顶和全屏。
+- 工具栏默认隐藏，通过标题栏左侧「⋯」展开左对齐毛玻璃面板，点击「×」或工具区 Escape 收起并恢复入口焦点。入口经 React portal 挂到 body，避开视频容器裁剪；44×30 的 no-drag 唤起区域仅在标题栏内，macOS 向右避开交通灯。鼠标离开 2 秒后自动收起，返回取消计时；入口再空闲 2 秒隐藏，移入标题栏入口区域或键盘聚焦时显示。通过 portal 的 React 事件保持共同悬停/焦点逻辑，不再监听 document mousemove，不遮挡手机输入。键盘操作、选择框编辑和文本输入等待期间暂停，操作结束后重新计时，卸载清理计时器及 portal。视频不为工具栏留空，面板展开/换行不改变视频容器尺寸；浮层空白处不拦截 Canvas 输入。面板保留挂载以保持异步输入状态。
+- 工具栏面板与入口使用 160ms opacity 过渡；面板收起时立即设 inert/aria-hidden 并禁用指针，淡出结束后 CSS visibility 隐藏，不用 display:none 截断动画。快速反向切换由 CSS 接续当前透明度，减少动态效果偏好下取消过渡。
+- 画质只提供原画（scale=1）和流畅（scale=0.5），不承诺固定FPS；选择框保留原生语义，使用可样式化picker统一毛玻璃外观。screencast/store.ts在初始化捕获前按原生整数缩放档位兼容旧比例（0.5/0.6→0.5，0.7～1→1），非法值默认原画；切换只保存规范值，同档位不重启。
+- ScreencastClient.getCaptureStats返回当前generation的成功Canvas绘制计数和实际格式，start/destroy清空。Toolbar仅展开时按1秒interval与performance.now差值计算FPS，generation改变/未出帧显示等待或破折号，无新增帧归零；收起/卸载清理interval。它不是编码目标或显示器呈现速率，无额外设备采集/IPC或逐帧React更新。状态和画质成组换行，控件统一28px垂直居中；选择框禁用Luna旧三角，仅使用单个可样式化picker箭头。
 - 文本按钮在 prompt 与发送期间用同步标记防重入，并等待 `main.inputText`、消费拒绝及显示通用错误。target 对象替换或卸载使旧会话失效，旧 prompt 不再发送、旧结果不通知或解锁新会话；这不取消已发送写入。底层不返回时保持忙碌，不自动重发；仍为单行输入和原 UiDriver 坐标语义。回归见 `test/text-input-toolbar.test.cjs`。
 
 ## UI 和生成文件
@@ -160,3 +171,11 @@ Canvas pointer 事件
 - 主题源是 `src/common/theme.json`，`npm run gen:theme` 生成 `src/renderer/theme.scss` 与 `src/common/theme.ts`。
 - 图标配置是 `src/renderer/icon.json`，图标源在本仓 `src/renderer/icon`，`npm run gen:icon` 生成 `src/renderer/icon.css`。
 - Prettier 配置为无分号、单引号、80 列；避免为局部任务运行全仓库重写格式。
+
+## 投屏后台准备与退出
+
+`main/index.ts` 在 HDC 初始化后启动 `lib/screencastPreparation.ts`，监听已有主窗口/投屏 store 和 HDC 的内部 `deviceEvents`（列举、add/remove）。`hdc/captureWarmup.ts` 只对选中且在线设备每代准备一次，待用服务 TTL 为 60 秒；选择变化、断连和退出使代次失效，不循环预热，无新增 renderer IPC。
+
+`captureSessions.prepareCapture` 与前台 start/stop 共用设备队列，记录待用资源的 owner/ready 状态；点击在准备后原子转移到 capture lease，取消/过期不得停止已接管的流，清理未确认则阻止再启动。`NativeVideo.prepare` 只校验/上传/加载候选和建立转发，不发 onStart；每个候选部署前重新核对 socket 占用，监听就绪、准备完成和正式 start 均核对本会话扩展进程仍存在后取流，尺寸不匹配重建。监听成功只记内存提示，真实流成功才持久化兼容提示。控制初始化必须先于 UITest 版本探测。
+
+退出处理立即取消预热并调用 shutdownCaptures 撤销帧路由，等待两者全部结算后允许可选 HDC shutdown。共享 relaunch 使用 app.quit 参与清理，主窗口 before-quit 后不因投屏可见而隐藏阻断退出。控制 HDC 准备尚无统一总截止，因此退出最多等待 10 秒，超时记录清理未确认并 app.exit 真正终止进程，避免迟到任务继续部署；远端资源或外部 HDC 子进程可能遗留，不宣称清理成功。证据见 docs/maintenance/screencast-pr56-review.md。

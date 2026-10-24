@@ -20,6 +20,16 @@ function fixture(t) {
     packages: [{ name: 'example', version: '1.0.0', repository: 'https://example.test/source', gitHead: 'fixture' }],
     sharedSources: [],
   }))
+  fs.mkdirSync(path.join(root, 'vendor/native-video'), { recursive: true })
+  fs.mkdirSync(path.join(root, 'resources/native-video'), { recursive: true })
+  const native = Buffer.from('native fixture')
+  const nativeManifest = JSON.stringify({ libraries: [{ file: 'fixture.so', size: native.length, sha256: require('node:crypto').createHash('sha256').update(native).digest('hex') }] })
+  for (const base of ['vendor/native-video', 'resources/native-video']) {
+    fs.writeFileSync(path.join(root, base, 'manifest.json'), nativeManifest)
+    fs.writeFileSync(path.join(root, base, 'LICENSE'), 'native upstream license fixture')
+    fs.writeFileSync(path.join(root, base, 'README.md'), 'native origin fixture')
+  }
+  fs.writeFileSync(path.join(root, 'resources/native-video/fixture.so'), native)
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({
     name: 'scrcpy-harmony', version: '1.0.1', main: 'dist/main/index.js',
     author: 'MonsterXia',
@@ -56,6 +66,9 @@ function fixture(t) {
 
 test('build prepares a runnable distribution without requiring a shell', (t) => {
   const f = fixture(t)
+  fs.writeFileSync(path.join(f.root, 'resources/native-video/unused-sdk.jar'), 'do not ship')
+  fs.mkdirSync(path.join(f.root, 'dist/resources/native-video'), { recursive: true })
+  fs.writeFileSync(path.join(f.root, 'dist/resources/native-video/stale-sdk.jar'), 'old build')
   const result = f.run()
   assert.equal(result.status, 0, result.stderr)
   const pkg = JSON.parse(fs.readFileSync(path.join(f.root, 'dist/package.json')))
@@ -70,11 +83,22 @@ test('build prepares a runnable distribution without requiring a shell', (t) => 
   }
   assert.equal(fs.readFileSync(path.join(f.root, 'dist/resources/hdc/fixture.txt'), 'utf8'), 'resources/hdc')
   assert.equal(fs.readFileSync(path.join(f.root, 'dist/resources/uitestkit_sdk/fixture.txt'), 'utf8'), 'resources/uitestkit_sdk')
+  assert.equal(fs.readFileSync(path.join(f.root, 'dist/resources/native-video/fixture.so'), 'utf8'), 'native fixture')
+  assert.match(fs.readFileSync(path.join(f.root, 'dist/THIRD_PARTY_NOTICES.txt'), 'utf8'), /native upstream license fixture/)
+  assert.deepEqual(fs.readdirSync(path.join(f.root, 'dist/resources/native-video')).sort(), ['LICENSE', 'README.md', 'fixture.so', 'manifest.json'])
   assert.equal(fs.readFileSync(path.join(f.root, 'dist/build/fixture.txt'), 'utf8'), 'build')
   assert.deepEqual(f.commands().at(-1), {
     args: ['install', '--omit=dev', '--no-audit', '--no-fund'],
     cwd: path.join(f.root, 'dist'),
   })
+})
+
+test('distribution build rejects missing or corrupted native video resources', (t) => {
+  const f = fixture(t)
+  fs.writeFileSync(path.join(f.root, 'resources/native-video/fixture.so'), 'corrupt')
+  const result = f.run()
+  assert.notEqual(result.status, 0)
+  assert.equal(fs.existsSync(path.join(f.root, 'dist/package.json')), false)
 })
 
 test('a failed build stops before packaging incomplete output', (t) => {

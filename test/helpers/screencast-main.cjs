@@ -25,12 +25,19 @@ exports.screencastMain = function (
     mainShows = 0
   const errors = []
   let targetRequests = 0,
-    initializationStops = 0
+    initializationStops = 0,
+    initializationQueries = 0
   const hdckit = require('hdckit')
   class TransportUiDriver extends hdckit.UiDriver {
     constructor(...args) {
       super(...args)
-      this.send = (...args) => {
+      let initialized = false
+      this.send = async (...args) => {
+        if (args[1] === 'getDisplaySize' && !initialized) {
+          initialized = true
+          initializationQueries++
+          await options.initialize?.()
+        }
         calls.push(args[1])
         return send(...args)
       }
@@ -116,6 +123,7 @@ exports.screencastMain = function (
             handleEvent: (name, handler) =>
               handlers.set(name, (_event, ...args) => handler(...args)),
             resolveResources: () => 'synthetic-sdk-not-read',
+            getUserDataPath: () => 'synthetic-cache-not-written',
           }
         if (id === '../lib/store') return { getScreencastStore: () => ({}) }
         if (id === './base')
@@ -129,6 +137,11 @@ exports.screencastMain = function (
               drivers.set(key, value)
             },
           }
+        if (id === './nativeVideo')
+          return { NativeVideo: class {
+            async start() { return false }
+            async stop() {}
+          } }
         if (id.startsWith('.'))
           return load(path.resolve(path.dirname(file), id + '.ts'))
         if (id === 'hdckit') return { ...hdckit, UiDriver: TransportUiDriver }
@@ -192,6 +205,9 @@ exports.screencastMain = function (
     return id
   }
   return {
+    prepare: (valid = () => true, key = 'synthetic-target') => load('../../src/main/lib/hdc/captureSessions.ts').prepareCapture(key, 0.5, valid, async () => drivers.get(key)),
+    cancelPreparation: (key = 'synthetic-target') => load('../../src/main/lib/hdc/captureSessions.ts').cancelCapturePreparation(key),
+    shutdown: () => load('../../src/main/lib/hdc/captureSessions.ts').shutdownCaptures(),
     windows,
     calls,
     attempts,
@@ -207,7 +223,7 @@ exports.screencastMain = function (
     mainShows: () => mainShows,
     current: () => current,
     evictDriver: (key = 'synthetic-target') => drivers.delete(key),
-    initialization: () => ({ targetRequests, initializationStops }),
+    initialization: () => ({ targetRequests, initializationStops, initializationQueries }),
     session: () => sessions.get(current),
     startSession: (id, scale = 0.5, generation = 1, win = current) =>
       invoke('startCaptureScreen', [id, scale, generation], win),

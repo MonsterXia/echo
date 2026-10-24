@@ -28,6 +28,7 @@ interface Device {
   tail: Promise<void>
   pending: number
   lease?: Lease
+  prepared?: { driver: CaptureUiDriver; ready: boolean }
 }
 
 let registered: Owner | undefined
@@ -52,11 +53,59 @@ function enqueue<T>(key: string, device: Device, operation: () => Promise<T>) {
   )
   void device.tail.then(() => {
     device.pending--
-    if (!device.pending && !device.lease && devices.get(key) === device) {
+    if (!device.pending && !device.lease && !device.prepared && devices.get(key) === device) {
       devices.delete(key)
     }
   })
   return task
+}
+
+async function discardPrepared(device: Device) {
+  const prepared = device.prepared
+  if (!prepared) return
+  prepared.ready = false
+  await prepared.driver.discardNativePreparation()
+  if (device.prepared === prepared) device.prepared = undefined
+}
+
+export function prepareCapture(key: string, scale: number, valid: () => boolean,
+  getDriver: (key: string) => Promise<CaptureUiDriver>, available = async () => true) {
+  const device = deviceFor(key)
+  return enqueue(key, device, async () => {
+    if (!valid() || device.lease) return false
+    if (device.prepared?.ready) return true
+    await discardPrepared(device)
+    // Do not initialize/recover the control daemon while another tool owns
+    // the video socket. Foreground capture keeps its existing fallback path.
+    if (!await available() || !valid()) return false
+    const driver = await getDriver(key)
+    if (!valid()) return false
+    const prepared = { driver, ready: false }
+    device.prepared = prepared
+    try {
+      prepared.ready = await driver.prepareNativeCapture(scale, valid)
+      if (!prepared.ready || !valid()) { await discardPrepared(device); return false }
+      return true
+    } catch (error) {
+      await discardPrepared(device)
+      throw error
+    }
+  })
+}
+
+export function cancelCapturePreparation(key: string) {
+  const device = devices.get(key)
+  if (!device) return Promise.resolve()
+  if (device.prepared) device.prepared.ready = false
+  return enqueue(key, device, () => discardPrepared(device))
+}
+
+export async function shutdownCaptures() {
+  if (registered) invalidate(registered)
+  await Promise.all([...devices].map(([key, device]) => enqueue(key, device, async () => {
+    if (device.lease) await stopLease(device, device.lease)
+    await discardPrepared(device)
+  })))
 }
 
 async function stopLease(device: Device, lease: Lease) {
@@ -173,7 +222,7 @@ export function initCaptureIpc(
 
   ipcMain.handle(
     'startCaptureScreen',
-    (event, id: string, scale: number, generation: number) => {
+    (event, id: string, scale: number, generation: number, preferVideo = true) => {
       const owner = sender(event)
       const session = sessions.get(id)
       if (
@@ -187,6 +236,7 @@ export function initCaptureIpc(
         !Number.isFinite(scale) ||
         scale <= 0 ||
         scale > 1 ||
+        typeof preferVideo !== 'boolean' ||
         !Number.isSafeInteger(generation) ||
         generation <= session.generation
       ) {
@@ -199,23 +249,26 @@ export function initCaptureIpc(
         if (!current(session, generation)) return
         const driver = await getUiDriver(session.connectKey)
         if (!current(session, generation)) return
+        if (device.prepared && (!device.prepared.ready || device.prepared.driver !== driver)) await discardPrepared(device)
         if (device.lease) await stopLease(device, device.lease)
-        else await driver.stopCaptureScreen()
+        else if (!device.prepared) await driver.stopCaptureScreen()
         if (!current(session, generation)) return
-        const scope = new CaptureScope((image) => {
+        const scope = new CaptureScope((image, metadata) => {
           const activeOwner = session.owner
           if (
             current(session, generation) &&
             activeOwner &&
             !activeOwner.contents.isDestroyed()
           ) {
-            session.frame?.send('captureScreen', id, generation, image)
+            if (metadata) session.frame?.send('captureScreen', id, generation, image, metadata)
+            else session.frame?.send('captureScreen', id, generation, image)
           }
         })
         const lease = { session, driver, scope }
+        device.prepared = undefined // transfer ownership without an async gap
         device.lease = lease
         try {
-          await driver.startOwnedCapture(scope, scale)
+          await driver.startOwnedCapture(scope, scale, preferVideo)
         } catch (error) {
           scope.dispose()
           try {

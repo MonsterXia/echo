@@ -5,6 +5,7 @@ import Style from './Screencast.module.scss'
 import endWith from 'licia/endWith'
 import { LoadingBar } from 'share/renderer/components/loading'
 import { installBundles } from '../../lib/util'
+import { fitWindow } from '../lib/fitWindow'
 
 export default observer(function Screencast() {
   const { target, screencastClient } = store
@@ -13,15 +14,23 @@ export default observer(function Screencast() {
 
   useEffect(() => {
     preload.setTitle(target.name)
+    let disposed = false
+    let stopFitting = () => {}
 
     async function start() {
       await screencastClient.ready
-      screenContainerRef.current!.appendChild(screencastClient.canvas)
+      if (disposed || !screenContainerRef.current) return
+      screenContainerRef.current.appendChild(screencastClient.canvas)
+      stopFitting = fitWindow(screencastClient.canvas, screenContainerRef.current)
       setIsLoading(false)
     }
     start()
 
-    return () => screencastClient.destroy()
+    return () => {
+      disposed = true
+      stopFitting()
+      screencastClient.destroy()
+    }
   }, [])
 
   async function onDrop(e: React.DragEvent) {

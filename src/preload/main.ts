@@ -6,6 +6,7 @@ import {
   IpcCreateCaptureSession,
   IpcDumpWindowHierarchy,
   IpcForward,
+  IpcFitScreencast,
   IpcGetBundleInfos,
   IpcGetBundles,
   IpcGetDisplaySize,
@@ -74,6 +75,7 @@ export default Object.assign(mainObj, {
   getWebviews: invoke<IpcGetWebviews>('getWebviews'),
   showScreencast: invoke('showScreencast'),
   closeScreencast: invoke('closeScreencast'),
+  fitScreencast: invoke<IpcFitScreencast>('fitScreencast'),
   setScreencastAlwaysOnTop: invoke<IpcSetScreencastAlwaysOnTop>(
     'setScreencastAlwaysOnTop',
   ),

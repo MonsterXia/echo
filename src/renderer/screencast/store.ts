@@ -3,6 +3,19 @@ import { ITarget } from 'common/types'
 import { action, makeObservable, observable, runInAction } from 'mobx'
 import ScreencastClient from './lib/ScreencastClient'
 
+function normalizeScale(value: unknown): number {
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < 0.5 ||
+    value > 1
+  )
+    return 1
+  // Preserve the native integer-divisor behavior of legacy saved ratios:
+  // 0.5/0.6 become smooth; 0.7/0.8/0.9/1 become original.
+  return Math.round(1 / value) >= 2 ? 0.5 : 1
+}
+
 class Store extends BaseStore {
   target!: ITarget
   screencastClient!: ScreencastClient
@@ -28,9 +41,11 @@ class Store extends BaseStore {
     main.setScreencastAlwaysOnTop(val)
   }
   setScale(scale: number) {
-    this.scale = scale
+    const next = normalizeScale(scale)
+    if (next === this.scale) return
+    this.scale = next
     this.screencastClient.start()
-    main.setScreencastStore('scale', scale)
+    main.setScreencastStore('scale', next)
   }
   async setTarget(target: ITarget | null) {
     if (target === null) {
@@ -50,9 +65,7 @@ class Store extends BaseStore {
       runInAction(() => (this.alwaysOnTop = true))
     }
     const scale = await main.getScreencastStore('scale')
-    if (scale) {
-      runInAction(() => (this.scale = scale))
-    }
+    runInAction(() => (this.scale = normalizeScale(scale)))
     const target = await main.getMainStore('target')
     this.setTarget(target)
   }

@@ -30,8 +30,13 @@ const bundle = build({
 
 async function open(area, restored) {
   let bounds, minimum
+  const handlers = new Map()
   const win = {
     getBounds: () => bounds,
+    getContentBounds: () => bounds,
+    isMaximized: () => false,
+    isFullScreen: () => false,
+    webContents: { mainFrame: {} },
     setBounds: (next) => {
       bounds = next
     },
@@ -48,7 +53,7 @@ async function open(area, restored) {
         case '../lib/hdc/captureSessions':
           return { registerCaptureWindow: () => () => {} }
         case 'electron':
-          return { screen: { getDisplayMatching: () => ({ workArea: area }) } }
+          return { ipcMain: { handle: (name, handler) => handlers.set(name, handler) }, screen: { getDisplayMatching: () => ({ workArea: area }) } }
         case 'share/main/lib/window':
           return {
             create(opts) {
@@ -75,7 +80,13 @@ async function open(area, restored) {
   })
   vm.runInContext((await bundle).outputFiles[0].text, context)
   context.module.exports.showWin()
-  return { bounds, minimum }
+  return {
+    get bounds() { return bounds }, get minimum() { return minimum }, win,
+    fit(width, height, inset, event = { sender: win.webContents, senderFrame: win.webContents.mainFrame }) {
+      assert.equal(typeof handlers.get('fitScreencast'), 'function', 'window must accept actual frame geometry');
+      return handlers.get('fitScreencast')(event, width, height, inset)
+    },
+  }
 }
 
 test('small work area contains the initial window and permits a compact window', async () => {
@@ -114,3 +125,38 @@ test('valid saved placement is retained and a tiny work area caps the minimum', 
   assert.ok(tiny.minimum[0] <= 280 && tiny.minimum[1] <= 300)
   assert.ok(tiny.bounds.width <= 280 && tiny.bounds.height <= 300)
 })
+
+
+test('first landscape frame removes large letterbox while preserving visible video area', async () => {
+  const w = await open({ x: 0, y: 0, width: 1920, height: 1040 });
+  w.fit(2412, 1084, 61);
+  assert.ok(w.bounds.width > 700);
+  assert.ok(Math.abs(w.bounds.width / (w.bounds.height - 61) - 2412 / 1084) < 0.01);
+});
+
+test('portrait and rotated frames include toolbar and stay inside a small negative-origin work area', async () => {
+  const area = { x: -800, y: -600, width: 800, height: 560 };
+  const w = await open(area);
+  for (const [width,height,inset] of [[1084,2412,92],[2412,1084,61]]) {
+    w.fit(width,height,inset);
+    assert.ok(Math.abs(w.bounds.width / (w.bounds.height - inset) - width / height) < 0.01);
+    assert.ok(w.bounds.x >= area.x && w.bounds.y >= area.y);
+    assert.ok(w.bounds.x + w.bounds.width <= area.x + area.width);
+    assert.ok(w.bounds.y + w.bounds.height <= area.y + area.height);
+    assert.ok(w.minimum[0] <= w.bounds.width && w.minimum[1] <= w.bounds.height);
+  }
+});
+
+test('frame fitting rejects other documents and invalid dimensions, preserves maximized/fullscreen', async () => {
+  const w = await open({ x: 0,y: 0,width: 1920,height: 1040 });
+  const before = { ...w.bounds };
+  assert.throws(() => w.fit(1084,2412,61,{sender:{},senderFrame:{}}));
+  for (const args of [[0,1084,61],[NaN,1084,61],[1084,2412,-1],[1084,2412,Infinity],[1e9,1,61]]) assert.throws(() => w.fit(...args));
+  w.win.isMaximized = () => true;
+  w.fit(1084,2412,61);
+  assert.deepEqual({...w.bounds}, before);
+  w.win.isMaximized = () => false;
+  w.win.isFullScreen = () => true;
+  w.fit(1084,2412,61);
+  assert.deepEqual({...w.bounds}, before);
+});

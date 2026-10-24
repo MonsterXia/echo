@@ -12,6 +12,7 @@ const store = getMainStore()
 const settingsStore = getSettingsStore()
 
 let win: BrowserWindow | null = null
+let quitting = false
 
 export function showWin() {
   logger.info('show')
@@ -35,10 +36,10 @@ export function showWin() {
 
   win.on('close', (e) => {
     const screencastWin = window.getWin('screencast')
-    if (screencastWin && screencastWin.isVisible()) {
+    if (!quitting && screencastWin && screencastWin.isVisible()) {
       e.preventDefault()
       win?.hide()
-    } else {
+    } else if (!quitting) {
       app.quit()
     }
   })
@@ -47,6 +48,7 @@ export function showWin() {
 }
 
 const init = once(() => {
+  app.on('before-quit', () => { quitting = true })
   session.defaultSession.webRequest.onBeforeSendHeaders(
     {
       urls: ['ws://*/*'],

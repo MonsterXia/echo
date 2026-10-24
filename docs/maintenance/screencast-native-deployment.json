@@ -1,0 +1,21 @@
+{
+  "scope": "Real native device stream and Chromium H.264 decode/draw; no screen data saved",
+  "received": 513,
+  "bytes": 16669122,
+  "preinstalledLibraryAbsent": true,
+  "codec": "h264",
+  "deployedLibrary": "libscrcpy_server_unix_6.6-20260418.z.so",
+  "durationMs": 15004,
+  "decoded": 514,
+  "errors": [],
+  "receivedFps": 34.19,
+  "decodedFps": 34.26,
+  "scaleRestart": {
+    "width": 2412,
+    "height": 1084,
+    "frames": 627
+  },
+  "reopened": true,
+  "stopConfirmed": true,
+  "originalLibraryRestored": true
+}

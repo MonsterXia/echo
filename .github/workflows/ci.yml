@@ -73,7 +73,9 @@ jobs:
             "$release/win-unpacked/$($pkg.productName).exe",
             "$release/win-unpacked/resources/app.asar",
             "$release/win-unpacked/resources/hdc/hdc.exe",
-            "$release/win-unpacked/resources/uitestkit_sdk/uitest_agent_v1.1.0.so"
+            "$release/win-unpacked/resources/uitestkit_sdk/uitest_agent_v1.1.0.so",
+            "$release/win-unpacked/resources/native-video/manifest.json",
+            "$release/win-unpacked/resources/native-video/libscrcpy_server_unix_6.6-20260418.z.so"
           )
           foreach ($file in $requiredFiles) {
             if (!(Test-Path -LiteralPath $file -PathType Leaf)) {

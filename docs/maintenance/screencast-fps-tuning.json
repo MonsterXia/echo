@@ -1,0 +1,196 @@
+{
+  "date": "2026-10-24",
+  "scope": "Actual Electron application and native-only parameter probes; counts only, no screen contents or device identifiers",
+  "baselineApp": {
+    "codec": "h264",
+    "width": 2412,
+    "height": 1084,
+    "durationMs": 15001,
+    "received": 516,
+    "drawn": 515,
+    "receivedFps": 34.39839474158043,
+    "drawnFps": 34.3317311858797,
+    "rafFps": 238.98884718714314,
+    "mbps": 8.955244488590978,
+    "configs": 0,
+    "errors": 0,
+    "resets": 0,
+    "queue": {
+      "n": 516,
+      "p50": 0,
+      "p95": 0,
+      "max": 0
+    },
+    "drawMs": {
+      "n": 515,
+      "p50": 3.400000000372529,
+      "p95": 3.800000000745058,
+      "max": 4.299999998882413
+    },
+    "arrivalMs": {
+      "n": 515,
+      "p50": 32.40000000037253,
+      "p95": 43.40000000037253,
+      "max": 52.30000000074506
+    },
+    "paintIntervalMs": {
+      "n": 514,
+      "p50": 32.09999999962747,
+      "p95": 43.399999998509884,
+      "max": 60.5
+    },
+    "sourceTimestampDelta": {
+      "n": 515,
+      "p50": 33,
+      "p95": 42,
+      "max": 49
+    },
+    "longTasks": {
+      "n": 0,
+      "p50": 0,
+      "p95": 0,
+      "max": 0
+    }
+  },
+  "nativeParameterProbe": {
+    "scope": "Production NativeVideo parameter comparison; encoded frame counts only, no screen bytes saved",
+    "results": [
+      {
+        "fps": 60,
+        "scale": 1,
+        "durationMs": 10004,
+        "frames": 333,
+        "actualFps": 33.28617292376747,
+        "mbps": 8.457683478283121,
+        "sourceDeltaMs": {
+          "n": 332,
+          "p50": 32,
+          "p95": 39,
+          "max": 61
+        },
+        "errors": []
+      },
+      {
+        "fps": 120,
+        "scale": 1,
+        "durationMs": 10003,
+        "frames": 602,
+        "actualFps": 60.18468540495187,
+        "mbps": 13.818804467015326,
+        "sourceDeltaMs": {
+          "n": 601,
+          "p50": 17,
+          "p95": 28,
+          "max": 40
+        },
+        "errors": []
+      },
+      {
+        "fps": 120,
+        "scale": 0.5,
+        "durationMs": 10006,
+        "frames": 601,
+        "actualFps": 60.06419453235539,
+        "mbps": 12.06990888591493,
+        "sourceDeltaMs": {
+          "n": 600,
+          "p50": 16,
+          "p95": 31,
+          "max": 42
+        },
+        "errors": []
+      },
+      {
+        "fps": 60,
+        "scale": 1,
+        "durationMs": 10013,
+        "frames": 0,
+        "actualFps": 0,
+        "mbps": 0,
+        "sourceDeltaMs": {
+          "n": 0,
+          "p50": 0,
+          "p95": 0,
+          "max": 0
+        },
+        "errors": [
+          "Native video stream ended"
+        ]
+      }
+    ]
+  },
+  "finalApp": {
+    "codec": "h264",
+    "width": 2412,
+    "height": 1084,
+    "durationMs": 15003,
+    "received": 902,
+    "drawn": 902,
+    "receivedFps": 60.120507625042976,
+    "drawnFps": 60.120507625042976,
+    "rafFps": 239.08232910313654,
+    "mbps": 15.72093846646127,
+    "configs": 0,
+    "errors": 0,
+    "resets": 0,
+    "queue": {
+      "n": 902,
+      "p50": 0,
+      "p95": 0,
+      "max": 1
+    },
+    "drawMs": {
+      "n": 902,
+      "p50": 3.200000001117587,
+      "p95": 3.700000001117587,
+      "max": 5.199999999254942
+    },
+    "arrivalMs": {
+      "n": 901,
+      "p50": 16.5,
+      "p95": 29.300000000745058,
+      "max": 52.20000000111759
+    },
+    "paintIntervalMs": {
+      "n": 901,
+      "p50": 16.09999999962747,
+      "p95": 31.09999999962747,
+      "max": 59.09999999962747
+    },
+    "sourceTimestampDelta": {
+      "n": 901,
+      "p50": 17,
+      "p95": 28,
+      "max": 38
+    },
+    "longTasks": {
+      "n": 0,
+      "p50": 0,
+      "p95": 0,
+      "max": 0
+    }
+  },
+  "actualAppTransportRecovery": {
+    "started": 214540.20000000112,
+    "generations": [
+      1,
+      2
+    ],
+    "codecs": {
+      "h264": 788,
+      "error": 1
+    },
+    "errors": 1,
+    "drawn": 785,
+    "firstRecoveredPaintMs": 2695,
+    "currentGeneration": 2,
+    "initialGeneration": 1,
+    "interrupted": 215244
+  },
+  "limitations": [
+    "Last native-only probe failed while user opened app; exclude from FPS comparison",
+    "Before/after content was dynamic but not identical replay",
+    "Transport interruption is not physical USB unplug",
+    "No long-term power or firmware matrix validation"
+  ]
+}

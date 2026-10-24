@@ -1,0 +1,18 @@
+{
+  "scope": "Real native device stream and Chromium H.264 decode/draw; no screen data saved",
+  "received": 516,
+  "bytes": 16803210,
+  "codec": "h264",
+  "durationMs": 15013,
+  "decoded": 516,
+  "errors": [],
+  "receivedFps": 34.37,
+  "decodedFps": 34.37,
+  "scaleRestart": {
+    "width": 2412,
+    "height": 1084,
+    "frames": 628
+  },
+  "reopened": true,
+  "stopConfirmed": true
+}

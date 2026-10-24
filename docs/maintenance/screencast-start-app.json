@@ -1,0 +1,55 @@
+{
+  "scope": "Actual application BrowserWindow opening to visible Canvas, plus real Chromium draws; no pixels/device identifiers stored",
+  "baseline": {
+    "coldVisibleMs": 11007,
+    "source": "screencast-first-frame-recovery.json"
+  },
+  "intermediateBeforeControlReuse": {
+    "cold": {
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084,
+      "visibleMs": 6021
+    },
+    "afterAppRestart": {
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084,
+      "visibleMs": 3695
+    }
+  },
+  "final": {
+    "afterAppRestart": {
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084,
+      "visibleMs": 2334
+    },
+    "sameProcessReopen": {
+      "codec": "h264",
+      "width": 2412,
+      "height": 1084,
+      "visibleMs": 2042
+    },
+    "scaleRestarts": [
+      {
+        "scale": "0.5",
+        "readyMs": 2768,
+        "width": 1206,
+        "height": 542,
+        "codec": "h264"
+      },
+      {
+        "scale": "1",
+        "readyMs": 2816,
+        "width": 2412,
+        "height": 1084,
+        "codec": "h264"
+      }
+    ],
+    "drawnFrames": 195,
+    "durationMs": 5002,
+    "drawnFps": 38.98,
+    "codec": "h264"
+  }
+}

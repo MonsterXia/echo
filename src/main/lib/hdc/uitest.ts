@@ -9,15 +9,30 @@ import {
   IpcTouchUp,
 } from 'common/types'
 import { getTargetStore, setTargetStore } from './base'
-import { handleEvent, resolveResources } from 'share/main/lib/util'
+import { getUserDataPath, handleEvent, resolveResources } from 'share/main/lib/util'
 import { CaptureUiDriver } from './captureDriver'
-import { initCaptureIpc } from './captureSessions'
+import { initCaptureIpc, prepareCapture } from './captureSessions'
+export { cancelCapturePreparation, shutdownCaptures } from './captureSessions'
+import { NativeVideo } from './nativeVideo'
 
 let client: Client
 
 const initializingDrivers = new Map<string, Promise<CaptureUiDriver>>()
 
-async function getUiDriver(connectKey: string): Promise<CaptureUiDriver> {
+function nativeOptions(connectKey: string) {
+  return {
+    ...client.options, connectKey,
+    resourcesDir: resolveResources('native-video'),
+    cacheDir: getUserDataPath('data/native-video'),
+  }
+}
+
+export function prepareTarget(connectKey: string, scale: number, valid: () => boolean) {
+  return prepareCapture(connectKey, scale, valid, key => getUiDriver(key, true),
+    () => new NativeVideo(nativeOptions(connectKey)).available())
+}
+
+async function getUiDriver(connectKey: string, background = false): Promise<CaptureUiDriver> {
   let uiDriver = getTargetStore(connectKey, 'uiDriver')
   if (uiDriver) return uiDriver
   const pending = initializingDrivers.get(connectKey)
@@ -29,7 +44,8 @@ async function getUiDriver(connectKey: string): Promise<CaptureUiDriver> {
       resolveResources('uitestkit_sdk/uitest_agent_v1.1.0.so'),
       '1.1.0',
     )
-    await uiDriver.stop()
+    await uiDriver.initializeControl(background)
+    uiDriver.nativeVideo = new NativeVideo(nativeOptions(connectKey))
     setTargetStore(connectKey, 'uiDriver', uiDriver)
     return uiDriver
   })()

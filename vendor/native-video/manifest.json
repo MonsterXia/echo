@@ -1,0 +1,46 @@
+{
+  "upstream": "https://gitcode.com/OpenHarmonyToolkitsPlaza/HOScrcpy",
+  "release": "v1.0.16-beta",
+  "sdkVersion": "1.0.18-beta",
+  "url": "https://gitcode.com/OpenHarmonyToolkitsPlaza/HOScrcpy/releases/download/v1.0.16-beta/hosScrcpy-1.0.18-beta.jar",
+  "size": 18442278,
+  "sha256": "2ce60b1893cc2be471a8cd7eab7e4127e41921f1f89a32a134c730ba15c8c0fd",
+  "libraries": [
+    {
+      "entry": "libscrcpy/libscrcpy_server_unix_6.6-20260629.z.so",
+      "file": "libscrcpy_server_unix_6.6-20260629.z.so",
+      "size": 260278,
+      "sha256": "b24231188ab0fffa84c2bd71cab6948c8ffad9d661c80301f32eaf580177ce8e"
+    },
+    {
+      "entry": "libscrcpy/libscrcpy_server_unix_6.6-20260418.z.so",
+      "file": "libscrcpy_server_unix_6.6-20260418.z.so",
+      "size": 268471,
+      "sha256": "98bbc964fef1c4d17b446ec717102b855d09224b23fc1872bf70e1f928d010dd"
+    },
+    {
+      "entry": "libscrcpy/libscrcpy_server_unix_6.5-20260313.z.so",
+      "file": "libscrcpy_server_unix_6.5-20260313.z.so",
+      "size": 268469,
+      "sha256": "2c8f1ef94d581281bf8e86d54f5939af9b205d5db5aa2cfb27f2562215c87b0a"
+    },
+    {
+      "entry": "libscrcpy/libscrcpy_server_unix_6.4-20260113.z.so",
+      "file": "libscrcpy_server_unix_6.4-20260113.z.so",
+      "size": 264374,
+      "sha256": "b698b41ae1351337eeea3dcc87bf0160552196d669ba321b4963c342fa5a47f4"
+    },
+    {
+      "entry": "libscrcpy/libscrcpy_server_unix_6.3.1-20260113.z.so",
+      "file": "libscrcpy_server_unix_6.3.1-20260113.z.so",
+      "size": 272567,
+      "sha256": "3e29e3a1d23ea6dbd4e6fb3b8f094ca5d4b15b4c580f421fba3d0e1f5429e3fe"
+    },
+    {
+      "entry": "libscrcpy/libscrcpy_server_5.10-20260114.z.so",
+      "file": "libscrcpy_server_5.10-20260114.z.so",
+      "size": 272567,
+      "sha256": "30535ef1d8e1e80b3a67361122a55d144a3a0449552522eca45ad37e969fc2ab"
+    }
+  ]
+}

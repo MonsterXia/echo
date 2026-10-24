@@ -43,6 +43,8 @@ The public **1.0.3** release includes the device, application and screencast fix
 
 ## Quick start
 
+The unreleased development build automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the published 1.0.3 release.
+
 1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
 2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
 3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. To send text, click **Input text** (输入文本) in the screencast toolbar.

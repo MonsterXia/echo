@@ -1,2 +1,4 @@
 # Preserve the exact imported source bytes recorded in vendor/manifest.json.
 vendor/** -text
+# Native resource notices retain their source CRLF bytes as well.
+vendor/native-video/** whitespace=cr-at-eol

@@ -108,7 +108,11 @@ try {
   })
   assert.equal(packagedMetadata.author, pkg.author)
   assert.equal(packagedMetadata.license, createHash('sha256').update(await readFile(new URL('../LICENSE', import.meta.url))).digest('hex'))
-  assert.equal(packagedMetadata.notices, createHash('sha256').update(await vendorNotices(path.dirname(fileURLToPath(new URL('../package.json', import.meta.url))))).digest('hex'))
+  const sourceRoot = path.dirname(fileURLToPath(new URL('../package.json', import.meta.url)))
+  const nativeNotices = await readFile(path.join(sourceRoot, 'vendor/native-video/README.md'), 'utf8') + '\n' +
+    await readFile(path.join(sourceRoot, 'vendor/native-video/LICENSE'), 'utf8')
+  const expectedNotices = await vendorNotices(sourceRoot) + '\n' + nativeNotices
+  assert.equal(packagedMetadata.notices, createHash('sha256').update(expectedNotices).digest('hex'))
 
   const expectedPage = pathToFileURL(
     path.join(resourcesDir, 'app.asar/renderer/index.html')
