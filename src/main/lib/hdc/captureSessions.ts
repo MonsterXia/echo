@@ -18,11 +18,13 @@ interface Session {
   owner?: Owner
   frame?: WebFrameMain
   generation: number
+  inputAbort: AbortController
 }
 interface Lease {
   session: Session
   driver: CaptureUiDriver
   scope: CaptureScope
+  touch?: { x: number; y: number }
 }
 interface Device {
   tail: Promise<void>
@@ -111,6 +113,13 @@ export async function shutdownCaptures() {
 async function stopLease(device: Device, lease: Lease) {
   if (device.lease !== lease) return
   lease.scope.dispose()
+  // Cancellation invalidates ordinary queued input, but an already dispatched
+  // touchDown may still be held. Cleanup belongs to the lease, not its document.
+  // Retain unknown touch state on failure and block a replacement capture.
+  if (lease.touch) {
+    await lease.driver.touchUp(lease.touch.x, lease.touch.y)
+    lease.touch = undefined
+  }
   // Do not release the device slot until the actual stop settles successfully.
   // On rejection the detached lease remains as unconfirmed device state.
   await lease.driver.stopCaptureScreen()
@@ -118,6 +127,7 @@ async function stopLease(device: Device, lease: Lease) {
 }
 
 function endSession(session: Session) {
+  session.inputAbort.abort()
   session.owner?.sessions.delete(session)
   session.owner = undefined
   session.frame = undefined
@@ -186,6 +196,42 @@ function current(session: Session, generation: number) {
   )
 }
 
+export function withCaptureInput<T>(event: IpcMainInvokeEvent, id: string,
+  operation: (connectKey: string, signal: AbortSignal, lease: Lease) => Promise<T>, releaseTouch = false) {
+  const owner = sender(event)
+  const session = sessions.get(id)
+  if (!session || session.owner !== owner || session.frame !== event.senderFrame) {
+    throw new Error('Input requires the active capture session')
+  }
+  const generation = session.generation
+  const signal = session.inputAbort.signal
+  const device = deviceFor(session.connectKey)
+  // Dropping a release under backpressure would leave the device finger held.
+  if (device.pending >= 64 && !releaseTouch) throw new Error('Input queue is full')
+  return enqueue(session.connectKey, device, async () => {
+    const lease = device.lease
+    if (!current(session, generation) || lease?.session !== session || !lease.scope.active) {
+      throw new Error('Input capture session is no longer active')
+    }
+    return operation(session.connectKey, signal, lease)
+  })
+}
+
+export function withCaptureTouch(event: IpcMainInvokeEvent, key: string,
+  type: 'touchDown' | 'touchMove' | 'touchUp', x: number, y: number) {
+  const owner = sender(event)
+  const session = [...owner.sessions].find(session => session.connectKey === key)
+  if (!session) throw new Error('Touch requires an active capture session')
+  return withCaptureInput(event, session.id, async (_key, signal, lease) => {
+    signal.throwIfAborted()
+    // Record before dispatch: a timeout does not prove that the device ignored
+    // a press or move. Only an acknowledged release clears this obligation.
+    if (type === 'touchDown' || lease.touch) lease.touch = { x, y }
+    await lease.driver[type](x, y)
+    if (type === 'touchUp') lease.touch = undefined
+  }, type === 'touchUp')
+}
+
 export function initCaptureIpc(
   getUiDriver: (key: string) => Promise<CaptureUiDriver>,
 ) {
@@ -214,6 +260,7 @@ export function initCaptureIpc(
       owner,
       frame: event.senderFrame!,
       generation: 0,
+      inputAbort: new AbortController(),
     }
     sessions.set(session.id, session)
     owner.sessions.add(session)
@@ -242,6 +289,8 @@ export function initCaptureIpc(
       ) {
         throw new Error('Invalid capture scale or generation')
       }
+      session.inputAbort.abort()
+      session.inputAbort = new AbortController()
       session.generation = generation
       const device = deviceFor(session.connectKey)
       device.lease?.scope.dispose()

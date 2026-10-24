@@ -6,6 +6,7 @@ import clamp from 'licia/clamp'
 import store from '../store'
 import H264Decoder from './H264Decoder'
 import type { CaptureFrameMetadata } from 'common/types'
+import type { ScreencastInputAction } from 'common/types'
 
 export default class ScreencastClient {
   canvas = document.createElement('canvas')
@@ -108,6 +109,13 @@ export default class ScreencastClient {
   }
   getCaptureStats() {
     return { codec: this.renderedCodec, frames: this.renderedFrames, generation: this.generation }
+  }
+  async input(action: ScreencastInputAction) {
+    if (this.destroyed || !this.frameReceived) throw new Error('Capture is not ready')
+    const generation = this.generation
+    const id = await this.getSession()
+    if (!this.isCurrent(generation)) throw new Error('Capture changed')
+    await main.screencastInput(id, action)
   }
   private getSession() {
     if (!this.sessionPromise) {
@@ -339,13 +347,13 @@ export default class ScreencastClient {
 
     const onTouchStart = (e: PointerEvent) => {
       if (this.destroyed) return
-      canvas.focus()
+      if (e.button !== undefined && e.button !== 0) return
       const pointer = this.getPointer(e)
       if (!pointer) {
         return
       }
       const { pointerX, pointerY } = pointer
-      main.touchDown(this.connectKey, pointerX, pointerY)
+      void Promise.resolve(main.touchDown(this.connectKey, pointerX, pointerY)).catch(console.error)
       this.isTouching = true
     }
     const onTouchMove = (e: PointerEvent) => {
@@ -357,7 +365,7 @@ export default class ScreencastClient {
         return
       }
       const { pointerX, pointerY } = pointer
-      main.touchMove(this.connectKey, pointerX, pointerY)
+      void Promise.resolve(main.touchMove(this.connectKey, pointerX, pointerY)).catch(console.error)
     }
     const onTouchEnd = (e: PointerEvent) => {
       if (!this.isTouching) {
@@ -369,7 +377,7 @@ export default class ScreencastClient {
         return
       }
       const { pointerX, pointerY } = pointer
-      main.touchUp(this.connectKey, pointerX, pointerY)
+      void Promise.resolve(main.touchUp(this.connectKey, pointerX, pointerY)).catch(console.error)
     }
     canvas.addEventListener('pointerdown', onTouchStart)
     canvas.addEventListener('pointermove', onTouchMove)

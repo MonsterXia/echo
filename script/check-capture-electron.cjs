@@ -92,7 +92,7 @@ if (!process.versions.electron) {
     loaded.set(file, module)
     const code = transformSync(source, { loader: 'ts', format: 'cjs' }).code
     vm.runInNewContext(code, {
-      module, exports: module.exports, Buffer, console, setTimeout, clearTimeout,
+      module, exports: module.exports, Buffer, AbortController, console, setTimeout, clearTimeout,
       require(id) {
         if (id === 'electron') return electron
         if (id === 'hdckit') return { ...hdckit, UiDriver: SyntheticDriver }

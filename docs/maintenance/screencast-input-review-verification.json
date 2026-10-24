@@ -1,0 +1,161 @@
+{
+  "date": "2026-10-25",
+  "scope": "Independent review of screencast keyboard, fused paste, phone internal copy/cut, menus, removed T entry and capture input lifecycle",
+  "fixed": [
+    "boundedClipboardReadAndFocusCancellation",
+    "releaseHeldTouchBeforeCaptureStop",
+    "retainFocusWhenContextMenuCancelled",
+    "routeNativeSelectAllAndDelete"
+  ],
+  "validation": {
+    "applicationTests": {
+      "passed": 578,
+      "failed": 0
+    },
+    "licia": {
+      "normal": {
+        "passed": 606,
+        "pending": 4
+      },
+      "fallback": {
+        "passed": 606,
+        "pending": 4
+      }
+    },
+    "finalTargetedTests": {
+      "passed": 26,
+      "failed": 0
+    },
+    "lint": "passed",
+    "builds": {
+      "main": "passed",
+      "preload": "passed",
+      "renderer": "passed"
+    },
+    "fullTypecheck": "blocked by existing diagnostics outside changed modules; not passed"
+  },
+  "electronLifecycle": {
+    "scope": "Actual Electron windows and IPC; synthetic transport and frame bytes; no device or HAP access",
+    "electron": "45.0.0",
+    "checks": {
+      "actualCloseDisposesListener": true,
+      "reopenedWindowRejectsOldFrames": true,
+      "oldStopCannotStopReplacement": true,
+      "reloadInvalidatesOldDocument": true,
+      "rendererCrashDisposesListener": true,
+      "lateStartCannotAttachToReplacement": true,
+      "failedStopDisposesLocallyAndBlocksUnsafeStart": true,
+      "directDestructionDisposesListener": true
+    },
+    "sources": {
+      "src/main/window/screencast.ts": "ee46e880cb17e8d02fb6799c19f90d967ee2dfa9aa6805daf6cc244f2ced144f",
+      "src/main/lib/hdc/captureSessions.ts": "b8074bd706e7b9e982d3589ed4765876436462d6b27dd143fbd194a3cb30099e",
+      "src/main/lib/hdc/captureDriver.ts": "2301c2cd980128357f77ff5cd55dac348477e016f028dbda4b8a4dfd42072db3",
+      "src/main/lib/hdc/uitest.ts": "af5de8c2dc2c93bf50538214992b9b854a188f3560faab639bbf9b7fb5f4687b",
+      "src/main/lib/hdc/screencastInput.ts": "2edd2e911220914aa88535f60f347f8b94387b49a31211958f1b3c091d862593",
+      "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639"
+    },
+    "closeEvents": [
+      [
+        "closed",
+        0
+      ],
+      [
+        "close",
+        0
+      ],
+      [
+        "contents-destroyed",
+        0
+      ]
+    ],
+    "passed": true
+  },
+  "windowsDeviceFusion": {
+    "initialHostPaste": true,
+    "phoneCopyThenOrdinaryPaste": true,
+    "phoneCopyDoesNotOverwriteDesktop": true,
+    "phoneCutThenOrdinaryPaste": true,
+    "changedHostWins": true,
+    "menuLabels": [
+      "复制",
+      "剪切",
+      "粘贴",
+      "粘贴电脑文本",
+      "粘贴手机内容"
+    ],
+    "manualPhonePaste": true,
+    "manualHostPaste": true,
+    "emptyHostPhonePaste": true,
+    "noFailureNotification": true,
+    "desktopClipboardRestored": true
+  },
+  "windowsDeviceNativeEditing": {
+    "nativeCopyPreservesHost": true,
+    "nativeCopyThenPaste": true,
+    "nativeCutPreservesHost": true,
+    "nativeCutThenPaste": true,
+    "nativeEditSelectAllDelete": true,
+    "nativeContextOpened": true,
+    "focusAfterContextCancel": true,
+    "typeAfterContextCancel": true,
+    "noFailureNotification": true,
+    "desktopClipboardRestored": true
+  },
+  "initialInvalidPrecondition": {
+    "reason": "After relaunch phone was on Settings home, not its search input. Text assertions failed. Opened search input and reran both suites.",
+    "fusion": {
+      "initialHostPaste": false,
+      "phoneCopyThenOrdinaryPaste": false,
+      "phoneCopyDoesNotOverwriteDesktop": true,
+      "phoneCutThenOrdinaryPaste": false,
+      "changedHostWins": false,
+      "menuLabels": [
+        "复制",
+        "剪切",
+        "粘贴",
+        "粘贴电脑文本",
+        "粘贴手机内容"
+      ],
+      "manualPhonePaste": false,
+      "manualHostPaste": false,
+      "emptyHostPhonePaste": false,
+      "noFailureNotification": true,
+      "desktopClipboardRestored": true
+    },
+    "nativeEditing": {
+      "nativeCopyPreservesHost": true,
+      "nativeCopyThenPaste": false,
+      "nativeCutPreservesHost": true,
+      "nativeCutThenPaste": false,
+      "nativeEditSelectAllDelete": false,
+      "nativeContextOpened": true,
+      "focusAfterContextCancel": true,
+      "typeAfterContextCancel": false,
+      "noFailureNotification": true,
+      "desktopClipboardRestored": true
+    }
+  },
+  "method": {
+    "device": "Current connected HarmonyOS device, Settings search, synthetic text only; search cleared after tests",
+    "clipboard": "All ClipboardItem representations deep-copied before write and restored in finally; text equality verified",
+    "menus": "Real native popup opened and cancelled. Explicit source selection used actual MenuItem callbacks; copy/cut used webContents API; selectAll/delete sent the production screencastEdit event. Independent Electron probe separately tested production main routing helper and local editing fallback."
+  },
+  "notVerified": [
+    "macOS native menu on actual macOS",
+    "manual desktop IME candidate interaction",
+    "other firmware",
+    "multiline and long text performance",
+    "phone to computer clipboard sync (deferred)"
+  ],
+  "sourceSha256": {
+    "src/renderer/screencast/lib/ScreencastInput.ts": "2a903d47bd223c28a0d5ae09342621aa629e65021916372d1d2e7c0dd61af34d",
+    "src/renderer/screencast/components/Screencast.tsx": "a4aa4817c5980db83163232c7e74557962e10b8a519b545c81dbb246cb4fbecd",
+    "src/renderer/screencast/components/Toolbar.tsx": "b5c264935d578f4620792139b380392c78db158e0d81a53cad9c52e0483570a7",
+    "src/main/lib/screencastEdit.ts": "68a7b3a1a22906af296bb01c6aee02c07b9dc304ed6827c909d5ee7b189d7e2b",
+    "src/main/lib/menu.ts": "c41a3e7806ecc992a93017822040d5f95f900a4fce8934272c17e142068f2687",
+    "src/main/lib/hdc/captureSessions.ts": "b8074bd706e7b9e982d3589ed4765876436462d6b27dd143fbd194a3cb30099e",
+    "src/main/lib/hdc/uitest.ts": "af5de8c2dc2c93bf50538214992b9b854a188f3560faab639bbf9b7fb5f4687b",
+    "src/main/lib/hdc/screencastInput.ts": "2edd2e911220914aa88535f60f347f8b94387b49a31211958f1b3c091d862593"
+  }
+}

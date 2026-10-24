@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-25",
+  "scope": "Windows actual Electron with connected device; synthetic text in Settings search",
+  "applicationTests": {
+    "passed": 579,
+    "failed": 0
+  },
+  "liciaModes": [
+    {
+      "passed": 606,
+      "pending": 4
+    },
+    {
+      "passed": 606,
+      "pending": 4
+    }
+  ],
+  "lint": "passed",
+  "builds": [
+    "main",
+    "preload",
+    "renderer"
+  ],
+  "liveInput": {
+    "typedAndSelectionReplacement": true,
+    "backspace": true,
+    "homeAndDelete": true,
+    "hostPaste": true,
+    "deviceCopyPaste": true,
+    "deviceCut": true,
+    "devicePasteAfterCut": true,
+    "noFailureNotification": true
+  },
+  "fullscreen": {
+    "fullscreen": true,
+    "inputInsideFullscreen": true,
+    "focused": true,
+    "width": 647.15625,
+    "height": 1440,
+    "viewport": [
+      2560,
+      1440
+    ],
+    "source": [
+      1084,
+      2412
+    ],
+    "typed": true
+  },
+  "electronLifecycle": {
+    "scope": "Actual Electron windows and IPC; synthetic transport and frame bytes; no device or HAP access",
+    "electron": "45.0.0",
+    "checks": {
+      "actualCloseDisposesListener": true,
+      "reopenedWindowRejectsOldFrames": true,
+      "oldStopCannotStopReplacement": true,
+      "reloadInvalidatesOldDocument": true,
+      "rendererCrashDisposesListener": true,
+      "lateStartCannotAttachToReplacement": true,
+      "failedStopDisposesLocallyAndBlocksUnsafeStart": true,
+      "directDestructionDisposesListener": true
+    },
+    "sources": {
+      "src/main/window/screencast.ts": "ee46e880cb17e8d02fb6799c19f90d967ee2dfa9aa6805daf6cc244f2ced144f",
+      "src/main/lib/hdc/captureSessions.ts": "86acabb25b7c90c3d35188c5948497c599b275a6b04368f47e4bbc5f670ea9c8",
+      "src/main/lib/hdc/captureDriver.ts": "2301c2cd980128357f77ff5cd55dac348477e016f028dbda4b8a4dfd42072db3",
+      "src/main/lib/hdc/uitest.ts": "5c46c751dde63ec51d08040ced1decf8eefe1982b64f55f9a55a947b33eda659",
+      "src/main/lib/hdc/screencastInput.ts": "2edd2e911220914aa88535f60f347f8b94387b49a31211958f1b3c091d862593",
+      "src/main/lib/hdc/finiteShell.ts": "bb43410b534eaad714e7afd9f775a5ac8b7a8a0a3d526e093bb4470b5fd82639"
+    },
+    "closeEvents": [
+      [
+        "closed",
+        0
+      ],
+      [
+        "close",
+        0
+      ],
+      [
+        "contents-destroyed",
+        0
+      ]
+    ],
+    "passed": true
+  }
+}
