@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 1.0.4-dev.0 开发预发布
+
+用户于 2026-10-25 授权发布 Pre-release。以 PR #58 合入后的功能基线准备三平台开发版，保留 v1.0.3 为稳定版本；只在固定源提交的 CI、实际发行包安装启动及附件校验完成后发布。状态、边界和后续事项见 [开发预发布记录](docs/releases/1.0.4-dev.0.md)，最终运行与资产证据归档到 Release。下方“不发布”描述此前任务阶段，不适用于本次明确授权。
+
 ## 本轮 PR #56 审查状态
 
 投屏、初始化和工具栏变更已整理至 [PR #56](https://github.com/MonsterXia/scrcpy-harmony/pull/56)。独立审查发现的服务争用、退出无界等待、后台破坏控制会话三项已修复并经只读复审；首轮跨平台 CI 暴露的许可烟测期望遗漏也已修复。修复后本地应用 558/558、Licia 两模式各 606 passing / 4 pending、lint、Electron 8/8 通过。合入必须以最终 SHA 的独立复核及全部五项 CI 成功为前提，实时结果留在 PR；不发布版本。详见[审查与修复记录](docs/maintenance/screencast-pr56-review.md)。下一步仍为固件矩阵、物理拔插、长期性能验收，M2 其余状态不变。
