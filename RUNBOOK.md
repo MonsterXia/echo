@@ -498,3 +498,10 @@
 - [#52 GC 回归稳定性](https://github.com/MonsterXia/scrcpy-harmony/pull/52)最终候选 `547147eff0466dd7cfc8c375fd1bc9ae09e4e417` 已获 [OpenAI（GPT-6）独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/52#pullrequestreview-5630067210)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/52/checks)成功后由主对话合并为 `b755306eb4e388053a0eab2f8ee7321b316793dd`。仅测试和记录变更，不证明 RSS 或真机长期无泄漏。
 - [#51 WebView 元数据展示](https://github.com/MonsterXia/scrcpy-harmony/pull/51)同步 #52 后的最终 `9a1d726` 已获 [OpenAI（GPT-6）增量独立审查](https://github.com/MonsterXia/scrcpy-harmony/pull/51#pullrequestreview-5630129811)，[五项必需 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/51/checks)全部成功，主对话合并为 `913cd7ff1996ca10dda740fca434a3e0416ae19f`。早期 CI 失败仍保留在原条目；M2-4 真机 WebView/Chrome 对照与断连恢复继续待验收。
 - 捕获修复本身的最终独立审查与五项 CI 待 PR 核验，不沿用 #51/#52 的检查替代；本分支不自行合并或发布，未操作手机/HAP/应用清单。
+
+### 2026-10-24 Sourcery PR 字符上限提示清理
+
+- 用户授权将 `Sorry @MonsterXia, your pull request is larger than the review limit of 150,000 diff characters` 也加入原超额度 Action；实际模板取自 PR #56 评论 `6386033835`。
+- 在原 `sourcery-quota-comments.yml` 的整段正文白名单中增加第二种模板，数字上限可变；共用原作者/PR 校验、删除前重新读取与手动单 ID 入口，没有新工作流或定时任务。正常审查、带附加意见的混合正文及未知模板保留。
+- 新增回归测试先在旧规则得到 4 项失败，再扩展规则后专项 55/55 通过；覆盖 created/edited、手动补清、不同上限、人类/其他 Bot/不同账号、混合正文及过期事件。`git diff --check` 通过。
+- 下一步：本修复 PR 五项必需 CI 全部通过后合入；用默认分支 Actions 实际补清已有同类提示，核对正常评论正文哈希。最终合并与真实删除证据记录于本修复 PR，未以本地单测替代上线验收。
