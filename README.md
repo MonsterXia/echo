@@ -39,11 +39,11 @@ Installers include HDC and the required device resources; Node.js is not needed 
 
 If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
 
-The public **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It is the recovery version before dependency source migration. The current source development version is **1.0.4-dev.0**, which has not been released. Include the commit SHA when reporting a problem with a source build.
+The stable **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It remains the recovery version before dependency source migration. [**1.0.4-dev.0**](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.0) is available as a development pre-release with H.264 mirroring and keyboard/clipboard input. Include the version and commit SHA when reporting a problem.
 
 ## Quick start
 
-The unreleased development build automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the published 1.0.3 release.
+The 1.0.4-dev.0 pre-release automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the stable 1.0.3 release.
 
 1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
 2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
