@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 1.0.4-dev.0 同版本覆盖（进行中）
+
+2026-10-25 维护者明确选择覆盖原预览版及下载文件，保持版本号 1.0.4-dev.0。将 [PR #61](https://github.com/MonsterXia/scrcpy-harmony/pull/61) 的静止首帧修复经五项 CI、同源三平台 Build/安装启动和资产核验后覆盖发布；tag 更新到经验证的修复构建，Latest 保持 v1.0.3。状态与原发布历史见[发布记录](docs/releases/1.0.4-dev.0.md)。下文“不发布”是此前修复阶段范围，已由本次明确授权取代。
+
 ## 静止画面投屏启动修复（2026-10-25）
 
 状态：**待验收（本设备通过，跨固件待验证）**。交付 [PR #61](https://github.com/MonsterXia/scrcpy-harmony/pull/61)，分支 `codex/fix-static-screencast-start`，基线 `14234fc`。已确认静止时原生编码器启动但未输出首帧，桌面重复试库放大等待；现先显示实时 JPEG，原生沉默时保留 JPEG，并补齐交接及清理保护。应用 585/585、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过，独立复审无 P1/P2。实际预览版首图 17419 ms，修改版首次 4885 ms、重开 289/275 ms；实测 H.264 交接、JPEG 后续更新和关闭清理，单独解包构建也通过启动及真机交接检查，详见[专项记录](docs/maintenance/screencast-static-start.md)。各提交五项必需 CI 以 PR 实时结果为准，合并前须全部成功；下一步为跨固件及长期验收，本轮不发布版本。
