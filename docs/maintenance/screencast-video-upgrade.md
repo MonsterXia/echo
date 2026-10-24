@@ -22,4 +22,8 @@ JPEG 和输入在编码器启动期间保持可用；不增加 generation、不�
 - 两次未满足静止 JPEG 基线的样本中，H.264 在测试阶段前已经输出，明确记为场景不成立，没有当作上述两项验收。最终原始统计及交接附近时间序列见[真机证据](screencast-video-upgrade-live.json)，不含屏幕像素或设备标识。
 - 定向 74 项、完整应用 595/595、Licia 生产/fallback 两种模式各 606 passing / 4 pending、完整构建与 lint 通过；最终 CI 结果以本轮提交记录为准。测试程序只退出自己启动的进程；关闭会等待当前会话输入/视频清理。
 
-下一步：通过 PR 必需 CI 和同源三平台发行构建后，按维护者既有授权覆盖 1.0.4-dev.0；继续跨固件、旋转、物理拔插和长期运行验收。
+## 交付
+
+[PR #63](https://github.com/MonsterXia/scrcpy-harmony/pull/63) 已合入，源 `91dbb57839e4f400351817e30604179cff9bd213` 的[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40124913520)和[三平台发行构建/安装启动](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40124914239)均成功。2026-10-25 03:27（UTC+8）按维护者既有授权再次覆盖 1.0.4-dev.0，14 个附件重新下载校验通过；同版本需重新下载安装，完整摘要及签名限制见[发布记录](../releases/1.0.4-dev.0.md)。测试程序已退出，手机原生视频 socket 和本次扩展进程均无残留。
+
+下一步：跨固件、旋转、物理拔插和长期运行验收；不将当前设备的受控交接间隔推广为所有设备的性能保证。
