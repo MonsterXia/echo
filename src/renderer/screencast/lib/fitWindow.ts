@@ -7,7 +7,7 @@ export function fitWindow(canvas: HTMLCanvasElement, container: HTMLElement) {
   let scheduled = 0
   const update = () => {
     scheduled = 0
-    if (disposed || document.fullscreenElement || !canvas.width || !canvas.height) return
+    if (disposed || !canvas.width || !canvas.height) return
     const rect = container.getBoundingClientRect()
     if (!rect.width || !rect.height) return
     const ratio = canvas.width / canvas.height
@@ -16,6 +16,7 @@ export function fitWindow(canvas: HTMLCanvasElement, container: HTMLElement) {
     // The canvas rect remains the visible image rect used for touch mapping.
     canvas.style.width = `${width}px`
     canvas.style.height = `${width / ratio}px`
+    if (document.fullscreenElement) return
     const inset = Math.round(window.innerHeight - rect.height)
     if (Math.abs(ratio - lastRatio) / ratio < 0.002 && inset === lastInset) return
     lastRatio = ratio

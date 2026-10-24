@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-25",
+  "scope": "Windows actual Electron and connected phone; synthetic Settings search text",
+  "applicationTests": {
+    "failed": 0,
+    "passed": 585
+  },
+  "liciaModes": [
+    {
+      "pending": 4,
+      "passed": 606
+    },
+    {
+      "pending": 4,
+      "passed": 606
+    }
+  ],
+  "lint": "passed",
+  "rendererBuild": "passed",
+  "live": {
+    "initialHostPaste": true,
+    "phoneCopyThenOrdinaryPaste": true,
+    "phoneCopyDoesNotOverwriteDesktop": true,
+    "phoneCutThenOrdinaryPaste": true,
+    "changedHostWins": true,
+    "menuLabels": [
+      "复制",
+      "剪切",
+      "粘贴",
+      "粘贴电脑文本",
+      "粘贴手机内容"
+    ],
+    "manualPhonePaste": true,
+    "manualHostPaste": true,
+    "emptyHostPhonePaste": true,
+    "noFailureNotification": true,
+    "desktopClipboardRestored": true
+  },
+  "sourceHashes": [
+    {
+      "file": "src/renderer/screencast/lib/ScreencastInput.ts",
+      "Hash": "3F45C65A85DA94FFD71AF7AE7640481091C2497350D9710D01D80AD0CB6E3A20"
+    },
+    {
+      "file": "src/renderer/screencast/components/Screencast.tsx",
+      "Hash": "0E1B922777790907F8E9441BE6D7FE0071047C1A16C383A7B4F2D3348B0B81EA"
+    }
+  ]
+}

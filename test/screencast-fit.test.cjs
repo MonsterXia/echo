@@ -75,8 +75,10 @@ test('HTML fullscreen defers auto fitting until the normal video viewport return
   f.flush()
   f.context.document.fullscreenElement = f.canvas
   f.canvas.width = 1084; f.canvas.height = 2412
+  f.rect.width = 1920; f.rect.height = 1080
   f.notify()
   assert.equal(f.calls.length, 1)
+  assert.equal(parseFloat(f.canvas.style.height), 1080, 'fullscreen container still fits the video')
   f.context.document.fullscreenElement = null
   f.notify()
   assert.equal(f.calls.length, 2)

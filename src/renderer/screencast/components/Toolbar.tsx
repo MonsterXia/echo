@@ -14,9 +14,7 @@ import download from 'licia/download'
 import toStr from 'licia/toStr'
 import toNum from 'licia/toNum'
 import fullscreen from 'licia/fullscreen'
-import LunaModal from 'luna-modal'
 import { useEffect, useRef, useState } from 'react'
-import { notify } from 'share/renderer/lib/util'
 
 const KEYCODE_HOME = 1
 const KEYCODE_BACK = 2
@@ -33,34 +31,20 @@ export default observer(function Toolbar() {
   const [hovered, setHovered] = useState(false)
   const [editing, setEditing] = useState(false)
   const keyboardInteraction = useRef(false)
-  const [isInputPending, setIsInputPending] = useState(false)
   const [captureStatus, setCaptureStatus] = useState<{
     codec: 'H.264' | 'JPEG' | null
     fps: number | null
   }>({ codec: null, fps: null })
-  const inputSession = useRef<{ active: boolean; pending: boolean } | null>(
-    null,
-  )
 
   useEffect(() => {
-    if ((!expanded && !buttonVisible) || hovered || editing || isInputPending)
+    if ((!expanded && !buttonVisible) || hovered || editing)
       return
     const timer = setTimeout(() => {
       if (expanded) setExpanded(false)
       else setButtonVisible(false)
     }, AUTO_HIDE_DELAY)
     return () => clearTimeout(timer)
-  }, [expanded, buttonVisible, hovered, editing, isInputPending])
-
-  useEffect(() => {
-    const session = { active: true, pending: false }
-    inputSession.current = session
-    setIsInputPending(false)
-    return () => {
-      // Invalidate UI continuations; an already sent write is not cancelled.
-      session.active = false
-    }
-  }, [target])
+  }, [expanded, buttonVisible, hovered, editing])
 
   useEffect(() => {
     if (!expanded || !screencastClient) return
@@ -94,34 +78,11 @@ export default observer(function Toolbar() {
   }
 
   async function toggleFullscreen() {
-    fullscreen.toggle(screencastClient.canvas)
+    fullscreen.toggle(screencastClient.canvas.parentElement || screencastClient.canvas)
   }
 
   function inputKey(keyCode: number) {
     return () => main.inputKey(target.key, keyCode)
-  }
-
-  async function inputText() {
-    const session = inputSession.current
-    if (!target || !session?.active || session.pending) return
-    const isCurrent = () => session.active && store.target === target
-    if (!isCurrent()) return
-
-    session.pending = true
-    setIsInputPending(true)
-    try {
-      const text = await LunaModal.prompt(t('inputText'), '')
-      if (text && isCurrent()) {
-        await main.inputText(target.key, text)
-      }
-    } catch {
-      if (isCurrent()) notify(t('commonErr'), { icon: 'error' })
-    } finally {
-      if (isCurrent()) {
-        session.pending = false
-        setIsInputPending(false)
-      }
-    }
   }
 
   return (
@@ -218,12 +179,6 @@ export default observer(function Toolbar() {
             icon="circle"
             title={t('home')}
             onClick={inputKey(KEYCODE_HOME)}
-          />
-          <ToolbarIcon
-            icon="text"
-            title={t('inputText')}
-            disabled={!target || isInputPending}
-            onClick={inputText}
           />
           <LunaToolbarSeparator />
           <ToolbarIcon

@@ -1,4 +1,5 @@
 import { Menu, MenuItemConstructorOptions, app, shell } from 'electron'
+import type { BaseWindow, MenuItem } from 'electron'
 import * as window from 'share/main/lib/window'
 import * as terminal from 'share/main/window/terminal'
 import * as process from 'share/main/window/process'
@@ -9,6 +10,7 @@ import isWindows from 'licia/isWindows'
 import { getUserDataPath, handleEvent } from 'share/main/lib/util'
 import * as updater from 'share/main/lib/updater'
 import { isDev } from 'share/common/util'
+import { editWindow } from './screencastEdit'
 
 function getTemplate(): MenuItemConstructorOptions[] {
   const hideMenu = isMac
@@ -76,12 +78,13 @@ function getTemplate(): MenuItemConstructorOptions[] {
         label: t('paste'),
       },
       {
-        role: 'delete',
         label: t('delete'),
+        click: (_item: MenuItem, focused: BaseWindow | undefined) => editWindow('delete', focused, window.getWin('screencast')),
       },
       {
-        role: 'selectAll',
         label: t('selectAll'),
+        accelerator: 'CommandOrControl+A',
+        click: (_item: MenuItem, focused: BaseWindow | undefined) => editWindow('selectAll', focused, window.getWin('screencast')),
       },
     ],
   }

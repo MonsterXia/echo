@@ -117,6 +117,10 @@ npm start
 
 依赖、共享源码或设备不齐时，明确记录未能执行的检查及原因，避免把环境缺失归为业务代码失败，也不声称未运行的检查已通过。
 
+## 投屏键盘验证
+
+定向回归：`node --test test/screencast-input.test.cjs test/screencast-input-main.test.cjs test/screencast-fit.test.cjs`。覆盖 IME 提交、局部焦点、纯文本粘贴、快捷键、自动粘贴来源切换、异步快照取消、会话与排队取消、文本安全编码和全屏尺寸；属于 JSDOM/模拟 HDC 检查。真机验收使用无提交副作用的输入框及合成文本，另验证普通 Ctrl+C/X→Ctrl+V、电脑复制新文本、电脑空剪贴板和右键显式来源。Electron 45 剪贴板备份若用于测试，需读取各 MIME 的内容并构造新的 ClipboardItem 才能 write；不能将 read 返回的对象直接交回 write。验收边界见 `docs/maintenance/screencast-input.md`。
+
 ## 打包与 CI
 
 `.github/workflows/ci.yml` 对目标为 `master` 的所有 PR、master push 和手动触发运行独立的 `test`、`lint`、`windows-package`、`macos-package-arm64`、`macos-package-x64` 检查。`test`、`lint` 使用 Ubuntu、Node 22 和 `npm ci`，不下载 Electron 二进制或设备资源，也不需要初始化子模块。没有路径过滤，文档 PR 同样会产生检查结果；检查名用于 master 分支保护，重命名前需同步更新 GitHub 设置。

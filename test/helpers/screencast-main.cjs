@@ -106,6 +106,8 @@ exports.screencastMain = function (
     vm.runInNewContext(code, {
       module,
       exports: module.exports,
+      AbortController,
+      Buffer,
       console: { error: (...args) => errors.push(args) },
       require(id) {
         if (id === 'electron')
@@ -142,6 +144,7 @@ exports.screencastMain = function (
             async start() { return false }
             async stop() {}
           } }
+        if (id === './finiteShell' && options.inputShell) return { runFiniteShell: options.inputShell }
         if (id.startsWith('.'))
           return load(path.resolve(path.dirname(file), id + '.ts'))
         if (id === 'hdckit') return { ...hdckit, UiDriver: TransportUiDriver }
@@ -165,6 +168,7 @@ exports.screencastMain = function (
   driver = addDriver('synthetic-target')
   const windowModule = load('../../src/main/window/screencast.ts')
   load('../../src/main/lib/hdc/uitest.ts').init({
+    options: { host: '127.0.0.1', port: 8710 },
     async getTarget() {
       targetRequests++
       if (options.getTarget) await options.getTarget()
@@ -216,6 +220,7 @@ exports.screencastMain = function (
     drivers,
     errors,
     invoke,
+    hasHandler: name => handlers.has(name),
     create,
     addDriver,
     show: windowModule.showWin,

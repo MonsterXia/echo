@@ -1,17 +1,15 @@
 import { Client } from 'hdckit'
+import { ipcMain } from 'electron'
 import each from 'licia/each'
 import {
   IpcDumpWindowHierarchy,
   IpcGetDisplaySize,
-  IpcInputText,
-  IpcTouchDown,
-  IpcTouchMove,
-  IpcTouchUp,
 } from 'common/types'
 import { getTargetStore, setTargetStore } from './base'
 import { getUserDataPath, handleEvent, resolveResources } from 'share/main/lib/util'
 import { CaptureUiDriver } from './captureDriver'
-import { initCaptureIpc, prepareCapture } from './captureSessions'
+import { initCaptureIpc, prepareCapture, withCaptureInput, withCaptureTouch } from './captureSessions'
+import { sendScreencastInput, validateScreencastInput } from './screencastInput'
 export { cancelCapturePreparation, shutdownCaptures } from './captureSessions'
 import { NativeVideo } from './nativeVideo'
 
@@ -91,34 +89,23 @@ const getDisplaySize: IpcGetDisplaySize = async function (connectKey) {
   return uiDriver.getDisplaySize()
 }
 
-const touchDown: IpcTouchDown = async function (connectKey, x, y) {
-  const uiDriver = await getUiDriver(connectKey)
-  await uiDriver.touchDown(x, y)
-}
-
-const touchMove: IpcTouchMove = async function (connectKey, x, y) {
-  const uiDriver = await getUiDriver(connectKey)
-  await uiDriver.touchMove(x, y)
-}
-
-const touchUp: IpcTouchUp = async function (connectKey, x, y) {
-  const uiDriver = await getUiDriver(connectKey)
-  await uiDriver.touchUp(x, y)
-}
-
-const inputText: IpcInputText = async function (connectKey, text) {
-  const uiDriver = await getUiDriver(connectKey)
-  await uiDriver.inputText(text)
-}
-
 export function init(c: Client) {
   client = c
 
   handleEvent('dumpWindowHierarchy', dumpWindowHierarchy)
   handleEvent('getDisplaySize', getDisplaySize)
   initCaptureIpc(getUiDriver)
-  handleEvent('touchDown', touchDown)
-  handleEvent('touchMove', touchMove)
-  handleEvent('touchUp', touchUp)
-  handleEvent('inputText', inputText)
+  for (const channel of ['touchDown', 'touchMove', 'touchUp'] as const) {
+    ipcMain.handle(channel, (event, key, x, y) => {
+      if (![x, y].every(value => Number.isInteger(value) && value >= 0 && value <= 16384)) {
+        throw new Error('Invalid touch coordinates')
+      }
+      return withCaptureTouch(event, key, channel, x, y)
+    })
+  }
+  // Input contents must not be recorded by the generic handleEvent logger.
+  ipcMain.handle('screencastInput', (event, id, action) => {
+    validateScreencastInput(action)
+    return withCaptureInput(event, id, (key, signal) => sendScreencastInput(key, action, client.options, signal))
+  })
 }
