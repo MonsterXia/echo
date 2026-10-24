@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "91dbb57839e4f400351817e30604179cff9bd213",
+  "previousSourceCommit": "9b0da71bcbeefcfafac2f9cdd157c0d82bb7edbc",
+  "releaseId": 422885887,
+  "replacedAt": "2026-10-24T19:27:28.666959+00:00",
+  "downloadedAssetsVerified": 14,
+  "latest": "v1.0.3",
+  "buildRun": 40124914239,
+  "ciRun": 40124913520,
+  "assetDigests": {
+    "Scrcpy-Harmony-1.0.4-dev.0-mac-x64.dmg": "8309f26b80abb9f6aaf9a0bfa085f3683d18a2906b4d754ae82afe8c48763167",
+    "Scrcpy-Harmony-1.0.4-dev.0-mac-x64.dmg.blockmap": "e904c5ce1e32538e95488ae3b8d23d22b81ae76c300dd146b28e06d070f0cba6",
+    "verification-mac-arm64.txt": "8dd90efc9e569ea8c7d604135ddc3ea678fa5e85b00971ad152a80a460a6d4cd",
+    "Scrcpy-Harmony-1.0.4-dev.0-win-x64.exe": "9a513a021498792cc67fed85d32c2670e77fb6b70d3916bb3e11f4622f0ac4e8",
+    "Scrcpy-Harmony-1.0.4-dev.0-mac-arm64.dmg": "2db46a92d35cceb91bbb9b43f0a791ab033ea306d744dc84248fb34dbe7012be",
+    "SHA256SUMS.txt": "38b94b95876c08378b055faf218b04ac793d98f8ed434a1e532a2f1e3f030176",
+    "verification-mac-x64.txt": "d01e98b78b45f2dc0e3f12d45b186b67016fb6d13c7f333bf3df6cf42c9181c5",
+    "latest-x64-mac.yml": "8ec3aea5792adf68be4d7c1984dd9f37a7069b7cf4570c1ed45f65c624d73f98",
+    "Scrcpy-Harmony-1.0.4-dev.0-win-x64.exe.blockmap": "fd63bd4a87e550f7721a8bb81fd1805b63c86c590f2b1d1468ed4cc0289d3559",
+    "latest.yml": "08422b50753ffdaf917aeed5208a3e4e100aeae6153f7155619310407fbda0ac",
+    "latest-mac.yml": "80165769120dfdc8e58f88238561e586fd0c3fda7d628a926b8051dc1c6c003d",
+    "release-validation.json": "ce46cb1aa6ba96ff169a7eaa3a4b24a4fe0a1d36e22ff016ba2c00f544cf80bb",
+    "verification-win-x64.json": "906d9bcc81ef5ada11bd97a308a488887f163fecf930cf343cd308dc56fecb1f",
+    "Scrcpy-Harmony-1.0.4-dev.0-mac-arm64.dmg.blockmap": "07c49e21ca9d7b858162c48acee9640d54a235986ee3a475697cab31dbc4b072"
+  }
+}

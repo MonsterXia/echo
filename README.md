@@ -45,7 +45,7 @@ The stable **1.0.3** release includes the device, application and screencast fix
 
 The 1.0.4-dev.0 pre-release automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the stable 1.0.3 release.
 
-The current source retries video once when the picture changes after JPEG fallback. You can also click **Switch to video** (切换到视频) in the screencast toolbar. JPEG stays active until the first decoded video frame is displayed; a failed attempt keeps JPEG running.
+The current pre-release retries video once when the picture changes after JPEG fallback. You can also click **Switch to video** (切换到视频) in the screencast toolbar. JPEG stays active until the first decoded video frame is displayed; a failed attempt keeps JPEG running. If you downloaded this version before October 25, 2026, 03:27 (UTC+8), download and install it again.
 
 1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
 2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
