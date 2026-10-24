@@ -1,0 +1,32 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-24T18:28:31.112Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 17419,
+      "visibleMs": 17486,
+      "firstCodec": "H.264",
+      "draws": 3,
+      "codecs": {
+        "H.264": 3
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.0",
+    "packaged": true
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+    "Prepared native video activation failed: Error: Native video first frame timeout",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+  ]
+}

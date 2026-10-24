@@ -104,10 +104,12 @@ test('preparing a cached driver also avoids destructive control recovery', async
   assert.equal(prepares, 0)
 })
 
-test('cold native start does not wait for an unrelated JPEG stop reply', async () => {
+test('cold native start stops only its own JPEG preview, never an unrelated capture', async () => {
   let prepared = false
+  let preview = false
   const h = screencastMain(async (_method, api) => {
-    if (api === 'stopCaptureScreen') throw new Error('Unnecessary JPEG stop')
+    if (api === 'startCaptureScreen') preview = true
+    if (api === 'stopCaptureScreen') { assert.ok(preview, 'no preflight JPEG stop'); preview = false }
     if (api === 'getDisplaySize') prepared = true
     return { sessionId: 'session' }
   })
@@ -119,7 +121,45 @@ test('cold native start does not wait for an unrelated JPEG stop reply', async (
   await h.create()
   await h.start()
   assert.equal(starts, 2)
-  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 0)
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 2)
+})
+
+test('JPEG preview reaches the window while native first frame is pending, then H264 takes over', async () => {
+  const h = screencastMain()
+  const ready = deferred()
+  let receive
+  h.driver.nativeVideo = {
+    async start(_scale, callback) { receive = callback; return ready.promise },
+    async stop() {},
+  }
+  h.show()
+  const starting = h.start()
+  await flush()
+  h.driver.emit('message', 'session', Buffer.from([7]))
+  assert.equal(h.deliveries.length, 1, 'static preview must not wait for native video')
+  assert.equal(h.deliveries[0].args[4], undefined)
+  receive({ data: Buffer.from([8]), config: false, keyFrame: true, timestamp: 1 })
+  ready.resolve(true)
+  await starting
+  assert.equal(h.deliveries[1].args[4].codec, 'h264')
+  assert.equal(listeners(h), 0)
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 1)
+  await h.stop()
+})
+
+test('native stop failure still attempts JPEG preview cleanup and retains the native lease', async () => {
+  const h = screencastMain()
+  let stopFails = true
+  h.driver.nativeVideo = {
+    async start() { throw new Error('native start failed') },
+    async stop() { if (stopFails) throw new Error('native stop unconfirmed') },
+  }
+  h.show()
+  await assert.rejects(h.start(), /native start failed/)
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 1)
+  await assert.rejects(h.stop(), /native stop unconfirmed/)
+  stopFails = false
+  await h.stop()
 })
 
 test('failed JPEG fallback start remains uncertain until a real stop is acknowledged', async () => {

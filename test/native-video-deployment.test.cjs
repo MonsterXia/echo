@@ -56,6 +56,25 @@ test('remote digest mismatch never executes uploaded code and removes all sessio
   assert.equal(f.calls.filter(args => args[1]?.startsWith('rm -f')).length, 2)
   assert.equal(f.native.name, undefined)
 })
+
+for (const prepared of [false, true]) {
+  test(`a silent first frame does not invalidate compatibility or probe every library (prepared=${prepared})`, async () => {
+    const f = await fixture({ firstFails: false })
+    f.native.preferred = 'newest.so'
+    let clears = 0
+    f.native.preference = { clear: async () => clears++, save: async () => {} }
+    if (prepared) await f.native.prepare(1)
+    f.native.openStream = async () => {
+      const error = new Error('Native video first frame timeout')
+      error.name = 'NativeVideoFirstFrameTimeout'
+      throw error
+    }
+    assert.equal(await f.native.start(1, () => {}, () => {}), false)
+    assert.equal(f.calls.filter(args => args[0] === 'file').length, 1)
+    assert.equal(clears, 0, 'an idle display is not evidence of library incompatibility')
+    assert.equal(f.native.name, undefined, 'cleanup still confirms release')
+  })
+}
 test('candidate cleanup failure blocks another deployment', async () => {
   const f = await fixture()
   const original = f.native.run

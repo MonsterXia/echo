@@ -15,6 +15,16 @@ const REMOTE_SOCKET = 'localabstract:scrcpy_grpc_socket'
 // measured device; 120 delivered ~60 FPS without reducing the image size.
 const NATIVE_FRAME_RATE = 120
 
+class NativeVideoFirstFrameTimeout extends Error {
+  constructor() {
+    super('Native video first frame timeout (the display may be idle)')
+    this.name = 'NativeVideoFirstFrameTimeout'
+  }
+}
+
+const isFirstFrameTimeout = (error: unknown) =>
+  error instanceof Error && error.name === 'NativeVideoFirstFrameTimeout'
+
 export async function connectNativeVideo(
   port: number,
   receive: (frame: NativeVideoFrame) => void,
@@ -25,12 +35,13 @@ export async function connectNativeVideo(
   let ready = false
   let reported = false
   let rejectStart: (error: Error) => void
+  let firstFrameTimer: ReturnType<typeof setTimeout>
   const fail = (error: Error) => {
     if (stopping || reported) return
     reported = true
-    if (ready) failed(error)
+    clearTimeout(firstFrameTimer)
+    if (ready) { failed(error); session.destroy() }
     else rejectStart(error)
-    session.destroy()
   }
   const request = (method: string) => session.request({
     ':method': 'POST', ':path': `/ScrcpyService/${method}`,
@@ -38,16 +49,48 @@ export async function connectNativeVideo(
   })
   session.on('error', fail)
   let stream: http2.ClientHttp2Stream
+  const stop = async () => {
+    if (stopping) return
+    stopping = true
+    clearTimeout(firstFrameTimer)
+    try {
+      if (session.destroyed || session.closed) throw new Error('Native video connection lost before stop')
+      await new Promise<void>((resolve, reject) => {
+        const end = request('onEnd')
+        let status: string | undefined
+        const timer = setTimeout(() => {
+          reject(new Error('Native video stop timeout'))
+          end.close()
+        }, 2000)
+        const check = (headers: http2.IncomingHttpHeaders) => {
+          if (headers['grpc-status'] !== undefined) status = String(headers['grpc-status'])
+        }
+        end.on('response', check)
+        end.on('trailers', check)
+        end.on('error', reject)
+        end.on('end', () => {
+          if (status === '0') resolve()
+          else reject(new Error('Native video gRPC stop unconfirmed'))
+        })
+        end.on('close', () => { clearTimeout(timer); reject(new Error('Native stop connection closed')) })
+        end.resume()
+        end.end(Buffer.alloc(5))
+      })
+    } finally {
+      stream?.close()
+      session.destroy()
+    }
+  }
   try {
     await new Promise<void>((resolve, reject) => {
       rejectStart = reject
-      const timer = setTimeout(() => fail(new Error('Native video first frame timeout')), 5000)
+      firstFrameTimer = setTimeout(() => fail(new NativeVideoFirstFrameTimeout()), 5000)
       stream = request('onStart')
       const parser = new GrpcMessages((bytes) => {
         const frame = parseVideoReply(bytes)
         if (!frame) return
         receive(frame)
-        if (!ready) { ready = true; clearTimeout(timer); resolve() }
+        if (!ready && !frame.config) { ready = true; clearTimeout(firstFrameTimer); resolve() }
       })
       stream.on('response', (headers) => {
         if (headers[':status'] !== 200 || (headers['grpc-status'] && headers['grpc-status'] !== '0')) {
@@ -60,47 +103,16 @@ export async function connectNativeVideo(
       })
       stream.on('error', fail)
       stream.on('end', () => fail(new Error('Native video stream ended')))
-      stream.on('close', () => { clearTimeout(timer); fail(new Error('Native video stream closed')) })
+      stream.on('close', () => fail(new Error('Native video stream closed')))
       stream.end(Buffer.alloc(5))
     })
   } catch (error) {
-    stopping = true
-    session.destroy()
+    // onStart may have created a virtual screen without sending any video.
+    // Give that encoder its normal teardown before the owned process is killed.
+    try { await stop() } catch { /* NativeVideo.stop still confirms process exit */ }
     throw error
   }
-  return {
-    async stop() {
-      if (stopping) return
-      stopping = true
-      try {
-        if (session.destroyed || session.closed) throw new Error('Native video connection lost before stop')
-        await new Promise<void>((resolve, reject) => {
-          const stop = request('onEnd')
-          let status: string | undefined
-          const timer = setTimeout(() => {
-            reject(new Error('Native video stop timeout'))
-            stop.close()
-          }, 2000)
-          const check = (headers: http2.IncomingHttpHeaders) => {
-            if (headers['grpc-status'] !== undefined) status = String(headers['grpc-status'])
-          }
-          stop.on('response', check)
-          stop.on('trailers', check)
-          stop.on('error', reject)
-          stop.on('end', () => {
-            if (status === '0') resolve()
-            else reject(new Error('Native video gRPC stop unconfirmed'))
-          })
-          stop.on('close', () => { clearTimeout(timer); reject(new Error('Native stop connection closed')) })
-          stop.resume()
-          stop.end(Buffer.alloc(5))
-        })
-      } finally {
-        stream!.close()
-        session.destroy()
-      }
-    },
-  }
+  return { stop }
 }
 
 interface Options { bin?: string; host?: string; port: number; connectKey: string; resourcesDir?: string; cacheDir?: string }
@@ -163,6 +175,7 @@ export class NativeVideo {
       }
       catch (error) {
         console.warn('Prepared native video activation failed:', error)
+        if (isFirstFrameTimeout(error)) { await this.stop(); return false }
         this.preferred = undefined
         await this.preference?.clear()
         await this.stop()
@@ -257,6 +270,10 @@ export class NativeVideo {
         return true
       } catch (error) {
         if (valid()) console.warn('Native video candidate failed:', candidate?.file || 'device library', error)
+        // No screen update is not evidence of an incompatible library. Keep a
+        // proven preference and use the already-running JPEG preview instead
+        // of waiting through the same timeout with every remaining candidate.
+        if (isFirstFrameTimeout(error)) { await this.stop(); return false }
         if (candidate?.file === this.preferred) {
           this.preferred = undefined
           await this.preference?.clear()

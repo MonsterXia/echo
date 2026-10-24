@@ -163,6 +163,8 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 
 ## 投屏启动分段计时
 
-关闭现有投屏后运行 `node script/profile-screencast-start.cjs <report.json>`。探针调用生产控制/视频模块，记录准备到首个编码包的耗时；不含窗口加载和解码，真实 UI 首帧需另测。`SCREENCAST_PROBE_CACHE` 指向独立临时目录以检查跨进程兼容提示；`--reset-control` 主动重建控制服务，只在关闭其他 UITest 工具后使用。脚本遇到已有视频套接字拒绝执行；结束清理自己的副本、进程和新增转发。数据不保存屏幕及设备标识，最新证据见 `docs/maintenance/screencast-start-latency.md`。
+关闭现有投屏后运行 `node script/profile-screencast-start.cjs <report.json>`。探针调用生产控制/视频模块，`firstFrameMs/firstFrameCodec` 记录首张非配置图片（可能为 JPEG 预览），`readyMs` 记录 start 与编码选择结算时间；不含窗口加载和解码，真实 UI 首帧需另测。`SCREENCAST_PROBE_CACHE` 指向独立临时目录以检查跨进程兼容提示；`--reset-control` 主动重建控制服务，只在关闭其他 UITest 工具后使用。脚本遇到已有视频套接字拒绝执行；结束清理自己的副本、进程和新增转发。数据不保存屏幕及设备标识，证据见 `docs/maintenance/screencast-start-latency.md` 和 `docs/maintenance/screencast-static-start.md`。
+
+静止场景实际窗口用 `node script/check-static-screencast-start.cjs <报告.json> [已安装程序路径]` 对照。默认测试本地 dist 三次打开，传入安装程序则测一次；使用临时配置和主进程 inspector，不保存屏幕。要求一台已解锁静止手机并退出其他投屏，明确断言 VideoDecoder 存在。浏览器自动化在本轮 Electron 环境改变了其可用性，不能将该条件下的纯 JPEG 样本当作原生对照。完全静止时 JPEG 也可能只发一张，持续更新需另做受控屏幕变化测试。
 
 投屏准备探针支持 `--prepare`：仅建立待用服务，记录 `preparationReadyMs`、点击前取流次数、约 2 秒 CPU ticks，再记录请求至首个编码包时间。`--reset-control` 和独立 `SCREENCAST_PROBE_CACHE` 可测完全重建/无兼容记录路径；实际应用会对选中设备自动预热，需先等待其清理，避免争用。实际窗口首帧、60 秒 TTL、退出/重启及物理断连仍需分开验证。

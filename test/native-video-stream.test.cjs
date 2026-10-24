@@ -46,6 +46,22 @@ test('native start rejects gRPC failures instead of reporting ready', async (t) 
   const port = await server(t, (s) => s.respond({ ':status': 200, 'content-type': 'application/grpc', 'grpc-status': '12' }, { endStream: true }))
   await assert.rejects(connectNativeVideo(port, () => {}, () => {}), /gRPC|ended/)
 })
+
+test('a silent encoder times out distinctly and receives onEnd before its connection is destroyed', async (t) => {
+  const { connectNativeVideo } = await load()
+  const requests = []
+  const port = await server(t, (s, h) => {
+    requests.push(h[':path'])
+    if (h[':path'].endsWith('onEnd')) {
+      s.respond({ ':status': 200, 'content-type': 'application/grpc' }, { waitForTrailers: true })
+      s.on('wantTrailers', () => s.sendTrailers({ 'grpc-status': '0' }))
+      s.end(Buffer.alloc(5))
+    }
+  })
+  await assert.rejects(connectNativeVideo(port, () => assert.fail('no synthetic video'), () => {}),
+    error => error.name === 'NativeVideoFirstFrameTimeout')
+  assert.deepEqual(requests, ['/ScrcpyService/onStart', '/ScrcpyService/onEnd'])
+})
 test('native stop failure is observable and still releases the local HTTP2 session', async (t) => {
   const { connectNativeVideo } = await load()
   const port = await server(t, (s, h) => {
