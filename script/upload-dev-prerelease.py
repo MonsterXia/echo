@@ -30,8 +30,11 @@ for suffix in ['win-x64.exe', 'mac-arm64.dmg', 'mac-x64.dmg']:
     shutil.copyfile(block, out / (name + '.blockmap'))
     installers.append(dict(name=name, size=p.stat().st_size, sha256=digest(p)))
 
-metadata = [p for p in files if p.suffix == '.yml']
+metadata_names = {'latest.yml', 'latest-mac.yml', 'latest-x64-mac.yml'}
+metadata = [p for p in files if p.name in metadata_names]
 assert len(metadata) == 3
+assert {p.name for p in metadata} == metadata_names
+metadata_targets = []
 for p in metadata:
     data = yaml.safe_load(p.read_text())
     assert data['version'] == version
@@ -43,7 +46,9 @@ for p in metadata:
     sha512 = base64.b64encode(hashlib.sha512(target.read_bytes()).digest()).decode()
     assert item['sha512'] == sha512 and data['sha512'] == sha512
     assert data['path'] == item['url']
+    metadata_targets.append(item['url'])
     shutil.copyfile(p, out / p.name)
+assert sorted(metadata_targets) == sorted(i['name'] for i in installers)
 
 reports = [p for p in files if p.name.startswith('verification-')]
 assert len(reports) == 3
@@ -71,4 +76,7 @@ report = dict(version=version, sourceCommit=source, buildRun=run_url, prerelease
               artifactDigests=[dict(name=a['name'], digest=a['digest']) for a in artifacts])
 (out / 'release-validation.json').write_text(json.dumps(report, indent=2) + '\n')
 (out / 'SHA256SUMS.txt').write_text(''.join(f'{digest(p)}  {p.name}\n' for p in sorted(out.iterdir())))
+expected = metadata_names | {'verification-win-x64.json', 'verification-mac-arm64.txt', 'verification-mac-x64.txt', 'release-validation.json', 'SHA256SUMS.txt'}
+expected |= {i['name'] for i in installers} | {i['name'] + '.blockmap' for i in installers}
+assert len(expected) == 14 and {p.name for p in out.iterdir()} == expected
 print(json.dumps(report, indent=2))
