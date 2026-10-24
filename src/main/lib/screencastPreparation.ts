@@ -38,8 +38,23 @@ export function init() {
     event.preventDefault()
     if (shuttingDown) return
     shuttingDown = true
-    void warmup.dispose().then(shutdownCaptures).catch(() => {
-      console.error('Capture cleanup failed during shutdown; device state is unconfirmed')
-    }).finally(() => { cleaned = true; app.quit() })
+    let forced = false
+    // Some legacy HDC setup operations can wait indefinitely. End the process
+    // at the deadline, rather than abandoning a live task that may later deploy.
+    const deadline = setTimeout(() => {
+      forced = true
+      console.error('Capture shutdown timed out; exiting with device cleanup unconfirmed')
+      app.exit(0)
+    }, 10000)
+    // Cancel preparation and detach active frame routes immediately, even if
+    // a different device is still blocked in control initialization.
+    void Promise.allSettled([warmup.dispose(), shutdownCaptures()]).then(results => {
+      if (results.some(result => result.status === 'rejected')) {
+        console.error('Capture cleanup failed during shutdown; device state is unconfirmed')
+      }
+    }).finally(() => {
+      clearTimeout(deadline)
+      if (!forced) { cleaned = true; app.quit() }
+    })
   })
 }

@@ -85,6 +85,25 @@ test('control initialization rebuilds an unresponsive daemon once and propagates
   assert.equal(queries, 2)
 })
 
+test('background control initialization never stops an unresponsive existing daemon', async () => {
+  const h = screencastMain(async () => { throw new Error('control unavailable') })
+  let stops = 0
+  h.driver.stop = async () => { stops++ }
+  await assert.rejects(h.driver.initializeControl(true), /control unavailable/)
+  assert.equal(stops, 0)
+  assert.deepEqual(h.calls, ['getDisplaySize'])
+})
+
+test('preparing a cached driver also avoids destructive control recovery', async () => {
+  const h = screencastMain(async () => { throw new Error('control unavailable') })
+  let stops = 0, prepares = 0
+  h.driver.stop = async () => { stops++ }
+  h.driver.nativeVideo = { prepare: async () => { prepares++; return true } }
+  await assert.rejects(h.driver.prepareNativeCapture(1, () => true), /control unavailable/)
+  assert.equal(stops, 0)
+  assert.equal(prepares, 0)
+})
+
 test('cold native start does not wait for an unrelated JPEG stop reply', async () => {
   let prepared = false
   const h = screencastMain(async (_method, api) => {

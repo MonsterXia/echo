@@ -158,9 +158,6 @@ export class NativeVideo {
   async start(scale: number, receive: (frame: NativeVideoFrame) => void, failed: (error: Error) => void) {
     if (this.prepared?.divisor === this.divisor(scale)) {
       try {
-        // A standby can outlive its daemon. Never send onStart/onEnd through
-        // an old forward if another tool has since claimed the fixed socket.
-        if (!(await this.ownedPids()).length) throw new Error('Prepared native process exited')
         await this.activate(receive, failed)
         return true
       }
@@ -175,6 +172,9 @@ export class NativeVideo {
   }
   private divisor(scale: number) { return Math.max(1, Math.min(5, Math.round(1 / scale))) }
   private async activate(receive: (frame: NativeVideoFrame) => void, failed: (error: Error) => void) {
+    // Both a cold launch and a standby may lose their process while HDC sets
+    // up the forward. Do not send onStart to a replacement socket owner.
+    if (!(await this.ownedPids()).length) throw new Error('Native process exited before activation')
     const candidate = this.prepared?.candidate
     this.stream = await this.openStream(receive, failed)
     if (candidate) {
@@ -194,20 +194,21 @@ export class NativeVideo {
         console.warn('Native video has no compatible resources for this device')
         return false
       }
-      const sockets = await this.shell('cat /proc/net/unix')
-      if (sockets.includes('@scrcpy_grpc_socket')) {
-        console.warn('Native video socket occupied by another session')
-        return false // belongs to another tool
-      }
     } catch (error) {
       console.warn('Native video preparation failed:', error)
       return false // no device resources have been created yet
     }
     for (const candidate of candidates) {
       if (!valid()) return false
-      this.name = `scrcpy_harmony_${randomBytes(8).toString('hex')}.so`
       const check = () => { if (!valid()) throw new Error('Native preparation cancelled') }
       try {
+        // Another tool may claim the fixed socket during a failed candidate's
+        // cleanup, so preflight every attempt before creating any resources.
+        if (!(await this.available())) {
+          console.warn('Native video socket occupied by another session')
+          return false
+        }
+        this.name = `scrcpy_harmony_${randomBytes(8).toString('hex')}.so`
         const remote = `/data/local/tmp/${this.name}`
         if (candidate) {
           // Use the platform's native path separators. HDC on Windows can
@@ -226,7 +227,11 @@ export class NativeVideo {
         let missingProcess = false
         for (let i = 0; i < 15; i++) {
           check()
-          if ((await this.shell('cat /proc/net/unix')).includes('@scrcpy_grpc_socket')) { listening = true; break }
+          if ((await this.shell('cat /proc/net/unix')).includes('@scrcpy_grpc_socket')) {
+            if (!(await this.ownedPids()).length) throw new Error('Native process exited before listening')
+            listening = true
+            break
+          }
           // The daemon launcher can report success even when dlopen fails.
           // Confirm absence twice to allow the child to appear after launch.
           if (i > 0) {
@@ -244,6 +249,7 @@ export class NativeVideo {
         check()
         this.prepared = { divisor, candidate }
         if (prepareOnly) {
+          if (!(await this.ownedPids()).length) throw new Error('Native process exited during preparation')
           // A listening library is a useful in-memory hint after expiry, but
           // persist it only once an actual onStart stream has succeeded.
           if (candidate) this.preferred = candidate.file

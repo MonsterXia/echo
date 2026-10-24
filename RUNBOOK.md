@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 本轮 PR #56 审查状态
+
+投屏、初始化和工具栏变更已整理至 [PR #56](https://github.com/MonsterXia/scrcpy-harmony/pull/56)。独立审查发现的服务争用、退出无界等待、后台破坏控制会话三项已修复并经只读复审；首轮跨平台 CI 暴露的许可烟测期望遗漏也已修复。修复后本地应用 558/558、Licia 两模式各 606 passing / 4 pending、lint、Electron 8/8 通过。合入必须以最终 SHA 的独立复核及全部五项 CI 成功为前提，实时结果留在 PR；不发布版本。详见[审查与修复记录](docs/maintenance/screencast-pr56-review.md)。下一步仍为固件矩阵、物理拔插、长期性能验收，M2 其余状态不变。
+
 本文件是后续维护的执行入口。初始基线为 2026-10-21 合入 PR #8 后的 `d672f8954d96ad3511527d074d312077fa8e4eee`；日期按 Asia/Hong_Kong。来源状态是当日快照，完整条目索引见 [维护来源记录](docs/maintenance/SOURCES.md)。
 
 ## 使用方式与完成标准

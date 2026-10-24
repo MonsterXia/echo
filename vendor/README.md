@@ -48,4 +48,6 @@ HDC、Licia、Luna 的 MIT 原文和作者信息保留在各包 LICENSE。两份
 
 控制初始化另已去除固定 2 秒等待：仅在自己新启动 daemon 后，以 3 秒预算尝试初始 Driver.create 握手；普通 RPC 不自动重发。应用层先用只读查询复用健康控制服务，仅初始失败时重建一次。动机及真机结果见[启动耗时记录](../docs/maintenance/screencast-start-latency.md)。
 
+后台准备会暂时关闭 UiDriver 的 `allowDaemonRestart`：遇到已有 daemon 与旧 SDK 时拒绝升级，应用层也不进行失败 stop 恢复，缓存 driver 的准备重连同样保护。显式前台初始化保留原恢复策略。审查动机见 [PR #56 修复记录](../docs/maintenance/screencast-pr56-review.md)。
+
 共享主进程 IPC 的 relaunch 本地适配为 app.relaunch + app.quit，允许应用等待投屏预热/活动会话清理；原 app.exit 绕过生命周期。对应窗口退出语义和验证见[后台准备记录](../docs/maintenance/screencast-preparation.md)。原始导入 manifest 哈希仍只描述导入版本。

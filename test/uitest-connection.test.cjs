@@ -3,6 +3,25 @@ const { test } = require('node:test')
 const net = require('node:net')
 const { loadConnection, loadTransport, packet } = require('./helpers/uitest-stream.cjs')
 
+test('background startup leaves an existing daemon and outdated SDK untouched', async () => {
+  const Driver = loadTransport().default
+  const commands = []
+  let uploads = 0, forwards = 0
+  const driver = new Driver({ sendFile: async () => { uploads++ } })
+  driver.allowDaemonRestart = false
+  driver.shell = async command => {
+    commands.push(command)
+    if (command === 'pidof uitest') return '4242'
+    if (command.startsWith('cat ')) return 'UITEST_AGENT_LIBRARY@v1.0.0'
+    return ''
+  }
+  driver.forwardTcp = async () => { forwards++; return 8012 }
+  await assert.rejects(driver.start(), /existing UITest daemon/)
+  assert.equal(commands.some(command => /kill|rm |param set|start-daemon/.test(command)), false)
+  assert.equal(uploads, 0)
+  assert.equal(forwards, 0)
+})
+
 test('cold control startup connects as soon as the daemon is ready and tolerates early connections', async t => {
   const Driver = loadTransport().default
   const driver = new Driver({})

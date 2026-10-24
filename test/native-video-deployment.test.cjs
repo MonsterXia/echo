@@ -68,10 +68,14 @@ test('candidate cleanup failure blocks another deployment', async () => {
 test('an extension that exits without a socket is rejected without exhausting readiness polls', async () => {
   const f = await fixture({ firstFails: false })
   const original = f.native.run
-  let uploads = 0, probes = 0
+  let uploads = 0, probes = 0, firstCleaned = false
   f.native.run = async args => {
     if (args[0] === 'file') uploads++
-    if (uploads === 1 && args[1] === 'cat /proc/net/unix') { probes++; return '' }
+    if (uploads === 1 && args[1]?.startsWith('rm -f')) firstCleaned = true
+    if (uploads === 1 && args[1] === 'cat /proc/net/unix') {
+      if (!firstCleaned) probes++
+      return ''
+    }
     if (uploads === 1 && args[1] === 'ps -ef') return 'UID PID PPID C STIME TTY TIME CMD'
     return original(args)
   }
@@ -159,6 +163,43 @@ test('a stale prepared forward cannot start a stream belonging to a different so
     ? Promise.resolve('UID PID PPID C STIME TTY TIME CMD') : original(args)
   let streams = 0
   f.native.openStream = async () => { streams++; throw new Error('Must not contact an unowned service') }
+  assert.equal(await f.native.start(1, () => {}, () => {}), false)
+  assert.equal(streams, 0)
+  assert.equal(f.calls.some(args => args[1]?.startsWith('kill -9')), false)
+})
+
+for (const prepareOnly of [false, true]) {
+  test(`a competing socket after failed launch cannot be adopted (prepare=${prepareOnly})`, async () => {
+    const f = await fixture({ firstFails: false })
+    const original = f.native.run
+    let launched = false, starts = 0, stops = 0
+    f.native.run = async args => {
+      if (args[1]?.startsWith('uitest start-daemon')) launched = true
+      // The launcher succeeded, but our extension died. The fixed socket is
+      // now supplied by another tool that started after our initial preflight.
+      if (launched && args[1] === 'ps -ef') return 'UID PID PPID C STIME TTY TIME CMD'
+      return original(args)
+    }
+    f.native.openStream = async () => { starts++; return { stop: async () => stops++ } }
+    assert.equal(await (prepareOnly ? f.native.prepare(1) : f.native.start(1, () => {}, () => {})), false)
+    await f.native.stop()
+    assert.equal(starts, 0)
+    assert.equal(stops, 0)
+    assert.equal(f.calls.filter(args => args[0] === 'file').length, 1, 'do not launch another candidate over the competitor')
+    assert.equal(f.calls.some(args => args[1]?.startsWith('kill -9')), false)
+  })
+}
+
+test('cold activation rechecks its process after forwarding before sending onStart', async () => {
+  const f = await fixture({ firstFails: false })
+  const original = f.native.run
+  let lost = false, streams = 0
+  f.native.run = async args => {
+    if (args[0] === 'fport' && args[1].startsWith('tcp:')) lost = true
+    if (lost && args[1] === 'ps -ef') return 'UID PID PPID C STIME TTY TIME CMD'
+    return original(args)
+  }
+  f.native.openStream = async () => { streams++; return { stop: async () => {} } }
   assert.equal(await f.native.start(1, () => {}, () => {}), false)
   assert.equal(streams, 0)
   assert.equal(f.calls.some(args => args[1]?.startsWith('kill -9')), false)

@@ -39,22 +39,29 @@ export class CaptureUiDriver extends UiDriver {
   private jpegCaptureAttempted = false
   async prepareNativeCapture(scale: number, valid: () => boolean) {
     if (!this.nativeVideo || !valid()) return false
-    await this.getDisplaySize()
+    // A cached driver's control connection may have closed since last use.
+    await this.initializeControl(true)
     if (!valid()) return false
     return this.nativeVideo.prepare(scale, valid)
   }
   async discardNativePreparation() {
     if (!this.nativeActive) await this.nativeVideo?.stop()
   }
-  async initializeControl() {
+  async initializeControl(background = false) {
     // UiDriver checks the agent version and handshakes before this read-only
     // query. Reuse a healthy daemon left by the previous application process.
+    this.allowDaemonRestart = !background
     try { await this.getDisplaySize() }
-    catch {
+    catch (error) {
+      // Background selection is not permission to interrupt another tool's
+      // control-only UITest session (which has no video socket to detect).
+      if (background) throw error
       // Recovery is confined to initial control setup, before video ownership.
       // Never replay input or restart a daemon from an active session timeout.
       await this.stop()
       await this.getDisplaySize()
+    } finally {
+      this.allowDaemonRestart = true
     }
   }
   on(event: string, listener: types.AnyFn): this {

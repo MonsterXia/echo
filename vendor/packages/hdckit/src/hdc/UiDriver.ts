@@ -19,6 +19,7 @@ const SDK_VERSION = '1.1.0'
 const AGENT_PATH = '/data/local/tmp/agent.so'
 
 export default class UiDriver extends Emitter {
+  protected allowDaemonRestart = true
   private readonly target: Target
   private connection: Connection = null
   private driverName: string = ''
@@ -41,6 +42,9 @@ export default class UiDriver extends Emitter {
     let launched = false
     let uiTestPid = trim(await this.shell('pidof uitest'))
     const shouldUpdateSdk = await this.shouldUpdateSdk()
+    if (uiTestPid && shouldUpdateSdk && !this.allowDaemonRestart) {
+      throw new Error('Background preparation cannot replace an existing UITest daemon')
+    }
     if (!uiTestPid || shouldUpdateSdk) {
       await this.shell('param set persist.ace.testmode.enabled 1')
 
