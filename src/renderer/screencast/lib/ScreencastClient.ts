@@ -24,6 +24,7 @@ export default class ScreencastClient {
   private retryTimer?: ReturnType<typeof setTimeout>
   private frameReceived = false
   private videoReceived = false
+  private videoPictureReceived = false
   private acceptingFrames = false
   private imageAbort = new AbortController()
   private readiness = new Readiness()
@@ -56,6 +57,7 @@ export default class ScreencastClient {
     this.imageAbort = new AbortController()
     this.frameReceived = false
     this.videoReceived = false
+    this.videoPictureReceived = false
     this.acceptingFrames = false
     this.pendingFrame = undefined
     this.resetVideo()
@@ -79,7 +81,8 @@ export default class ScreencastClient {
           this.imageAbort.abort()
         }
       }
-      if (this.isCurrent(generation) && !this.frameReceived) {
+      if (this.isCurrent(generation) && (!this.frameReceived ||
+        (this.videoPictureReceived && this.renderedCodec !== 'H.264'))) {
         this.retryTimer = setTimeout(() => {
           this.retryTimer = undefined
           if (this.isCurrent(generation)) {
@@ -206,6 +209,7 @@ export default class ScreencastClient {
       } else fail()
       return
     }
+    if (!metadata.config) this.videoPictureReceived = true
     if (!this.videoDecoder) {
       this.videoDecoder = new H264Decoder((frame) => {
         if (!this.isCurrent(generation) || !this.acceptingFrames) { frame.close(); return }
@@ -218,7 +222,7 @@ export default class ScreencastClient {
   }
   private async draw(image: Uint8Array) {
     const generation = this.generation
-    if (!this.isCurrent(generation)) return
+    if (!this.isCurrent(generation) || this.renderedCodec === 'H.264') return
     const blob = new Blob([image], { type: 'image/jpeg' })
     const url = URL.createObjectURL(blob)
     const signal = this.imageAbort.signal
@@ -235,6 +239,7 @@ export default class ScreencastClient {
   }
   private async paint(img: CanvasImageSource, width: number, height: number, generation: number, codec: 'H.264' | 'JPEG') {
     if (!this.isCurrent(generation) || !this.acceptingFrames) return
+    if (codec === 'JPEG' && this.renderedCodec === 'H.264') return
     const { canvas, ctx } = this
     if (
       !this.displaySize ||
@@ -267,7 +272,8 @@ export default class ScreencastClient {
     this.renderedCodec = codec
     this.renderedFrames++
     this.frameReceived = true
-    this.clearRetry()
+    // A JPEG preview proves capture works, but not that video can decode.
+    if (codec === 'H.264' || !this.videoPictureReceived) this.clearRetry()
     this.readiness.signal('captureScreen')
   }
   private getPointer(e: PointerEvent) {

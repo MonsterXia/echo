@@ -1,0 +1,34 @@
+{
+  "scope": "Packaged app startup, real JPEG to H.264 Canvas handoff; static state not reconfirmed for this package smoke round; no pixels saved",
+  "startedAt": "2026-10-24T18:36:26.457Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 4535,
+      "visibleMs": 4622,
+      "firstCodec": "JPEG",
+      "draws": 660,
+      "codecs": {
+        "JPEG": 4,
+        "H.264": 656
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.0",
+    "packaged": true
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+  ],
+  "sourceCommit": "479a56c8d2fb663779b69eafc7cf2991cf7d1e6c",
+  "asarSha256": "dfdfc8d7dec600c700d0a0280ef117f338dcd16e0b6f3fa06a85a29fc5e97c44",
+  "packagedSmokePassed": true
+}

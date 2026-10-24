@@ -271,6 +271,65 @@ test('unsupported decoder still falls back immediately instead of retrying trans
   assert.deepEqual(f.videoPreferences, [true, false])
 })
 
+test('a queued JPEG preview cannot overwrite H264 after video takeover', async (t) => {
+  const f = await fixture(t, { codecs: {
+    VideoDecoder: class {
+      state = 'configured'
+      decodeQueueSize = 0
+      constructor(callbacks) { this.callbacks = callbacks }
+      configure() {}
+      decode() { this.callbacks.output({ displayWidth: 100, displayHeight: 200, close() {} }) }
+      close() { this.state = 'closed' }
+    },
+    EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+  } })
+  await flush()
+  f.frame()
+  f.frame() // One JPEG is loading and another is waiting when video arrives.
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
+  f.images[0].onload()
+  await flush()
+  const lastImage = f.images[1]
+  if (lastImage?.onload) lastImage.onload()
+  await flush()
+  assert.equal(f.client.getCaptureStats().codec, 'H.264')
+  assert.equal(f.painted.length, 2, 'only the initial JPEG and then video should paint')
+  assert.equal(f.urls.size, 0)
+})
+
+test('JPEG preview does not hide a video decoder that never produces a picture', async (t) => {
+  const pending = deferred()
+  const f = await fixture(t, { start: () => pending.promise, codecs: {
+    VideoDecoder: class {
+      state = 'configured'
+      decodeQueueSize = 0
+      configure() {}
+      decode() {}
+      close() { this.state = 'closed' }
+    },
+    EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+  } })
+  await flush()
+  f.frame()
+  f.images[0].onload()
+  await flush()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true })
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
+  pending.resolve()
+  await flush()
+  f.frame() // A late JPEG must not cancel the decoder deadline.
+  f.images[1].onload()
+  await flush()
+  await f.tick(5000)
+  assert.deepEqual(f.videoPreferences, [true, false])
+  f.frame()
+  f.images[2].onload()
+  await flush()
+  assert.equal(f.client.getCaptureStats().codec, 'JPEG')
+  assert.equal(f.timers.size, 0)
+})
+
 test('configuration without a decoded first frame falls back to JPEG instead of restarting native forever', async (t) => {
   const f = await fixture(t, { codecs: { VideoDecoder: class {} } })
   await flush()

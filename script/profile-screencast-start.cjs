@@ -10,7 +10,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'screencast-start-'))
 const bundle = path.join(dir, 'probe.cjs')
 buildSync({ stdin: { contents: "export * from './src/main/lib/hdc/nativeVideo'; export * from './src/main/lib/hdc/captureDriver'", resolveDir: root }, outfile: bundle, bundle: true, platform: 'node', format: 'cjs' })
 const { NativeVideo, CaptureUiDriver, CaptureScope } = require(bundle)
-const report = { scope: 'Production control/native startup to first encoded frame; excludes window and Chromium decode', stages: [] }
+const report = { scope: 'Production startup: first delivered image and settled codec selection; excludes window and Chromium decode', stages: [] }
 const started = performance.now()
 function wrap(object, method, label) {
   const original = object[method]
@@ -64,7 +64,13 @@ async function run() {
     }
     click = performance.now()
   }
-  scope = new CaptureScope((_data, metadata) => { report.codec = metadata?.codec || 'jpeg' })
+  scope = new CaptureScope((_data, metadata) => {
+    report.codec = metadata?.codec || 'jpeg'
+    if (!metadata?.config && report.firstFrameMs === undefined) {
+      report.firstFrameMs = Math.round(performance.now() - click)
+      report.firstFrameCodec = report.codec
+    }
+  })
   await driver.startOwnedCapture(scope, 1)
   report.readyMs = Math.round(performance.now() - click)
   report.library = native.preferred
