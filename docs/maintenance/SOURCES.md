@@ -132,6 +132,8 @@
 
 ## 2026-10-25 键盘输入与向手机粘贴
 
+[PR #58](https://github.com/MonsterXia/scrcpy-harmony/pull/58)对应最终交付，记录新上下文完整提交审查、104 项独立回归及最终 CI/合入状态。下方未提交状态和测试数量分别对应历史阶段。
+
 [输入独立审查](screencast-input-review.md)记录本轮四项确认缺陷、修复与复核、578 项应用回归、8 项实际 Electron 生命周期、类型检查限制及真机前置状态失败；最新脱敏结果见[审查验证统计](screencast-input-review-verification.json)。
 
 随后按用户要求移除工具栏 T 和闲置的旧输入 IPC；[工具栏记录](screencast-toolbar.md)新增 25 项定向回归、三部分构建、8 项 Electron 生命周期和真实应用按钮/桥接检查，保留此前阶段历史数据。
