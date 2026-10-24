@@ -2,7 +2,7 @@
 
 ## 静止画面投屏启动修复（2026-10-25）
 
-状态：**待验收（本机修复已验证，待 PR CI）**。分支 `codex/fix-static-screencast-start`，基线 `14234fc`。已确认静止时原生编码器启动但未输出首帧，桌面重复试库放大等待；现先显示实时 JPEG，原生沉默时保留 JPEG，并补齐交接及清理保护。应用 585/585、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过，独立复审无 P1/P2。实际预览版首图 17419 ms，修改版首次 4885 ms、重开 289/275 ms；实测 H.264 交接、JPEG 后续更新和关闭清理，详见[专项记录](docs/maintenance/screencast-static-start.md)。下一步完成 PR 必需 CI；跨固件及长期验收仍保留，不发布版本。
+状态：**待验收（本机修复已验证，待 PR CI）**。交付 [PR #61](https://github.com/MonsterXia/scrcpy-harmony/pull/61)，分支 `codex/fix-static-screencast-start`，基线 `14234fc`。已确认静止时原生编码器启动但未输出首帧，桌面重复试库放大等待；现先显示实时 JPEG，原生沉默时保留 JPEG，并补齐交接及清理保护。应用 585/585、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过，独立复审无 P1/P2。实际预览版首图 17419 ms，修改版首次 4885 ms、重开 289/275 ms；实测 H.264 交接、JPEG 后续更新和关闭清理，详见[专项记录](docs/maintenance/screencast-static-start.md)。下一步完成 PR 必需 CI；跨固件及长期验收仍保留，不发布版本。
 
 ## 1.0.4-dev.0 开发预发布
 
