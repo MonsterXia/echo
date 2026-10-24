@@ -60,7 +60,7 @@ React 组件 / MobX store
 
 请求类型集中在 `src/common/types.ts`。主进程设备处理器集中在 `src/main/lib/hdc/`，注册由 `src/main/lib/hdc.ts` 的 `init()` 串起；窗口类处理器在 `src/main/window/`。
 
-捕获的 create/start/stop 通道由 `hdc/captureSessions.ts` 直接注册 `ipcMain.handle`，保留并验证 Electron sender/senderFrame；不能套用会丢弃 event 的共享 handleEvent。投屏窗口须在 loadPage 前注册到会话管理器。
+捕获的 create/start/stop 和 retryCaptureVideo/finishCaptureVideo 通道由 `hdc/captureSessions.ts` 直接注册 `ipcMain.handle`，保留并验证 Electron sender/senderFrame；不能套用会丢弃 event 的共享 handleEvent。投屏窗口须在 loadPage 前注册到会话管理器。视频升档使用原 lease、generation 和独立 promotion ID，JPEG 持续显示至 renderer 确认实际绘制；启动等待不占设备输入队列，driver 负责关闭前等待尝试和清理完成。详见 [JPEG 恢复视频](../../../../docs/maintenance/screencast-video-upgrade.md)。
 
 注意 API 名不一定等于 channel 名：renderer 的 `main.dumpLayout()` 使用 `dumpWindowHierarchy` channel。排错时核对桥接字符串，而不只搜方法名。
 

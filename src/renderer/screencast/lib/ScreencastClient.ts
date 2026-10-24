@@ -31,8 +31,15 @@ export default class ScreencastClient {
   private isTouching = false
   private isDrawing = false
   private pendingFrame?: Uint8Array
-  private pendingVideoFrame?: { frame: VideoFrame; generation: number }
+  private pendingVideoFrame?: { frame: VideoFrame; generation: number; epoch: number }
   private videoDecoder?: H264Decoder
+  private videoEpoch = 0
+  private startSettled = false
+  private autoPromotionAttempted = false
+  private previousJpeg?: Uint8Array
+  private promotionCounter = 0
+  private acceptedPromotion?: number
+  private promotion?: { id: number; generation: number; timer?: ReturnType<typeof setTimeout>; finishing?: Promise<void> }
   private preferVideo = true
   private videoRecoveryAttempted = false
   private renderedCodec: 'H.264' | 'JPEG' | null = null
@@ -50,6 +57,11 @@ export default class ScreencastClient {
       return this.captureTask
     }
     const generation = ++this.generation
+    this.startSettled = false
+    this.previousJpeg = undefined
+    this.acceptedPromotion = undefined
+    if (this.promotion?.timer) clearTimeout(this.promotion.timer)
+    this.promotion = undefined
     this.renderedCodec = null
     this.renderedFrames = 0
     this.clearRetry()
@@ -81,6 +93,7 @@ export default class ScreencastClient {
           this.imageAbort.abort()
         }
       }
+      if (this.isCurrent(generation)) this.startSettled = true
       if (this.isCurrent(generation) && (!this.frameReceived ||
         (this.videoPictureReceived && this.renderedCodec !== 'H.264'))) {
         this.retryTimer = setTimeout(() => {
@@ -98,6 +111,9 @@ export default class ScreencastClient {
   destroy(): void {
     if (this.destroyed) return
     this.destroyed = true
+    if (this.promotion?.timer) clearTimeout(this.promotion.timer)
+    this.promotion = undefined
+    this.previousJpeg = undefined
     this.renderedCodec = null
     this.renderedFrames = 0
     this.pendingFrame = undefined
@@ -111,7 +127,49 @@ export default class ScreencastClient {
     this.releaseSession()
   }
   getCaptureStats() {
-    return { codec: this.renderedCodec, frames: this.renderedFrames, generation: this.generation }
+    return { codec: this.renderedCodec, frames: this.renderedFrames, generation: this.generation,
+      upgrading: !!this.promotion, canRetryVideo: !this.destroyed && this.startSettled &&
+        this.renderedCodec === 'JPEG' && !this.videoPictureReceived && !this.promotion && typeof VideoDecoder !== 'undefined' }
+  }
+  async retryVideo() {
+    if (!this.getCaptureStats().canRetryVideo || !this.sessionId) return
+    this.autoPromotionAttempted = true
+    this.preferVideo = true
+    this.clearRetry()
+    this.resetVideo()
+    this.videoReceived = false
+    this.videoPictureReceived = false
+    const promotion = { id: ++this.promotionCounter, generation: this.generation }
+    this.promotion = promotion
+    this.acceptedPromotion = promotion.id
+    try {
+      const started = await main.retryCaptureVideo(this.sessionId, promotion.generation, promotion.id)
+      if (this.promotion !== promotion || !this.isCurrent(promotion.generation)) return
+      if (!started) return this.finishPromotion(false)
+      if (this.renderedCodec !== 'H.264' && !this.promotion.finishing) {
+        this.promotion.timer = setTimeout(() => { void this.finishPromotion(false) }, 5000)
+      }
+    } catch (error) {
+      console.error(error)
+      if (this.promotion === promotion) await this.finishPromotion(false)
+    }
+  }
+  private finishPromotion(commit: boolean): Promise<void> {
+    const promotion = this.promotion
+    if (!promotion) return Promise.resolve()
+    if (promotion.finishing) return promotion.finishing
+    if (promotion.timer) clearTimeout(promotion.timer)
+    if (!commit) {
+      this.acceptedPromotion = undefined
+      this.resetVideo()
+      this.videoReceived = false
+      this.videoPictureReceived = false
+    }
+    promotion.finishing = main.finishCaptureVideo(this.sessionId!, promotion.generation, promotion.id, commit)
+      .catch(console.error).finally(() => {
+        if (this.promotion === promotion) this.promotion = undefined
+      })
+    return promotion.finishing
   }
   async input(action: ScreencastInputAction) {
     if (this.destroyed || !this.frameReceived) throw new Error('Capture is not ready')
@@ -163,7 +221,7 @@ export default class ScreencastClient {
     if (video) {
       this.pendingVideoFrame = undefined
       this.isDrawing = true
-      this.paint(video.frame, video.frame.displayWidth, video.frame.displayHeight, video.generation, 'H.264')
+      this.paint(video.frame, video.frame.displayWidth, video.frame.displayHeight, video.generation, 'H.264', video.epoch)
         .catch(console.error)
         .finally(() => {
           video.frame.close()
@@ -184,21 +242,25 @@ export default class ScreencastClient {
       })
   }
   private resetVideo() {
+    this.videoEpoch++
     this.videoDecoder?.destroy()
     this.videoDecoder = undefined
     this.pendingVideoFrame?.frame.close()
     this.pendingVideoFrame = undefined
   }
   private videoFrame(image: Uint8Array, metadata: CaptureFrameMetadata) {
+    if (metadata.promotion !== this.acceptedPromotion) return
     this.videoReceived = true
     const generation = this.generation
     const fail = () => {
       if (!this.isCurrent(generation) || !this.preferVideo) return
+      if (this.promotion && this.renderedCodec !== 'H.264') { void this.finishPromotion(false); return }
       console.error('Native video failed; restarting in JPEG compatibility mode')
       this.preferVideo = false
       this.start()
     }
     if (metadata.codec === 'error') {
+      if (this.promotion && this.renderedCodec !== 'H.264') { void this.finishPromotion(false); return }
       // Transport loss is not proof that H.264 is unsupported. Retry through
       // the owned capture queue once per client; repeated failures still fall
       // back, without an endless loop between native and JPEG capture.
@@ -211,10 +273,11 @@ export default class ScreencastClient {
     }
     if (!metadata.config) this.videoPictureReceived = true
     if (!this.videoDecoder) {
+      const epoch = this.videoEpoch
       this.videoDecoder = new H264Decoder((frame) => {
-        if (!this.isCurrent(generation) || !this.acceptingFrames) { frame.close(); return }
+        if (!this.isCurrent(generation) || !this.acceptingFrames || epoch !== this.videoEpoch) { frame.close(); return }
         this.pendingVideoFrame?.frame.close()
-        this.pendingVideoFrame = { frame, generation }
+        this.pendingVideoFrame = { frame, generation, epoch }
         this.drawPendingFrame()
       }, fail)
     }
@@ -237,8 +300,9 @@ export default class ScreencastClient {
     }
     await this.paint(img, img.naturalWidth, img.naturalHeight, generation, 'JPEG')
   }
-  private async paint(img: CanvasImageSource, width: number, height: number, generation: number, codec: 'H.264' | 'JPEG') {
+  private async paint(img: CanvasImageSource, width: number, height: number, generation: number, codec: 'H.264' | 'JPEG', epoch?: number) {
     if (!this.isCurrent(generation) || !this.acceptingFrames) return
+    if (epoch !== undefined && epoch !== this.videoEpoch) return
     if (codec === 'JPEG' && this.renderedCodec === 'H.264') return
     const { canvas, ctx } = this
     if (
@@ -251,6 +315,7 @@ export default class ScreencastClient {
       // (for example, after rotating the device).
       const size = await main.getDisplaySize(this.connectKey)
       if (!this.isCurrent(generation) || !this.acceptingFrames) return
+      if (epoch !== undefined && epoch !== this.videoEpoch) return
       if (
         !Number.isInteger(size.width) ||
         !Number.isInteger(size.height) ||
@@ -272,6 +337,7 @@ export default class ScreencastClient {
     this.renderedCodec = codec
     this.renderedFrames++
     this.frameReceived = true
+    if (codec === 'H.264' && this.promotion) void this.finishPromotion(true)
     // A JPEG preview proves capture works, but not that video can decode.
     if (codec === 'H.264' || !this.videoPictureReceived) this.clearRetry()
     this.readiness.signal('captureScreen')
@@ -345,8 +411,14 @@ export default class ScreencastClient {
           }
           // Keep one latest frame while decoding. Bursts must not freeze on
           // their first frame or build an increasingly stale decode queue.
+          const previous = this.previousJpeg
+          this.previousJpeg = image
           this.pendingFrame = image
           this.drawPendingFrame()
+          if (this.startSettled && this.preferVideo && !this.autoPromotionAttempted && previous &&
+            (previous.length !== image.length || !previous.every((byte, i) => byte === image[i]))) {
+            void this.retryVideo()
+          }
         }
       },
     )

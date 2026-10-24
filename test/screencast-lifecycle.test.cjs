@@ -120,6 +120,8 @@ async function fixture(t, bridge = {}) {
         videoPreferences.push(preferVideo)
         return bridge.start?.(key, scale, generation)
       },
+      retryCaptureVideo: async (...args) => { calls.push('promote'); return bridge.promote?.(...args) ?? false },
+      finishCaptureVideo: async (...args) => { calls.push(['finishVideo', args[3]]); return bridge.finishVideo?.(...args) },
       getDisplaySize: async () => {
         calls.push('size')
         return bridge.size ? bridge.size() : { width: 100, height: 200 }
@@ -207,6 +209,91 @@ test('busy decoder retains only the newest frame and paints it without another a
   assert.ok(f.client.getCaptureStats().generation > before)
   f.client.destroy()
   assert.equal(f.client.getCaptureStats().frames, 0)
+})
+
+test('JPEG changes trigger only one automatic video promotion without restarting capture', async (t) => {
+  const f = await fixture(t, { codecs: { VideoDecoder: class {} } })
+  await flush()
+  f.frame(); f.images[0].onload(); await flush()
+  await f.tick(15000)
+  f.frame(); f.images[1].onload(); await flush()
+  assert.equal(f.calls.filter(x => x === 'promote').length, 0, 'identical static frames should not spend the retry')
+  f.frame(undefined, undefined, new Uint8Array([4, 5, 6]))
+  f.images[2].onload(); await flush()
+  assert.equal(f.calls.filter(x => x === 'promote').length, 1)
+  f.frame(undefined, undefined, new Uint8Array([7, 8, 9]))
+  f.images[3].onload(); await flush()
+  assert.equal(f.calls.filter(x => x === 'promote').length, 1)
+  assert.equal(f.videoPreferences.length, 1)
+  assert.equal(f.client.getCaptureStats().codec, 'JPEG')
+  await f.client.retryVideo()
+  assert.equal(f.calls.filter(x => x === 'promote').length, 2, 'manual retry remains available')
+})
+
+for (const paintsVideo of [true, false]) {
+  test(`video promotion ${paintsVideo ? 'commits only after paint' : 'times out without interrupting JPEG'}`, async (t) => {
+    let output
+    const pending = deferred()
+    const f = await fixture(t, { promote: () => pending.promise, codecs: {
+      VideoDecoder: class {
+        state = 'configured'; decodeQueueSize = 0
+        constructor(callbacks) { output = callbacks.output }
+        configure() {} decode() {} close() { this.state = 'closed' }
+      },
+      EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+    } })
+    await flush(); f.frame(); f.images[0].onload(); await flush()
+    const generation = f.client.getCaptureStats().generation
+    const upgrading = f.client.retryVideo()
+    await f.client.retryVideo()
+    assert.equal(f.calls.filter(x => x === 'promote').length, 1)
+    const config = new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1])
+    f.frame(undefined, undefined, config, { codec: 'h264', config: true, promotion: 1 })
+    f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true, promotion: 1 })
+    f.frame(); f.images[1].onload(); await flush()
+    assert.equal(f.client.getCaptureStats().codec, 'JPEG')
+    assert.equal(f.calls.filter(x => Array.isArray(x) && x[0] === 'finishVideo').length, 0)
+    pending.resolve(true); await upgrading
+    const frame = { displayWidth: 100, displayHeight: 200, closed: 0, close() { this.closed++ } }
+    if (paintsVideo) output(frame)
+    else await f.tick(5000)
+    await flush()
+    assert.deepEqual(f.calls.filter(x => Array.isArray(x) && x[0] === 'finishVideo'), [['finishVideo', paintsVideo]])
+    assert.equal(f.client.getCaptureStats().codec, paintsVideo ? 'H.264' : 'JPEG')
+    assert.equal(f.client.getCaptureStats().generation, generation)
+    assert.equal(f.videoPreferences.length, 1)
+    if (!paintsVideo) {
+      output(frame)
+      f.frame(undefined, undefined, config, { codec: 'h264', config: true, promotion: 1 })
+      await flush()
+      assert.equal(frame.closed, 1)
+      assert.equal(f.client.getCaptureStats().codec, 'JPEG')
+    }
+  })
+}
+
+for (const decoderError of [false, true]) test(`${decoderError ? 'decoder' : 'transport'} failure during promotion commit still recovers instead of freezing the painted video`, async (t) => {
+  const commit = deferred()
+  let failDecoder
+  const f = await fixture(t, { promote: async () => true, finishVideo: () => commit.promise, codecs: {
+    VideoDecoder: class {
+      state = 'configured'; decodeQueueSize = 0
+      constructor(callbacks) { this.callbacks = callbacks; failDecoder = callbacks.error }
+      configure() {} decode() { this.callbacks.output({ displayWidth: 100, displayHeight: 200, close() {} }) }
+      close() { this.state = 'closed' }
+    },
+    EncodedVideoChunk: class { constructor(options) { Object.assign(this, options) } },
+  } })
+  await flush(); f.frame(); f.images[0].onload(); await flush()
+  await f.client.retryVideo()
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x67,0x64,0,0x28,0,0,0,1,0x68,1]), { codec: 'h264', config: true, promotion: 1 })
+  f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true, promotion: 1 })
+  await flush()
+  assert.equal(f.client.getCaptureStats().codec, 'H.264')
+  if (decoderError) failDecoder(new Error('decoder failed'))
+  else f.frame(undefined, undefined, new Uint8Array(), { codec: 'error', promotion: 1 })
+  await flush(); commit.resolve(); await flush()
+  assert.equal(f.videoPreferences.length, 2)
 })
 
 test('native transport retries H264 once, rejects stale errors, then bounds repeated failure with JPEG', async (t) => {
@@ -318,6 +405,8 @@ test('JPEG preview does not hide a video decoder that never produces a picture',
   f.frame(undefined, undefined, new Uint8Array([0,0,0,1,0x65,1]), { codec: 'h264', keyFrame: true })
   pending.resolve()
   await flush()
+  await f.client.retryVideo()
+  assert.equal(f.calls.includes('promote'), false, 'manual promotion must not cancel initial video decode recovery')
   f.frame() // A late JPEG must not cancel the decoder deadline.
   f.images[1].onload()
   await flush()

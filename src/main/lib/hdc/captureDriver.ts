@@ -37,6 +37,10 @@ export class CaptureUiDriver extends UiDriver {
   nativeVideo?: NativeVideo
   private nativeActive = false
   private jpegCaptureAttempted = false
+  private capture?: { scope: CaptureScope; scale: number; videoReceived: boolean }
+  private promotion?: {
+    scope: CaptureScope; id: number; active: boolean; task: Promise<boolean>; settled?: Promise<boolean>; finish?: Promise<void>
+  }
   async prepareNativeCapture(scale: number, valid: () => boolean) {
     if (!this.nativeVideo || !valid()) return false
     // A cached driver's control connection may have closed since last use.
@@ -74,12 +78,12 @@ export class CaptureUiDriver extends UiDriver {
     return this
   }
   async startOwnedCapture(scope: CaptureScope, scale: number, preferVideo = true) {
-    let videoReceived = false
+    const capture = this.capture = { scope, scale, videoReceived: false }
     const startJpeg = () => {
       this.jpegCaptureAttempted = true
       return registration.run({ driver: this, scope }, () =>
         super.startCaptureScreen(image => {
-          if (!videoReceived) scope.deliver(image)
+          if (!capture.videoReceived) scope.deliver(image)
         }, { scale }),
       )
     }
@@ -96,7 +100,7 @@ export class CaptureUiDriver extends UiDriver {
       this.nativeActive = true
       const started = await this.nativeVideo.start(scale,
         ({ data, ...metadata }) => {
-          if (!metadata.config) videoReceived = true
+          if (!metadata.config) capture.videoReceived = true
           scope.deliver(data, { codec: 'h264', ...metadata })
         },
         (error) => {
@@ -120,7 +124,57 @@ export class CaptureUiDriver extends UiDriver {
     await this.discardNativePreparation()
     return startJpeg()
   }
+  retryCaptureVideo(scope: CaptureScope, id: number): Promise<boolean> {
+    const capture = this.capture
+    if (!this.nativeVideo || this.nativeActive || this.promotion || !this.jpegCaptureAttempted ||
+      capture?.scope !== scope || !scope.active) return Promise.resolve(false)
+    const promotion = { scope, id, active: true, task: Promise.resolve(false) } as NonNullable<CaptureUiDriver['promotion']>
+    this.promotion = promotion
+    this.nativeActive = true
+    promotion.task = this.nativeVideo.start(capture.scale, ({ data, ...metadata }) => {
+      if (promotion.active && scope.active) scope.deliver(data, { codec: 'h264', ...metadata, promotion: id })
+    }, () => {
+      if (promotion.active && scope.active) scope.deliver(Buffer.alloc(0), { codec: 'error', promotion: id })
+    })
+    // Keep live JPEG until the renderer acknowledges an actually painted frame.
+    // Never hold the device input queue while waiting for the encoder.
+    promotion.settled = promotion.task.then(async started => {
+      if (!started) await this.finishCaptureVideo(scope, id, false)
+      return started
+    }, async error => {
+      await this.finishCaptureVideo(scope, id, false)
+      throw error
+    })
+    return promotion.settled
+  }
+  finishCaptureVideo(scope: CaptureScope, id: number, commit: boolean): Promise<void> {
+    const promotion = this.promotion
+    if (!promotion || promotion.scope !== scope || promotion.id !== id) return Promise.resolve()
+    if (promotion.finish) return promotion.finish
+    if (!commit) promotion.active = false
+    promotion.finish = (async () => {
+      const started = await promotion.task.catch(() => false)
+      if (commit && started && scope.active && this.capture?.scope === scope) {
+        this.capture.videoReceived = true
+        await super.stopCaptureScreen()
+        this.jpegCaptureAttempted = false
+      } else {
+        promotion.active = false
+        await this.nativeVideo!.stop()
+        this.nativeActive = false
+        if (this.promotion === promotion) this.promotion = undefined
+      }
+    })()
+    return promotion.finish
+  }
   async stopCaptureScreen() {
+    this.capture = undefined
+    const promotion = this.promotion
+    if (promotion) {
+      promotion.active = false
+      await (promotion.settled || promotion.task).catch(() => {})
+      await promotion.finish?.catch(() => {})
+    }
     let failure: unknown
     if (this.nativeActive) {
       try { await this.nativeVideo!.stop(); this.nativeActive = false }
@@ -131,5 +185,6 @@ export class CaptureUiDriver extends UiDriver {
       catch (error) { failure ??= error }
     }
     if (failure) throw failure
+    this.promotion = undefined
   }
 }
