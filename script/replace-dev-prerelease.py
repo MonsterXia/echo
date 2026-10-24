@@ -114,9 +114,9 @@ Windows x64、macOS Apple Silicon（arm64）和 Intel（x64）；macOS 最低 13
 '''
     Path('replacement-notes.md').write_text(notes)
     # Keep the existing release ID and URLs; hide the mixed upload state.
-    api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-F', 'draft=true')
+    api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-f', f'tag_name={TAG}', '-F', 'draft=true')
     api(f'git/refs/tags/{TAG}', '--method', 'PATCH', '-f', f'sha={SOURCE}', '-F', 'force=true')
-    api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-f', f'target_commitish={SOURCE}', '-F', 'prerelease=true')
+    api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-f', f'tag_name={TAG}', '-f', f'target_commitish={SOURCE}', '-F', 'prerelease=true')
     gh('release', 'upload', TAG, *[str(p) for p in files.values()], '--clobber')
     verify_assets(api(f'releases/{RELEASE_ID}'), files)
     remote = Path('downloaded-release')
@@ -124,8 +124,10 @@ Windows x64、macOS Apple Silicon（arm64）和 Intel（x64）；macOS 最低 13
     assert {p.name for p in remote.iterdir()} == set(files)
     for name, local in files.items():
         assert digest(remote / name) == digest(local), 'Downloaded bytes mismatch: ' + name
-    gh('release', 'edit', TAG, '--draft=false', '--prerelease', '--latest=false',
-       '--title', 'Scrcpy Harmony 1.0.4-dev.0 (Screencast Startup Fix)', '--notes-file', 'replacement-notes.md')
+    api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-f', f'tag_name={TAG}',
+        '-f', f'target_commitish={SOURCE}', '-F', 'draft=false', '-F', 'prerelease=true',
+        '-f', 'make_latest=false', '-f', 'name=Scrcpy Harmony 1.0.4-dev.0 (Screencast Startup Fix)',
+        '-f', f'body={notes}')
     after, current = release_state()
     assert current == SOURCE and not after['draft'] and after['target_commitish'] == SOURCE
     verify_assets(after, files)
