@@ -66,7 +66,7 @@ jobs:
               issueNumber = payload.issue.number;
             } else return;
 
-            // Full-body allowlist of the observed notification, not keyword matching.
+            // Full-body allowlist of observed limit notices, not keyword matching.
             // Unknown templates and any appended review content are left untouched.
             const quotaNotice = new RegExp(
               String.raw`^Sorry @MonsterXia, you've used your own review budget of \d[\d,]* diff characters for the last 7 days\.\n\n` +
@@ -74,6 +74,7 @@ jobs:
               String.raw`by commenting \x60@sourcery-ai review\x60\. \[Upgrade\]\(https://app\.sourcery\.ai/dashboard/billing\?` +
               String.raw`connection=github&owner=MonsterXia&from_surface=github_bot&intent=rate_limit_hit\) to get a review now\.$`
             );
+            const sizeLimitNotice = /^Sorry @MonsterXia, your pull request is larger than the review limit of \d[\d,]* diff characters$/;
             const issueUrl = 'https://api.github.com/repos/' + context.repo.owner +
               '/' + context.repo.repo + '/issues/' + issueNumber;
             function isQuotaNotice(comment) {
@@ -81,7 +82,8 @@ jobs:
                 comment.user.type === 'Bot' &&
                 comment.issue_url === issueUrl &&
                 typeof comment.body === 'string' &&
-                quotaNotice.test(comment.body.replace(/\r\n/g, '\n').trim());
+                [quotaNotice, sizeLimitNotice].some(pattern =>
+                  pattern.test(comment.body.replace(/\r\n/g, '\n').trim()));
             }
 
             if (!isQuotaNotice(eventComment)) {

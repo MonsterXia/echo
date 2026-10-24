@@ -147,7 +147,7 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 
 ## Sourcery 超额度评论清理
 
-`.github/workflows/sourcery-quota-comments.yml` 在默认分支监听 PR 顶层评论的 `issue_comment.created/edited`。只有 `sourcery-ai[bot]`（Bot 类型）且整段正文匹配已确认的额度耗尽模板时才删除；匹配限定本仓库账号、Sourcery billing 链接和 `rate_limit_hit`，金额与等待时长可变。普通审查、指南、混合正文、其他作者、Issue 和未知模板均保留。
+`.github/workflows/sourcery-quota-comments.yml` 在默认分支监听 PR 顶层评论的 `issue_comment.created/edited`。只有 `sourcery-ai[bot]`（Bot 类型）且整段正文匹配已确认的限制提示模板时才删除：一类是额度耗尽，限定本仓库账号、Sourcery billing 链接和 `rate_limit_hit`，字符额度与等待时长可变；另一类是 `Sorry @MonsterXia, your pull request is larger than the review limit of <数字> diff characters`，允许字符上限数值变化。普通审查、指南、混合正文、其他作者、Issue 和未知模板均保留。
 
 工作流不 checkout、不执行 PR 代码，只授予任务 `pull-requests: write`；通过 `context.payload` 读取正文，删除前重新读取并核对作者、正文、评论 ID 和所属 PR。PR 评论删除需要 PR 写权限；仅有 `issues: write` 的旧配置曾在实际运行中返回 403。404 视为已删除，权限/其他错误使任务失败。自动事件只检查触发它的单条评论，不扫描全库。
 
