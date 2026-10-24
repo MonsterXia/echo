@@ -7,8 +7,8 @@ import shutil
 import yaml
 
 version = '1.0.4-dev.0'
-source = '9b0da71bcbeefcfafac2f9cdd157c0d82bb7edbc'
-run_url = 'https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40121812642'
+source = '91dbb57839e4f400351817e30604179cff9bd213'
+run_url = 'https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40124914239'
 root = Path('verified-artifacts')
 out = Path('verified-assets')
 out.mkdir()

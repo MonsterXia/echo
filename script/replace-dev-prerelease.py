@@ -10,10 +10,10 @@ import zipfile
 REPO = 'MonsterXia/scrcpy-harmony'
 TAG = 'v1.0.4-dev.0'
 RELEASE_ID = 422885887
-OLD = '0774a0b2d6402c447c362bd18f541e881472e16f'
-SOURCE = '9b0da71bcbeefcfafac2f9cdd157c0d82bb7edbc'
-BUILD = 40121812642
-CI = 40121815862
+OLD = '9b0da71bcbeefcfafac2f9cdd157c0d82bb7edbc'
+SOURCE = '91dbb57839e4f400351817e30604179cff9bd213'
+BUILD = 40124914239
+CI = 40124913520
 EXPECTED_JOBS = {'test', 'lint', 'windows-package', 'macos-package-arm64', 'macos-package-x64'}
 
 def gh(*args, **kwargs):
@@ -44,7 +44,7 @@ def prepare():
     assert ci['head_sha'] == SOURCE and ci['conclusion'] == 'success'
     jobs = api(f'actions/runs/{CI}/jobs?per_page=100')['jobs']
     assert {j['name'] for j in jobs} == EXPECTED_JOBS and all(j['conclusion'] == 'success' for j in jobs)
-    pr = api('pulls/61')
+    pr = api('pulls/63')
     assert pr['merged'] and pr['head']['sha'] == SOURCE, 'Fix must be merged at verified head'
     release, _ = release_state()
     save('release-before.json', release)
@@ -90,13 +90,15 @@ def publish():
         save('release-after.json', release)
         save('replacement-audit.json', {'alreadyPublished': True, 'sourceCommit': SOURCE})
         return
-    notes = f'''Scrcpy Harmony **1.0.4-dev.0** 开发预览版（投屏启动修复）。
+    notes = f'''Scrcpy Harmony **1.0.4-dev.0** 开发预览版（投屏启动与视频恢复修复）。
 
-2026-10-25 按维护者要求，以同一版本号替换了原预览安装包。**已经下载旧版的用户请重新下载并安装**；同版本不会自动提示升级。下方 SHA256SUMS.txt 和 release-validation.json 用于区分此次修复包。
+2026-10-25 按维护者要求，再次以同一版本号替换预览安装包，包含 JPEG 自动/手动恢复视频。**已下载此前版本（含此前启动修复包）的用户请重新下载并安装**；同版本不会自动提示升级。下方 SHA256SUMS.txt 和 release-validation.json 用于区分此次修复包。
 
 ### 修复内容
 - 亮屏解锁但静止时先显示实时 JPEG，H.264 就绪后切换；首帧沉默不再反复等待所有兼容库。
 - 修复 JPEG 与 H.264 交接、解码无输出恢复及双通道停止清理。
+- JPEG 回退后画面再次变化时自动尝试一次 H.264；工具栏提供“切换到视频”。尝试期间 JPEG 与输入继续工作，真正解码并绘制视频首帧后交接；失败保留 JPEG。
+- 当前设备连续运动对照中，自动/手动交接分别为 14/25 ms。该对照使用受控 JPEG 起点和真实触摸滑动，不保证所有固件或所有场景具有相同延迟。
 - 本机旧安装版首图 17.4 秒，修复版首次约 4.9 秒、重开约 0.3 秒；静止固件可能继续使用 JPEG，不保证始终输出 H.264。
 
 保留原预览版的原生投屏、预热、工具栏、画质/FPS、键盘/IME、选区和电脑到手机粘贴，以及本仓内置依赖源码。
@@ -126,7 +128,7 @@ Windows x64、macOS Apple Silicon（arm64）和 Intel（x64）；macOS 最低 13
         assert digest(remote / name) == digest(local), 'Downloaded bytes mismatch: ' + name
     api(f'releases/{RELEASE_ID}', '--method', 'PATCH', '-f', f'tag_name={TAG}',
         '-f', f'target_commitish={SOURCE}', '-F', 'draft=false', '-F', 'prerelease=true',
-        '-f', 'make_latest=false', '-f', 'name=Scrcpy Harmony 1.0.4-dev.0 (Screencast Startup Fix)',
+        '-f', 'make_latest=false', '-f', 'name=Scrcpy Harmony 1.0.4-dev.0 (Video Recovery Fix)',
         '-f', f'body={notes}')
     after, current = release_state()
     assert current == SOURCE and not after['draft'] and after['target_commitish'] == SOURCE
