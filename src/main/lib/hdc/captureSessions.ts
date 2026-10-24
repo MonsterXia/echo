@@ -346,4 +346,32 @@ export function initCaptureIpc(
       return lease ? 'stopped' : 'released'
     })
   })
+
+  for (const name of ['retryCaptureVideo', 'finishCaptureVideo'] as const) {
+    ipcMain.handle(name, async (event, id: string, generation: number, promotion: number, commit?: boolean) => {
+      const owner = sender(event)
+      const session = sessions.get(id)
+      if (!session || session.owner !== owner || session.frame !== event.senderFrame || !current(session, generation)) {
+        throw new Error('Video promotion requires the active capture generation')
+      }
+      if (!Number.isSafeInteger(promotion) || promotion <= 0 ||
+        (name === 'finishCaptureVideo' && typeof commit !== 'boolean')) throw new Error('Invalid video promotion')
+      const device = deviceFor(session.connectKey)
+      // Queue acquisition only: native startup must not delay touch or keyboard.
+      // The driver owns pending work and stop waits for it before releasing lease.
+      const result = await enqueue(session.connectKey, device, async () => {
+        const lease = device.lease
+        if (!current(session, generation) || lease?.session !== session || !lease.scope.active) {
+          throw new Error('Video promotion requires an active capture')
+        }
+        const task = name === 'retryCaptureVideo'
+          ? lease.driver.retryCaptureVideo(lease.scope, promotion)
+          : lease.driver.finishCaptureVideo(lease.scope, promotion, commit!)
+        // Attach a rejection observer before returning the non-awaiting wrapper.
+        void task.catch(() => {})
+        return { task }
+      })
+      return result.task
+    })
+  }
 }

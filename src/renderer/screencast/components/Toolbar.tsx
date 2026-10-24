@@ -34,7 +34,9 @@ export default observer(function Toolbar() {
   const [captureStatus, setCaptureStatus] = useState<{
     codec: 'H.264' | 'JPEG' | null
     fps: number | null
-  }>({ codec: null, fps: null })
+    upgrading: boolean
+    canRetryVideo: boolean
+  }>({ codec: null, fps: null, upgrading: false, canRetryVideo: false })
 
   useEffect(() => {
     if ((!expanded && !buttonVisible) || hovered || editing)
@@ -50,13 +52,15 @@ export default observer(function Toolbar() {
     if (!expanded || !screencastClient) return
     let previous = screencastClient.getCaptureStats()
     let previousTime = performance.now()
-    setCaptureStatus({ codec: previous.codec, fps: null })
+    setCaptureStatus({ ...previous, fps: null })
     const timer = setInterval(() => {
       const current = screencastClient.getCaptureStats()
       const now = performance.now()
       const elapsed = now - previousTime
       setCaptureStatus({
         codec: current.codec,
+        upgrading: current.upgrading,
+        canRetryVideo: current.canRetryVideo,
         fps:
           current.codec &&
           current.generation === previous.generation &&
@@ -215,6 +219,20 @@ export default observer(function Toolbar() {
                 FPS
               </span>
             </span>
+            {captureStatus.codec === 'JPEG' && (
+              <button
+                type="button"
+                className={Style.retryVideo}
+                disabled={!captureStatus.canRetryVideo}
+                title={t('screencastRetryVideoHint')}
+                onClick={() => {
+                  void screencastClient.retryVideo()
+                  setCaptureStatus(status => ({ ...status, ...screencastClient.getCaptureStats() }))
+                }}
+              >
+                {t(captureStatus.upgrading ? 'screencastSwitchingVideo' : 'screencastRetryVideo')}
+              </button>
+            )}
             <LunaToolbarText text={t('scale') + ':'} />
             <LunaToolbarSelect
               className={Style.resolution}

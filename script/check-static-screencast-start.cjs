@@ -10,10 +10,16 @@ const { createHash } = require('node:crypto')
 const { setTimeout: delay } = require('node:timers/promises')
 const root = path.resolve(__dirname, '..')
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-static-window-'))
-const installed = process.argv[3]
+const upgradeMode = process.argv.includes('--upgrade')
+const controlledMotion = process.argv.includes('--controlled-motion')
+const manualMotion = process.argv.includes('--manual-motion')
+const installed = process.argv[3] === '--upgrade' ? undefined : process.argv[3]
 const report = { scope: 'Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved',
   startedAt: new Date().toISOString(), rounds: [], passed: false }
 let app, ownedChild, ownedSocket, launchError
+if (upgradeMode) report.scope = 'Real app: static JPEG manual retry, then automatic H264 promotion on user motion; no pixels saved'
+if (controlledMotion) report.scope = 'Controlled real-device JPEG baseline (initial preferVideo=false), automatic H264 promotion and actual pointer swipes; no pixels saved'
+if (manualMotion) report.scope = 'Controlled real-device JPEG baseline, toolbar manual H264 promotion and actual pointer swipes; no pixels saved'
 const deadline = setTimeout(() => {
   report.error = 'Static-window check timed out'
   ownedSocket?.close()
@@ -128,9 +134,23 @@ async function run() {
     if (targets.length !== 1) throw new Error('Exactly one authorized device required')
     await window.main.setMainStore('target', targets[0])
   })
+  if (controlledMotion) await app.evaluate(({ ipcMain }) => {
+    const original = ipcMain._invokeHandlers.get('startCaptureScreen')
+    if (!original) throw new Error('Capture handler unavailable')
+    ipcMain.removeHandler('startCaptureScreen')
+    // Controlled starting format only; capture, promotion, decoding and input
+    // continue through the real implementation and physical device.
+    ipcMain.handle('startCaptureScreen', (event, id, scale, generation) => original(event, id, scale, generation, false))
+  })
   const instrumentation = () => {
     const original = CanvasRenderingContext2D.prototype.drawImage
-    window.captureTiming = { draws: 0, codecs: {} }
+    window.captureTiming = { draws: 0, codecs: {}, timeline: [] }
+    if (window.main) window.main.on('captureScreen', (_session, _generation, _image, metadata) => {
+      if (metadata?.promotion) {
+        window.captureTiming.promotion = metadata.promotion
+        if (!window.captureTiming.promotionPacketAt) window.captureTiming.promotionPacketAt = Date.now()
+      }
+    })
     CanvasRenderingContext2D.prototype.drawImage = function (...args) {
       const result = original.apply(this, args)
       const probe = window.captureTiming
@@ -138,6 +158,12 @@ async function run() {
       if (!probe.firstAt) { probe.firstAt = Date.now(); probe.firstCodec = codec }
       probe.draws++
       probe.codecs[codec] = (probe.codecs[codec] || 0) + 1
+      if (probe.timeline.length < 300) probe.timeline.push({ at: Date.now(), codec })
+      if (codec === 'JPEG') probe.lastJpegAt = Date.now()
+      if (codec === 'H.264' && !probe.firstVideoAt) {
+        probe.firstVideoAt = Date.now()
+        probe.handoverGapMs = probe.lastJpegAt ? probe.firstVideoAt - probe.lastJpegAt : null
+      }
       probe.width = this.canvas.width
       probe.height = this.canvas.height
       return result
@@ -148,17 +174,73 @@ async function run() {
       contents.once('dom-ready', () => { void contents.executeJavaScript(`(${source})()`) })
     })
   }, instrumentation.toString())
-  for (let round = 0; round < (installed ? 1 : 3); round++) {
+  for (let round = 0; round < (controlledMotion ? 1 : upgradeMode ? 2 : installed ? 1 : 3); round++) {
     const clickedAt = Date.now()
     await renderer(() => window.main.showScreencast())
     await waitFor(() => renderer(() => window.captureTiming?.draws > 0 && Boolean(document.querySelector('canvas')?.getBoundingClientRect().width), true))
     const visibleMs = Date.now() - clickedAt
-    await delay(11000)
+    await delay(controlledMotion ? 500 : 11000)
+    if (upgradeMode) {
+      const before = await renderer(() => window.captureTiming, true)
+      if (before.codecs['H.264']) {
+        report.earlyVideo = { round: round + 1, promotion: before.promotion ?? null, frames: before.codecs['H.264'] }
+        throw new Error('Video already active before requested test phase; sample retained, scenario needs repeat')
+      }
+      if (round === 0 && !controlledMotion) {
+        await renderer(() => document.querySelector('[aria-controls="screencast-tools"]').click(), true)
+        await waitFor(() => renderer(() => [...document.querySelectorAll('button')].some(b => b.textContent === '切换到视频' && !b.disabled), true))
+        await renderer(() => [...document.querySelectorAll('button')].find(b => b.textContent === '切换到视频').click(), true)
+        console.log('MANUAL_RETRY_STARTED_KEEP_PHONE_STATIC')
+        await delay(15000)
+        await renderer(() => {
+          const toggle = document.querySelector('[aria-controls="screencast-tools"]')
+          if (toggle.getAttribute('aria-expanded') !== 'true') toggle.click()
+        }, true)
+        await waitFor(() => renderer(() => [...document.querySelectorAll('button')].some(b => b.textContent === '切换到视频' && !b.disabled), true))
+        report.manualRetryRetainedJpeg = await renderer(() => {
+          const canvas = document.querySelector('canvas')
+          return !!canvas?.width && window.captureTiming.codecs.JPEG > 0 && !window.captureTiming.codecs['H.264']
+        }, true)
+        assert.ok(report.manualRetryRetainedJpeg)
+      } else {
+        if (manualMotion) {
+          await renderer(() => document.querySelector('[aria-controls="screencast-tools"]').click(), true)
+          await waitFor(() => renderer(() => [...document.querySelectorAll('button')].some(b => b.textContent === '切换到视频' && !b.disabled), true))
+          await renderer(() => [...document.querySelectorAll('button')].find(b => b.textContent === '切换到视频').click(), true)
+        }
+        console.log('READY_FOR_MOTION: swipe phone continuously for several seconds')
+        if (controlledMotion) await renderer(() => {
+          window.captureTiming.controlledMotion = 'running'
+          void (async () => {
+            const canvas = document.querySelector('canvas')
+            const pause = ms => new Promise(resolve => setTimeout(resolve, ms))
+            for (let swipe = 0; swipe < 16; swipe++) {
+              const rect = canvas.getBoundingClientRect()
+              const send = (type, fraction) => canvas.dispatchEvent(new PointerEvent(type, {
+                button: 0, pointerId: 1, clientX: rect.x + rect.width * fraction,
+                clientY: rect.y + rect.height * 0.55,
+              }))
+              const from = swipe % 2 ? 0.2 : 0.8, to = 1 - from
+              send('pointerdown', from)
+              for (let step = 1; step <= 10; step++) { await pause(40); send('pointermove', from + (to - from) * step / 10) }
+              send('pointerup', to)
+              await pause(350)
+            }
+            window.captureTiming.controlledMotion = 'done'
+          })().catch(() => { window.captureTiming.controlledMotion = 'failed' })
+        }, true)
+        await waitFor(() => renderer(() => window.captureTiming?.codecs['H.264'] >= 3, true), 60000)
+        if (controlledMotion) await waitFor(() => renderer(() => window.captureTiming.controlledMotion === 'done', true), 20000)
+        await delay(3000)
+      }
+    }
     const stats = await renderer(() => window.captureTiming, true)
     const capabilities = await renderer(() => ({ videoDecoder: typeof VideoDecoder, secure: isSecureContext }), true)
     assert.equal(capabilities.videoDecoder, 'function', 'Validation must exercise native video capability')
     report.rounds.push({ round: round + 1, firstDrawMs: stats.firstAt - clickedAt, visibleMs,
-      firstCodec: stats.firstCodec, draws: stats.draws, codecs: stats.codecs, width: stats.width, height: stats.height, capabilities })
+      firstCodec: stats.firstCodec, draws: stats.draws, codecs: stats.codecs, width: stats.width, height: stats.height, capabilities,
+      ...(upgradeMode ? { handoverGapMs: stats.handoverGapMs ?? null, promotion: stats.promotion ?? null,
+        timeline: stats.timeline, controlledMotion: stats.controlledMotion ?? null } : {}) })
     console.log(JSON.stringify(report.rounds.at(-1)))
     // The device JPEG service may also suppress identical static frames.
     // Continued live capture requires a separate controlled display change.

@@ -1,0 +1,254 @@
+[
+  {
+    "scope": "Real app: static JPEG manual retry, then automatic H264 promotion on user motion; no pixels saved",
+    "startedAt": "2026-10-24T19:13:26.073Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 4913,
+        "visibleMs": 4917,
+        "firstCodec": "JPEG",
+        "draws": 1,
+        "codecs": {
+          "JPEG": 1
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        },
+        "handoverGapMs": null,
+        "promotion": null
+      },
+      {
+        "round": 2,
+        "firstDrawMs": 282,
+        "visibleMs": 327,
+        "firstCodec": "JPEG",
+        "draws": 7,
+        "codecs": {
+          "JPEG": 3,
+          "H.264": 4
+        },
+        "width": 1084,
+        "height": 2412,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        },
+        "handoverGapMs": 2952,
+        "promotion": 1
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+      "Prepared native video activation failed: NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture"
+    ],
+    "mainAssetSha256": "4e2b7a7dd6faa64af3ddbda5d9c26e16bb11e139a38eb1647e572e747779ab22",
+    "manualRetryRetainedJpeg": true
+  },
+  {
+    "scope": "Controlled real-device JPEG baseline (initial preferVideo=false), automatic H264 promotion and actual pointer swipes; no pixels saved",
+    "startedAt": "2026-10-24T19:17:50.876Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 5784,
+        "visibleMs": 5792,
+        "firstCodec": "JPEG",
+        "draws": 673,
+        "codecs": {
+          "JPEG": 26,
+          "H.264": 647
+        },
+        "width": 1084,
+        "height": 2412,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        },
+        "handoverGapMs": 14,
+        "promotion": 1,
+        "timeline": [
+          {
+            "at": 1792869479118,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869479171,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869479211,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869479308,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869479355,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869479369,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479373,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479379,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479384,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479389,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479399,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479409,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479421,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479431,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869479444,
+            "codec": "H.264"
+          }
+        ],
+        "controlledMotion": "done"
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+    ],
+    "mainAssetSha256": "4e2b7a7dd6faa64af3ddbda5d9c26e16bb11e139a38eb1647e572e747779ab22"
+  },
+  {
+    "scope": "Controlled real-device JPEG baseline, toolbar manual H264 promotion and actual pointer swipes; no pixels saved",
+    "startedAt": "2026-10-24T19:19:00.204Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 5802,
+        "visibleMs": 5821,
+        "firstCodec": "JPEG",
+        "draws": 672,
+        "codecs": {
+          "JPEG": 28,
+          "H.264": 644
+        },
+        "width": 1084,
+        "height": 2412,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        },
+        "handoverGapMs": 25,
+        "promotion": 1,
+        "timeline": [
+          {
+            "at": 1792869548688,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869548723,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869548766,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869548805,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869548832,
+            "codec": "JPEG"
+          },
+          {
+            "at": 1792869548857,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548858,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548864,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548869,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548875,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548883,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548895,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548907,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548919,
+            "codec": "H.264"
+          },
+          {
+            "at": 1792869548929,
+            "codec": "H.264"
+          }
+        ],
+        "controlledMotion": "done"
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+    ],
+    "mainAssetSha256": "4e2b7a7dd6faa64af3ddbda5d9c26e16bb11e139a38eb1647e572e747779ab22"
+  }
+]

@@ -123,6 +123,7 @@
 
 .details {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   flex-shrink: 0;
 }
@@ -194,6 +195,17 @@
 }
 
 // Keep native selection/keyboard behavior while styling Chromium's picker.
+.retryVideo {
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 3px 7px;
+  white-space: nowrap;
+  &:disabled { opacity: 0.55; cursor: default; }
+}
+
 // Scope this to screencast so other Luna selects retain their existing look.
 .container:global(.luna-toolbar) .resolution::after {
   // Luna's triangle would otherwise overlap Chromium's picker icon.

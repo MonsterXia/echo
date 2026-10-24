@@ -4,6 +4,88 @@ const { screencastMain } = require('./helpers/screencast-main.cjs')
 const flush = () => new Promise((resolve) => setImmediate(resolve))
 const listeners = (h) => (h.driver._events.message || []).length
 
+test('video promotion keeps live JPEG and input until the renderer confirms a painted frame', async () => {
+  const h = screencastMain()
+  const ready = deferred()
+  let receive, starts = 0
+  h.driver.nativeVideo = {
+    async start(_scale, callback) { if (++starts === 1) return false; receive = callback; return ready.promise },
+    async stop() {},
+  }
+  h.show(); await h.start()
+  assert.ok(h.hasHandler('retryCaptureVideo'))
+  const promoting = h.invoke('retryCaptureVideo', [h.session(), 1, 1])
+  await flush()
+  h.driver.emit('message', 'session', Buffer.from([1]))
+  await h.invoke('touchDown', ['synthetic-target', 5, 5])
+  assert.ok(h.calls.includes('touchDown'), 'native startup must not block input queue')
+  receive({ data: Buffer.from([8]), config: false, keyFrame: true, timestamp: 1 })
+  ready.resolve(true); assert.equal(await promoting, true)
+  h.driver.emit('message', 'session', Buffer.from([2]))
+  assert.equal(h.deliveries.at(-1).args[4], undefined, 'encoded bytes alone cannot stop JPEG')
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 0)
+  await h.invoke('finishCaptureVideo', [h.session(), 1, 1, true])
+  assert.equal(h.calls.filter(x => x === 'stopCaptureScreen').length, 1)
+  await h.stop()
+})
+
+test('failed video promotion keeps JPEG and stale acknowledgements cannot stop a newer capture', async () => {
+  const h = screencastMain()
+  h.driver.nativeVideo = { async start() { return false }, async stop() {} }
+  h.show(); await h.start()
+  assert.ok(h.hasHandler('retryCaptureVideo'))
+  assert.equal(await h.invoke('retryCaptureVideo', [h.session(), 1, 1]), false)
+  h.driver.emit('message', 'session', Buffer.from([1]))
+  assert.equal(h.deliveries.length, 1)
+  await h.start()
+  await assert.rejects(h.invoke('finishCaptureVideo', [h.session(), 1, 1, true]), /active|generation/)
+  await h.stop()
+})
+
+test('close during promotion drops late video and waits before releasing the device', async () => {
+  const h = screencastMain()
+  const ready = deferred()
+  let starts = 0, receive, stopped = 0
+  h.driver.nativeVideo = {
+    async start(_scale, callback) { if (++starts === 1) return false; receive = callback; return ready.promise },
+    async stop() { stopped++ },
+  }
+  h.show(); await h.start()
+  const upgrading = h.invoke('retryCaptureVideo', [h.session(), 1, 1])
+  await flush()
+  let done = false
+  const stopping = h.stop().then(() => { done = true })
+  await flush()
+  receive({ data: Buffer.from([8]), config: false })
+  assert.equal(h.deliveries.length, 0)
+  assert.equal(done, false)
+  ready.resolve(true)
+  await Promise.all([upgrading, stopping])
+  assert.equal(done, true)
+  assert.ok(stopped >= 2)
+})
+
+for (const rejects of [false, true]) test(`closing when promotion ${rejects ? 'rejects' : 'fails'} never runs native cleanup concurrently`, async () => {
+  const h = screencastMain()
+  const ready = deferred(), cleanup = deferred()
+  let starts = 0, stopping = 0, maxStopping = 0
+  h.driver.nativeVideo = {
+    async start() { return ++starts === 1 ? false : ready.promise },
+    async stop() { stopping++; maxStopping = Math.max(maxStopping, stopping); if (starts > 1) await cleanup.promise; stopping-- },
+  }
+  h.show(); await h.start()
+  const upgrading = h.invoke('retryCaptureVideo', [h.session(), 1, 1])
+  const observed = rejects ? assert.rejects(upgrading, /promotion failed/) : upgrading
+  await flush()
+  const closed = h.stop()
+  await flush()
+  if (rejects) ready.reject(new Error('promotion failed'))
+  else ready.resolve(false)
+  await flush()
+  assert.equal(maxStopping, 1)
+  cleanup.resolve(); await Promise.all([observed, closed])
+})
+
 test('application shutdown detaches frames immediately and waits for active capture cleanup', async () => {
   const h = screencastMain()
   h.show(); await h.start()

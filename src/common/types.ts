@@ -106,7 +106,10 @@ export interface CaptureFrameMetadata {
   timestamp?: number
   config?: boolean
   keyFrame?: boolean
+  promotion?: number
 }
+export type IpcRetryCaptureVideo = (sessionId: string, generation: number, promotion: number) => Promise<boolean>
+export type IpcFinishCaptureVideo = (sessionId: string, generation: number, promotion: number, commit: boolean) => Promise<void>
 export type IpcStartCaptureScreen = (
   sessionId: string,
   scale: number,
