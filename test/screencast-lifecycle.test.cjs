@@ -566,6 +566,41 @@ for (const operation of ['start']) {
   })
 }
 
+test('persistent startup failure stops automatic retries and manual retry can recover', async t => {
+  let failing = true
+  const states = []
+  const f = await fixture(t, { start: async () => {
+    if (failing) throw new Error('UITest request timed out')
+  } })
+  const off = f.client.subscribeState(state => states.push(state))
+  await flush()
+  for (let i = 0; i < 10; i++) await f.tick(5000)
+  assert.equal(f.calls.filter(x => Array.isArray(x) && x[0] === 'start').length, 3)
+  assert.equal(states.at(-1), 'failed')
+  assert.equal(f.timers.size, 0)
+  failing = false
+  await f.client.start()
+  assert.equal(states.at(-1), 'loading')
+  f.frame()
+  f.images[0].onload()
+  await flush()
+  assert.equal(states.at(-1), 'ready')
+  off()
+  await f.client.start()
+  assert.equal(states.at(-1), 'ready', 'unsubscribed UI must not receive updates')
+})
+
+test('successful start with no picture reaches a failure state instead of loading forever', async t => {
+  const f = await fixture(t)
+  const states = []
+  f.client.subscribeState(state => states.push(state))
+  await flush()
+  for (let i = 0; i < 10; i++) await f.tick(5000)
+  assert.equal(states.at(-1), 'failed')
+  assert.equal(f.calls.filter(x => Array.isArray(x) && x[0] === 'start').length, 3)
+  assert.equal(f.timers.size, 0)
+})
+
 test('destroy stop rejection is handled without rearming retry', async (t) => {
   const f = await fixture(t)
   await flush()
@@ -696,7 +731,7 @@ test('repeated no-frame retries retain one listener and destroy prevents explici
   const f = await fixture(t)
   await flush()
   for (let attempt = 0; attempt < 3; attempt++) await f.tick(5000)
-  assert.equal(f.calls.filter(Array.isArray).length, 4)
+  assert.equal(f.calls.filter(Array.isArray).length, 3)
   assert.equal(f.registrations(), 1)
   assert.equal(f.listeners.size, 1)
   await f.client.destroy()
@@ -762,6 +797,32 @@ test('destroy retains the synchronous React effect cleanup return contract', asy
   const f = await fixture(t)
   await flush()
   assert.equal(f.client.destroy(), undefined)
+})
+
+test('JPEG previews followed by startup failures cannot reset the automatic retry budget', async (t) => {
+  const attempts = []
+  const f = await fixture(t, { start: () => {
+    const attempt = deferred()
+    attempts.push(attempt)
+    return attempt.promise
+  } })
+  const states = []
+  f.client.subscribeState(state => states.push(state))
+  await flush()
+  for (let i = 0; i < 3; i++) {
+    assert.equal(attempts.length, i + 1)
+    f.frame()
+    f.images.at(-1).onload()
+    await flush()
+    attempts[i].reject(new Error('native handover stop timed out after JPEG preview'))
+    await flush()
+    if (i < 2) await f.tick(5000)
+  }
+  assert.equal(f.painted.length, 3)
+  assert.equal(states.at(-1), 'failed')
+  assert.equal(f.timers.size, 0)
+  await f.tick(30000)
+  assert.equal(attempts.length, 3)
 })
 
 test('session creation failure retries without reusing a rejected promise', async (t) => {

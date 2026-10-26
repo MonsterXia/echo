@@ -14,3 +14,18 @@
     outline: none !important;
   }
 }
+
+.error {
+  position: absolute;
+  z-index: 1;
+  max-width: 80%;
+  padding: 20px;
+  color: white;
+  background: #222;
+  border-radius: 8px;
+  text-align: center;
+  button {
+    padding: 8px 20px;
+    cursor: pointer;
+  }
+}

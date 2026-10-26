@@ -92,6 +92,8 @@
   "screencastWaiting": "等待画面",
   "screencastStatusHint": "当前实际绘制的格式与帧率，每秒更新。静止画面或停止出帧时 FPS 可能降低；这不是请求帧率或显示器刷新率。",
   "screencastRetryVideo": "切换到视频",
+  "screencastStartFailed": "投屏未能启动。请检查 USB 连接、解锁手机后重试。",
+  "screencastRetry": "重试投屏",
   "screencastSwitchingVideo": "正在尝试视频…",
   "screencastRetryVideoHint": "保持当前画面，尝试切换到 H.264 视频；失败时继续使用 JPEG。",
   "screencastScaleHint": "原画：保留原分辨率，画面更清晰。流畅：宽高各减半，减轻传输和解码负担，画面清晰度会降低。切换画质不保证提高帧率。",

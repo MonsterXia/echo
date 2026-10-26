@@ -2,7 +2,11 @@
 
 ## 检查更新无反馈修复（2026-10-26）
 
-状态：**本地修复完成，发布待验收**。实际菜单复现本地构建被 electron-updater 跳过且无反馈，另有结果被投屏遮挡、未消费 Promise 拒绝及通道降级副作用。已修复本地检查、稳定通道/不降级、在途合并、菜单进度及当前窗口系统对话框；独立复审发现的置顶遮挡和 homepage 片段拼接问题均已修复。630 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；主窗口及置顶投屏窗口实际在线菜单检查均显示结果，未下载/安装。PR [#65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 独立审查另发现并修复 Windows 自定义菜单状态未刷新，两项新增回归及 15 项更新专项通过；最终 CI/合入状态以 PR 为准。原安装包未覆盖，证据见[专项记录](docs/maintenance/update-check-recovery.md)。
+状态：**已通过 PR #65 合入，发布待验收**。实际菜单复现本地构建被 electron-updater 跳过且无反馈，另有结果被投屏遮挡、未消费 Promise 拒绝及通道降级副作用。已修复本地检查、稳定通道/不降级、在途合并、菜单进度及当前窗口系统对话框；独立复审发现的置顶遮挡和 homepage 片段拼接问题均已修复。630 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；主窗口及置顶投屏窗口实际在线菜单检查均显示结果，未下载/安装。PR [#65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 独立审查另发现并修复 Windows 自定义菜单状态未刷新，两项新增回归及 15 项更新专项通过；最终 head `5df6243` 独立复审及[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40306999951)通过，合入提交 `53d7396`。原安装包未覆盖，证据见[专项记录](docs/maintenance/update-check-recovery.md)。
+
+## 投屏控制超时现场恢复（2026-10-26）
+
+状态：**本地修复及本机验证完成，跨固件和发布未完成**。交付 [PR #66](https://github.com/MonsterXia/scrcpy-harmony/pull/66)，已同步 #65 合入后的 master；最终审查、CI 和合入状态见该 PR。已补前台受限控制恢复、SDK 检查失败保护、三次失败上限及“重试投屏”。独立复审进一步修复部分连接表读取误判、SDK I/O 检查误判及 JPEG 预览清零重试次数三项；620 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建及本地启动通过，复审无新增阻断。用户重新接入后，二次修订真机正常首图 5932 ms，受控控制故障后 6019 ms 出图并绘制 H.264；三次预览后失败/手动重试通过。首次复验因历史视频扩展占用而被拒绝，现场核对后仅清理残留进程再通过；跨进程残留的自动回收仍未实现。首轮 USB 数据另列如下。真实 USB 拔插后同进程重开首图 553 ms；受控阻断控制请求后真实 daemon 更换并于 5854 ms 出图，错误提示及手动重试也通过。设备拒绝 SIGSTOP，该实验不计成功；最初 SDK 内部阻塞点仍未知。未替换已安装应用或发布版本。证据、限制及下一步见[现场记录](docs/maintenance/screencast-control-timeout.md)和[脱敏数据](docs/maintenance/screencast-control-recovery.json)。
 
 ## JPEG 回退后恢复视频（已交付，跨固件待验收）
 

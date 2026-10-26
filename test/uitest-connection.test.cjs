@@ -3,6 +3,38 @@ const { test } = require('node:test')
 const net = require('node:net')
 const { loadConnection, loadTransport, packet } = require('./helpers/uitest-stream.cjs')
 
+test('SDK inspection command does not confirm a failed file read as an outdated agent', async t => {
+  const fs = require('node:fs'), os = require('node:os'), path = require('node:path')
+  const { spawnSync } = require('node:child_process')
+  if (process.platform === 'win32') { t.skip('device shell command exercised with POSIX shell'); return }
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'uitest-agent-read-'))
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }))
+  const agent = path.join(dir, 'agent.so')
+  fs.writeFileSync(agent, 'fixture')
+  const commands = []
+  let uploads = 0
+  const Driver = loadTransport().default
+  const driver = new Driver({
+    shell: async command => {
+      commands.push(command)
+      let output = ''
+      if (command.startsWith('if [ -f ')) {
+        const script = 'grep() { echo "grep: I/O error" >&2; return 2; };\n' +
+          command.replaceAll('/data/local/tmp/agent.so', "'" + agent.replaceAll("'", "'\\''") + "'")
+        const result = spawnSync('/bin/sh', ['-c', `{\n${script}\n} 2>&1`], { encoding: 'utf8' })
+        assert.ifError(result.error)
+        output = result.stdout + result.stderr
+      }
+      return { readAll: async () => Buffer.from(output) }
+    },
+    sendFile: async () => { uploads++ },
+  })
+  driver.forwardTcp = async () => 8012
+  await assert.rejects(driver.start(), /inspection unconfirmed/)
+  assert.equal(uploads, 0)
+  assert.equal(commands.some(command => /^(kill|rm |param set|uitest start)/.test(command)), false)
+})
+
 test('background startup leaves an existing daemon and outdated SDK untouched', async () => {
   const Driver = loadTransport().default
   const commands = []
@@ -12,7 +44,7 @@ test('background startup leaves an existing daemon and outdated SDK untouched', 
   driver.shell = async command => {
     commands.push(command)
     if (command === 'pidof uitest') return '4242'
-    if (command.startsWith('cat ')) return 'UITEST_AGENT_LIBRARY@v1.0.0'
+    if (command.startsWith('if [ -f ')) return 'UITEST_AGENT_LIBRARY@v1.0.0\nUITEST_AGENT_INSPECTED'
     return ''
   }
   driver.forwardTcp = async () => { forwards++; return 8012 }
@@ -21,6 +53,25 @@ test('background startup leaves an existing daemon and outdated SDK untouched', 
   assert.equal(uploads, 0)
   assert.equal(forwards, 0)
 })
+
+for (const response of ['[Fail] Device not ready', '[E000004] device is not ready', '']) {
+  test(`unconfirmed SDK inspection cannot remove or upload the agent (${response || 'empty'})`, async () => {
+    const Driver = loadTransport().default
+    const commands = []
+    let uploads = 0
+    const driver = new Driver({
+      shell: async command => {
+        commands.push(command)
+        return { readAll: async () => Buffer.from(command === 'pidof uitest' ? '123' : response) }
+      },
+      sendFile: async () => { uploads++ },
+    })
+    driver.forwardTcp = async () => 8012
+    await assert.rejects(driver.start(), /unconfirmed|command failed/)
+    assert.equal(uploads, 0)
+    assert.equal(commands.some(command => /^(kill|rm |param set|uitest start)/.test(command)), false)
+  })
+}
 
 test('cold control startup connects as soon as the daemon is ready and tolerates early connections', async t => {
   const Driver = loadTransport().default
@@ -111,6 +162,22 @@ test('a request deadline retires the socket and rejects other in-flight requests
   assert.equal(c.rejects.size, 0)
   assert.equal(await settledWithin(c.sendMessage({ method: 'after-close' })), 'rejected')
   assert.equal(c.resolves.size, 0, 'closed send must not leak a pending entry')
+})
+
+test('transport failure identifies each pending API without including input arguments', async t => {
+  const c = await fixture(t)
+  const results = await Promise.allSettled([
+    c.sendMessage({ method: 'Captures', params: { api: 'stopCaptureScreen', args: {} } }, 20),
+    c.sendMessage({ method: 'callHypiumApi', params: { api: 'Driver.inputText', args: ['private-test-text'] } }, 1000),
+  ])
+  assert.equal(results[0].status, 'rejected')
+  assert.equal(results[1].status, 'rejected')
+  assert.match(results[0].reason.message, /Captures\.stopCaptureScreen/)
+  assert.match(results[1].reason.message, /callHypiumApi\.Driver\.inputText/)
+  for (const result of results) {
+    assert.equal(result.reason.code, 'UITEST_TRANSPORT')
+    assert.doesNotMatch(result.reason.message, /private-test-text/)
+  }
 })
 
 test('successful reply cancels its timer and leaves the stream usable', async t => {

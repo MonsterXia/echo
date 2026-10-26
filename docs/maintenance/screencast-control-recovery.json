@@ -1,0 +1,338 @@
+{
+  "physicalUsbAndRetryUi": {
+    "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+    "startedAt": "2026-10-26T08:46:08.609Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 6725,
+        "visibleMs": 6740,
+        "firstCodec": "JPEG",
+        "draws": 1,
+        "codecs": {
+          "JPEG": 1
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      },
+      {
+        "round": 2,
+        "firstDrawMs": 553,
+        "visibleMs": 573,
+        "firstCodec": "JPEG",
+        "draws": 6,
+        "codecs": {
+          "JPEG": 6
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+      "Prepared native video activation failed: NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Capture cleanup failed; device stop is unconfirmed",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Capture cleanup failed; device stop is unconfirmed",
+      "Recovering failed UITest control before capture restart",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+    ],
+    "mainAssetSha256": "bd401a9c25606680ec23c9939528ffdb226ebec9637c63a0f7321c1b4921fc8a",
+    "physicalDisconnectObserved": true,
+    "physicalReconnectObserved": true,
+    "failureMessageVisible": true,
+    "manualRetryRecovered": true
+  },
+  "controlTransportFault": {
+    "scope": "Real app/device capture and guarded process reset; control RPC writes suppressed until daemon replacement; no pixels saved",
+    "startedAt": "2026-10-26T08:57:37.997Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 5638,
+        "visibleMs": 5682,
+        "firstCodec": "JPEG",
+        "draws": 1,
+        "codecs": {
+          "JPEG": 1
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      },
+      {
+        "round": 2,
+        "firstDrawMs": 5854,
+        "visibleMs": 5894,
+        "firstCodec": "JPEG",
+        "draws": 3,
+        "codecs": {
+          "JPEG": 3
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+      "Prepared native video activation failed: NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Capture cleanup failed; device stop is unconfirmed",
+      "Recovering failed UITest control before capture restart",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture"
+    ],
+    "mainAssetSha256": "bd401a9c25606680ec23c9939528ffdb226ebec9637c63a0f7321c1b4921fc8a",
+    "controlTransportFaultInjected": true,
+    "controlProcessReplaced": true,
+    "controlRequestsSuppressed": 4
+  },
+  "rejectedSignalInjection": {
+    "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+    "startedAt": "2026-10-26T08:56:28.575Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 7023,
+        "visibleMs": 7037,
+        "firstCodec": "JPEG",
+        "draws": 4,
+        "codecs": {
+          "JPEG": 3,
+          "H.264": 1
+        },
+        "width": 1084,
+        "height": 2412,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      }
+    ],
+    "passed": false,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+      "Prepared native video activation failed: NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture"
+    ],
+    "mainAssetSha256": "bd401a9c25606680ec23c9939528ffdb226ebec9637c63a0f7321c1b4921fc8a",
+    "pauseReply": "/bin/sh: kill: CONTROL_PID: Permission denied; signal_sent",
+    "pausedState": "S",
+    "error": "Fault injection must confirm stopped state\n\n'S' !== 'T'\n"
+  },
+  "note": "Physical USB, IPC failure UI test and transport fault injection are separate scenarios. SIGSTOP was denied, so it is not recovery evidence. No device identifiers or pixels saved.",
+  "validation": {
+    "applicationTests": 612,
+    "applicationFailed": 0,
+    "liciaProduction": {
+      "passed": 606,
+      "pending": 4
+    },
+    "liciaFallback": {
+      "passed": 606,
+      "pending": 4
+    },
+    "lint": "passed",
+    "fullBuild": "passed",
+    "baselineCommit": "4190f9a",
+    "packaged": false,
+    "installedApplicationReplaced": false
+  },
+  "sourceSha256": {
+    "src/main/lib/hdc/controlRecovery.ts": "282b739b827c9afd58c7d82ce32b9775abf0240739ead186c3fd937f482b3842",
+    "src/main/lib/hdc/captureDriver.ts": "0dee5dbf9b0ad9e60a36e41ede3f38f3015185c16c0bd2edb2c33148e228db1f",
+    "src/main/lib/hdc/captureSessions.ts": "8a6cf71fa2099f890c0fa2a52a076c9993b81d5f1f1fdcdd7a649227e18ab80e",
+    "src/main/lib/hdc/uitest.ts": "14c729fc6666c8acbce94fb0f1a5186a3c37324814ce90f6a2a7c05209bb8ee9",
+    "src/renderer/screencast/lib/ScreencastClient.ts": "b87f4c1b8cd4c1f2d8d2eedeb76620efea5c9c8ff5eec0d998b434abed0f91a7",
+    "src/renderer/screencast/components/Screencast.tsx": "5226dc92fd22158e0cef430098e4cb8341f30f2a4cb0b8300155cc7368c020b7",
+    "vendor/packages/hdckit/src/hdc/UiDriver.ts": "a6f4ab16616298b02b8d5143a38a8c67cf7b19efb5966b2e8948b83dfeff17d0"
+  },
+  "handoff": {
+    "localBuildRunning": true,
+    "faultInjectionActive": false,
+    "actualPictureVisuallyConfirmed": false,
+    "installedApplicationReplaced": false,
+    "note": "Final reviewed build relaunched normally; selected the screencast UI and observed its ready Canvas/input state. Controlled fault injection lived only in the exited test process. Installed application unchanged.",
+    "captureReadyConfirmedFromUI": true
+  },
+  "independentReview": {
+    "date": "2026-10-26",
+    "fixed": [
+      "partial socket/process inventory must fail closed",
+      "SDK read failure must not trigger deployment",
+      "JPEG preview before startup rejection must not reset retry count"
+    ],
+    "applicationTests": 620,
+    "applicationFailed": 0,
+    "liciaProduction": {
+      "passed": 606,
+      "pending": 4
+    },
+    "liciaFallback": {
+      "passed": 606,
+      "pending": 4
+    },
+    "lint": "passed",
+    "fullBuild": "passed",
+    "review": "no remaining concrete blocker reported",
+    "deviceAtReview": "disconnected",
+    "physicalTestsRepeated": false,
+    "mainAssetSha256": "991d0aa0dd28eb6a604cff4e9fee49bf3ad7248178d032de5649868123fe548c",
+    "sourceSha256": {
+      "src/main/lib/hdc/controlRecovery.ts": "2563350428665fd7a4005ee62a772499b3b37a6b5f2f35cfcd199f10e1726ca5",
+      "src/main/lib/hdc/captureDriver.ts": "0dee5dbf9b0ad9e60a36e41ede3f38f3015185c16c0bd2edb2c33148e228db1f",
+      "src/main/lib/hdc/captureSessions.ts": "8a6cf71fa2099f890c0fa2a52a076c9993b81d5f1f1fdcdd7a649227e18ab80e",
+      "src/main/lib/hdc/uitest.ts": "14c729fc6666c8acbce94fb0f1a5186a3c37324814ce90f6a2a7c05209bb8ee9",
+      "src/renderer/screencast/lib/ScreencastClient.ts": "858eddc8dbc4314dd8ae81c6cf9b87598d8a6f0c0f40498025fff761675e3d6a",
+      "src/renderer/screencast/components/Screencast.tsx": "5226dc92fd22158e0cef430098e4cb8341f30f2a4cb0b8300155cc7368c020b7",
+      "vendor/packages/hdckit/src/hdc/UiDriver.ts": "a1248900598bf4a33a3aa10a0cfd0612da1c90ddc71b65e0ce4b35763dee59b4"
+    }
+  },
+  "postReviewLiveBlocked": {
+    "scope": "Post-review real app/device capture and guarded process reset; control RPC writes suppressed until daemon replacement; real-preview-then-IPC-failure UI retry; no pixels saved",
+    "startedAt": "2026-10-26T09:39:06.777Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 8130,
+        "visibleMs": 8155,
+        "firstCodec": "JPEG",
+        "draws": 5,
+        "codecs": {
+          "JPEG": 5
+        },
+        "width": 542,
+        "height": 1206,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      }
+    ],
+    "passed": false,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video socket occupied by another session",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Native video socket occupied by another session",
+      "Capture cleanup failed; device stop is unconfirmed",
+      "Recovering failed UITest control before capture restart",
+      "Recovering failed UITest control before capture restart",
+      "Recovering failed UITest control before capture restart"
+    ],
+    "mainAssetSha256": "991d0aa0dd28eb6a604cff4e9fee49bf3ad7248178d032de5649868123fe548c",
+    "controlTransportFaultInjected": true,
+    "error": "Window observation timed out",
+    "interpretation": "Normal JPEG drawing passed; control fault recovery was refused while an earlier scrcpy_harmony native extension occupied the device video socket. This is not a successful recovery test."
+  },
+  "postReviewOrphanCleanup": {
+    "desktopInstancesAbsent": true,
+    "controlClientsAbsent": true,
+    "processIdentityChecked": true,
+    "target": "single earlier generated scrcpy_harmony video extension",
+    "processExitConfirmed": true,
+    "videoSocketReleased": true,
+    "controlDaemonStopped": false,
+    "automaticOwnershipGuardBypassedInProduct": false
+  },
+  "postReviewLivePassed": {
+    "scope": "Post-review real app/device capture and guarded process reset; control RPC writes suppressed until daemon replacement; real-preview-then-IPC-failure UI retry; no pixels saved",
+    "startedAt": "2026-10-26T09:42:31.960Z",
+    "rounds": [
+      {
+        "round": 1,
+        "firstDrawMs": 5932,
+        "visibleMs": 5975,
+        "firstCodec": "JPEG",
+        "draws": 1,
+        "codecs": {
+          "JPEG": 1
+        },
+        "width": 1206,
+        "height": 542,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      },
+      {
+        "round": 2,
+        "firstDrawMs": 6019,
+        "visibleMs": 6108,
+        "firstCodec": "JPEG",
+        "draws": 2,
+        "codecs": {
+          "JPEG": 1,
+          "H.264": 1
+        },
+        "width": 2412,
+        "height": 1084,
+        "capabilities": {
+          "videoDecoder": "function",
+          "secure": true
+        }
+      }
+    ],
+    "passed": true,
+    "runtime": {
+      "version": "1.0.4-dev.0",
+      "packaged": false
+    },
+    "nativeDiagnostics": [
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+      "Prepared native video activation failed: NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Capture cleanup failed; device stop is unconfirmed",
+      "Recovering failed UITest control before capture restart",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture",
+      "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+      "Native video unavailable; using JPEG compatibility capture"
+    ],
+    "mainAssetSha256": "991d0aa0dd28eb6a604cff4e9fee49bf3ad7248178d032de5649868123fe548c",
+    "controlTransportFaultInjected": true,
+    "controlProcessReplaced": true,
+    "controlRequestsSuppressed": 4,
+    "failureMessageVisible": true,
+    "previewFailureAttempts": 3,
+    "previewDrawsBeforeFailure": 3,
+    "manualRetryRecovered": true,
+    "physicalUsbRepeated": false
+  }
+}

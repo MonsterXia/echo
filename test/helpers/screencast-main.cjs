@@ -108,7 +108,7 @@ exports.screencastMain = function (
       exports: module.exports,
       AbortController,
       Buffer,
-      console: { error: (...args) => errors.push(args) },
+      console: { error: (...args) => errors.push(args), warn() {} },
       require(id) {
         if (id === 'electron')
           return {
@@ -144,6 +144,10 @@ exports.screencastMain = function (
             async start() { return false }
             async stop() {}
           } }
+        if (id === './controlRecovery') return { ControlRecovery: class {
+          async remember() {}
+          async reset() { throw new Error('Synthetic device recovery is not configured') }
+        } }
         if (id === './finiteShell' && options.inputShell) return { runFiniteShell: options.inputShell }
         if (id.startsWith('.'))
           return load(path.resolve(path.dirname(file), id + '.ts'))

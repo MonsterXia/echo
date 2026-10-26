@@ -155,16 +155,76 @@ test('control initialization reuses a responsive daemon without stopping it', as
   assert.deepEqual(h.calls, ['getDisplaySize'])
 })
 
+test('foreground retry recovers a failed control channel before replacing an unconfirmed capture', async () => {
+  let failed = false, starts = 0, recoveries = 0
+  const h = screencastMain(async (_method, api) => {
+    if (failed) throw Object.assign(new Error('UITest request timed out'), { code: 'UITEST_TRANSPORT' })
+    if (api === 'startCaptureScreen') starts++
+    return { sessionId: 'session', result: { width: 100, height: 200 } }
+  })
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.controlRecovery = { async remember() {}, async reset() { recoveries++; failed = false } }
+  h.show()
+  await h.start()
+  failed = true
+  await h.start()
+  assert.equal(recoveries, 1)
+  assert.equal(starts, 2)
+  h.driver.emit('message', 'session', Buffer.from([1]))
+  assert.equal(h.deliveries.length, 1, 'replacement owns the only live frame listener')
+  await h.stop()
+})
+
+test('failed foreground recovery retains the old lease and never starts another capture', async () => {
+  let failed = false, starts = 0, resets = 0
+  const h = screencastMain(async (_method, api) => {
+    if (failed) throw Object.assign(new Error('UITest request timed out'), { code: 'UITEST_TRANSPORT' })
+    if (api === 'startCaptureScreen') starts++
+    return { sessionId: 'session' }
+  })
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.controlRecovery = { async remember() {}, async reset() { resets++; throw new Error('Control service is in use') } }
+  h.show(); await h.start(); failed = true
+  await assert.rejects(h.start(), /Control service is in use/)
+  assert.equal(resets, 1)
+  assert.equal(starts, 1)
+  await assert.rejects(h.stop(), /timed out/)
+})
+
 test('control initialization rebuilds an unresponsive daemon once and propagates repeated failure', async () => {
   let queries = 0, stops = 0
   const h = screencastMain(async () => {
     queries++
-    throw new Error('control unavailable')
+    throw Object.assign(new Error('control unavailable'), { code: 'UITEST_TRANSPORT' })
   })
-  h.driver.stop = async () => { stops++ }
+  h.driver.controlRecovery = { async remember() {}, async reset() { stops++ } }
+  h.driver.stop = async () => { assert.fail('must not use broad UITest stop') }
   await assert.rejects(h.driver.initializeControl(), /control unavailable/)
   assert.equal(stops, 1)
   assert.equal(queries, 2)
+})
+
+test('failed control identity recording closes the newly opened connection', async () => {
+  const h = screencastMain(async () => ({ result: { width: 100, height: 200 } }))
+  let inspections = 0, closed = 0
+  h.driver.controlRecovery = { async remember() {
+    if (++inspections === 2) throw new Error('process inspection failed')
+  } }
+  h.driver.getDisplaySize = async () => {
+    h.driver.connection = { end() { closed++ } }
+    return { width: 100, height: 200 }
+  }
+  await assert.rejects(h.driver.initializeControl(), /inspection failed/)
+  assert.equal(closed, 1)
+  assert.equal(h.driver.connection, null)
+})
+
+test('control initialization never resets a daemon after unconfirmed HDC setup', async () => {
+  const h = screencastMain(async () => { throw new Error('UITest SDK inspection unconfirmed') })
+  let stops = 0
+  h.driver.stop = async () => { stops++ }
+  await assert.rejects(h.driver.initializeControl(), /inspection unconfirmed/)
+  assert.equal(stops, 0)
 })
 
 test('background control initialization never stops an unresponsive existing daemon', async () => {

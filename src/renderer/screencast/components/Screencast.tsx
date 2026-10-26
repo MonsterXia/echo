@@ -10,17 +10,19 @@ import ScreencastInput from '../lib/ScreencastInput'
 import { t } from 'common/util'
 import { notify } from 'share/renderer/lib/util'
 import contextMenu from 'share/renderer/lib/contextMenu'
+import type { CaptureState } from '../lib/ScreencastClient'
 
 export default observer(function Screencast() {
   const { target, screencastClient } = store
   const screenContainerRef = useRef<HTMLDivElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [captureState, setCaptureState] = useState<CaptureState>('loading')
 
   useEffect(() => {
     preload.setTitle(target.name)
     let disposed = false
     let stopFitting = () => {}
     let keyboard: ScreencastInput | undefined
+    const offState = screencastClient.subscribeState(setCaptureState)
     const offEdit = main.on('screencastEdit', (command: string) => {
       if (disposed || (command !== 'selectAll' && command !== 'delete')) return
       if (!keyboard?.edit(command)) document.execCommand(command)
@@ -55,12 +57,12 @@ export default observer(function Screencast() {
       screencastClient.canvas.addEventListener('contextmenu', onContextMenu)
       screencastClient.canvas.title = t('screencastKeyboardHint')
       stopFitting = fitWindow(screencastClient.canvas, screenContainerRef.current)
-      setIsLoading(false)
     }
     start()
 
     return () => {
       disposed = true
+      offState()
       offEdit()
       stopFitting()
       keyboard?.destroy()
@@ -91,7 +93,13 @@ export default observer(function Screencast() {
       onDrop={onDrop}
       onDragOver={(e) => e.preventDefault()}
     >
-      {isLoading && <LoadingBar />}
+      {captureState === 'loading' && <LoadingBar />}
+      {captureState === 'failed' && (
+        <div className={Style.error} role="alert">
+          <p>{t('screencastStartFailed')}</p>
+          <button onClick={() => { void screencastClient.start() }}>{t('screencastRetry')}</button>
+        </div>
+      )}
     </div>
   )
 })

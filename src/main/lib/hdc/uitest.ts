@@ -12,6 +12,8 @@ import { initCaptureIpc, prepareCapture, withCaptureInput, withCaptureTouch } fr
 import { sendScreencastInput, validateScreencastInput } from './screencastInput'
 export { cancelCapturePreparation, shutdownCaptures } from './captureSessions'
 import { NativeVideo } from './nativeVideo'
+import { ControlRecovery } from './controlRecovery'
+import { runFiniteShell } from './finiteShell'
 
 let client: Client
 
@@ -42,8 +44,11 @@ async function getUiDriver(connectKey: string, background = false): Promise<Capt
       resolveResources('uitestkit_sdk/uitest_agent_v1.1.0.so'),
       '1.1.0',
     )
-    await uiDriver.initializeControl(background)
+    uiDriver.controlRecovery = new ControlRecovery(command => runFiniteShell(connectKey, command, {
+      host: client.options.host, port: client.options.port, timeoutMs: 5000,
+    }))
     uiDriver.nativeVideo = new NativeVideo(nativeOptions(connectKey))
+    await uiDriver.initializeControl(background)
     setTargetStore(connectKey, 'uiDriver', uiDriver)
     return uiDriver
   })()
