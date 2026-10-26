@@ -54,6 +54,8 @@ The current pre-release retries video once when the picture changes after JPEG f
 
 The app uses its bundled HDC by default. To use another version, specify the executable path in **HDC location** (HDC 位置) in settings.
 
+The current source supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. This change is not yet included in the published installers. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
+
 ### Common questions
 
 - **The device list is empty:** Make sure your cable supports data transfer and debugging is authorized on the device, then refresh the list. If you use a custom HDC, check that its configured path is valid.

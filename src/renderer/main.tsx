@@ -1,7 +1,8 @@
 import { lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import log from 'share/common/log'
-import { i18n, t } from 'common/util'
+import { t } from 'common/util'
+import { applyLanguage } from './lib/language'
 import getUrlParam from 'licia/getUrlParam'
 import 'share/renderer/main'
 import 'luna-toolbar/css'
@@ -67,7 +68,7 @@ function renderApp() {
 
 ;(async function () {
   const language = await main.getLanguage()
-  i18n.locale(language)
+  applyLanguage(language)
 
   renderApp()
 })()

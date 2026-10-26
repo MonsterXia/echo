@@ -1,6 +1,7 @@
 import fs from 'fs-extra'
 import memoize from 'licia/memoize'
 import FileStore from 'licia/FileStore'
+import SettingsStore from './SettingsStore'
 import { getUserDataPath } from 'share/main/lib/util'
 
 fs.exists(getUserDataPath('data'), function (exists) {
@@ -14,7 +15,7 @@ export const getMainStore = memoize(function () {
 })
 
 export const getSettingsStore = memoize(function () {
-  return new FileStore(getUserDataPath('data/settings.json'), {
+  return new SettingsStore(getUserDataPath('data/settings.json'), {
     language: 'system',
     theme: 'system',
     hdcPath: '',

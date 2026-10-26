@@ -75,11 +75,12 @@ test('real updater chooses stable or all prereleases from the saved preference w
 })
 
 
-test('Beta Update is off in a fresh real FileStore and survives write/reload', async () => {
+test('Beta Update is off in a fresh settings store and survives immediate write/reload', async () => {
   const os = require('node:os'), path = require('node:path')
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-beta-settings-'))
   fs.mkdirSync(path.join(root, 'data'))
   const read = () => load('src/main/lib/store.ts', {
+    './SettingsStore': load('src/main/lib/SettingsStore.ts'),
     'share/main/lib/util': { getUserDataPath: name => path.join(root, name) },
   }).getSettingsStore()
   try {
@@ -87,13 +88,7 @@ test('Beta Update is off in a fresh real FileStore and survives write/reload', a
     assert.equal(store.get('betaUpdate'), false)
     for (const value of [true, false]) {
       store.set('betaUpdate', value)
-      let persisted = false
-      for (let i = 0; i < 80; i++) {
-        await new Promise(resolve => setTimeout(resolve, 25))
-        try { persisted = JSON.parse(fs.readFileSync(path.join(root, 'data/settings.json'), 'utf8')).betaUpdate === value } catch {}
-        if (persisted) break
-      }
-      assert.equal(persisted, true)
+      assert.equal(JSON.parse(fs.readFileSync(path.join(root, 'data/settings.json'), 'utf8')).betaUpdate, value)
       store = read()
       assert.equal(store.get('betaUpdate'), value)
     }

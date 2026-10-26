@@ -7,22 +7,22 @@ import store from '../../store'
 
 export default observer(function Panels() {
   const tabItems = map(
-    [
-      'overview',
-      'application',
-      'process',
-      'shell',
-      'layout',
-      'screenshot',
-      'hilog',
-      'webview',
-    ],
-    (panel) => {
+    {
+      overview: t('overview'),
+      application: t('application'),
+      process: t('process'),
+      shell: t('shell'),
+      layout: t('layout'),
+      screenshot: t('screenshot'),
+      hilog: t('hilog'),
+      webview: t('webview'),
+    },
+    (title, panel) => {
       return (
         <LunaTabItem
           key={panel}
           id={panel}
-          title={t(panel)}
+          title={title}
           selected={panel === store.panel}
         />
       )

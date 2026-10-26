@@ -21,8 +21,13 @@ const notifyRequireReload = debounce(() => {
 }, 1000)
 
 export default observer(function SettingsModal(props: IModalProps) {
-  function onChange(key, val) {
-    store.settings.set(key, val)
+  async function onChange(key, val) {
+    try {
+      await store.settings.set(key, val)
+      if (key === 'language') notifyRequireReload()
+    } catch {
+      notify(t('settingsSaveFailed'), { icon: 'error' })
+    }
   }
 
   return createPortal(
@@ -34,6 +39,17 @@ export default observer(function SettingsModal(props: IModalProps) {
     >
       <LunaSetting className={Style.settings} onChange={onChange}>
         <LunaSettingTitle title={t('appearance')} />
+        <LunaSettingSelect
+          keyName="language"
+          value={store.settings.language}
+          title={t('language')}
+          description={t('languageRestartHint')}
+          options={{
+            [t('sysPreference')]: 'system',
+            English: 'en-US',
+            '简体中文': 'zh-CN',
+          }}
+        />
         <LunaSettingSelect
           keyName="theme"
           value={store.settings.theme}

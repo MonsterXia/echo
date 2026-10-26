@@ -1,5 +1,7 @@
 # 维护来源记录
 
+2026-10-26 用户要求对整个项目做国际化，并将国际化流程融入对应 skill，保证后续开发有维护步骤。现场源码确认已有共享中英文基础，但业务 en-US 与 zh-CN 同指中文字典、设置页未提供语言选择，另有漏词和第三方确认框独立选择语言。修复、自动检查与隔离 Electron 双语验收见[专项记录](internationalization.md)，持久流程见[项目 skill](../../.agents/skills/scrcpy-harmony-project/references/internationalization.md)。本轮语言范围为现有英文及简体中文，不翻译设备/协议原始数据，不修改系统或手机语言。
+
 2026-10-26 用户要求更新中提供 Beta Update 选项：关闭仅正式版，开启包含所有预发布版选择最高版本；随后提供 GPT 更新进度 GIF 和结果卡截图，要求消除长时间无反馈并还原样式。实现与隔离 Electron/在线验证见[专项记录](beta-update-ui.md)。截图参考仅用于还原布局，应用使用自身图标；原始截图、临时测试脚本与网络原始日志未提交。
 
 2026-10-26 用户授权按仓库规则创建 PR、独立审查评论并在审查与 CI 通过后合入。更新检查 [PR #65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 已经最终独立复审、五项 CI 通过后合入 `53d7396`；投屏恢复单独交付 [PR #66](https://github.com/MonsterXia/scrcpy-harmony/pull/66)，最终状态和检查证据见该 PR。两项都不包含发布或安装包覆盖。

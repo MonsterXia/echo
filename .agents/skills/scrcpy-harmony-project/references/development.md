@@ -8,6 +8,8 @@
 
 ## 先检查环境
 
+修改用户可见文案或 UI 时，同时遵循[国际化流程](internationalization.md)。`npm run check:i18n` 检查中英文词典、占位符、引用和常见硬编码；已接入 lint 和应用测试。语言选择/第三方弹窗/启动顺序回归在 `test/i18n.test.cjs`，检查器回归在 `test/i18n-check.test.cjs`；静态通过不能代替双语布局验收。
+
 ```powershell
 git status --short
 node --version

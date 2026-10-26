@@ -117,5 +117,13 @@
   "pause": "暂停",
   "resume": "继续",
   "showScreencastTools": "展开投屏工具",
-  "hideScreencastTools": "收起投屏工具"
+  "hideScreencastTools": "收起投屏工具",
+  "install": "安装",
+  "iconView": "图标视图",
+  "listView": "列表视图",
+  "appSwitch": "最近应用",
+  "hapFile": "鸿蒙应用 (*.hap)",
+  "betaUpdate": "接收预发布更新",
+  "languageRestartHint": "重启 Scrcpy Harmony 后，语言将应用到所有窗口和菜单。",
+  "settingsSaveFailed": "设置保存失败，请确认应用数据目录可写后重试。"
 }

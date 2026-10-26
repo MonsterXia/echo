@@ -1,5 +1,8 @@
 {
   "add": "Add",
+  "on": "On",
+  "off": "Off",
+  "ok": "OK",
   "appearance": "Appearance",
   "browse": "Browse",
   "updateNoNewerDescription": "No newer version is available. The latest release in this channel is {{version}}.",
@@ -35,7 +38,7 @@
   "open": "Open",
   "paste": "Paste",
   "reportIssue": "Report Issue",
-  "requireReload": "Requires reload",
+  "requireReload": "Restart required",
   "selectAll": "Select All",
   "settings": "Settings",
   "showAll": "Show All",
