@@ -14,7 +14,7 @@ Scrcpy Harmony is a graphical HDC desktop tool for HarmonyOS devices, bringing t
 
 | Feature | Description |
 | --- | --- |
-| Screen mirroring and control | View the device screen, click and drag with your mouse, and use the toolbar to send text or device key events |
+| Screen mirroring and control | View the device screen, click and drag with your mouse, and send text or device key events |
 | Device overview | View the device model, system version, and display information |
 | Screenshots | Capture, view, and save device screenshots |
 | App management | Install and uninstall apps, inspect app details, and clear app cache or data |
@@ -49,12 +49,12 @@ The current pre-release retries video once when the picture changes after JPEG f
 
 1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
 2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
-3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. To send text, click **Input text** (输入文本) in the screencast toolbar.
+3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. In the development pre-release, focus a phone text field and type or paste from your keyboard; stable 1.0.3 uses **Input text** (输入文本) in the toolbar.
 4. Switch between the **Apps** (应用), **Terminal** (终端), and **Logs** (日志) panels in the main window. To export HiLog output, click **Save** (保存) in the Logs toolbar.
 
 The app uses its bundled HDC by default. To use another version, specify the executable path in **HDC location** (HDC 位置) in settings.
 
-The current source supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. This change is not yet included in the published installers. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
+The 1.0.4-dev.1 pre-release supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. Stable 1.0.3 does not include this language selection. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
 
 ### Common questions
 
