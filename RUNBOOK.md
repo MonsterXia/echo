@@ -2,7 +2,7 @@
 
 ## 检查更新无反馈修复（2026-10-26）
 
-状态：**本地修复完成，发布待验收**。实际菜单复现本地构建被 electron-updater 跳过且无反馈，另有结果被投屏遮挡、未消费 Promise 拒绝及通道降级副作用。已修复本地检查、稳定通道/不降级、在途合并、菜单进度及当前窗口系统对话框；独立复审发现的置顶遮挡和 homepage 片段拼接问题均已修复。630 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；主窗口及置顶投屏窗口实际在线菜单检查均显示结果，未下载/安装。原安装包未覆盖，证据见[专项记录](docs/maintenance/update-check-recovery.md)。
+状态：**本地修复完成，发布待验收**。实际菜单复现本地构建被 electron-updater 跳过且无反馈，另有结果被投屏遮挡、未消费 Promise 拒绝及通道降级副作用。已修复本地检查、稳定通道/不降级、在途合并、菜单进度及当前窗口系统对话框；独立复审发现的置顶遮挡和 homepage 片段拼接问题均已修复。630 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；主窗口及置顶投屏窗口实际在线菜单检查均显示结果，未下载/安装。PR [#65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 独立审查另发现并修复 Windows 自定义菜单状态未刷新，两项新增回归及 15 项更新专项通过；最终 CI/合入状态以 PR 为准。原安装包未覆盖，证据见[专项记录](docs/maintenance/update-check-recovery.md)。
 
 ## JPEG 回退后恢复视频（已交付，跨固件待验收）
 
