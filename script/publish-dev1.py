@@ -1,4 +1,4 @@
-"""One-off verified dev.1 release; never replaces an existing release or tag."""
+"""Resume the inspected dev.1 draft; verify existing assets before publication."""
 from pathlib import Path
 from datetime import datetime, timezone
 import hashlib
@@ -12,6 +12,7 @@ TAG = 'v1.0.4-dev.1'
 SOURCE = '1b8f4a98bbf1678f00643055c9ae0553dc482391'
 BUILD = 40330050058
 CI = 40330048501
+RELEASE_ID = 424286821
 JOBS = {'test', 'lint', 'windows-package', 'macos-package-arm64', 'macos-package-x64'}
 
 def gh(*args, **kwargs):
@@ -73,10 +74,13 @@ def publish():
     verify_source()
     files = {p.name: p for p in Path('verified-assets').iterdir() if p.is_file()}
     assert len(files) == 14
-    # Resolve only a new tag/release. Fail rather than overwrite existing state.
-    for endpoint in [f'releases/tags/{TAG}', f'git/ref/tags/{TAG}']:
-        check = subprocess.run(['gh', 'api', f'repos/{REPO}/{endpoint}'], capture_output=True, text=True)
-        assert check.returncode != 0 and 'HTTP 404' in check.stderr, 'Tag/release already exists or lookup failed'
+    # The tag endpoint excludes drafts. Resume only the independently inspected
+    # release ID, with no tag movement or asset replacement.
+    release = api(f'releases/{RELEASE_ID}')
+    assert release['tag_name'] == TAG and release['draft'] and release['prerelease']
+    assert release['target_commitish'] == SOURCE
+    tag = api(f'git/ref/tags/{TAG}')['object']
+    assert tag['type'] == 'commit' and tag['sha'] == SOURCE
     notes = f'''Scrcpy Harmony **1.0.4-dev.1** 开发预发布 / Development preview.
 
 ### 本版更新 / Changes
@@ -100,17 +104,15 @@ Publisher signing, notarization and Gatekeeper results are recorded in verificat
 This is a **Pre-release**. Stable Latest remains **v1.0.3**; dev.0 remains available.
 '''
     Path('release-notes.md').write_text(notes)
-    api('git/refs', '--method', 'POST', '-f', f'ref=refs/tags/{TAG}', '-f', f'sha={SOURCE}')
-    gh('release', 'create', TAG, '--verify-tag', '--draft', '--prerelease', '--latest=false',
-       '--target', SOURCE, '--title', 'Scrcpy Harmony 1.0.4-dev.1', '--notes-file', 'release-notes.md')
-    gh('release', 'upload', TAG, *[str(p) for p in files.values()])
-    release = api(f'releases/tags/{TAG}')
     verify_assets(release, files)
     remote = Path('downloaded-release')
     gh('release', 'download', TAG, '--dir', str(remote))
     assert {p.name for p in remote.iterdir()} == set(files)
     for name, local in files.items():
         assert digest(remote / name) == digest(local), 'Downloaded bytes mismatch: ' + name
+    current = api(f'releases/{RELEASE_ID}')
+    assert current['updated_at'] == release['updated_at'] and current['draft']
+    verify_assets(current, files)
     api(f"releases/{release['id']}", '--method', 'PATCH', '-f', f'tag_name={TAG}',
         '-f', f'target_commitish={SOURCE}', '-F', 'draft=false', '-F', 'prerelease=true', '-f', 'make_latest=false')
     after = api(f'releases/tags/{TAG}')
