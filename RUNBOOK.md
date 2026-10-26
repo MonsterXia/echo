@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 应用国际化与开发流程（2026-10-26）
+
+状态：**实现与本机双语验证完成，最终审查/CI 以 PR 为准；尚未发布安装包**。修复英文指向中文字典，补齐 127 项业务和 67 项共享词条（含既有共享翻译），增加系统/English/简体中文选择并在用户重启后统一应用到菜单和窗口；同步 Luna 确认框与 HTML lang。国际化检查接入 lint/应用测试，项目 skill 新增[开发流程](.agents/skills/scrcpy-harmony-project/references/internationalization.md)。隔离真实 Electron 的双语菜单、设置、跨重启持久化、更新卡与确认框通过，范围和后续验收见[专项记录](docs/maintenance/internationalization.md)。[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Finternationalization)。下一步完成最终提交独立复审、五项 CI 后合入；Windows/x64 人工双语视觉与发行包验收待办。
+
 ## Beta Update 与即时更新窗口（2026-10-26）
 
 状态：**源码与本地验证完成，交付/CI 状态以 PR 为准；尚未发布安装包**。新增默认关闭并持久化的 Beta Update；开启后正式/预发布一起按版本号选择最新，保持不降级。按用户提供 GPT 参考图改为即时进度、可取消、同窗口结果卡和精确版本下载页。公开 API 限流备用路径、初始化前取消、父窗口最小化、不可适用版本及事件退订均已覆盖。验证证据与边界见[专项记录](docs/maintenance/beta-update-ui.md)，[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fbeta-update)。跨平台实际人工交互和安装包发布仍待验收。

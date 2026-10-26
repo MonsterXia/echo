@@ -61,7 +61,7 @@ function getTemplate(): MenuItemConstructorOptions[] {
       },
       {
         id: 'beta-update',
-        label: 'Beta Update',
+        label: t('betaUpdate'),
         type: 'checkbox' as const,
         checked: getSettingsStore().get('betaUpdate') === true,
         click(item: MenuItem) {

@@ -181,7 +181,8 @@ Canvas pointer 事件
 ## UI 和生成文件
 
 - 使用 React 函数组件、`mobx-react-lite` 的 `observer`、Luna React 封装和局部 `.module.scss`；CSS Modules 配置为 `camelCaseOnly`。
-- `src/common/util.ts` 初始化国际化；目前 `en-US` 与 `zh-CN` 都指向同一中文字典，不应假设已有独立英文翻译文件。
+- `src/common/util.ts` 注册独立 `en-US` / `zh-CN` 业务词典，与 `src/share/common/langs` 合并；`t()` 在缺词时兜底英文，未知 key 原样显示。主进程启动解析已保存/系统语言；renderer 在页面懒加载前同步 i18n、HTML lang 和 LunaModal。设置页语言保存后由用户重启生效，包含菜单和各窗口。开发步骤与检查器边界见[国际化开发流程](internationalization.md)。
+- `src/main/lib/SettingsStore.ts` 为低频 settings.json 保留 Store 的 get/set/change 接口，使用同步临时文件替换，在设置 IPC 返回前完成落盘，保证立即重启可读取。主窗口/投屏状态仍用 FileStore 防抖写盘。持久化回归在 `test/settings-persistence.test.cjs`。
 - 主题源是 `src/common/theme.json`，`npm run gen:theme` 生成 `src/renderer/theme.scss` 与 `src/common/theme.ts`。
 - 图标配置是 `src/renderer/icon.json`，图标源在本仓 `src/renderer/icon`，`npm run gen:icon` 生成 `src/renderer/icon.css`。
 - Prettier 配置为无分号、单引号、80 列；避免为局部任务运行全仓库重写格式。

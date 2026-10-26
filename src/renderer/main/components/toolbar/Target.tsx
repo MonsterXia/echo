@@ -18,8 +18,7 @@ export default observer(function Target() {
       targetOptions[`${target.name} (${target.key})`] = target.key
     })
   } else {
-    const status = store.targetsError ? 'targetRefreshFailed' : 'targetNotConnected'
-    targetOptions[t(status)] = ''
+    targetOptions[t(store.targetsError ? 'targetRefreshFailed' : 'targetNotConnected')] = ''
     targetDisabled = true
   }
 

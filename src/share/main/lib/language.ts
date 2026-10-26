@@ -1,5 +1,5 @@
 import { getSettingsStore } from '../../../main/lib/store'
-import { i18n, hasLocale } from '../../common/i18n'
+import { i18n, resolveLocale } from '../../common/i18n'
 import { app } from 'electron'
 import { handleEvent } from './util'
 import log from '../../common/log'
@@ -28,14 +28,4 @@ export function init() {
 
   i18n.locale(language)
   handleEvent('getLanguage', get)
-}
-
-function resolveLocale(locale: string) {
-  if (hasLocale(locale)) {
-    return locale
-  }
-  const [lang] = locale.split('-')
-  if (hasLocale(lang)) {
-    return lang
-  }
 }

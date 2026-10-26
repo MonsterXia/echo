@@ -20,11 +20,13 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 | 投屏、触摸坐标 | `src/renderer/screencast/lib/ScreencastClient.ts`、`src/main/lib/hdc/uitest.ts` |
 | 构建、资源、打包 | `package.json`、`vite*.ts`、`script/` |
 | 本地依赖二次适配 | `vendor/README.md`、`vendor/packages/*/src/`、`script/lib/` |
+| 国际化、界面文案与语言切换 | [国际化开发流程](references/internationalization.md)、`src/common/langs/`、`src/share/common/langs/` |
 
 ## 按需读取
 
 - 修改功能、追踪 IPC、理解状态或投屏：读 [架构与代码导航](references/architecture.md) 的相关章节。
 - 配置环境、运行验证、启动或打包：读 [开发与验证](references/development.md)。
+- 新增或修改用户可见文案、菜单、弹窗、语言设置或 UI 组件时，读 [国际化开发流程](references/internationalization.md)，同步简体中文和英文并执行词条检查。
 - 查看迁移后目录与源码/产物对应关系：读 [仓库结构指南](../../../docs/repository-guide.md)。
 - 分阶段修复与交接：读仓库根目录 [RUNBOOK](../../../RUNBOOK.md)；上游报告与 PR 的历史状态见 [来源记录](../../../docs/maintenance/SOURCES.md)。
 - 普通小改只读对应入口及其直接依赖；以上导航不足时再扩大搜索。
@@ -35,7 +37,7 @@ description: Use when analyzing, developing, debugging, reviewing, or building t
 - `share/*` 来自本仓库跟踪的 `src/share`；图标源 `src/renderer/icon` 也为普通目录。v1.0.3 及更早 tag 才需要初始化子模块。`common/*` 对应 `src/common`，两者都是 Vite 别名。
 - 投屏 JPEG 帧尺寸、CSS 显示尺寸和设备触摸尺寸是三个坐标空间。触摸使用 `getDisplaySize()` 的结果，不用请求的 `scale` 反推。
 - 主窗口切换标签后，已访问面板仍挂载；异步任务和监听的清理不能只依赖标签切换。设备切换另有按 target key 重建机制。
-- UI 延续 MobX + `observer`、Luna 组件、SCSS Modules；文案通过 `common/util.ts` 的 `t()` 和 `src/common/langs/zh-CN.json`。
+- UI 延续 MobX + `observer`、Luna 组件、SCSS Modules；业务文案通过 `common/util.ts` 的 `t()`，同步维护 `src/common/langs/{en-US,zh-CN}.json`。共享文案在 `src/share/common/langs/`；不得把英文映射到中文字典或依靠 fallback 代替翻译。提交前运行 `npm run check:i18n`；修改布局或语言流程时补双语 UI 验证。
 - 验证报告区分静态检查、无真机单测、Electron 运行与设备验证，不把其中一种当作其余几种已通过。
 
 ## 使用与维护

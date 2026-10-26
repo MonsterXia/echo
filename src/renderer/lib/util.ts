@@ -13,7 +13,7 @@ export async function installBundles(connectKey: string, hapPaths?: string[]) {
   if (!hapPaths) {
     const { filePaths } = await main.showOpenDialog({
       properties: ['openFile', 'multiSelections'],
-      filters: [{ name: 'hap file', extensions: ['hap'] }],
+      filters: [{ name: t('hapFile'), extensions: ['hap'] }],
     })
     if (isEmpty(filePaths)) {
       return hasSuccess

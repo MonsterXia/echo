@@ -1,5 +1,8 @@
 {
   "add": "添加",
+  "on": "开",
+  "off": "关",
+  "ok": "确定",
   "appearance": "外观",
   "browse": "浏览",
   "updateNoNewerDescription": "当前没有更高版本可更新。此渠道最新版本为 {{version}}。",

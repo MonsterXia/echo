@@ -62,7 +62,7 @@ export default observer(function RemoteControllerModal(props: IModalProps) {
         </div>
         <div className={Style.directionPad}>
           <div className={Style.ok} onClick={inputKey(KEYCODE_DPAD_CENTER)}>
-            OK
+            {t('ok')}
           </div>
           <div className={Style.up} onClick={inputKey(KEYCODE_DPAD_UP)} />
           <div className={Style.right} onClick={inputKey(KEYCODE_DPAD_RIGHT)} />
