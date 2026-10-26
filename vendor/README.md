@@ -51,3 +51,5 @@ HDC、Licia、Luna 的 MIT 原文和作者信息保留在各包 LICENSE。两份
 后台准备会暂时关闭 UiDriver 的 `allowDaemonRestart`：遇到已有 daemon 与旧 SDK 时拒绝升级，应用层也不进行失败 stop 恢复，缓存 driver 的准备重连同样保护。显式前台初始化保留原恢复策略。审查动机见 [PR #56 修复记录](../docs/maintenance/screencast-pr56-review.md)。
 
 共享主进程 IPC 的 relaunch 本地适配为 app.relaunch + app.quit，允许应用等待投屏预热/活动会话清理；原 app.exit 绕过生命周期。对应窗口退出语义和验证见[后台准备记录](../docs/maintenance/screencast-preparation.md)。原始导入 manifest 哈希仍只描述导入版本。
+
+共享更新器的本地适配另包含显式手动检查的 Promise 合并/异常消费、附着当前窗口的系统结果提示和确认后打开 Releases；菜单在检查及提示期间禁用。项目 updater 指定稳定发布、不降级，并允许本地构建执行显式配置源的元数据检查，禁用自动下载/退出安装。原 renderer 结果弹窗已移除，测试与证据见[更新检查修复](../docs/maintenance/update-check-recovery.md)。

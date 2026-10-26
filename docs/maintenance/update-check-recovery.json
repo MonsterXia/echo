@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-26",
+  "scope": "Local build update metadata check, real menu and native dialog; no download or install",
+  "applicationTests": 630,
+  "applicationFailed": 0,
+  "liciaProduction": {
+    "passed": 606,
+    "pending": 4
+  },
+  "liciaFallback": {
+    "passed": 606,
+    "pending": 4
+  },
+  "lint": "passed",
+  "build": "passed",
+  "independentReview": "no remaining blockers",
+  "mainAssetSha256": "1c68a1d6df820f958fab98bee1ec57c91111f7669f748290ea5b0cc186703163",
+  "sourceSha256": {
+    "src/main/lib/updater.ts": "07cf2f296ed09b15e9256608ac0af4e22d313118f032847026cc43788fc8e6d1",
+    "src/main/lib/menu.ts": "9818e53e496555d3f88ad2daa338b95fdecd579bee7b22818a72df266536386f",
+    "src/share/main/lib/updater.ts": "7368303e3425b3f3493bcdbe6fad13acb3b8525096f159501a5031ab0a994872",
+    "src/renderer/main/App.tsx": "e684525e9301694e54dcab5221e5e26750c23cd800b9192f2b049200e3f7f527",
+    "src/share/common/langs/en-US.json": "1f1d2dd1607a9bcf3b91c8d6dd3624b10e54f11229f5c1c645fe8dd6ecd6226a",
+    "src/share/common/langs/zh-CN.json": "e9491f4576f9c2296fc181739ee3d8e7da55f8f728382cd948f4128f542bbbb8"
+  },
+  "live": {
+    "menuCheckingDisabledObserved": true,
+    "mainWindowResultObserved": true,
+    "pinnedScreencastResultObserved": true,
+    "menuRestored": true,
+    "currentVersion": "1.0.4-dev.0",
+    "latestStableVersion": "1.0.3",
+    "downgradeAllowed": false,
+    "updateAvailable": false,
+    "downloaded": false,
+    "installedApplicationReplaced": false
+  },
+  "limits": [
+    "No actual network outage injected",
+    "Update-available acceptance/cancellation tested with Electron and network boundaries",
+    "No cross-platform packaged update acceptance"
+  ]
+}

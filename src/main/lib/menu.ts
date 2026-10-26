@@ -44,8 +44,18 @@ function getTemplate(): MenuItemConstructorOptions[] {
       },
       {
         label: `${t('checkUpdate')}...`,
-        click() {
-          updater.checkUpdate()
+        async click(item: MenuItem) {
+          const label = item.label
+          item.enabled = false
+          item.label = t('checkingForUpdates')
+          refreshMenu()
+          try {
+            await updater.checkUpdate()
+          } finally {
+            item.label = label
+            item.enabled = true
+            refreshMenu()
+          }
         },
       },
       ...hideMenu,
@@ -155,7 +165,10 @@ function getTemplate(): MenuItemConstructorOptions[] {
 
 function updateMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(getTemplate()))
+  refreshMenu()
+}
 
+function refreshMenu() {
   if (isWindows) {
     window.sendTo('main', 'refreshMenu')
   }

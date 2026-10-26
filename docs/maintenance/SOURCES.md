@@ -1,5 +1,7 @@
 # 维护来源记录
 
+2026-10-26 用户反馈 Check for Updates 损坏。菜单实际复现和本地 electron-updater 实现核对、修复及验证见[更新检查记录](update-check-recovery.md)；未替换安装包或发布。
+
 2026-10-25 用户反馈 1.0.4-dev.0 在亮屏解锁但静止时投屏迟迟无画面。手机日志、原因边界、修复及验证见 [静止投屏启动记录](screencast-static-start.md)；原始日志含设备信息，未将其全文提交。
 
 记录日期：2026-10-21（Asia/Hong_Kong）。用于 [RUNBOOK](../../RUNBOOK.md) 的来源追踪；状态是归档时快照，后续实施以当前源码和新证据为准。

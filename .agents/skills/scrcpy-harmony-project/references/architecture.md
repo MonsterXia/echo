@@ -6,7 +6,7 @@
 
 `package.json` 的包名为 `scrcpy-harmony`、产品名为 `Scrcpy Harmony`，仓库目录名为 `scrcpy-harmony`。项目基于上游 `liriliri/echo`，由 MonsterXia 独立维护，2026-10-21 已解除 GitHub fork 关系；仓库、反馈和发布入口指向 `MonsterXia/scrcpy-harmony`。保留原作者和许可证；应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装，用户数据采用新的产品名目录，旧配置保留且不自动迁移。操作当前 Git 远端时仍使用 `git remote -v` 核对。
 
-共享模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。更新源覆盖仍由本项目 `updater.ts` 负责。检查更新仍由共享模块发起；发现更新后 renderer 提示并打开本仓库 Releases 页面，不自动下载或安装。
+共享模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。更新源覆盖仍由本项目 `updater.ts` 负责。检查更新仍由共享模块发起：显式启用本地构建的元数据检查，固定稳定发布选择并禁用降级、自动下载及退出安装。共享模块合并在途请求、消费检查异常并将结果通过系统对话框附着于当前窗口（包括置顶投屏窗口）；用户确认后打开本仓库 Releases 页面。菜单检查期间禁用并显示进度，renderer 不再承载更新结果弹窗。
 
 | 路径 | 职责 |
 | --- | --- |
