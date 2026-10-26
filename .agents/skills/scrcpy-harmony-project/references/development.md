@@ -104,7 +104,7 @@ npm start
 
 `test/build.test.cjs` 在带空格及 `&` 的临时路径中运行真实构建脚本，以 npm 替身验证发行目录、资源复制、元数据和子构建失败时立即停止；它不替代实际 Vite 构建、安装包生成及安装启动检查。
 
-`test/updater.test.cjs` 验证 Windows、macOS arm64/x64 的 GitHub 源和通道覆盖，包括清除共享更新器遗留通道的影响。它使用替身，不访问 GitHub、不验证线上 Release 元数据或下载。2026-10-21 基线共有 13 项测试（投屏 8、构建 2、更新配置 3）；此后数量以实际运行结果为准。
+`test/updater.test.cjs` 验证 Windows、macOS arm64/x64 的 GitHub 源和通道覆盖，以及真实 AppUpdater/GitHubProvider 在合成网络边界下选择稳定版本、不降级、本地可检查。`test/update-check.test.cjs` 验证在途合并、错误只提示一次、同步失败、跳过检查、当前窗口系统对话框及实际 package.json 首页 URL 到 Releases 的转换。均不访问 GitHub；实际菜单/线上检查单独见 `docs/maintenance/update-check-recovery.md`。2026-10-21 基线共有 13 项测试（投屏 8、构建 2、更新配置 3）；此后数量以实际运行结果为准。
 
 | 修改类别 | 有意义的验证 |
 | --- | --- |

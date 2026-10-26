@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useState } from 'react'
+import { FC, PropsWithChildren, useState } from 'react'
 import Toolbar from './components/toolbar/Toolbar'
 import Style from './App.module.scss'
 import { observer } from 'mobx-react-lite'
@@ -6,34 +6,13 @@ import store from './store'
 import Overview from './components/overview/Overview'
 import Screenshot from './components/screenshot/Screenshot'
 import Application from './components/application/Application'
-import { t } from 'common/util'
 import Process from './components/process/Process'
 import Shell from './components/shell/Shell'
 import Layout from './components/layout/Layout'
-import Modal from 'luna-modal'
 import Webview from './components/webview/Webview'
 import Hilog from './components/hilog/Hilog'
 
 export default observer(function App() {
-  useEffect(() => {
-    const offUpdateError = main.on('updateError', () => {
-      Modal.alert(t('updateErr'))
-    })
-    const offUpdateNotAvailable = main.on('updateNotAvailable', () => {
-      Modal.alert(t('updateNotAvailable'))
-    })
-    const offUpdateAvailable = main.on('updateAvailable', async () => {
-      const result = await Modal.confirm(t('updateAvailable'))
-      if (result) {
-        main.openExternal('https://github.com/MonsterXia/scrcpy-harmony/releases')
-      }
-    })
-    return () => {
-      offUpdateError()
-      offUpdateNotAvailable()
-      offUpdateAvailable()
-    }
-  }, [])
 
   return (
     <>
