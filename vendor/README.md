@@ -52,4 +52,4 @@ HDC、Licia、Luna 的 MIT 原文和作者信息保留在各包 LICENSE。两份
 
 共享主进程 IPC 的 relaunch 本地适配为 app.relaunch + app.quit，允许应用等待投屏预热/活动会话清理；原 app.exit 绕过生命周期。对应窗口退出语义和验证见[后台准备记录](../docs/maintenance/screencast-preparation.md)。原始导入 manifest 哈希仍只描述导入版本。
 
-共享更新器的本地适配另包含显式手动检查的 Promise 合并/异常消费、附着当前窗口的系统结果提示和确认后打开 Releases；菜单在检查及提示期间禁用。项目 updater 指定稳定发布、不降级，并允许本地构建执行显式配置源的元数据检查，禁用自动下载/退出安装。原 renderer 结果弹窗已移除，测试与证据见[更新检查修复](../docs/maintenance/update-check-recovery.md)。
+共享更新器的本地适配包含手动检查合并、即时进度/结果窗口、初始化前取消和迟到结果抑制。共享协调器调用项目 update 窗口，使用受限 IPC；旧原生结果弹窗已替换。项目 ReleaseProvider 按持久化的 Beta Update 选项选择正式或所有发布版本，API 限流时严格解析公开发布页，始终不降级、不自动下载/安装。依赖 semver、builder-util-runtime、parse5 作为直接构建依赖锁定；仅在用户确认后打开精确 tag 下载页。测试与验证见[Beta 更新与交互](../docs/maintenance/beta-update-ui.md)；前序原生提示修复保留为[历史记录](../docs/maintenance/update-check-recovery.md)。

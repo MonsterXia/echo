@@ -1,69 +1,98 @@
 import { autoUpdater } from 'electron-updater'
-import * as window from './window'
 import isMac from 'licia/isMac'
 import pkg from '../../../../package.json'
-import { BrowserWindow, dialog, shell } from 'electron'
-import { t } from '../../common/i18n'
+import { shell } from 'electron'
+import type { UpdateInfo } from 'builder-util-runtime'
+import type { UpdateState } from 'common/types'
+import { gt } from 'semver'
+import { beginReleaseCheck, cancelReleaseChecks } from '../../../main/lib/ReleaseProvider'
+import {
+  showUpdateWindow,
+  setUpdateState,
+  closeUpdateWindow,
+  focusUpdateWindow,
+} from '../../../main/window/update'
 
+type ReleaseInfo = UpdateInfo & { tag?: string }
 autoUpdater.autoDownload = false
 let checking: Promise<void> | undefined
-let errorReported = false
-let notification: Promise<void> = Promise.resolve()
+let pendingCheck: ReturnType<typeof autoUpdater.checkForUpdates> | undefined
 
 export function checkUpdate() {
-  if (checking) return checking
-  errorReported = false
+  if (checking) {
+    focusUpdateWindow()
+    return checking
+  }
+  let closed = false
+  let selected: ReleaseInfo | undefined
+  let status: UpdateState['status'] = 'checking'
+  let dismiss!: () => void
+  const dismissed = new Promise<void>((resolve) => { dismiss = resolve })
+  const state = (): UpdateState => ({
+    status,
+    productName: pkg.productName,
+    currentVersion: pkg.version,
+    latestVersion: selected?.version,
+  })
+  const close = () => {
+    if (closed) return
+    closed = true
+    cancelReleaseChecks()
+    closeUpdateWindow()
+    dismiss()
+  }
+  showUpdateWindow(state(), async (action) => {
+    if (closed) return
+    if (action === 'cancel' || action === 'close') {
+      close()
+    } else if (action === 'openRelease' && status === 'available' && selected) {
+      try {
+        const releases = new URL(pkg.homepage)
+        releases.hash = ''
+        releases.search = ''
+        const tag = selected.tag ? `/tag/${encodeURIComponent(selected.tag)}` : ''
+        releases.pathname = `${releases.pathname.replace(/\/$/, '')}/releases${tag}`
+        await shell.openExternal(releases.href)
+        close()
+      } catch {
+        if (!closed) { status = 'error'; setUpdateState(state()) }
+      }
+    }
+  })
+  const request = async () => {
+    // A cancelled AppUpdater may still be finishing filesystem initialization.
+    // Show the new progress UI immediately, but drain that operation before
+    // starting another so the library cannot reuse its cancelled Promise.
+    if (pendingCheck) await pendingCheck.catch(() => {})
+    if (closed) return null
+    const end = beginReleaseCheck()
+    let result: ReturnType<typeof autoUpdater.checkForUpdates>
+    try { result = autoUpdater.checkForUpdates() }
+    catch (error) { end(); throw error }
+    const operation = result.finally(() => {
+      end()
+      if (pendingCheck === operation) pendingCheck = undefined
+    })
+    pendingCheck = operation
+    return operation
+  }
   const task = (async () => {
     try {
-      const result = await autoUpdater.checkForUpdates()
-      if (!result) reportError()
+      const result = await Promise.race([request(), dismissed.then(() => null)])
+      if (!closed) {
+        selected = result?.updateInfo
+        status = !selected ? 'error' : result?.isUpdateAvailable ? 'available'
+          : gt(selected.version, pkg.version) ? 'unavailable' : 'upToDate'
+        setUpdateState(state())
+      }
     } catch {
-      // electron-updater emits an error AND rejects. Consume the rejection
-      // without showing a second dialog; also cover synchronous setup errors.
-      reportError()
+      if (!closed) { status = 'error'; setUpdateState(state()) }
     }
-    await notification
+    await dismissed
   })()
   checking = task
   void task.then(() => { if (checking === task) checking = undefined })
   return task
-}
-
-function notify(channel: string) {
-  notification = showResult(channel).catch(error => console.error('Update result could not be shown:', error))
-}
-
-async function showResult(channel: string) {
-  // Parent the system dialog to the active window, including pinned capture
-  // windows. A renderer modal in main can remain behind always-on-top windows.
-  const win = BrowserWindow.getFocusedWindow() || window.getWin('main')
-  if (!win || win.isDestroyed()) return
-  if (win.isMinimized()) win.restore()
-  win.show()
-  win.focus()
-  const available = channel === 'updateAvailable'
-  const { response } = await dialog.showMessageBox(win, {
-    type: channel === 'updateError' ? 'error' : 'info',
-    title: t('checkUpdate'),
-    message: t(channel === 'updateError' ? 'updateErr' : channel),
-    buttons: available ? [t('updateOpenReleases'), t('updateLater')] : [t('updateOK')],
-    defaultId: available ? 1 : 0,
-    cancelId: available ? 1 : 0,
-    noLink: true,
-  })
-  if (available && response === 0) {
-    const releases = new URL(pkg.homepage)
-    releases.hash = ''
-    releases.search = ''
-    releases.pathname = `${releases.pathname.replace(/\/$/, '')}/releases`
-    await shell.openExternal(releases.href)
-  }
-}
-
-function reportError() {
-  if (errorReported) return
-  errorReported = true
-  notify('updateError')
 }
 
 export function init() {
@@ -72,12 +101,7 @@ export function init() {
   if (isMac && process.arch !== 'arm64') {
     autoUpdater.channel = `${pkg.productName}-latest-x64`
   }
-
-  autoUpdater.on('update-not-available', () => {
-    notify('updateNotAvailable')
-  })
-  autoUpdater.on('update-available', () => {
-    notify('updateAvailable')
-  })
-  autoUpdater.on('error', reportError)
+  // The request Promise owns presentation, including cancellation. Listening
+  // prevents EventEmitter's error throw without displaying duplicate/late UI.
+  autoUpdater.on('error', () => {})
 }

@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## Beta Update 与即时更新窗口（2026-10-26）
+
+状态：**源码与本地验证完成，交付/CI 状态以 PR 为准；尚未发布安装包**。新增默认关闭并持久化的 Beta Update；开启后正式/预发布一起按版本号选择最新，保持不降级。按用户提供 GPT 参考图改为即时进度、可取消、同窗口结果卡和精确版本下载页。公开 API 限流备用路径、初始化前取消、父窗口最小化、不可适用版本及事件退订均已覆盖。验证证据与边界见[专项记录](docs/maintenance/beta-update-ui.md)，[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fbeta-update)。跨平台实际人工交互和安装包发布仍待验收。
+
 ## 检查更新无反馈修复（2026-10-26）
 
 状态：**已通过 PR #65 合入，发布待验收**。实际菜单复现本地构建被 electron-updater 跳过且无反馈，另有结果被投屏遮挡、未消费 Promise 拒绝及通道降级副作用。已修复本地检查、稳定通道/不降级、在途合并、菜单进度及当前窗口系统对话框；独立复审发现的置顶遮挡和 homepage 片段拼接问题均已修复。630 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；主窗口及置顶投屏窗口实际在线菜单检查均显示结果，未下载/安装。PR [#65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 独立审查另发现并修复 Windows 自定义菜单状态未刷新，两项新增回归及 15 项更新专项通过；最终 head `5df6243` 独立复审及[五项 CI](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40306999951)通过，合入提交 `53d7396`。原安装包未覆盖，证据见[专项记录](docs/maintenance/update-check-recovery.md)。

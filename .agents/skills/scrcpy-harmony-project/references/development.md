@@ -104,7 +104,7 @@ npm start
 
 `test/build.test.cjs` 在带空格及 `&` 的临时路径中运行真实构建脚本，以 npm 替身验证发行目录、资源复制、元数据和子构建失败时立即停止；它不替代实际 Vite 构建、安装包生成及安装启动检查。
 
-`test/updater.test.cjs` 验证 Windows、macOS arm64/x64 的 GitHub 源和通道覆盖，以及真实 AppUpdater/GitHubProvider 在合成网络边界下选择稳定版本、不降级、本地可检查。`test/update-check.test.cjs` 验证在途合并、错误只提示一次、同步失败、跳过检查、当前窗口系统对话框及实际 package.json 首页 URL 到 Releases 的转换。`test/update-menu.test.cjs` 验证 Windows 自定义标题栏在检查和完成/失败后收到菜单状态刷新。均不访问 GitHub；实际菜单/线上检查单独见 `docs/maintenance/update-check-recovery.md`。2026-10-21 基线共有 13 项测试（投屏 8、构建 2、更新配置 3）；此后数量以实际运行结果为准。
+`test/updater.test.cjs` 验证三平台元数据通道、真实 AppUpdater 的自定义 Provider/不降级行为及 FileStore 写盘重读。`test/release-provider.test.cjs`、`test/release-page.test.cjs` 验证正式/预发布筛选、SemVer 顺序、完整分页、限流备用路径、取消和元数据 tag 一致性。`test/update-check.test.cjs` 验证即时进度、重复检查、初始化前取消/迟到结果/排空后重试、错误和不可适用版本。`test/update-window.test.cjs` 验证父窗口恢复、尺寸及 IPC frame 权限；`test/update-view.test.cjs` 验证 React 初始状态竞态、键盘操作和退订；`test/update-menu.test.cjs` 验证 Windows 菜单刷新及 Beta 勾选状态。网络与窗口替身不能冒充实机/实际网络验收；隔离 Electron 在线与样式验证见 `docs/maintenance/beta-update-ui.md`。早期更新修复证据仍保留在 `update-check-recovery.md`。
 
 | 修改类别 | 有意义的验证 |
 | --- | --- |

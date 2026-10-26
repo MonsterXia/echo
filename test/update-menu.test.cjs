@@ -4,7 +4,7 @@ const { transformSync } = require('esbuild')
 const fs = require('node:fs')
 const vm = require('node:vm')
 
-function fixture() {
+function fixture(saved = {}) {
   const snapshots = []
   let menu, finish, fail
   const pending = new Promise((resolve, reject) => { finish = resolve; fail = reject })
@@ -23,6 +23,7 @@ function fixture() {
           snapshots.push({ label: item.label, enabled: item.enabled !== false })
         },
       }
+      if (id === './store') return { getSettingsStore: () => ({ get: key => saved[key], set: (key, value) => { saved[key] = value } }) }
       if (id === 'share/main/lib/updater') return { checkUpdate: () => pending }
       if (id === 'licia/isMac') return false
       if (id === 'licia/isWindows') return true
@@ -35,7 +36,7 @@ function fixture() {
   })
   module.exports.init()
   snapshots.length = 0
-  return { snapshots, click: () => menu[0].submenu[1].click(menu[0].submenu[1]), finish, fail }
+  return { snapshots, saved, rebuild: () => module.exports.init(), beta: () => menu[0].submenu.find(item => item.id === 'beta-update'), click: () => menu[0].submenu[1].click(menu[0].submenu[1]), finish, fail }
 }
 
 for (const rejected of [false, true]) {
@@ -57,3 +58,17 @@ for (const rejected of [false, true]) {
     ])
   })
 }
+
+
+test('Beta Update defaults off and persists its checkbox choice across menu rebuilds', () => {
+  const f = fixture()
+  assert.equal(f.beta()?.type, 'checkbox')
+  assert.equal(f.beta().checked, false)
+  f.beta().click({ checked: true })
+  assert.equal(f.saved.betaUpdate, true)
+  f.rebuild()
+  assert.equal(f.beta().checked, true)
+  f.beta().click({ checked: false })
+  f.rebuild()
+  assert.equal(f.beta().checked, false)
+})

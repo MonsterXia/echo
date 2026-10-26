@@ -11,6 +11,7 @@ import { getUserDataPath, handleEvent } from 'share/main/lib/util'
 import * as updater from 'share/main/lib/updater'
 import { isDev } from 'share/common/util'
 import { editWindow } from './screencastEdit'
+import { getSettingsStore } from './store'
 
 function getTemplate(): MenuItemConstructorOptions[] {
   const hideMenu = isMac
@@ -56,6 +57,16 @@ function getTemplate(): MenuItemConstructorOptions[] {
             item.enabled = true
             refreshMenu()
           }
+        },
+      },
+      {
+        id: 'beta-update',
+        label: 'Beta Update',
+        type: 'checkbox' as const,
+        checked: getSettingsStore().get('betaUpdate') === true,
+        click(item: MenuItem) {
+          getSettingsStore().set('betaUpdate', item.checked)
+          refreshMenu()
         },
       },
       ...hideMenu,

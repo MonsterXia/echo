@@ -37,6 +37,11 @@ function renderApp() {
   let title = PRODUCT_NAME
 
   switch (getUrlParam('page')) {
+    case 'update':
+      App = lazy(() => import('./update/App.js') as Promise<any>)
+      document.body.classList.add('update-window')
+      title = t('softwareUpdate')
+      break
     case 'terminal':
       App = lazy(() => import('share/renderer/terminal/App.js') as Promise<any>)
       title = t('terminal')
