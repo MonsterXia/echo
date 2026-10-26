@@ -1,0 +1,21 @@
+{
+  "source": "1b8f4a98bbf1678f00643055c9ae0553dc482391",
+  "kind": "local distribution, real Electron and online release metadata",
+  "scenarios": [
+    {
+      "beta": false,
+      "status": "upToDate",
+      "productName": "Scrcpy Harmony",
+      "currentVersion": "1.0.4-dev.1",
+      "latestVersion": "1.0.3"
+    },
+    {
+      "beta": true,
+      "status": "upToDate",
+      "productName": "Scrcpy Harmony",
+      "currentVersion": "1.0.4-dev.1",
+      "latestVersion": "1.0.4-dev.1"
+    }
+  ],
+  "passed": true
+}
