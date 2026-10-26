@@ -133,3 +133,13 @@ export type IpcOpenHilog = (connectKey: string) => Promise<string>
 export type IpcCloseHilog = (hilogId: string) => Promise<void>
 export type IpcPauseHilog = IpcCloseHilog
 export type IpcResumeHilog = IpcCloseHilog
+
+export interface UpdateState {
+  status: 'checking' | 'upToDate' | 'available' | 'unavailable' | 'error'
+  productName: string
+  currentVersion: string
+  latestVersion?: string
+}
+export type UpdateAction = 'cancel' | 'close' | 'openRelease'
+export type IpcGetUpdateState = () => Promise<UpdateState>
+export type IpcUpdateAction = (action: UpdateAction) => Promise<void>

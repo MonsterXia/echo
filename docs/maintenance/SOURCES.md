@@ -1,5 +1,7 @@
 # 维护来源记录
 
+2026-10-26 用户要求更新中提供 Beta Update 选项：关闭仅正式版，开启包含所有预发布版选择最高版本；随后提供 GPT 更新进度 GIF 和结果卡截图，要求消除长时间无反馈并还原样式。实现与隔离 Electron/在线验证见[专项记录](beta-update-ui.md)。截图参考仅用于还原布局，应用使用自身图标；原始截图、临时测试脚本与网络原始日志未提交。
+
 2026-10-26 用户授权按仓库规则创建 PR、独立审查评论并在审查与 CI 通过后合入。更新检查 [PR #65](https://github.com/MonsterXia/scrcpy-harmony/pull/65) 已经最终独立复审、五项 CI 通过后合入 `53d7396`；投屏恢复单独交付 [PR #66](https://github.com/MonsterXia/scrcpy-harmony/pull/66)，最终状态和检查证据见该 PR。两项都不包含发布或安装包覆盖。
 
 2026-10-26 用户反馈 Check for Updates 损坏。菜单实际复现和本地 electron-updater 实现核对、修复及验证见[更新检查记录](update-check-recovery.md)；未替换安装包或发布。

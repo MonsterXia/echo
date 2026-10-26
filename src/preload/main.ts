@@ -1,4 +1,6 @@
 import {
+  IpcGetUpdateState,
+  IpcUpdateAction,
   IpcCleanBundleCache,
   IpcCleanBundleData,
   IpcCloseHilog,
@@ -46,6 +48,8 @@ import mainObj from 'share/preload/main'
 import { invoke } from 'share/preload/util'
 
 export default Object.assign(mainObj, {
+  getUpdateState: invoke<IpcGetUpdateState>('getUpdateState'),
+  updateAction: invoke<IpcUpdateAction>('updateAction'),
   getMainStore: invoke<IpcGetStore>('getMainStore'),
   setMainStore: invoke<IpcSetStore>('setMainStore'),
   getTargets: invoke<IpcGetTargets>('getTargets'),

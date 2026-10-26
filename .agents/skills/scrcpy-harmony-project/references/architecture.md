@@ -6,7 +6,11 @@
 
 `package.json` 的包名为 `scrcpy-harmony`、产品名为 `Scrcpy Harmony`，仓库目录名为 `scrcpy-harmony`。项目基于上游 `liriliri/echo`，由 MonsterXia 独立维护，2026-10-21 已解除 GitHub fork 关系；仓库、反馈和发布入口指向 `MonsterXia/scrcpy-harmony`。保留原作者和许可证；应用 ID 为 `io.github.monsterxia.scrcpyharmony`，与上游 ECHO 分开安装，用户数据采用新的产品名目录，旧配置保留且不自动迁移。操作当前 Git 远端时仍使用 `git remote -v` 核对。
 
-共享模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 GitHub Releases 源。Windows / macOS arm64 使用 `latest`，macOS x64 使用 `latest-x64`，与 `script/pack.mjs` 保持一致。更新源覆盖仍由本项目 `updater.ts` 负责。检查更新仍由共享模块发起：显式启用本地构建的元数据检查，固定稳定发布选择并禁用降级、自动下载及退出安装。共享模块合并在途请求、消费检查异常并将结果通过系统对话框附着于当前窗口（包括置顶投屏窗口）；用户确认后打开本仓库 Releases 页面。菜单检查期间禁用并显示进度，renderer 不再承载更新结果弹窗。
+共享模块在 ready 时初始化更新监听并设置上游源；`src/main/index.ts` 随后调用本项目 `src/main/lib/updater.ts`，覆盖为本仓库 `ReleaseProvider`。菜单的 **Beta Update** 默认关闭，使用 settings.json 的 `betaUpdate` 布尔值持久化；关闭只选正式版，开启将所有正式版与预发布版按 SemVer 取最高版本，检查中改选项仅影响下一次检查。始终禁用降级、自动下载和退出安装，本地构建也可显式检查。
+
+`ReleaseProvider.ts` 完整分页读取 GitHub Releases；API 403/429 时改读公开 Release 页，`releasePage.ts` 只解析发布卡片标题与标记、核对同仓库递增分页，结构未知/截断或上限未能确认完整时拒绝。请求共用 30 秒网络取消预算，API 最多 10 页各 100 条、网页最多 10 页，不拿部分清单宣称最新。选中 tag 后读取 Windows `latest.yml`、macOS arm64 `latest-mac.yml`、macOS x64 `latest-x64-mac.yml`，核对元数据版本与 tag 一致；名称仍与 `script/pack.mjs` 对齐。
+
+共享更新协调器在网络前立即打开 `src/main/window/update.ts` 的独立更新窗口，合并重复检查；`src/renderer/update` 显示 400×146 进度窗口及约 260×234 结果卡。取消在 AppUpdater 异步初始化前登记，立即关闭展示并抑制迟到结果；旧请求排空后才允许下一次实际请求，以免复用取消中的库 Promise。初始化中的文件操作本身无法强制中断，取消后的窗口可重开显示等待并再次取消。新的版本不适用于系统/灰度时单独提示，不称为没有更高版本。`getUpdateState`、`updateAction` 仅接受该窗口的 main frame，状态通过 `updateState` 发送；renderer 用 `main.on` 返回值退订。更新窗口恢复最小化父窗口，跟随置顶，支持 Cancel/Escape/Enter；仅明确点击下载按钮时打开选中 tag 的 Releases 页面。
 
 | 路径 | 职责 |
 | --- | --- |
