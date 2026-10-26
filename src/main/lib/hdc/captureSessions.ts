@@ -5,7 +5,7 @@ import {
   WebFrameMain,
 } from 'electron'
 import { randomUUID } from 'node:crypto'
-import { CaptureScope, CaptureUiDriver } from './captureDriver'
+import { CaptureScope, CaptureUiDriver, isControlRecoveryError } from './captureDriver'
 
 interface Owner {
   contents: WebContents
@@ -298,9 +298,23 @@ export function initCaptureIpc(
         if (!current(session, generation)) return
         const driver = await getUiDriver(session.connectKey)
         if (!current(session, generation)) return
+        let recovered = false
+        const recover = async (error: unknown) => {
+          if (recovered || !isControlRecoveryError(error) || !driver.controlRecovery || !current(session, generation)) throw error
+          recovered = true
+          console.warn('Recovering failed UITest control before capture restart')
+          await driver.recoverControl()
+          // An unknown touchDown is never replayed. A release is still owed
+          // before another session may acquire input, even after daemon reset.
+          if (device.lease) await stopLease(device, device.lease)
+        }
         if (device.prepared && (!device.prepared.ready || device.prepared.driver !== driver)) await discardPrepared(device)
-        if (device.lease) await stopLease(device, device.lease)
-        else if (!device.prepared) await driver.stopCaptureScreen()
+        try {
+          if (device.lease) await stopLease(device, device.lease)
+          else if (!device.prepared) await driver.stopCaptureScreen()
+        } catch (error) {
+          await recover(error)
+        }
         if (!current(session, generation)) return
         const scope = new CaptureScope((image, metadata) => {
           const activeOwner = session.owner
@@ -324,6 +338,9 @@ export function initCaptureIpc(
             await stopLease(device, lease)
           } catch {
             // Keep the lease: a later attempt must confirm stop before starting.
+          }
+          if (isControlRecoveryError(error) && !recovered && driver.controlRecovery && current(session, generation)) {
+            await recover(error)
           }
           throw error
         }

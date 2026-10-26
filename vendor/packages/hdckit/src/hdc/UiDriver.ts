@@ -41,9 +41,12 @@ export default class UiDriver extends Emitter {
   async start() {
     let launched = false
     let uiTestPid = trim(await this.shell('pidof uitest'))
+    if (uiTestPid && !/^\d+(?:\s+\d+)*$/.test(uiTestPid)) throw new Error('UITest process inventory unconfirmed')
     const shouldUpdateSdk = await this.shouldUpdateSdk()
     if (uiTestPid && shouldUpdateSdk && !this.allowDaemonRestart) {
-      throw new Error('Background preparation cannot replace an existing UITest daemon')
+      throw Object.assign(new Error('Background preparation cannot replace an existing UITest daemon'), {
+        code: 'UITEST_SDK_UPDATE_REQUIRED',
+      })
     }
     if (!uiTestPid || shouldUpdateSdk) {
       await this.shell('param set persist.ace.testmode.enabled 1')
@@ -71,9 +74,21 @@ export default class UiDriver extends Emitter {
       this.connection = null
     }
     const uiTestPid = trim(await this.shell('pidof uitest'))
+    if (uiTestPid && !/^\d+(?:\s+\d+)*$/.test(uiTestPid)) throw new Error('UITest process inventory unconfirmed')
     if (uiTestPid) {
       await this.shell(`kill -9 ${uiTestPid}`)
     }
+  }
+  protected closeControlConnection() {
+    this.connection?.end()
+    this.connection = null
+  }
+  // Caller must first confirm that the old device control process has ended.
+  protected clearStoppedCapture() {
+    this.closeControlConnection()
+    if (this.captureScreenCallback) this.off('message', this.captureScreenCallback)
+    this.captureScreenCallback = null
+    this.driverName = ''
   }
   async startCaptureScreen(
     callback: (message: Buffer) => void,
@@ -201,13 +216,17 @@ export default class UiDriver extends Emitter {
     return port
   }
   private async shouldUpdateSdk() {
-    const result = await this.shell(
-      `cat ${AGENT_PATH} | grep -a UITEST_AGENT_LIBRARY`
-    )
+    const output = trim(await this.shell(
+      `if [ -f ${AGENT_PATH} ]; then grep -a UITEST_AGENT_LIBRARY ${AGENT_PATH}; result=$?; [ "$result" -le 1 ] && echo UITEST_AGENT_INSPECTED; elif [ ! -e ${AGENT_PATH} ]; then echo UITEST_AGENT_MISSING; fi`
+    ))
+    if (output === 'UITEST_AGENT_MISSING') return true
+    if (!output.endsWith('UITEST_AGENT_INSPECTED')) throw new Error('UITest SDK inspection unconfirmed')
+    const result = trim(output.slice(0, -'UITEST_AGENT_INSPECTED'.length))
     if (!contain(result, 'UITEST_AGENT_LIBRARY')) {
       return true
     }
     const deviceSdkVersion = getSdkVersion(result)
+    if (!/^\d+(?:\.\d+)+$/.test(deviceSdkVersion)) throw new Error('UITest SDK version unconfirmed')
     return cmpVersion(deviceSdkVersion, this.sdkVersion) < 0
   }
   private async updateSdk() {
@@ -216,7 +235,9 @@ export default class UiDriver extends Emitter {
   }
   private async shell(command: string) {
     const connection = await this.target.shell(command)
-    return (await connection.readAll()).toString()
+    const output = (await connection.readAll()).toString()
+    if (/\[Fail\]|\[E\d{6}\]|permission denied/i.test(output)) throw new Error('UITest device command failed')
+    return output
   }
 }
 
@@ -224,6 +245,10 @@ const HEADER_BYTES = Buffer.from('_uitestkit_rpc_message_head_')
 const TAILER_BYTES = Buffer.from('_uitestkit_rpc_message_tail_')
 
 type OnMessage = (sessionId: number, message: Buffer) => void
+
+class UiTestTransportError extends Error {
+  readonly code = 'UITEST_TRANSPORT'
+}
 
 class Connection {
   socket!: Socket
@@ -271,10 +296,13 @@ class Connection {
     message: any,
     timeout = 10000
   ): Promise<{ sessionId: number; result: any }> {
-    if (this.ended) return Promise.reject(new Error('UITest connection closed'))
+    if (this.ended) return Promise.reject(new UiTestTransportError('UITest connection closed'))
     if (!Number.isFinite(timeout) || timeout <= 0 || timeout > 2147483647) {
       return Promise.reject(new Error('Invalid UITest request timeout'))
     }
+    // Identify the RPC, never its arguments (which may contain typed text).
+    const api = [message.method, message.params?.api]
+      .filter(value => typeof value === 'string' && /^[\w.]{1,80}$/.test(value)).join('.') || 'request'
     message = JSON.stringify(message)
     // Identical commands in one clock tick must not overwrite pending requests.
     const sessionId = ++this.sequence
@@ -286,7 +314,8 @@ class Connection {
     sessionIdBuf.writeUInt32BE(sessionId, 0)
     return new Promise((resolve, reject) => {
       this.resolves.set(sessionId, resolve)
-      this.rejects.set(sessionId, reject)
+      this.rejects.set(sessionId, error => reject(error instanceof UiTestTransportError
+        ? new UiTestTransportError(`${error.message} [${api}]`) : error))
       this.timers.set(sessionId, setTimeout(() => {
         this.fail(new Error('UITest request timed out'))
       }, timeout))
@@ -316,6 +345,7 @@ class Connection {
   }
   private fail(error: Error) {
     if (this.ended) return
+    error = new UiTestTransportError(error.message)
     this.ended = true
     clearTimeout(this.connectTimer)
     this.connectReject?.(error)

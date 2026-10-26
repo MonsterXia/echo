@@ -8,6 +8,8 @@ import H264Decoder from './H264Decoder'
 import type { CaptureFrameMetadata } from 'common/types'
 import type { ScreencastInputAction } from 'common/types'
 
+export type CaptureState = 'loading' | 'ready' | 'failed'
+
 export default class ScreencastClient {
   canvas = document.createElement('canvas')
   ctx = this.canvas.getContext('2d')!
@@ -45,6 +47,9 @@ export default class ScreencastClient {
   private renderedCodec: 'H.264' | 'JPEG' | null = null
   private renderedFrames = 0
   private displaySize: { width: number; height: number } | null = null
+  private state: CaptureState = 'loading'
+  private stateListeners = new Set<(state: CaptureState) => void>()
+  private startAttempts = 0
   constructor(connectKey: string) {
     this.connectKey = connectKey
     this.ready = this.readiness.ready('captureScreen')
@@ -52,10 +57,23 @@ export default class ScreencastClient {
     this.bindEvent()
     this.start()
   }
-  start() {
+  subscribeState(listener: (state: CaptureState) => void) {
+    this.stateListeners.add(listener)
+    listener(this.state)
+    return () => { this.stateListeners.delete(listener) }
+  }
+  private setState(state: CaptureState) {
+    if (state === this.state) return
+    this.state = state
+    for (const listener of this.stateListeners) listener(state)
+  }
+  start(automatic = false) {
     if (this.destroyed) {
       return this.captureTask
     }
+    if (!automatic) this.startAttempts = 0
+    this.startAttempts++
+    this.setState('loading')
     const generation = ++this.generation
     this.startSettled = false
     this.previousJpeg = undefined
@@ -86,6 +104,7 @@ export default class ScreencastClient {
       } catch (error) {
         console.error(error)
         if (this.isCurrent(generation)) {
+          this.setState('loading')
           this.acceptingFrames = false
           this.frameReceived = false
           this.pendingFrame = undefined
@@ -93,16 +112,23 @@ export default class ScreencastClient {
           this.imageAbort.abort()
         }
       }
-      if (this.isCurrent(generation)) this.startSettled = true
+      if (this.isCurrent(generation)) {
+        this.startSettled = true
+        if (this.frameReceived) this.startAttempts = 0
+      }
       if (this.isCurrent(generation) && (!this.frameReceived ||
         (this.videoPictureReceived && this.renderedCodec !== 'H.264'))) {
+        if (this.startAttempts >= 3) {
+          this.setState('failed')
+          return
+        }
         this.retryTimer = setTimeout(() => {
           this.retryTimer = undefined
           if (this.isCurrent(generation)) {
             // SPS/PPS alone does not prove that this device can produce a
             // usable picture. Avoid retrying an unusable video mode forever.
             if (this.videoReceived) this.preferVideo = false
-            this.start()
+            this.start(true)
           }
         }, 5000)
       }
@@ -111,6 +137,7 @@ export default class ScreencastClient {
   destroy(): void {
     if (this.destroyed) return
     this.destroyed = true
+    this.stateListeners.clear()
     if (this.promotion?.timer) clearTimeout(this.promotion.timer)
     this.promotion = undefined
     this.previousJpeg = undefined
@@ -337,6 +364,10 @@ export default class ScreencastClient {
     this.renderedCodec = codec
     this.renderedFrames++
     this.frameReceived = true
+    // A preview can arrive before startup fails (for example at handover).
+    // Only a settled successful start may reset the failure budget.
+    if (this.startSettled) this.startAttempts = 0
+    this.setState('ready')
     if (codec === 'H.264' && this.promotion) void this.finishPromotion(true)
     // A JPEG preview proves capture works, but not that video can decode.
     if (codec === 'H.264' || !this.videoPictureReceived) this.clearRetry()

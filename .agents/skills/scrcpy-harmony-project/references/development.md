@@ -168,3 +168,7 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 静止场景实际窗口用 `node script/check-static-screencast-start.cjs <报告.json> [已安装程序路径]` 对照。默认测试本地 dist 三次打开，传入安装程序则测一次；使用临时配置和主进程 inspector，不保存屏幕。要求一台已解锁静止手机并退出其他投屏，明确断言 VideoDecoder 存在。浏览器自动化在本轮 Electron 环境改变了其可用性，不能将该条件下的纯 JPEG 样本当作原生对照。完全静止时 JPEG 也可能只发一张，持续更新需另做受控屏幕变化测试。
 
 投屏准备探针支持 `--prepare`：仅建立待用服务，记录 `preparationReadyMs`、点击前取流次数、约 2 秒 CPU ticks，再记录请求至首个编码包时间。`--reset-control` 和独立 `SCREENCAST_PROBE_CACHE` 可测完全重建/无兼容记录路径；实际应用会对选中设备自动预热，需先等待其清理，避免争用。实际窗口首帧、60 秒 TTL、退出/重启及物理断连仍需分开验证。
+
+## 控制超时恢复回归
+
+`test/control-recovery.test.cjs` 验证记录进程身份、PID 复用、其他 TCP 客户端、未知清单及停止后确认；`test/capture-sessions.test.cjs` 验证旧 lease 失败后的单次前台恢复、拒绝恢复后继续保留 lease，以及初始化失败关闭连接；`test/uitest-connection.test.cjs` 验证安全 API 标签及 SDK 检查失败不更新。`test/screencast-lifecycle.test.cjs` 验证三次失败上限、无首图、手动重试及状态退订。上述为模拟边界测试；USB 实机和真实 Canvas/UI 证据单独见 [控制超时记录](../../../../docs/maintenance/screencast-control-timeout.md)。
