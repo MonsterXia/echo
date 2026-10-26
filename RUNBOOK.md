@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 1.0.4-dev.1 开发预发布（2026-10-26）
+
+状态：**进行中**。用户授权拉取最新代码、迭代并发布开发版本；已从 `4190f9a` 快进至 `fe1dfd9`，以 PR #65–#68 的更新检查、控制恢复、Beta Update 和国际化为本轮内容，分支 `codex/release-1.0.4-dev.1`。发布准备递增版本至 1.0.4-dev.1；独立复审、同源五项 CI、三平台安装启动和附件校验待执行。证据与下一步见[发布记录](docs/releases/1.0.4-dev.1.md)。下方历史记录中的“未发布”和“待合入”保留其当时语境；本轮发布不改变真机待验收项。
+
 ## 应用国际化与开发流程（2026-10-26）
 
 状态：**实现与本机双语验证完成，最终审查/CI 以 PR 为准；尚未发布安装包**。修复英文指向中文字典，补齐 127 项业务和 67 项共享词条（含既有共享翻译），增加系统/English/简体中文选择并在用户重启后统一应用到菜单和窗口；同步 Luna 确认框与 HTML lang。国际化检查接入 lint/应用测试，项目 skill 新增[开发流程](.agents/skills/scrcpy-harmony-project/references/internationalization.md)。隔离真实 Electron 的双语菜单、设置、跨重启持久化、更新卡与确认框通过，范围和后续验收见[专项记录](docs/maintenance/internationalization.md)。[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Finternationalization)。下一步完成最终提交独立复审、五项 CI 后合入；Windows/x64 人工双语视觉与发行包验收待办。
