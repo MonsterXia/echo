@@ -48,8 +48,14 @@ function getTemplate(): MenuItemConstructorOptions[] {
           const label = item.label
           item.enabled = false
           item.label = t('checkingForUpdates')
-          try { await updater.checkUpdate() }
-          finally { item.label = label; item.enabled = true }
+          refreshMenu()
+          try {
+            await updater.checkUpdate()
+          } finally {
+            item.label = label
+            item.enabled = true
+            refreshMenu()
+          }
         },
       },
       ...hideMenu,
@@ -159,7 +165,10 @@ function getTemplate(): MenuItemConstructorOptions[] {
 
 function updateMenu() {
   Menu.setApplicationMenu(Menu.buildFromTemplate(getTemplate()))
+  refreshMenu()
+}
 
+function refreshMenu() {
   if (isWindows) {
     window.sendTo('main', 'refreshMenu')
   }

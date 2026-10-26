@@ -31,4 +31,8 @@
 
 ## 交付与下一步
 
-按用户授权以独立 PR 提交更新检查修复，审查与五项 CI 通过后合入；[交付 PR 的实时状态](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Ffix-update-check)。安装包发布和跨平台真实更新验收仍未完成，不随源码合入标记完成。
+按用户授权以独立 PR 提交更新检查修复，审查与五项 CI 通过后合入；[PR #65 的实时状态](https://github.com/MonsterXia/scrcpy-harmony/pull/65)。安装包发布和跨平台真实更新验收仍未完成，不随源码合入标记完成。
+
+## PR 独立审查补充
+
+全新上下文审查发现 Windows 自定义标题栏菜单缓存未同步检查状态：原生 MenuItem 变化没有发送 refreshMenu。现复用刷新通知，在进入检查及 finally 恢复后通知主窗口，不重建菜单。新增完成/失败两项菜单边界回归先失败后通过，更新专项共 15/15，lint 通过；Windows 实际安装启动由本 PR CI 验证，自动菜单边界测试不等同于 Windows 人工交互验收。上文 630 项全量与 main asset 哈希是本地现场版本，未将其冒充此追加修订的构建。
