@@ -64,6 +64,8 @@ async function fixture(
 ) {
   const calls = { lists: [], infos: [], installs: [], uninstalls: [] }
   const notifications = []
+  const listeners = new Map()
+  const emitInstalled = (key) => listeners.get("bundleInstalled")?.(key)
   let menu, iconProps, gridProps
   const store = observable({
     target: { key: 'fixture-a' },
@@ -86,7 +88,8 @@ async function fixture(
     getBundleInfos: (...args) =>
       delayInfos ? request('infos', args) : Promise.resolve(args[1].map(info)),
     showOpenDialog: async () => ({ filePaths: hapPaths }),
-    installBundle: (...args) => request('installs', args),
+    installBundle: (...args) => request('installs', args).then(() => emitInstalled(args[0])),
+    on: (name, fn) => { listeners.set(name, fn); return () => listeners.delete(name) },
     uninstallBundle: (...args) => request('uninstalls', args),
   }
   const h = React.createElement
@@ -196,6 +199,7 @@ async function fixture(
     calls,
     store,
     notifications,
+    externalInstall: key => act(async () => emitInstalled(key)),
     render,
     unmount,
     names: () =>
@@ -472,4 +476,30 @@ test('a partially successful multi-file installation requests one trailing refre
   await f.settle(f.calls.lists[1], ['installed'])
   assert.deepEqual(f.names(), ['installed'])
   assert.equal(f.loading(), false)
+})
+
+test('installation notifies success only after each completed HAP and keeps failure distinct', async (t) => {
+  const f = await fixture(t, { hapPaths: ['first.hap', 'second.hap'] })
+  await f.click('add')
+  assert.equal(f.notifications.some(([, options]) => options.icon === 'success'), false)
+  await f.settle(f.calls.installs[0])
+  assert.deepEqual(f.notifications.filter(([, options]) => options.icon === 'success').map(([text]) => text), ['bundleInstalled'])
+  await f.settle(f.calls.installs[1], new Error('signature mismatch'), true)
+  assert.equal(f.notifications.filter(([, options]) => options.icon === 'success').length, 1)
+  assert.equal(f.notifications.filter(([text]) => text === 'installBundleErr').length, 1)
+})
+
+
+test('installation in another window refreshes only the matching device and unsubscribes on unmount', async (t) => {
+  const f = await fixture(t)
+  await f.settle(f.calls.lists[0], ['before'])
+  await f.externalInstall('different-device')
+  assert.equal(f.calls.lists.length, 1)
+  await f.externalInstall('fixture-a')
+  assert.equal(f.calls.lists.length, 2)
+  await f.settle(f.calls.lists[1], ['before', 'installed'])
+  assert.deepEqual(f.names(), ['before', 'installed'])
+  await f.unmount()
+  await f.externalInstall('fixture-a')
+  assert.equal(f.calls.lists.length, 2)
 })

@@ -1,0 +1,12 @@
+{
+  "installedPath": "/Applications/Scrcpy Harmony.app",
+  "backupPath": "release/hap-drop-local/backup/Scrcpy Harmony.app",
+  "previousAsarSha256": "9ccad367bab78002a40c8608b5d7d5c93e7c8d28fd573ef5912b59d8a8733a46",
+  "installedAsarSha256": "639ca7efafcc55f4cc57dfcbd8dc8b41428fddf9a81bff111fef5461faeff2ef",
+  "matchesTestedArtifact": true,
+  "signatureVerified": true,
+  "startupVerified": true,
+  "screencastVisible": true,
+  "verification": "Native application accessibility URL resolves to /Applications app.asar; device frame visually observed without saving screen pixels",
+  "completedAt": "2026-10-27T02:23:11.037014+00:00"
+}

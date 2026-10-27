@@ -11,8 +11,10 @@ import Shell from './components/shell/Shell'
 import Layout from './components/layout/Layout'
 import Webview from './components/webview/Webview'
 import Hilog from './components/hilog/Hilog'
+import useHapDrop from '../lib/useHapDrop'
 
 export default observer(function App() {
+  useHapDrop(store.target?.key)
 
   return (
     <>

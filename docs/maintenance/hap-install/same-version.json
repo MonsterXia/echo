@@ -1,0 +1,144 @@
+{
+  "startedAt": "2026-10-27T01:48:44.741Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "hapSha256": "7f2d38b11877412f4d8880cf9a57d5d04c8fa1bb32dae6fb03b2297d8e1a80b6",
+  "bundleName": "com.example.testhap",
+  "software": "PSN-AL00 7.0.0.109(SP6C00E105R3P3)",
+  "initiallyPresent": true,
+  "scope": "Actual UI install, replacement, native menu callback and confirmation, HDC and automatic refresh. File picker/menu selection automated; no IPC/device responses mocked.",
+  "assets": {
+    "src/renderer/lib/util.ts": "7eef318d70686b20bd6d8e168c3d9c61b30f7daa62e7d198812b671728449523",
+    "vendor/packages/hdckit/src/hdc/command/install.ts": "330122209ee2f4ef07c1eac32c179fcf693b240b0c3c84f8228424674e2cd283",
+    "dist/main/index.js": "b6979510ef59d618bd2fc2248fb65ee45394463429a7663c0a67d5d8d0c90dcb"
+  },
+  "languages": [
+    {
+      "language": "zh-CN",
+      "cycles": [
+        {
+          "kind": "fresh",
+          "durationMs": 5892,
+          "metadata": {
+            "installTime": 1793065736820,
+            "updateTime": 1793065736820,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "共 9 个应用"
+        },
+        {
+          "kind": "replacement",
+          "durationMs": 5716,
+          "metadata": {
+            "installTime": 1793065736820,
+            "updateTime": 1793065742729,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "共 9 个应用"
+        },
+        {
+          "kind": "replacement",
+          "durationMs": 5878,
+          "metadata": {
+            "installTime": 1793065736820,
+            "updateTime": 1793065748677,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "共 9 个应用"
+        }
+      ],
+      "pageErrors": [],
+      "otherBundleCount": 8,
+      "initialResetThroughUi": true,
+      "before": "共 8 个应用",
+      "after": "共 8 个应用",
+      "otherBundlesUnchanged": true,
+      "uninstallAutoRefresh": true
+    },
+    {
+      "language": "en-US",
+      "cycles": [
+        {
+          "kind": "fresh",
+          "durationMs": 6044,
+          "metadata": {
+            "installTime": 1793065764879,
+            "updateTime": 1793065764879,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "Applications: 9"
+        },
+        {
+          "kind": "replacement",
+          "durationMs": 5772,
+          "metadata": {
+            "installTime": 1793065764879,
+            "updateTime": 1793065771101,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "Applications: 9"
+        },
+        {
+          "kind": "replacement",
+          "durationMs": 5648,
+          "metadata": {
+            "installTime": 1793065764879,
+            "updateTime": 1793065777131,
+            "bundleName": "com.example.testhap",
+            "versionName": "1.0.0",
+            "versionCode": 1000000,
+            "debug": true
+          },
+          "label": "Hello World",
+          "hasApplicationIcon": false,
+          "notification": true,
+          "automaticallyVisible": true,
+          "listCount": "Applications: 9"
+        }
+      ],
+      "pageErrors": [],
+      "otherBundleCount": 8,
+      "before": "Applications: 8",
+      "after": "Applications: 8",
+      "otherBundlesUnchanged": true,
+      "uninstallAutoRefresh": true
+    }
+  ],
+  "passed": true,
+  "finallyInstalled": false
+}
