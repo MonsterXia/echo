@@ -7,6 +7,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url'
 import { _electron as electron } from 'playwright-core'
 import { vendorNotices } from './lib/vendor-notices.mjs'
 import { createHash } from 'node:crypto'
+import { waitForWindowVisible } from './lib/smoke-window.mjs'
 
 assert.ok(['win32', 'darwin'].includes(process.platform), 'Unsupported smoke check platform')
 assert.ok(process.argv[2], 'Pass the installed application executable path')
@@ -133,7 +134,9 @@ try {
   assert.equal(bridge.customTitlebar, true)
   await assertSamePath(bridge.hdcPath, path.join(resourcesDir, hdcResource))
   const browserWindow = await application.browserWindow(page)
-  assert.equal(await browserWindow.evaluate((win) => win.isVisible()), true)
+  // DOM readiness can precede ready-to-show (or the application's fallback).
+  // Observe the actual window without forcing it to show or skipping the check.
+  await waitForWindowVisible(browserWindow)
 
   await page.locator('#app .icon-setting').click()
   await page.locator('.luna-modal:visible .luna-setting').waitFor({

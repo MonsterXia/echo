@@ -2,7 +2,7 @@
 
 ## 安装修改独立审查（2026-10-27）
 
-状态：**独立审查与修复完成，本机验证通过；提交/CI 状态以[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fhap-install-review)为准，未发布**。两个独立上下文分别审查生产链路/回归与验收证据；修复刷新误判、报告丢失、通知可见性检查不完整及 Windows 测试文件名/打包路径问题。应用 698/698、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；强化后的中英文打包真机矩阵各 15 项通过，负对照正确识别安装后未刷新。证据版本、复审范围与未验证边界见[审查记录](docs/maintenance/hap-install-review.md)。下一步查看 PR CI；Windows/macOS x64 真机验收仍待办。
+状态：**独立审查与修复完成，本机验证通过；提交/CI 状态以[PR #71](https://github.com/MonsterXia/scrcpy-harmony/pull/71)为准，未发布**。两个独立上下文分别审查生产链路/回归与验收证据；修复刷新误判、报告丢失、通知可见性检查不完整及 Windows 测试文件名/打包路径问题。应用 698/698、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；强化后的中英文打包真机矩阵各 15 项通过，负对照正确识别安装后未刷新。证据版本、复审范围与未验证边界见[审查记录](docs/maintenance/hap-install-review.md)。PR 初轮 macOS x64 暴露启动探针过早检查窗口可见性的竞态，已改为有期限的真实状态等待并保留失败断言。合入条件为最终五项必需 CI 全部通过，状态见 PR；Windows/macOS x64 HAP 真机验收仍待办。
 
 ## 拖入主窗口/投屏安装完整验证（2026-10-27）
 

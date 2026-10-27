@@ -135,7 +135,7 @@ npm start
 
 `windows-package` 使用标准 Windows runner 和 Node 22，执行 npm ci（含本地依赖编译） → 下载设备资源（显式指定 Git Bash）→ build → pack → 验证非空的 NSIS x64 安装包、应用程序、app.asar、HDC 和 uitestkit 文件 → 安装与启动检查。通过 `npm run pack -- --no-publish` 禁止发布，不使用签名 secrets，也不上传安装包 artifact；任务超时为 20 分钟。
 
-`script/check-windows-install.ps1` 仅允许在 GitHub 托管 Windows runner 上运行：静默安装到包含空格的临时目录（限时 120 秒），再执行 `script/smoke-app.mjs`。NSIS 可能替换同 app ID 的已有安装，因此不要在开发机上绕过此限制。启动脚本使用锁定版本的 `playwright-core` 驱动已安装的 Electron，无需下载额外浏览器；检查实际 exe/app.asar 路径、版本、隔离用户目录、主窗口可见性、React 初始化、preload/设备枚举 IPC、设置页、页面异常及正常退出。启动检查整体限时 90 秒，失败输出进程日志；CI 最后停止 HDC 服务。
+`script/check-windows-install.ps1` 仅允许在 GitHub 托管 Windows runner 上运行：静默安装到包含空格的临时目录（限时 120 秒），再执行 `script/smoke-app.mjs`。NSIS 可能替换同 app ID 的已有安装，因此不要在开发机上绕过此限制。启动脚本使用锁定版本的 `playwright-core` 驱动已安装的 Electron，无需下载额外浏览器；检查实际 exe/app.asar 路径、版本、隔离用户目录、主窗口可见性、React 初始化、preload/设备枚举 IPC、设置页、页面异常及正常退出。DOM 就绪可能早于原生窗口显示；通过 `script/lib/smoke-window.mjs` 最长等待 20 秒观察实际可见状态，不强制 show，超时或销毁仍失败。启动检查整体限时 90 秒，失败输出进程日志；CI 最后停止 HDC 服务。
 
 本机已有安装时可单独运行 `node script/smoke-app.mjs "C:/path/to/Scrcpy Harmony.exe"`，它使用临时用户配置并关闭自己启动的进程，不执行安装。macOS 可传入已安装应用的 `"/path/to/Scrcpy Harmony.app/Contents/MacOS/Scrcpy Harmony"` 路径。启动自动化依赖 Electron 的调试接口，不修改发行程序或模拟 IPC；它不替代真实设备投屏、签名/SmartScreen 和人工视觉验收。
 

@@ -1,6 +1,6 @@
 # 安装修改独立审查与交付
 
-2026-10-27（UTC+8）。用户要求独立审查本次安装相关全部修改、修复发现的问题后提交并创建 PR。基线为 `972876c`，分支为 `codex/hap-install-review`；[交付 PR 与 CI](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fhap-install-review)。本记录接续[首次安装/覆盖验收](hap-install.md)和[拖入专项](hap-drop.md)，不将历史“未提交”状态当作当前交付状态。
+2026-10-27（UTC+8）。用户要求独立审查本次安装相关全部修改、修复发现的问题后提交并创建 PR。基线为 `972876c`，分支为 `codex/hap-install-review`；[交付 PR #71 与 CI](https://github.com/MonsterXia/scrcpy-harmony/pull/71)。本记录接续[首次安装/覆盖验收](hap-install.md)和[拖入专项](hap-drop.md)，不将历史“未提交”状态当作当前交付状态。
 
 ## 审查范围与结果
 
@@ -33,3 +33,13 @@ v2 证明通知插入时可见，未测持续遮挡或整个显示周期。刷�
 旧 `drop-zh.json` / `drop-en.json` 保留历史证据，列表刷新和完整终态通知检查以 v2 为准。原 HAP、设备标识、完整个人应用清单、手机画面及原始日志均不入库；已有两张图片只包含专用测试应用行。
 
 后续查看 PR CI，再按维护者决定合入。尚未发布新版本；Windows/macOS x64 真机、跨固件、物理断连、签名不匹配/降级、应用数据内容保持仍未验收，不声称解释了所有历史偶发失败。
+
+## PR #71 审查意见与 CI 跟进
+
+用户随后授权检查远端审查意见/CI，修复后在全部必需检查通过时合入。GitHub 初次检查没有审查提交或逐行评论；Sourcery 仅生成导读，实际审查因额度用尽 `skipped`，不能当作外部审查通过。先前两个独立上下文的代码/证据复审仍保留其范围。
+
+初次 [CI 40440746591](https://github.com/MonsterXia/scrcpy-harmony/actions/runs/40440746591) 的 test、lint、Windows 与 macOS arm64 通过；macOS x64 完成构建、DMG 打包和安装后，在 `smoke-app.mjs` 一次性 `BrowserWindow.isVisible()` 断言失败。源码中 DOM 初始化与原生 `ready-to-show` 独立，窗口还可在创建后 1 秒兜底显示，因此 DOM 就绪后立即检查会提前失败。GPU 初始化日志也存在，但不是此轮断言的直接错误，未据此关闭 GPU 或修改业务代码。
+
+启动探针现在最长等待 20 秒观察实际窗口可见；不主动调用 `show()`，不移除断言，窗口销毁立即失败。全探针 90 秒总期限保留。新增 3 项回归在旧的一次性断言下失败，修复后通过，覆盖延迟显示、一直隐藏到期限、显示前销毁；macOS arm64 实际已安装包完整启动检查通过。最终 CI 和合入状态以 PR #71 为准，三平台安装启动不等同于三平台 HAP 真机验证。
+
+本轮完整 `npm test` 应用 **701/701**，Licia 两模式各 **606 passing / 4 pending**，lint/i18n 通过。合入前另一个新上下文独立审查此次启动探针修正，确认真实窗口可见性检查未被绕过，定向 3/3 通过且无阻断项。
