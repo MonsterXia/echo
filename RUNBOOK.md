@@ -1,5 +1,17 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 安装修改独立审查（2026-10-27）
+
+状态：**独立审查与修复完成，本机验证通过；提交/CI 状态以[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fhap-install-review)为准，未发布**。两个独立上下文分别审查生产链路/回归与验收证据；修复刷新误判、报告丢失、通知可见性检查不完整及 Windows 测试文件名/打包路径问题。应用 698/698、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；强化后的中英文打包真机矩阵各 15 项通过，负对照正确识别安装后未刷新。证据版本、复审范围与未验证边界见[审查记录](docs/maintenance/hap-install-review.md)。下一步查看 PR CI；Windows/macOS x64 真机验收仍待办。
+
+## 拖入主窗口/投屏安装完整验证（2026-10-27）
+
+状态：**当前 macOS arm64 修复、打包验证和本机安装完成，未发布**。用户反馈明确来自拖入，确认正在运行的旧应用缺成功提示；补统一窗口 drop、全屏通知归属、窄窗口长路径换行、大写 `.HAP` 临时副本，以及安装后的跨窗口列表刷新。688 项应用测试、Licia 两模式各 606 passing / 4 pending、lint、完整构建通过；同一打包应用中英文各 15 项（共 30 项）真实文件拖入场景通过。已保留旧版备份、更新 `/Applications/Scrcpy Harmony.app` 并验证实际启动/投屏，手机保留测试包 1.0.1。来源、失败探针记录、交付哈希与跨平台边界见[拖入专项](docs/maintenance/hap-drop.md)。M1-3 离线图标等无关待办保持不变。
+
+## HAP 安装与覆盖升级验收（2026-10-27）
+
+状态：**本机修复与验收完成，未发布**。用户提供 1.0.0/1.0.1 专用 HAP，显式使用 `hdc install -r` 并增加中英文逐包安装成功通知。真实 Electron 在 macOS arm64 / HarmonyOS 7.0.0.109 完成双语首次安装、1.0.0 → 1.0.1、同版本覆盖、卸载和自动刷新，其他应用集合不变，测试包已移除。678 项应用测试、Licia 两模式各 606 passing / 4 pending、lint 和完整构建通过。原代码本机未复现偶发覆盖失败，不声称全部原因已解决；数据内容保留、跨固件/平台仍待验证。M1-2 当前设备缺口补齐，M1-3 离线图标仍进行中。证据与下一步见[专项记录](docs/maintenance/hap-install.md)。
+
 ## 1.0.4-dev.1 开发预发布（2026-10-26）
 
 状态：**已完成发布，设备与人工视觉矩阵待验收**。2026-10-26 21:33（UTC+8）已发布 [1.0.4-dev.1](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.1)，包含 PR #65–#68 的更新检查、控制恢复、Beta Update 和国际化。发布准备 [PR #69](https://github.com/MonsterXia/scrcpy-harmony/pull/69) 已合入；tag/构建源 `1b8f4a9` 的独立复审、五项 CI、三平台实际安装启动和 14 个附件重新下载校验通过，Latest 保持 v1.0.3。证据、草稿读取恢复经过及下一步见[发布记录](docs/releases/1.0.4-dev.1.md)。下方历史记录中的“未发布”和“待合入”保留其当时语境；下一步仍为跨固件、长期运行、物理断连和三平台人工双语视觉验收。
@@ -87,7 +99,7 @@
 | ID | 状态 | 来源与工作项 | 验收条件 |
 | --- | --- | --- | --- |
 | M1-1 | 已完成 | [Issue #21](https://github.com/liriliri/echo/issues/21)、[PR #30](https://github.com/liriliri/echo/pull/30)：设备枚举异常隔离及版本字段兼容 | 同时存在有效设备和读取失败设备时，有效设备仍显示；缺失/不同格式版本字段不使整个列表失败；空列表与全部失败可诊断；连接、断开、重连通过目标设备验证。见 [验收报告](docs/maintenance/M1-1.md)及 [PR #16](https://github.com/MonsterXia/scrcpy-harmony/pull/16)。 |
-| M1-2 | 待验收 | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。代码与只读验证见 [M1-2 报告](docs/maintenance/M1-2.md)；本轮仅补[并发刷新回归](docs/maintenance/M1-2-refresh.md)，缺专用 bilibili HAP，真实安装/卸载验收仍待办。 |
+| M1-2 | 已完成（本机验收） | [PR #31](https://github.com/liriliri/echo/pull/31)：逐应用处理 `bm dump` 失败 | 有效 JSON、错误文本、缺失主模块、命令失败混合输入时正常应用仍可见，结果与 bundleName 不错位；失败项有可定位日志；安装/卸载后的列表刷新正常。隔离与[并发刷新回归](docs/maintenance/M1-2-refresh.md)已通过；2026-10-27 用用户提供的专用 Hello World HAP 完成双语真实安装、升级、卸载与自动刷新，[证据与边界](docs/maintenance/hap-install.md)。其他固件/平台仍待扩展。 |
 | M1-3 | 进行中 | [Issue #24](https://github.com/liriliri/echo/issues/24)、[PR #29](https://github.com/liriliri/echo/pull/29)：侧载应用名称与图标 | [PR #18](https://github.com/MonsterXia/scrcpy-harmony/pull/18) 仅使用 bilibili 验证名称与图标，见 [名称报告](docs/maintenance/M1-3.md)及[离线图标专项报告](docs/maintenance/M1-3-icons.md)。已补齐 Node/Chromium 双侧断网、两种视图、解码/哈希与刷新验证，但离线仍显示默认图标；HAP/资源索引读取被拒绝，无本地测试 HAP，不能标为完成。 |
 
 代码入口：M1-1 为 `src/main/lib/hdc.ts` 的 `getTargets`；M1-2/3 为 `src/main/lib/hdc/bundle.ts` 的 `getBundleInfos`，UI 为 `src/renderer/main/components/application/`。

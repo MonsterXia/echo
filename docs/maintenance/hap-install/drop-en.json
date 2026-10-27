@@ -1,0 +1,165 @@
+{
+  "startedAt": "2026-10-27T02:16:40.603Z",
+  "language": "en-US",
+  "packages": [
+    {
+      "bundleName": "com.example.testhap",
+      "versionName": "1.0.0",
+      "versionCode": 1000000,
+      "sha256": "7f2d38b11877412f4d8880cf9a57d5d04c8fa1bb32dae6fb03b2297d8e1a80b6"
+    },
+    {
+      "bundleName": "com.example.testhap",
+      "versionName": "1.0.1",
+      "versionCode": 1000001,
+      "sha256": "4a302564608645cb7d4d9a524815bea555751c7fdcfc110a7ecf7b4334d09d1f"
+    }
+  ],
+  "cases": [
+    {
+      "name": "main application fresh drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.0",
+      "fullscreen": false
+    },
+    {
+      "name": "main toolbar upgrade drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main mixed uppercase spaced file",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main partial failure continues",
+      "calls": 2,
+      "successful": 1,
+      "failed": 1,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main unsupported drop",
+      "calls": 0,
+      "successful": 0,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main drop during refresh",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main two valid HAPs",
+      "calls": 2,
+      "successful": 2,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main overview empty area",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main fullscreen toolbar",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast ordinary drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "concurrent main and screencast drops",
+      "calls": 2,
+      "successful": 2,
+      "failed": 0,
+      "notificationsVisible": true
+    },
+    {
+      "name": "screencast partial failure continues",
+      "calls": 2,
+      "successful": 1,
+      "failed": 1,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "screencast fullscreen drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast fullscreen invalid HAP",
+      "calls": 1,
+      "successful": 0,
+      "failed": 1,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast after fullscreen exit",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "version": "1.0.1",
+      "fullscreen": false
+    }
+  ],
+  "passed": true,
+  "scope": "CDP OS-backed file drops into actual Electron windows; no fake file paths or mocked installation results; no screen pixels saved except notification crops",
+  "buildSha256": "639ca7efafcc55f4cc57dfcbd8dc8b41428fddf9a81bff111fef5461faeff2ef",
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": true,
+    "electron": "45.0.0"
+  },
+  "initiallyInstalled": true,
+  "otherBundlesUnchanged": true,
+  "finalVersion": "1.0.1",
+  "finallyInstalled": true
+}

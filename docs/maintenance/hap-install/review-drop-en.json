@@ -1,0 +1,443 @@
+{
+  "evidenceVersion": 2,
+  "negativeControl": false,
+  "startedAt": "2026-10-27T02:44:25.859Z",
+  "language": "en-US",
+  "packages": [
+    {
+      "bundleName": "com.example.testhap",
+      "versionName": "1.0.0",
+      "versionCode": 1000000,
+      "sha256": "7f2d38b11877412f4d8880cf9a57d5d04c8fa1bb32dae6fb03b2297d8e1a80b6"
+    },
+    {
+      "bundleName": "com.example.testhap",
+      "versionName": "1.0.1",
+      "versionCode": 1000001,
+      "sha256": "4a302564608645cb7d4d9a524815bea555751c7fdcfc110a7ecf7b4334d09d1f"
+    }
+  ],
+  "cases": [
+    {
+      "name": "main application fresh drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 486.015625,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 8,
+      "refreshedAfterInstall": {
+        "startedSeq": 9,
+        "completed": true,
+        "success": true,
+        "completedSeq": 10
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.0",
+      "fullscreen": false
+    },
+    {
+      "name": "main toolbar upgrade drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 12,
+      "refreshedAfterInstall": {
+        "startedSeq": 13,
+        "completed": true,
+        "success": true,
+        "completedSeq": 14
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main mixed uppercase spaced file",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 892.796875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 16,
+      "refreshedAfterInstall": {
+        "startedSeq": 17,
+        "completed": true,
+        "success": true,
+        "completedSeq": 18
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main partial failure continues",
+      "calls": 2,
+      "successful": 1,
+      "failed": 1,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 216.703125,
+          "viewport": 960
+        },
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 21,
+      "refreshedAfterInstall": {
+        "startedSeq": 22,
+        "completed": true,
+        "success": true,
+        "completedSeq": 23
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main unsupported drop",
+      "calls": 0,
+      "successful": 0,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 283.7265625,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": null,
+      "refreshedAfterInstall": null,
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main drop during refresh",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 26,
+      "refreshedAfterInstall": {
+        "startedSeq": 28,
+        "completed": true,
+        "success": true,
+        "completedSeq": 29
+      },
+      "controlledRefreshOverlap": {
+        "startedSeq": 24,
+        "completed": false
+      },
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main two valid HAPs",
+      "calls": 2,
+      "successful": 2,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 960
+        },
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 892.796875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 35,
+      "refreshedAfterInstall": {
+        "startedSeq": 36,
+        "completed": true,
+        "success": true,
+        "completedSeq": 37
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main overview empty area",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 960
+        }
+      ],
+      "latestInstallSuccessSeq": 39,
+      "refreshedAfterInstall": {
+        "startedSeq": 40,
+        "completed": true,
+        "success": true,
+        "completedSeq": 41
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "main fullscreen toolbar",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 519.9921875,
+          "viewport": 1728
+        }
+      ],
+      "latestInstallSuccessSeq": 43,
+      "refreshedAfterInstall": {
+        "startedSeq": 44,
+        "completed": true,
+        "success": true,
+        "completedSeq": 45
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast ordinary drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 330,
+          "viewport": 370
+        }
+      ],
+      "latestInstallSuccessSeq": 47,
+      "refreshedAfterInstall": {
+        "startedSeq": 48,
+        "completed": true,
+        "success": true,
+        "completedSeq": 49
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "concurrent main and screencast drops",
+      "calls": 2,
+      "successful": 2,
+      "failed": 0,
+      "notificationsVisible": true,
+      "latestInstallSuccessSeq": 54,
+      "refreshedAfterInstall": {
+        "startedSeq": 56,
+        "completed": true,
+        "success": true,
+        "completedSeq": 57
+      }
+    },
+    {
+      "name": "screencast partial failure continues",
+      "calls": 2,
+      "successful": 1,
+      "failed": 1,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 216.703125,
+          "viewport": 370
+        },
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 330,
+          "viewport": 370
+        }
+      ],
+      "latestInstallSuccessSeq": 60,
+      "refreshedAfterInstall": {
+        "startedSeq": 61,
+        "completed": true,
+        "success": true,
+        "completedSeq": 62
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    },
+    {
+      "name": "screencast fullscreen drop",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 892.796875,
+          "viewport": 1728
+        }
+      ],
+      "latestInstallSuccessSeq": 64,
+      "refreshedAfterInstall": {
+        "startedSeq": 65,
+        "completed": true,
+        "success": true,
+        "completedSeq": 66
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast fullscreen invalid HAP",
+      "calls": 1,
+      "successful": 0,
+      "failed": 1,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 216.703125,
+          "viewport": 1728
+        }
+      ],
+      "latestInstallSuccessSeq": null,
+      "refreshedAfterInstall": null,
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": true
+    },
+    {
+      "name": "screencast after fullscreen exit",
+      "calls": 1,
+      "successful": 1,
+      "failed": 0,
+      "notificationsVisible": true,
+      "notificationChecks": [
+        {
+          "visible": true,
+          "fits": true,
+          "insideFullscreen": true,
+          "noMarkupInjection": true,
+          "width": 330,
+          "viewport": 370
+        }
+      ],
+      "latestInstallSuccessSeq": 69,
+      "refreshedAfterInstall": {
+        "startedSeq": 70,
+        "completed": true,
+        "success": true,
+        "completedSeq": 71
+      },
+      "controlledRefreshOverlap": null,
+      "version": "1.0.1",
+      "fullscreen": false
+    }
+  ],
+  "passed": true,
+  "scope": "CDP OS-backed file drops into actual Electron windows; no fake file paths or mocked installation results; no screen pixels saved except notification crops",
+  "buildSha256": "639ca7efafcc55f4cc57dfcbd8dc8b41428fddf9a81bff111fef5461faeff2ef",
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": true,
+    "electron": "45.0.0"
+  },
+  "initiallyInstalled": true,
+  "otherBundlesUnchanged": true,
+  "finalVersion": "1.0.1",
+  "finallyInstalled": true
+}

@@ -21,7 +21,6 @@ import isNull from 'licia/isNull'
 import Style from './Application.module.scss'
 import { PannelLoading } from '../common/loading'
 import find from 'licia/find'
-import endWith from 'licia/endWith'
 import BundleInfoModal from './BundleInfoModal'
 import LunaDataGrid from 'luna-data-grid/react'
 import toEl from 'licia/toEl'
@@ -64,9 +63,13 @@ export default observer(function Application() {
     const state = { active: true, running: false, pending: false }
     refreshRef.current = state
     refresh()
+    const offInstalled = main.on('bundleInstalled', (connectKey: string) => {
+      if (connectKey === target?.key) void refresh()
+    })
     return () => {
       state.active = false
       state.pending = false
+      offInstalled()
     }
   }, [target?.key])
   useWindowResize(() => dataGridRef.current?.fit())
@@ -127,26 +130,13 @@ export default observer(function Application() {
     }
   }
 
-  async function onDrop(e: React.DragEvent) {
-    e.preventDefault()
+  function onDrop() {
+    draggingRef.current = 0
     setDropHighlight(false)
-    const files = e.dataTransfer.files
-    const apkPaths: string[] = []
-    for (let i = 0, len = files.length; i < len; i++) {
-      const path = preload.getPathForFile(files[i])
-      if (!endWith(path, '.hap')) {
-        continue
-      }
-      apkPaths.push(path)
-    }
-    await install(apkPaths)
   }
 
   async function install(hapPaths?: string[]) {
-    const result = await installBundles(target!.key, hapPaths)
-    if (result) {
-      refresh()
-    }
+    await installBundles(target!.key, hapPaths)
   }
 
   function showInfo(bunldeName: string) {

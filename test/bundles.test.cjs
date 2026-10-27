@@ -6,8 +6,8 @@ const vm = require('node:vm')
 
 // Load both production modules: the shared shell framing and registered IPC
 // handler remain real. Only HDC transport, online metadata and Electron are mocked.
-async function loadBundles(entries, online = async (name) => ({ data: { name: `Label ${name}`, icon: `icon:${name}` } }), labels = {}) {
-  const handlers = new Map(), logs = [], commands = [], lookups = []
+async function loadBundles(entries, online = async (name) => ({ data: { name: `Label ${name}`, icon: `icon:${name}` } }), labels = {}, install = async () => {}) {
+  const handlers = new Map(), logs = [], commands = [], lookups = [], events = []
   const logger = Object.fromEntries(['debug', 'info', 'warn', 'error'].map((level) =>
     [level, (...args) => logs.push({ level, args })]))
   let base
@@ -17,6 +17,7 @@ async function loadBundles(entries, online = async (name) => ({ data: { name: `L
     vm.runInNewContext(code, { module, exports: module.exports, Buffer, setTimeout,
       require(id) {
         if (id === './base') return base
+        if (id === 'share/main/lib/window') return { sendAll: (...args) => events.push(args) }
         if (id === 'share/main/lib/util') return { handleEvent: (name, handler) => handlers.set(name, handler) }
         if (id === 'share/common/log') return () => logger
         if (id === 'axios') return { post: async (_url, data) => { lookups.push(data.pkgName); return online(data.pkgName) } }
@@ -27,7 +28,7 @@ async function loadBundles(entries, online = async (name) => ({ data: { name: `L
     return module.exports
   }
   base = load('src/main/lib/hdc/base.ts')
-  const client = { getTarget() { return { async shell(command) {
+  const client = { getTarget() { return { install, async shell(command) {
     commands.push(command)
     if (command === 'bm dump -h') {
       if (labels.help instanceof Error) throw labels.help
@@ -48,7 +49,7 @@ async function loadBundles(entries, online = async (name) => ({ data: { name: `L
   } } } }
   await base.init(client)
   await load('src/main/lib/hdc/bundle.ts').init(client)
-  return { getInfos: async (names) => JSON.parse(JSON.stringify(await handlers.get('getBundleInfos')('DEVICE_TEST', names))), logs, commands, lookups }
+  return { getInfos: async (names) => JSON.parse(JSON.stringify(await handlers.get('getBundleInfos')('DEVICE_TEST', names))), logs, commands, lookups, events, install: hap => handlers.get('installBundle')('DEVICE_TEST', hap) }
 }
 function info(name, version = '1.0') {
   return { name, installTime: 1000, releaseType: 'Release', mainEntry: 'entry',
@@ -260,4 +261,14 @@ test('a local label equal to the bundle name still takes priority over the store
   const [result] = await getInfos(['app'])
   assert.equal(result.label, 'app')
   assert.equal(result.icon, 'icon:app')
+})
+
+
+test('successful installation broadcasts to application lists; rejected installation does not', async () => {
+  const good = await loadBundles({})
+  await good.install('fixture.hap')
+  assert.deepEqual(good.events, [['bundleInstalled', 'DEVICE_TEST']])
+  const bad = await loadBundles({}, undefined, {}, async () => { throw Error('signature mismatch') })
+  await assert.rejects(bad.install('fixture.hap'), /signature mismatch/)
+  assert.deepEqual(bad.events, [])
 })

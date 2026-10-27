@@ -62,6 +62,8 @@ React 组件 / MobX store
   → 鸿蒙设备
 ```
 
+HAP 拖入由主窗口和投屏根组件各注册一次 `src/renderer/lib/useHapDrop.ts`，覆盖窗口客户区；应用面板局部 drop 只清理高亮，不重复安装。`installDroppedBundles` 提取文件、识别大小写扩展名并处理无设备/不支持/读路径失败，调用共用 `installBundles`；逐包成功/失败通知中的文件路径按文本转义。共享通知容器随 `fullscreenchange` 移入/移出全屏元素，长路径可在窄窗口内换行。`installBundle` IPC → `hdc/bundle.ts` → 本地 hdckit `InstallCommand` 使用 `hdc install -r` 显式覆盖，不先卸载；大写 `.HAP` 复制为临时小写扩展名以兼容原生 HDC，成功/失败均清理，不改原件。
+
 请求类型集中在 `src/common/types.ts`。主进程设备处理器集中在 `src/main/lib/hdc/`，注册由 `src/main/lib/hdc.ts` 的 `init()` 串起；窗口类处理器在 `src/main/window/`。
 
 捕获的 create/start/stop 和 retryCaptureVideo/finishCaptureVideo 通道由 `hdc/captureSessions.ts` 直接注册 `ipcMain.handle`，保留并验证 Electron sender/senderFrame；不能套用会丢弃 event 的共享 handleEvent。投屏窗口须在 loadPage 前注册到会话管理器。视频升档使用原 lease、generation 和独立 promotion ID，JPEG 持续显示至 renderer 确认实际绘制；启动等待不占设备输入队列，driver 负责关闭前等待尝试和清理完成。详见 [JPEG 恢复视频](../../../../docs/maintenance/screencast-video-upgrade.md)。
@@ -73,6 +75,7 @@ React 组件 / MobX store
 | 事件 | 数据或用途 |
 | --- | --- |
 | `changeTarget` | HDC 设备增删后通知主窗口刷新设备列表 |
+| `bundleInstalled` | 安装成功后的 connectKey；应用面板按当前设备过滤并合并刷新，覆盖投屏/其他面板发起的安装，订阅随面板生命周期清理 |
 | `changeMainStore` | 主 store 的 name/value 变更，投屏用它同步当前设备 |
 | `captureScreen` | 直发原 WebFrameMain 的 sessionId、generation、图像字节；H.264 附 codec/timestamp/config/keyFrame 元数据，运行错误用 codec=error |
 | `shellData` | 发给主窗口的 sessionId 与终端文本 |

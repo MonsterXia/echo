@@ -21,6 +21,7 @@ import map from 'licia/map'
 import startWith from 'licia/startWith'
 import filter from 'licia/filter'
 import contain from 'licia/contain'
+import { sendAll } from 'share/main/lib/window'
 
 const logger = log('hdcBundle')
 
@@ -230,6 +231,12 @@ async function getOnlineBundleInfo(bundleName: string) {
 const installBundle: IpcInstallBundle = async (connectKey, hap) => {
   const target = await client.getTarget(connectKey)
   await target.install(hap)
+  try {
+    sendAll('bundleInstalled', connectKey)
+  } catch (error) {
+    // A closing window must not turn a completed installation into a failure.
+    logger.warn('Failed to notify windows after installation', error)
+  }
 }
 
 const startBundle: IpcStartBundle = async (connectKey, bundleName, ability) => {

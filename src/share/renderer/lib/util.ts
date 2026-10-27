@@ -8,11 +8,21 @@ import { isObservable, toJS } from 'mobx'
 import LunaNotification, { INotifyOptions } from 'luna-notification'
 
 let notification: LunaNotification | null = null
+let notificationHost: HTMLElement | null = null
+
+function syncNotificationHost() {
+  const parent = document.fullscreenElement || document.body
+  if (notificationHost && notificationHost.parentElement !== parent) {
+    parent.appendChild(notificationHost)
+  }
+}
 
 export function notify(content: string, options?: INotifyOptions) {
   if (!notification) {
     const div = h('div')
-    document.body.appendChild(div)
+    notificationHost = div
+    syncNotificationHost()
+    document.addEventListener('fullscreenchange', syncNotificationHost)
     notification = new LunaNotification(div, {
       position: {
         x: 'center',

@@ -46,6 +46,17 @@
 .luna-notification-item {
   border-radius: 4px;
   padding: 5px 10px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.luna-notification-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.luna-notification-icon-container {
+  flex-shrink: 0;
 }
 
 .luna-image-viewer {

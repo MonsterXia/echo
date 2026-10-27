@@ -94,6 +94,12 @@ npm start
 
 `test/bundles.test.cjs` 同时加载真实 `hdc/bundle.ts` 与 `hdc/base.ts`，调用已注册的 getBundleInfos 处理器，仅替换 HDC transport、在线元数据与 Electron 注册边界。覆盖混合命令失败/错误文本/坏 JSON、缺失主模块、分隔符碰撞、包名对应关系、在线失败回退及下一次刷新。模拟删除/重装不等于真机安装/卸载验收。
 
+拖入专项：`node script/check-hap-drop-live.cjs <基础hap> <升级hap> <证据目录> --disposable [--executable <打包应用二进制>] [--language en-US]`。仅允许 `com.example.testhap` 专用样本，检查两包版本，先移除已有测试包以验证首次安装，最后保留升级版。使用真实 OS 文件支持的 Chromium 拖放、preload/IPC/HDC；覆盖主窗口内容/工具栏/概览、投屏普通/全屏、大小写/特殊路径、多文件部分失败、刷新期间及双窗口并发。无设备/不可读取文件由单测覆盖，物理断连和跨平台另验。仅保存统计与本地通知裁剪图，不保存手机画面；详见[拖入记录](../../../../docs/maintenance/hap-drop.md)。
+
+拖入报告 `evidenceVersion: 2` 要求每次成功后发起并完成新的主窗口应用列表查询，逐条检查成功/失败/不支持通知插入时的显示样式、有效尺寸、窗口边界与全屏归属。刷新重叠场景暂扣一次真实清单响应，安装结束后释放并核对再次查询；不替换 HDC 返回值。`--negative-control-stale-refresh` 在已有升级包后屏蔽安装广播，预期退出非零且报告“no fresh list request”；不能把这轮 `passed: false` 计为业务验收失败。打包哈希从运行应用的 `app.getAppPath()` 读取，不假设 macOS 目录结构。Windows 路径样本避开非法尖括号，转义由 renderer mock 测试补齐。
+
+安装/升级验收：完整 build 后运行 `node script/check-hap-install-live.mjs <hap> <bundleName> <证据目录> --disposable --upgrade-hap <较新hap>`（需要 `unzip`）。仅用于用户授权的可卸载测试包，真实执行双语首次安装、升级、同版本覆盖与卸载，验证成功通知、自动刷新和其他应用集合；默认拒绝已有测试包，显式 `--reset-existing-test-app` 才允许先卸载。文件选择及原生菜单选择由探针代选，设备/IPC 不替换。成功最终卸载测试包，失败可能保留已安装包；时间戳核对不等于数据内容保持验收。见[证据与边界](../../../../docs/maintenance/hap-install.md)。
+
 完整 build 后可运行 `node script/check-bundles-live.mjs <证据目录>`：需要一台已授权鸿蒙设备，使用隔离配置验证真实正常包与不存在包混合查询、应用面板加载与手动刷新。脚本只读设备，不安装/卸载；保存运行与页面错误记录，并脱敏设备标识及非抽样包名。主模块源码 SHA-256 随报告保存，公开归档前仍需检查日志。
 
 图标专项验证使用 `node script/check-bundle-icon-live.mjs <证据目录> [offline]`。启动时不挂载功能面板，再将应用选择范围限制为 bilibili；真实元数据处理器、HDC 与 renderer 保留。离线模式同时拒绝 Node HTTP(S) 和 Chromium 联网，并验证探针确实经过代理；检查两种视图的图片解码/哈希和真实刷新完成。报告中的 `verificationPassed` 与 `offlineIconAcceptancePassed` 分别表示验证步骤完成和离线应用图标通过，不能混同。只保存指定应用字段与裁剪面板，不收集完整应用列表、设备 key 或原始日志；不执行安装、卸载、提权。全新配置的冷启动结果不代表进程内热缓存切换已验收。
@@ -174,3 +180,5 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 ## 控制超时恢复回归
 
 `test/control-recovery.test.cjs` 验证记录进程身份、PID 复用、其他 TCP 客户端、未知清单及停止后确认；`test/capture-sessions.test.cjs` 验证旧 lease 失败后的单次前台恢复、拒绝恢复后继续保留 lease，以及初始化失败关闭连接；`test/uitest-connection.test.cjs` 验证安全 API 标签及 SDK 检查失败不更新。`test/screencast-lifecycle.test.cjs` 验证三次失败上限、无首图、手动重试及状态退订。上述为模拟边界测试；USB 实机和真实 Canvas/UI 证据单独见 [控制超时记录](../../../../docs/maintenance/screencast-control-timeout.md)。
+
+安装探针最终化由 `script/lib/hap-report.cjs` 独立执行关闭、清理与设备查询；任何阶段失败仍尽力保存报告，状态查询异常写 `finallyInstalled: null`，保留原错误。仅明确的包不存在响应判为未安装，断连/非 JSON 响应不能推断卸载成功。`test/hap-acceptance.test.cjs` 覆盖这些故障及拖入验收断言。
