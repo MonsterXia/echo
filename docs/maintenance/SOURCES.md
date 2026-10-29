@@ -172,3 +172,6 @@
 ## 2026-10-29 桌面残留会话阻塞投屏
 
 来源为用户截图、已安装应用真实 IPC 失败、当前连接手机的 ps/stat/socket 证据，以及[专项修复记录](screencast-orphan-recovery.md)。新机制的开发构建和最终安装路径均完成同 profile 强制退出/重启及真实 Canvas 验收；旧版无记录残留经单独精确核验清理，不归功于新自动回收。最终安装包、独立复审、回归统计与未覆盖边界以专项记录为准。
+
+
+[PR #72](https://github.com/MonsterXia/scrcpy-harmony/pull/72) 合入复审补充：确认 `fport ls` 同时返回 Forward/Reverse 后，修复合法 Reverse 清单导致恢复拒绝的问题；五个新增故障/成功分支有修复前失败及修复后通过证据。复审 finding 已关闭，最终 CI 和合入状态见 PR，先前本机安装哈希维持其原验收范围。

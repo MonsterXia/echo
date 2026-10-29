@@ -1,6 +1,6 @@
 # 桌面残留会话导致投屏无法启动（2026-10-29）
 
-状态：源码修复、本地回归、开发构建及最终安装路径真机恢复通过，已更新本机应用。基线为 master `153304c`（PR #71 已合入），本轮分支 `codex/fix-stale-mirroring-session`，未发布 Release。
+状态：源码修复、本地回归、开发构建及最终安装路径真机恢复通过，已更新本机应用。基线为 master `153304c`（PR #71 已合入），交付 [PR #72](https://github.com/MonsterXia/scrcpy-harmony/pull/72)，最终审查/CI 与合入状态以该 PR 为准，未发布 Release。
 
 ## 现场与根因
 
@@ -44,3 +44,27 @@
 - [安装包首轮恢复探针失败](screencast-orphan-recovery/packaged-recover.json)发生于 inspector/主窗口初始化，尚未请求投屏，原记录被保留；等待主窗口 ready 后复测通过，不能隐去这轮失败。
 - 安装包首次冷启动/静止画面曾出现候选扩展退出与首个视频帧超时，按既有机制转为 JPEG 后恢复 H.264。成功不意味着所有候选均兼容或静止画面永不等待。
 - 最后通过原生 UI 从实际安装路径、用户原配置点击投屏，确认手机画面可见、无失败卡；应用保持运行供用户继续使用。截图仅用于当场观察，没有保存到证据或仓库。
+
+
+## PR #72 合入复审（2026-10-29）
+
+独立合入复审确认一项 P2：`fport ls` 同时列出正/反向转发，旧恢复校验只接受 `[Forward]`，任意正常 `rport` 都会阻止旧会话回收。已统一允许合法的 `[Forward]`/`[Reverse]` 清单，但只认领 `[Forward]` 且设备、端口、socket 匹配的映射；删除失败后的残留确认也使用同一方向与目标条件。未知方向仍保守拒绝。
+
+新增五项模拟回归覆盖混合清单、只有相同元组的 Reverse、删除失败但 Forward 已消失、Forward 仍在和未知方向。修复前新增四项失败，修复后 105 项相关回归、lint/i18n 与主进程构建通过；独立复审重跑新增五项通过，finding 关闭。最终提交必须通过 PR 五项 CI 后再合入，不以旧 head 的结果代替。初轮 CI 的注释仅为 Actions Node 运行时弃用与 runner 镜像迁移提示，不是应用 lint 失败，本次不扩大为工作流升级。
+
+上述转发兼容修正尚未单独进行真机反向转发验收；先前安装包/截图/哈希证据继续对应 `664365f` 的生产实现。本轮不打断用户正在使用的应用，也不将旧本机包称为包含最新转发修正。
+
+
+### Sourcery 七条意见的核验与处置
+
+| 审查意见 | 结论与依据 |
+| --- | --- |
+| [数字 PID TOCTOU](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142131) | 原理成立，现有 HDC shell 无法提供 pidfd 级原子终止；随机名称、PID/starttime 及同一远端 shell 临杀前重读缩小而不消除窗口。独立复审认为应明确记录限制，本轮不临时部署未经固件验证的原生 helper。下一步若要求严格原子身份，单独设计/验证 pidfd_open + 身份检查 + pidfd_send_signal 及内核/权限支持。 |
+| [转发清单成功但漏整行](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142138) | 未找到该成功截断场景。HDC 上游 `CMD_FORWARD_LIST` 整体构造字符串并一次发送长度帧，客户端收满帧才写 stdout；本仓 hdckit `ListForwardsCommand` 同样通过 `readValue/readBytes` 按长度读满。CLI 超时/进程错误/缓冲上限会拒绝，空或格式不完整清单也拒绝。不能用本地 echo 或重复读取伪造服务器完整性证明；若存在特定固件复现需另查。此依据不声称已证明现场二进制与上游 master 完全一致。 |
+| [损坏 journal 阻塞后续记录](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142147) | 已修复：JSON/字段损坏原子改名为随机 `.invalid`，保留原字节并报告，不据此清理远端；继续处理合法记录。读取/隔离 I/O 错误仍失败。 |
+| [进程改名后丢失归属](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142154) | 已修复：完整 ps 中记录 PID 仍在但随机名称不再匹配时读取 stat，starttime 相同则拒绝清理/保留记录；只有不同 starttime 才判原进程不在。 |
+| [另一桌面进程与认领者竞争](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142162) | 正常产品入口不可达：`src/share/main/index.ts` 在 HDC 初始化前获取 Electron single-instance lock，同 profile 第二进程立即退出；不同 profile 不共享 journal。目录别名/符号链接绕过单实例路径不属于当前支持范围。原子认领及真实多进程单测仍保留。 |
+| [后台缓存绕过前台恢复](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142182) | 已修复：前台复用 cached/pending driver 仍执行回收；后台只读发现其他进程/待恢复记录时不创建新 standby，避免新 listener 遮蔽旧 forward。当前进程正常会话记录不妨碍自己预热，已认领但未完成的旧记录仍阻止预热。 |
+| [测试没有执行 starttime guard](https://github.com/MonsterXia/scrcpy-harmony/pull/72#discussion_r4412142189) | 已补实际 sh/Git Bash 执行生成脚本，cat/kill 被函数替身截获，不读/杀真实进程；初查后 starttime 改变时 shell 在 kill 之前失败。此测试不宣称消除了校验之后的极短 TOCTOU。 |
+
+新增损坏 JSON、后台准备、改名 PID、cached foreground 用例在修复前共五项失败。修复后投屏相关 114/114、lint/i18n、主进程构建通过；独立复审重跑 ownership/deployment/capture-sessions 三文件 92/92，通过并关闭 3/4/6/7。完整 `npm test` 通过：736 项应用回归，Licia 两模式各 606 passing / 4 pending。全部处置保留上述适用范围；最后完整 CI 必须针对推送后的新 head 验证。

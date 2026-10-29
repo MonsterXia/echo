@@ -46,6 +46,25 @@ export class NativeVideoOwnership {
     if (!namePattern.test(name)) throw new Error('Invalid native ownership record name')
     await rm(this.file(name), { force: true })
   }
+  async hasForeignRecords() {
+    let files: string[]
+    try { files = await readdir(this.directory) }
+    catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false; throw error }
+    for (const file of files) {
+      const match = /^(scrcpy_harmony_[a-f0-9]{16}\.so)\.([1-9]\d*)\.json$/.exec(file)
+      if (!match) continue
+      if (Number(match[2]) !== process.pid) return true
+      let contents: string
+      try { contents = await readFile(path.join(this.directory, file), 'utf8') }
+      catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue; throw error }
+      try {
+        const owner = JSON.parse(contents)
+        validate(owner, match[1])
+        if (owner.hostPid !== process.pid) return true
+      } catch { return true }
+    }
+    return false
+  }
   recover(cleanup: (owner: NativeOwner) => Promise<void>): Promise<void> {
     const pending = recovering.get(this.directory)
     if (pending) return pending
@@ -65,10 +84,19 @@ export class NativeVideoOwnership {
       const claimant = Number(match[2])
       if (claimant !== process.pid && alive(claimant)) continue
       const source = path.join(this.directory, file)
-      let owner: NativeOwner
-      try { owner = JSON.parse(await readFile(source, 'utf8')) }
+      let contents: string
+      try { contents = await readFile(source, 'utf8') }
       catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue; throw error }
-      validate(owner, match[1])
+      let owner: NativeOwner
+      try { owner = JSON.parse(contents); validate(owner, match[1]) }
+      catch {
+        // Preserve corrupt data for diagnosis, never use it to authorize device
+        // cleanup and never let it prevent processing other valid sessions.
+        try { await rename(source, source + `.${randomBytes(8).toString('hex')}.invalid`) }
+        catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error }
+        console.warn('Invalid native ownership record quarantined')
+        continue
+      }
       if (alive(owner.hostPid)) continue
       const claimed = this.file(owner.name)
       if (source !== claimed) {

@@ -48,7 +48,9 @@ test('concurrent callers in one desktop process share one recovery', async t => 
 for (const changes of [{ name: '../other.so' }, { devicePid: '123; killall uitest' }, { started: '' }, { port: 70000 }]) {
   test(`malformed ownership cannot authorize cleanup ${JSON.stringify(changes)}`, async t => {
     const f = await fixture(t); await f.put({ ...f.record, ...changes })
-    await assert.rejects(f.journal.recover(() => { throw Error('unsafe cleanup invoked') }), /ownership record/i)
+    await f.journal.recover(() => { throw Error('unsafe cleanup invoked') })
+    const files = await fs.readdir(f.dir)
+    assert.equal(files.length, 1); assert.match(files[0], /\.invalid$/)
   })
 }
 test('normal sessions persist their exact identity and remove it after confirmed stop', async t => {
@@ -89,4 +91,30 @@ test('a new process can retry after a recovery claimant crashes', async t => {
   await f.journal.recover(async () => { retried = true })
   assert.equal(retried, true)
   assert.equal((await fs.readdir(f.dir)).filter(name => name.endsWith('.json')).length, 0)
+})
+
+test('corrupt JSON is preserved in quarantine without blocking a later valid session', async t => {
+  const f = await fixture(t); await f.put()
+  const invalid = path.join(f.dir, `scrcpy_harmony_0000000000000000.so.${f.record.hostPid}.json`)
+  await fs.writeFile(invalid, '{truncated')
+  const cleanups = []
+  await f.journal.recover(async record => cleanups.push(record))
+  assert.deepEqual(cleanups, [f.record])
+  const files = await fs.readdir(f.dir)
+  assert.equal(files.length, 1); assert.match(files[0], /\.invalid$/)
+  assert.equal(await fs.readFile(path.join(f.dir, files[0]), 'utf8'), '{truncated')
+})
+test('background preparation defers for foreign records, even malformed ones', async t => {
+  const f = await fixture(t)
+  assert.equal(await f.journal.hasForeignRecords(), false)
+  await f.journal.save({ name, devicePid: '123', started: '456' })
+  assert.equal(await f.journal.hasForeignRecords(), false)
+  await f.put()
+  assert.equal(await f.journal.hasForeignRecords(), true)
+})
+
+test('background preparation also defers for a failed recovery claimed by this process', async t => {
+  const f = await fixture(t)
+  await f.put(f.record, process.pid)
+  assert.equal(await f.journal.hasForeignRecords(), true)
 })

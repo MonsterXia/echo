@@ -234,6 +234,7 @@ test('durable ownership is saved before forwarding and cleared only after device
     return run(args)
   }
   f.native.ownership = {
+    hasForeignRecords: async () => false,
     save: async record => history.push({ ...record }),
     clear: async name => history.push({ clear: name }),
   }
@@ -295,5 +296,111 @@ for (const occupied of [false, true, 'empty', 'partial', 'malformed']) {
     if (occupied) await assert.rejects(f.native.recoverOrphans(), /possibly reused forward|socket inventory unconfirmed/)
     else await f.native.recoverOrphans()
     assert.equal(removed, !occupied)
+  })
+}
+
+for (const scenario of ['mixed', 'reverse-only', 'removed-with-reverse', 'still-present-with-reverse', 'unknown-direction']) {
+  test(`orphan recovery distinguishes forward and reverse mappings (${scenario})`, async () => {
+    const f = await fixture({ firstFails: false })
+    const name = 'scrcpy_harmony_0123456789abcdef.so'
+    const forward = 'synthetic tcp:12345 localabstract:scrcpy_grpc_socket [Forward]'
+    const reverse = 'synthetic tcp:12345 localabstract:scrcpy_grpc_socket [Reverse]'
+    let inventories = 0, removals = 0, fileRemoved = false
+    f.native.ownership = { recover: async cleanup => cleanup({ name, hostPid: 99999, devicePid: '123', started: '456', port: 12345 }) }
+    f.native.run = async args => {
+      if (args.join(' ') === 'fport ls') {
+        inventories++
+        if (scenario === 'unknown-direction') return reverse.replace('[Reverse]', '[Unknown]')
+        if (scenario === 'reverse-only' || (scenario === 'removed-with-reverse' && inventories > 1)) return reverse
+        return forward + '\n' + reverse
+      }
+      if (args[0] === 'fport' && args[1] === 'rm') {
+        removals++
+        assert.deepEqual(args, ['fport', 'rm', 'tcp:12345', 'localabstract:scrcpy_grpc_socket'])
+        if (scenario.includes('with-reverse')) throw Error('mapping not found')
+        return ''
+      }
+      if (args[1] === 'ps -ef && echo NATIVE_READ_COMPLETE') return 'UID PID PPID C STIME TTY TIME CMD\nNATIVE_READ_COMPLETE'
+      if (args[1] === 'cat /proc/net/unix && echo NATIVE_SOCKET_READ_COMPLETE') return 'Num RefCount Protocol Flags Type St Inode Path\nNATIVE_SOCKET_READ_COMPLETE'
+      if (args[1].startsWith('rm -f')) { fileRemoved = true; return '' }
+      if (args[1].startsWith('test ! -e')) return 'removed'
+      throw Error('Unexpected command: ' + args.join(' '))
+    }
+    if (scenario === 'unknown-direction' || scenario === 'still-present-with-reverse') {
+      await assert.rejects(f.native.recoverOrphans(), /inventory unconfirmed|mapping not found/)
+      assert.equal(fileRemoved, false)
+    } else {
+      await f.native.recoverOrphans()
+      assert.equal(fileRemoved, true)
+    }
+    assert.equal(removals, ['reverse-only', 'unknown-direction'].includes(scenario) ? 0 : 1)
+  })
+}
+
+test('background preparation does not create a new listener before orphan recovery', async () => {
+  const f = await fixture({ firstFails: false })
+  f.native.ownership = { hasForeignRecords: async () => true }
+  assert.equal(await f.native.prepare(1), false)
+  assert.deepEqual(f.calls, [])
+})
+for (const sameIdentity of [true, false]) {
+  test(`a recorded PID with changed command text keeps its journal while the same identity is alive (${sameIdentity})`, async () => {
+    const f = await fixture({ firstFails: false })
+    const name = 'scrcpy_harmony_0123456789abcdef.so'
+    let removed = false
+    f.native.ownership = { recover: async cleanup => cleanup({ name, hostPid: 99999, devicePid: '123', started: '456' }) }
+    f.native.run = async args => {
+      if (args[1] === 'ps -ef && echo NATIVE_READ_COMPLETE') return 'UID PID PPID C STIME TTY TIME CMD\nshell 123 1 0 00:00 ? 00:00 renamed-process\nNATIVE_READ_COMPLETE'
+      if (args[1] === 'cat /proc/123/stat') return `123 (renamed) S ${'0 '.repeat(18)}${sameIdentity ? '456' : '789'} 0`
+      if (args[1].startsWith('rm -f')) { removed = true; return '' }
+      if (args[1].startsWith('test ! -e')) return 'removed'
+      throw Error('Unexpected command: ' + args.join(' '))
+    }
+    if (sameIdentity) await assert.rejects(f.native.recoverOrphans(), /identity.*unconfirmed/)
+    else await f.native.recoverOrphans()
+    assert.equal(removed, !sameIdentity)
+  })
+}
+
+for (const replacementBeforeKill of [false, true]) {
+  test(`the actual shell guard stops a PID replacement before kill (${replacementBeforeKill})`, async () => {
+    const { execFile } = require('node:child_process')
+    const { promisify } = require('node:util')
+    const f = await fixture({ firstFails: false })
+    const name = 'scrcpy_harmony_0123456789abcdef.so'
+    f.native.name = name
+    f.native.recoveredOwner = { name, hostPid: 99999, devicePid: '123', started: '456' }
+    let exists = true, signalled = false
+    f.native.run = async args => {
+      const cmd = args[1]
+      if (cmd === 'ps -ef && echo NATIVE_READ_COMPLETE') return 'UID PID PPID C STIME TTY TIME CMD\n' +
+        (exists ? `shell 123 1 0 00:00 ? 00:00 uitest start-daemon singleness --extension-name ${name} -scale 1\n` : '') + 'NATIVE_READ_COMPLETE'
+      if (cmd === 'cat /proc/123/stat') return `123 (xdevice_scrcpy) S ${'0 '.repeat(18)}456 0`
+      if (cmd.includes('kill -9')) {
+        const shell = process.platform === 'win32' ? path.join(process.env.ProgramFiles || 'C:/Program Files', 'Git/bin/bash.exe') : '/bin/sh'
+        // Execute the generated guard, replacing device I/O and signals with
+        // shell functions. No real process is read or killed by this test.
+        const script = `cat() { printf '%s\\n' "$SYNTHETIC_PROC_STAT"; }; kill() { printf '%s\\n' "WOULD_KILL:$*"; };\n${cmd}`
+        try {
+          const { stdout } = await promisify(execFile)(shell, ['-c', script], {
+            env: { ...process.env, SYNTHETIC_PROC_STAT: `123 (xdevice_scrcpy) S ${'0 '.repeat(18)}${replacementBeforeKill ? '789' : '456'} 0` },
+            timeout: 5000,
+          })
+          assert.equal(stdout.trim(), 'WOULD_KILL:-9 123\nstopped')
+          signalled = true; exists = false; return 'stopped'
+        } catch (error) {
+          assert.equal(error.code, 1); assert.equal(error.stdout, '')
+          throw Error('identity changed before kill')
+        }
+      }
+      if (cmd.startsWith('rm -f')) return ''
+      if (cmd.startsWith('test ! -e')) return 'removed'
+      throw Error('Unexpected command: ' + cmd)
+    }
+    if (replacementBeforeKill) {
+      await assert.rejects(f.native.stop(), /identity changed before kill/)
+      assert.equal(f.native.name, name)
+    } else await f.native.stop()
+    assert.equal(signalled, !replacementBeforeKill)
   })
 }
