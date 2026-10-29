@@ -2,7 +2,7 @@
 
 ## 1.0.4-dev.2（开发预发布）
 
-发布准备与验证状态见[发布记录](docs/releases/1.0.4-dev.2.md)。本版为 Pre-release，稳定版保持 v1.0.3。
+2026-10-29 已发布 [v1.0.4-dev.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.2)。同源五项 CI、三平台实际安装启动及 14 个附件重新下载校验通过；签名限制与真机验收边界见[发布记录](docs/releases/1.0.4-dev.2.md)。本版为 Pre-release，稳定版保持 v1.0.3，dev.0/dev.1 及其附件保留。
 
 * 修复拖入主窗口/投屏窗口的 HAP 安装流程，支持大写扩展名，明确覆盖安装，并在完成后显示通知、刷新应用列表。
 * 为桌面异常退出后遗留的投屏会话增加持久归属和受限回收，改善反复提示 Screen mirroring 无法启动的问题。
