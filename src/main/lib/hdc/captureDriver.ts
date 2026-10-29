@@ -63,6 +63,7 @@ export class CaptureUiDriver extends UiDriver {
     // UiDriver checks the agent version and handshakes before this read-only
     // query. Reuse a healthy daemon left by the previous application process.
     try {
+      if (!background) await this.nativeVideo?.recoverOrphans()
       await this.controlRecovery?.remember()
       try { await this.getDisplaySize() }
       catch (error) {
@@ -89,6 +90,7 @@ export class CaptureUiDriver extends UiDriver {
       await this.promotion.finish?.catch(() => {})
     }
     await this.nativeVideo?.stop()
+    await this.nativeVideo?.recoverOrphans()
     if (this.nativeVideo && !await this.nativeVideo.available()) {
       throw new Error('Control recovery blocked by another native capture')
     }

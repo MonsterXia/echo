@@ -1,0 +1,66 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T11:58:49.930Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 2112,
+      "visibleMs": 2183,
+      "firstCodec": "JPEG",
+      "draws": 5,
+      "codecs": {
+        "JPEG": 1,
+        "H.264": 4
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 2,
+      "firstDrawMs": 333,
+      "visibleMs": 378,
+      "firstCodec": "JPEG",
+      "draws": 4,
+      "codecs": {
+        "JPEG": 2,
+        "H.264": 2
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 3,
+      "firstDrawMs": 355,
+      "visibleMs": 386,
+      "firstCodec": "JPEG",
+      "draws": 3,
+      "codecs": {
+        "JPEG": 1,
+        "H.264": 2
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": false
+  },
+  "nativeDiagnostics": [],
+  "mainAssetSha256": "3575942e9cec676677ea1ccb19526d75dd646dbbf869a289820c6389f8d62e1d",
+  "previousSessionReplaced": true,
+  "normalExitClearedOwnership": true
+}

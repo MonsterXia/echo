@@ -167,3 +167,11 @@
 [PR #56 审查与修复](screencast-pr56-review.md)保存新上下文独立审查的三个确认问题、复现与回归、首轮 CI 许可校验失败原因及修复后本地验证。最终提交审查和 CI/合入状态见该 PR；历史“未提交”条目仅描述当时阶段，不代表当前 PR 状态。
 
 [帧率与意外降级记录](screencast-fps-tuning.md)及[脱敏统计](screencast-fps-tuning.json)分别保存原应用、独立编码流与更新后实际应用计数：原分辨率约 34→60 FPS。包含独立探针/应用时间重叠时失败与 JPEG 降级、一次原生重连修复、实际视频 TCP 中断后 2.695 秒恢复的证据，不外推为物理拔插或全部固件通过。参数参考官方 HOScrcpy API 文档固定 commit，桌面无 Java。
+
+
+## 2026-10-29 桌面残留会话阻塞投屏
+
+来源为用户截图、已安装应用真实 IPC 失败、当前连接手机的 ps/stat/socket 证据，以及[专项修复记录](screencast-orphan-recovery.md)。新机制的开发构建和最终安装路径均完成同 profile 强制退出/重启及真实 Canvas 验收；旧版无记录残留经单独精确核验清理，不归功于新自动回收。最终安装包、独立复审、回归统计与未覆盖边界以专项记录为准。
+
+
+[PR #72](https://github.com/MonsterXia/scrcpy-harmony/pull/72) 合入复审补充：确认 `fport ls` 同时返回 Forward/Reverse 后，修复合法 Reverse 清单导致恢复拒绝的问题；五个新增故障/成功分支有修复前失败及修复后通过证据。复审 finding 已关闭，最终 CI 和合入状态见 PR，先前本机安装哈希维持其原验收范围。

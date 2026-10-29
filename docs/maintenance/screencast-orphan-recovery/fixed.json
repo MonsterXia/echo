@@ -1,0 +1,66 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T11:55:37.140Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 7724,
+      "visibleMs": 7736,
+      "firstCodec": "JPEG",
+      "draws": 121,
+      "codecs": {
+        "JPEG": 1,
+        "H.264": 120
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 2,
+      "firstDrawMs": 349,
+      "visibleMs": 354,
+      "firstCodec": "JPEG",
+      "draws": 309,
+      "codecs": {
+        "JPEG": 5,
+        "H.264": 304
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 3,
+      "firstDrawMs": 348,
+      "visibleMs": 384,
+      "firstCodec": "JPEG",
+      "draws": 13,
+      "codecs": {
+        "JPEG": 4,
+        "H.264": 9
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": false
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+  ],
+  "mainAssetSha256": "3575942e9cec676677ea1ccb19526d75dd646dbbf869a289820c6389f8d62e1d"
+}

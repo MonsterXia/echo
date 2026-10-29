@@ -182,3 +182,10 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 `test/control-recovery.test.cjs` 验证记录进程身份、PID 复用、其他 TCP 客户端、未知清单及停止后确认；`test/capture-sessions.test.cjs` 验证旧 lease 失败后的单次前台恢复、拒绝恢复后继续保留 lease，以及初始化失败关闭连接；`test/uitest-connection.test.cjs` 验证安全 API 标签及 SDK 检查失败不更新。`test/screencast-lifecycle.test.cjs` 验证三次失败上限、无首图、手动重试及状态退订。上述为模拟边界测试；USB 实机和真实 Canvas/UI 证据单独见 [控制超时记录](../../../../docs/maintenance/screencast-control-timeout.md)。
 
 安装探针最终化由 `script/lib/hap-report.cjs` 独立执行关闭、清理与设备查询；任何阶段失败仍尽力保存报告，状态查询异常写 `finallyInstalled: null`，保留原错误。仅明确的包不存在响应判为未安装，断连/非 JSON 响应不能推断卸载成功。`test/hap-acceptance.test.cjs` 覆盖这些故障及拖入验收断言。
+
+
+## 桌面异常退出后的投屏恢复
+
+`native-video-ownership.test.cjs` 覆盖持久记录、真实双进程争抢与认领者退出，`native-video-deployment.test.cjs` 覆盖恢复时设备 PID/starttime、转发归属和不完整 socket 清单；这些均不是设备验收。
+
+`check-static-screencast-start.cjs` 等待主窗口 ready and show 日志后连接 inspector，避免在 Node bootstrap 阶段误加载 Electron 模块。真实异常退出验收须先关闭其他实例、准备一台已解锁设备，再为两次命令设置相同的绝对临时目录 `SCRCPY_TEST_RECOVERY_PROFILE`（不要使用日常配置）：第一次追加 `--orphan-crash`，实际 H.264 绘制后强制结束本次测试进程并断言记录仍在；第二次追加 `--orphan-recover`，断言旧会话替换、新会话绘制以及正常退出后记录清空。两次均可在报告路径后指定同一安装程序路径。第二次必须执行；若中途失败，保留临时目录并按记录检查精确归属，不可按名称前缀批量清理手机进程。报告仅保存统计，不保存帧、设备标识或会话 PID。范围与限制见[专项记录](../../../../docs/maintenance/screencast-orphan-recovery.md)。

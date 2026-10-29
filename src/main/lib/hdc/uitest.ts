@@ -34,9 +34,16 @@ export function prepareTarget(connectKey: string, scale: number, valid: () => bo
 
 async function getUiDriver(connectKey: string, background = false): Promise<CaptureUiDriver> {
   let uiDriver = getTargetStore(connectKey, 'uiDriver')
-  if (uiDriver) return uiDriver
+  if (uiDriver) {
+    if (!background) await uiDriver.nativeVideo?.recoverOrphans()
+    return uiDriver
+  }
   const pending = initializingDrivers.get(connectKey)
-  if (pending) return pending
+  if (pending) {
+    const driver = await pending
+    if (!background) await driver.nativeVideo?.recoverOrphans()
+    return driver
+  }
   const initializing = (async () => {
     const target = await client.getTarget(connectKey)
     uiDriver = new CaptureUiDriver(

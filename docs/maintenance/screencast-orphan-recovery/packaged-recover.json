@@ -1,0 +1,13 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T12:03:24.944Z",
+  "rounds": [],
+  "passed": false,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": true
+  },
+  "nativeDiagnostics": [],
+  "error": "App inspector evaluation failed",
+  "closeError": "normal quit must clear the replacement ownership\n\n1 !== 0\n"
+}

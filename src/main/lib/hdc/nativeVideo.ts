@@ -1,13 +1,14 @@
 import http2 from 'node:http2'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { randomBytes } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { setTimeout as delay } from 'node:timers/promises'
 import getPort from 'licia/getPort'
 import path from 'node:path'
 import { GrpcMessages, NativeVideoFrame, parseVideoReply } from './nativeVideoProtocol'
 import { loadNativeLibraries, supportsNativeVideo } from './nativeVideoResources'
 import { NativeVideoPreference } from './nativeVideoPreference'
+import { NativeOwner, NativeVideoOwnership } from './nativeVideoOwnership'
 
 const execute = promisify(execFile)
 const REMOTE_SOCKET = 'localabstract:scrcpy_grpc_socket'
@@ -126,7 +127,57 @@ export class NativeVideo {
   private preference?: NativeVideoPreference
   private preferenceIdentity?: string
   private prepared?: { divisor: number; candidate?: { file: string } }
-  constructor(private options: Options) {}
+  private ownership?: NativeVideoOwnership
+  private recorded?: Omit<NativeOwner, 'hostPid'>
+  private recoveredOwner?: NativeOwner
+  constructor(private options: Options) {
+    if (options.cacheDir) {
+      const key = createHash('sha256').update(JSON.stringify([
+        options.host || '127.0.0.1', options.port, options.connectKey,
+      ])).digest('hex')
+      this.ownership = new NativeVideoOwnership(path.join(options.cacheDir, 'sessions', key))
+    }
+  }
+  async recoverOrphans() {
+    await this.ownership?.recover(async owner => {
+      const stale = new NativeVideo({ ...this.options, cacheDir: undefined })
+      stale.run = args => this.run(args)
+      stale.name = owner.name
+      stale.recoveredOwner = owner
+      // Verify any recorded forward still refers to this device and socket.
+      if (owner.port) {
+        const inventory = await this.run(['fport', 'ls'])
+        if (inventory !== '[Empty]') {
+          const rows = inventory.split(/\r?\n/).filter(Boolean).map(line => line.trim().split(/\s+/))
+          if (!rows.length || rows.some(row => row.length !== 4 || !['[Forward]', '[Reverse]'].includes(row[3]))) {
+            throw new Error('Native forward inventory unconfirmed')
+          }
+          stale.forwarded = rows.some(row => row[3] === '[Forward]' && row[0] === this.options.connectKey &&
+            row[1] === `tcp:${owner.port}` && row[2] === REMOTE_SOCKET)
+          if (stale.forwarded) stale.port = owner.port
+        }
+      }
+      await stale.stop()
+    })
+  }
+  private async readStartTime(pid: string) {
+    const stat = await this.shell(`cat /proc/${pid}/stat`)
+    const started = stat.slice(stat.lastIndexOf(')') + 2).trim().split(/\s+/)[19]
+    if (!stat.startsWith(`${pid} (`) || !/^\d+$/.test(started || '')) {
+      throw new Error('Native process identity unconfirmed')
+    }
+    return started
+  }
+  private async recoveredSocketIsFree() {
+    const inventory = await this.shell('cat /proc/net/unix && echo NATIVE_SOCKET_READ_COMPLETE')
+    if (!inventory.endsWith('\nNATIVE_SOCKET_READ_COMPLETE')) throw new Error('Native socket inventory unconfirmed')
+    const rows = inventory.slice(0, -'\nNATIVE_SOCKET_READ_COMPLETE'.length).split(/\r?\n/)
+    if (!/^\s*Num\s+RefCount\s+Protocol\s+Flags\s+Type\s+St\s+Inode\s+Path\s*$/.test(rows.shift() || '') ||
+      rows.filter(row => row.trim()).some(row => !/^\s*[a-f0-9]+:\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+\d+(?:\s+.*)?$/i.test(row))) {
+      throw new Error('Native socket inventory unconfirmed')
+    }
+    return !inventory.includes('@scrcpy_grpc_socket')
+  }
   private async run(args: string[]) {
     const { bin = 'hdc', host = '127.0.0.1', port, connectKey } = this.options
     const { stdout, stderr } = await execute(bin, ['-s', `${host}:${port}`, '-t', connectKey, ...args], {
@@ -165,6 +216,9 @@ export class NativeVideo {
     return !(await this.shell('cat /proc/net/unix')).includes('@scrcpy_grpc_socket')
   }
   async prepare(scale: number, valid = () => true) {
+    // A new standby would hide a dead session's remaining forward behind its
+    // listener. Leave foreign records for foreground recovery before warming up.
+    if (await this.ownership?.hasForeignRecords()) return false
     return this.launch(scale, () => {}, () => {}, true, valid)
   }
   async start(scale: number, receive: (frame: NativeVideoFrame) => void, failed: (error: Error) => void) {
@@ -256,7 +310,17 @@ export class NativeVideo {
         }
         if (!listening) throw new Error('Native video service unavailable')
         check()
+        if (this.ownership) {
+          const pids = await this.ownedPids()
+          if (pids.length !== 1) throw new Error('Native process identity is ambiguous')
+          this.recorded = { name: this.name, devicePid: pids[0], started: await this.readStartTime(pids[0]) }
+          await this.ownership.save(this.recorded)
+        }
         this.port = await getPort()
+        if (this.recorded) {
+          this.recorded.port = this.port
+          await this.ownership!.save(this.recorded)
+        }
         this.forwarded = true
         await this.run(['fport', `tcp:${this.port}`, REMOTE_SOCKET])
         check()
@@ -288,11 +352,26 @@ export class NativeVideo {
   }
   private async ownedPids() {
     if (!this.name) return []
-    const processes = await this.shell('ps -ef')
+    let processes = await this.shell(this.recoveredOwner ? 'ps -ef && echo NATIVE_READ_COMPLETE' : 'ps -ef')
+    if (this.recoveredOwner) {
+      if (!processes.endsWith('\nNATIVE_READ_COMPLETE')) throw new Error('Native process inventory unconfirmed')
+      processes = processes.slice(0, -'\nNATIVE_READ_COMPLETE'.length)
+      const rows = processes.split(/\r?\n/).slice(1).filter(line => line.trim())
+      if (rows.some(line => !/^\S+\s+\d+\s+\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S/.test(line.trim()))) {
+        throw new Error('Native process inventory unconfirmed')
+      }
+    }
     if (!/^\s*(UID|USER)\s+PID\s+PPID\b/m.test(processes)) throw new Error('Native process inventory unconfirmed')
-    return processes.split(/\r?\n/).filter((line) =>
+    const pids = processes.split(/\r?\n/).filter((line) =>
       line.includes(`uitest start-daemon singleness --extension-name ${this.name} `),
     ).map((line) => line.trim().split(/\s+/)[1]).filter((pid) => /^\d+$/.test(pid))
+    const owner = this.recoveredOwner
+    if (owner && !pids.includes(owner.devicePid) &&
+      processes.split(/\r?\n/).some(line => line.trim().split(/\s+/)[1] === owner.devicePid) &&
+      await this.readStartTime(owner.devicePid) === owner.started) {
+      throw new Error('Native process identity is unconfirmed after its command changed')
+    }
+    return pids
   }
   async stop() {
     if (this.stream) {
@@ -302,8 +381,23 @@ export class NativeVideo {
       this.stream = undefined
     }
     const pids = await this.ownedPids()
-    for (const pid of pids) await this.shell(`kill -9 ${pid}`)
+    if (this.recoveredOwner && pids.length) {
+      const owner = this.recoveredOwner
+      if (pids.length !== 1 || pids[0] !== owner.devicePid || await this.readStartTime(pids[0]) !== owner.started) {
+        throw new Error('Native process changed; refusing to stop a replacement')
+      }
+      const result = await this.shell(`stat=$(cat /proc/${owner.devicePid}/stat) || exit 1
+rest=\${stat##*) }
+set -- $rest
+shift 19
+[ "$1" = "${owner.started}" ] || exit 1
+kill -9 ${owner.devicePid} && echo stopped`)
+      if (result !== 'stopped') throw new Error('Native process stop unconfirmed')
+    } else for (const pid of pids) await this.shell(`kill -9 ${pid}`)
     if (pids.length && (await this.ownedPids()).length) throw new Error('Native video process stop unconfirmed')
+    if (this.recoveredOwner && this.forwarded && !await this.recoveredSocketIsFree()) {
+      throw new Error('Native socket is still occupied; refusing to remove a possibly reused forward')
+    }
     if (this.forwarded) {
       try {
         await this.run(['fport', 'rm', `tcp:${this.port}`, REMOTE_SOCKET])
@@ -314,8 +408,9 @@ export class NativeVideo {
         if (inventory !== '[Empty]') {
           const entries = inventory.split(/\r?\n/).filter(Boolean).map((line) => line.trim().split(/\s+/))
           if (!entries.length || entries.some((entry) =>
-            entry.length !== 4 || entry[3] !== '[Forward]' ||
-            (entry[1] === `tcp:${this.port}` && entry[2] === REMOTE_SOCKET),
+            entry.length !== 4 || !['[Forward]', '[Reverse]'].includes(entry[3]) ||
+            (entry[3] === '[Forward]' && entry[0] === this.options.connectKey &&
+              entry[1] === `tcp:${this.port}` && entry[2] === REMOTE_SOCKET),
           )) throw error
         }
       }
@@ -326,8 +421,10 @@ export class NativeVideo {
       if (await this.shell(`test ! -e /data/local/tmp/${this.name} && echo removed`) !== 'removed') {
         throw new Error('Native file removal unconfirmed')
       }
+      await this.ownership?.clear(this.name)
       this.name = undefined
     }
+    this.recorded = undefined
     this.port = undefined
     this.prepared = undefined
   }

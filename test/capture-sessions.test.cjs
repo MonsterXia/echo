@@ -8,7 +8,7 @@ test('video promotion keeps live JPEG and input until the renderer confirms a pa
   const h = screencastMain()
   const ready = deferred()
   let receive, starts = 0
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start(_scale, callback) { if (++starts === 1) return false; receive = callback; return ready.promise },
     async stop() {},
   }
@@ -31,7 +31,7 @@ test('video promotion keeps live JPEG and input until the renderer confirms a pa
 
 test('failed video promotion keeps JPEG and stale acknowledgements cannot stop a newer capture', async () => {
   const h = screencastMain()
-  h.driver.nativeVideo = { async start() { return false }, async stop() {} }
+  h.driver.nativeVideo = { async recoverOrphans() {}, async start() { return false }, async stop() {} }
   h.show(); await h.start()
   assert.ok(h.hasHandler('retryCaptureVideo'))
   assert.equal(await h.invoke('retryCaptureVideo', [h.session(), 1, 1]), false)
@@ -46,7 +46,7 @@ test('close during promotion drops late video and waits before releasing the dev
   const h = screencastMain()
   const ready = deferred()
   let starts = 0, receive, stopped = 0
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start(_scale, callback) { if (++starts === 1) return false; receive = callback; return ready.promise },
     async stop() { stopped++ },
   }
@@ -69,7 +69,7 @@ for (const rejects of [false, true]) test(`closing when promotion ${rejects ? 'r
   const h = screencastMain()
   const ready = deferred(), cleanup = deferred()
   let starts = 0, stopping = 0, maxStopping = 0
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start() { return ++starts === 1 ? false : ready.promise },
     async stop() { stopping++; maxStopping = Math.max(maxStopping, stopping); if (starts > 1) await cleanup.promise; stopping-- },
   }
@@ -162,7 +162,7 @@ test('foreground retry recovers a failed control channel before replacing an unc
     if (api === 'startCaptureScreen') starts++
     return { sessionId: 'session', result: { width: 100, height: 200 } }
   })
-  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true }, async recoverOrphans() {} }
   h.driver.controlRecovery = { async remember() {}, async reset() { recoveries++; failed = false } }
   h.show()
   await h.start()
@@ -182,7 +182,7 @@ test('failed foreground recovery retains the old lease and never starts another 
     if (api === 'startCaptureScreen') starts++
     return { sessionId: 'session' }
   })
-  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true }, async recoverOrphans() {} }
   h.driver.controlRecovery = { async remember() {}, async reset() { resets++; throw new Error('Control service is in use') } }
   h.show(); await h.start(); failed = true
   await assert.rejects(h.start(), /Control service is in use/)
@@ -240,7 +240,7 @@ test('preparing a cached driver also avoids destructive control recovery', async
   const h = screencastMain(async () => { throw new Error('control unavailable') })
   let stops = 0, prepares = 0
   h.driver.stop = async () => { stops++ }
-  h.driver.nativeVideo = { prepare: async () => { prepares++; return true } }
+  h.driver.nativeVideo = { async recoverOrphans() {}, prepare: async () => { prepares++; return true } }
   await assert.rejects(h.driver.prepareNativeCapture(1, () => true), /control unavailable/)
   assert.equal(stops, 0)
   assert.equal(prepares, 0)
@@ -256,7 +256,7 @@ test('cold native start stops only its own JPEG preview, never an unrelated capt
     return { sessionId: 'session' }
   })
   let starts = 0
-  h.driver.nativeVideo = { async start() { assert.ok(prepared, 'prepare control before starting native capture'); starts++; return true }, async stop() {} }
+  h.driver.nativeVideo = { async recoverOrphans() {}, async start() { assert.ok(prepared, 'prepare control before starting native capture'); starts++; return true }, async stop() {} }
   h.show()
   await h.start()
   await h.stop()
@@ -270,7 +270,7 @@ test('JPEG preview reaches the window while native first frame is pending, then 
   const h = screencastMain()
   const ready = deferred()
   let receive
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start(_scale, callback) { receive = callback; return ready.promise },
     async stop() {},
   }
@@ -292,7 +292,7 @@ test('JPEG preview reaches the window while native first frame is pending, then 
 test('native stop failure still attempts JPEG preview cleanup and retains the native lease', async () => {
   const h = screencastMain()
   let stopFails = true
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start() { throw new Error('native start failed') },
     async stop() { if (stopFails) throw new Error('native stop unconfirmed') },
   }
@@ -312,7 +312,7 @@ test('failed JPEG fallback start remains uncertain until a real stop is acknowle
     return { sessionId: 'session' }
   })
   let nativeStarts = 0
-  h.driver.nativeVideo = { async start() { nativeStarts++; return false }, async stop() {} }
+  h.driver.nativeVideo = { async recoverOrphans() {}, async start() { nativeStarts++; return false }, async stop() {} }
   h.show()
   await assert.rejects(h.start(), /JPEG start result unknown/)
   await assert.rejects(h.start(), /JPEG stop unconfirmed/)
@@ -691,7 +691,7 @@ test('native frames retain generation ownership and closing during start compens
   const pending = deferred()
   const h = screencastMain()
   let receive, stops = 0
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start(_scale, callback) { receive = callback; return pending.promise },
     async stop() { stops++ },
   }
@@ -713,7 +713,7 @@ test('native frames retain generation ownership and closing during start compens
 test('native unavailable falls back to JPEG while explicit compatibility skips native', async () => {
   const h = screencastMain()
   let starts = 0
-  h.driver.nativeVideo = { async start() { starts++; return false }, async stop() {} }
+  h.driver.nativeVideo = { async recoverOrphans() {}, async start() { starts++; return false }, async stop() {} }
   h.show()
   await h.start()
   assert.equal(starts, 1)
@@ -727,7 +727,7 @@ test('native unavailable falls back to JPEG while explicit compatibility skips n
 test('unconfirmed native cleanup blocks JPEG fallback and subsequent start', async () => {
   const h = screencastMain()
   let starts = 0
-  h.driver.nativeVideo = {
+  h.driver.nativeVideo = { async recoverOrphans() {},
     async start() { starts++; throw new Error('native cleanup unconfirmed') },
     async stop() { throw new Error('native cleanup unconfirmed') },
   }
@@ -736,4 +736,31 @@ test('unconfirmed native cleanup blocks JPEG fallback and subsequent start', asy
   await assert.rejects(h.invoke('startCaptureScreen', [h.session(), 0.5, 2, false]), /cleanup unconfirmed/)
   assert.equal(starts, 1)
   assert.equal(listeners(h), 0)
+})
+
+test('foreground setup reclaims recorded orphans before control recovery; background setup never reclaims', async () => {
+  const h = screencastMain(async () => ({ result: { width: 100, height: 200 } }))
+  let occupied = true, reclaimed = 0
+  h.driver.nativeVideo = { async recoverOrphans() { occupied = false; reclaimed++ } }
+  h.driver.controlRecovery = { async remember() { assert.equal(occupied, false) } }
+  await h.driver.initializeControl()
+  assert.equal(reclaimed, 1)
+  h.driver.controlRecovery = { async remember() {} }
+  await h.driver.initializeControl(true)
+  assert.equal(reclaimed, 1)
+})
+
+test('foreground capture recovers orphans when reusing a cached background driver', async () => {
+  const h = screencastMain(async () => ({ sessionId: 'session', result: { width: 100, height: 200 } }))
+  const events = []
+  h.driver.nativeVideo = {
+    async recoverOrphans() { events.push('recover') },
+    async start() { events.push('start'); return false },
+    async stop() {},
+  }
+  await h.driver.initializeControl(true)
+  assert.deepEqual(events, [])
+  h.show(); await h.start()
+  assert.deepEqual(events, ['recover', 'start'])
+  await h.stop()
 })

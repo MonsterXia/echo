@@ -141,6 +141,7 @@ exports.screencastMain = function (
           }
         if (id === './nativeVideo')
           return { NativeVideo: class {
+            async recoverOrphans() {}
             async start() { return false }
             async stop() {}
           } }

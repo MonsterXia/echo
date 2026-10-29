@@ -1,0 +1,22 @@
+{
+  "version": "1.0.4-dev.1",
+  "sourceBranch": "codex/fix-stale-mirroring-session",
+  "appAsarSha256": "75e106b6053b826e44368ee6b45d4405090252b5388c38d05a10c6d38ff9477d",
+  "previousAsarSha256": "639ca7efafcc55f4cc57dfcbd8dc8b41428fddf9a81bff111fef5461faeff2ef",
+  "backupRelativePath": "release/mirroring-recovery-local/backup/Scrcpy Harmony.app",
+  "codesignVerifyDeepStrict": true,
+  "configurationPreserved": true,
+  "releasePublished": false,
+  "installedPathUiFrameConfirmed": true,
+  "appTests": {
+    "passed": 722,
+    "failed": 0
+  },
+  "liciaEachMode": {
+    "passed": 606,
+    "pending": 4
+  },
+  "lintAndI18nPassed": true,
+  "buildPassed": true,
+  "mainAssetSha256": "291bcb17ca995fbbbe5eecb3816b4e06afc092377a2139bb7283f6a50279d149"
+}
