@@ -1,0 +1,16 @@
+{
+  "identity": {
+    "baseline_sha": "4f6e767b6b5b922df87c0015b3f93f070fda600b",
+    "build_run": 40875259788,
+    "ci_run": 40875222123,
+    "preparation_pr": 73,
+    "release_name": "Scrcpy Harmony 1.0.4-dev.2",
+    "repo": "MonsterXia/scrcpy-harmony",
+    "source_sha": "dc03b25363f2b6f42e2feeff873b661982679eab",
+    "stable_tag": "v1.0.3",
+    "tag": "v1.0.4-dev.2",
+    "version": "1.0.4-dev.2"
+  },
+  "notes_sha256": "d0ebea9d052f7035fc08ddfed190497d95fa7f6ed99ec9b2b653ea1cad9f221c",
+  "release_id": 427865203
+}
