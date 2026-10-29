@@ -223,3 +223,77 @@ test('cold activation rechecks its process after forwarding before sending onSta
   assert.equal(streams, 0)
   assert.equal(f.calls.some(args => args[1]?.startsWith('kill -9')), false)
 })
+
+test('durable ownership is saved before forwarding and cleared only after device cleanup', async () => {
+  const f = await fixture({ firstFails: false })
+  const history = []
+  const run = f.native.run
+  f.native.run = async args => {
+    history.push(args.join(' '))
+    if (args[1] === 'cat /proc/123/stat') return `123 (xdevice_scrcpy) S ${'0 '.repeat(18)}456 0`
+    return run(args)
+  }
+  f.native.ownership = {
+    save: async record => history.push({ ...record }),
+    clear: async name => history.push({ clear: name }),
+  }
+  await f.native.prepare(1)
+  const records = history.filter(item => typeof item === 'object')
+  assert.equal(records[0].devicePid, '123'); assert.equal(records[0].started, '456')
+  assert.equal(typeof records[1].port, 'number')
+  assert.ok(history.indexOf(records[1]) < history.findIndex(x => typeof x === 'string' && x.startsWith('fport tcp:')))
+  await f.native.stop()
+  assert.ok(history.findIndex(x => typeof x === 'object' && x.clear) > history.findIndex(x => typeof x === 'string' && x.includes('test ! -e')))
+})
+
+for (const scenario of ['same', 'replaced', 'unknown']) {
+  test(`stale ownership recovery validates the remote process (${scenario})`, async () => {
+    const f = await fixture({ firstFails: false })
+    const name = 'scrcpy_harmony_0123456789abcdef.so'
+    const record = { name, hostPid: 99999, devicePid: '123', started: '456' }
+    let exists = true, killed = false, removed = false
+    f.native.ownership = { recover: async cleanup => cleanup(record) }
+    f.native.run = async args => {
+      const cmd = args[1]
+      if (cmd === 'ps -ef && echo NATIVE_READ_COMPLETE') return scenario === 'unknown' ? 'permission denied' :
+        `UID PID PPID C STIME TTY TIME CMD\n${exists ? `shell 123 1 0 00:00 ? 00:00 uitest start-daemon singleness --extension-name ${name} -scale 1\n` : ''}NATIVE_READ_COMPLETE`
+      if (cmd === 'cat /proc/123/stat') return `123 (xdevice_scrcpy) S ${'0 '.repeat(18)}${scenario === 'replaced' ? '789' : '456'} 0`
+      if (cmd.includes('kill -9')) { assert.match(cmd, /\[ "\$1" = "456" \]/); killed = true; exists = false; return 'stopped' }
+      if (cmd.startsWith('rm -f')) { removed = true; return '' }
+      if (cmd.startsWith('test ! -e')) return 'removed'
+      throw Error('Unexpected command: '+cmd)
+    }
+    if (scenario === 'same') {
+      await f.native.recoverOrphans(); assert.equal(killed, true); assert.equal(removed, true)
+    } else {
+      await assert.rejects(f.native.recoverOrphans(), /changed|inventory unconfirmed/)
+      assert.equal(killed, false); assert.equal(removed, false)
+    }
+  })
+}
+
+for (const occupied of [false, true, 'empty', 'partial', 'malformed']) {
+  test(`orphan forward cleanup refuses another active capture (occupied=${occupied})`, async () => {
+    const f = await fixture({ firstFails: false })
+    const name = 'scrcpy_harmony_0123456789abcdef.so'
+    let removed = false
+    f.native.ownership = { recover: async cleanup => cleanup({ name, hostPid: 99999, devicePid: '123', started: '456', port: 12345 }) }
+    f.native.run = async args => {
+      if (args.join(' ') === 'fport ls') return 'synthetic tcp:12345 localabstract:scrcpy_grpc_socket [Forward]'
+      if (args[0] === 'fport' && args[1] === 'rm') { removed = true; return '' }
+      if (args[1] === 'ps -ef && echo NATIVE_READ_COMPLETE') return 'UID PID PPID C STIME TTY TIME CMD\nNATIVE_READ_COMPLETE'
+      if (args[1] === 'cat /proc/net/unix && echo NATIVE_SOCKET_READ_COMPLETE') {
+        if (occupied === 'empty') return ''
+        if (occupied === 'partial') return 'Num RefCount Protocol Flags Type St Inode Path'
+        if (occupied === 'malformed') return 'Num RefCount Protocol Flags Type St Inode Path\nerror\nNATIVE_SOCKET_READ_COMPLETE'
+        return 'Num RefCount Protocol Flags Type St Inode Path\n' + (occupied ? '1: 2 0 10000 1 01 123 @scrcpy_grpc_socket\n' : '') + 'NATIVE_SOCKET_READ_COMPLETE'
+      }
+      if (args[1].startsWith('rm -f')) return ''
+      if (args[1].startsWith('test ! -e')) return 'removed'
+      throw Error('Unexpected command: '+args.join(' '))
+    }
+    if (occupied) await assert.rejects(f.native.recoverOrphans(), /possibly reused forward|socket inventory unconfirmed/)
+    else await f.native.recoverOrphans()
+    assert.equal(removed, !occupied)
+  })
+}

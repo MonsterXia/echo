@@ -162,7 +162,7 @@ test('foreground retry recovers a failed control channel before replacing an unc
     if (api === 'startCaptureScreen') starts++
     return { sessionId: 'session', result: { width: 100, height: 200 } }
   })
-  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true }, async recoverOrphans() {} }
   h.driver.controlRecovery = { async remember() {}, async reset() { recoveries++; failed = false } }
   h.show()
   await h.start()
@@ -182,7 +182,7 @@ test('failed foreground recovery retains the old lease and never starts another 
     if (api === 'startCaptureScreen') starts++
     return { sessionId: 'session' }
   })
-  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true } }
+  h.driver.nativeVideo = { async start() { return false }, async stop() {}, async available() { return true }, async recoverOrphans() {} }
   h.driver.controlRecovery = { async remember() {}, async reset() { resets++; throw new Error('Control service is in use') } }
   h.show(); await h.start(); failed = true
   await assert.rejects(h.start(), /Control service is in use/)
@@ -736,4 +736,16 @@ test('unconfirmed native cleanup blocks JPEG fallback and subsequent start', asy
   await assert.rejects(h.invoke('startCaptureScreen', [h.session(), 0.5, 2, false]), /cleanup unconfirmed/)
   assert.equal(starts, 1)
   assert.equal(listeners(h), 0)
+})
+
+test('foreground setup reclaims recorded orphans before control recovery; background setup never reclaims', async () => {
+  const h = screencastMain(async () => ({ result: { width: 100, height: 200 } }))
+  let occupied = true, reclaimed = 0
+  h.driver.nativeVideo = { async recoverOrphans() { occupied = false; reclaimed++ } }
+  h.driver.controlRecovery = { async remember() { assert.equal(occupied, false) } }
+  await h.driver.initializeControl()
+  assert.equal(reclaimed, 1)
+  h.driver.controlRecovery = { async remember() {} }
+  await h.driver.initializeControl(true)
+  assert.equal(reclaimed, 1)
 })

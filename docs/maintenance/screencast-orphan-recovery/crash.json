@@ -1,0 +1,33 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T11:58:25.507Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 6028,
+      "visibleMs": 6092,
+      "firstCodec": "JPEG",
+      "draws": 3,
+      "codecs": {
+        "JPEG": 1,
+        "H.264": 2
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": false
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+  ],
+  "mainAssetSha256": "3575942e9cec676677ea1ccb19526d75dd646dbbf869a289820c6389f8d62e1d",
+  "crashLeftOwnershipRecord": true
+}

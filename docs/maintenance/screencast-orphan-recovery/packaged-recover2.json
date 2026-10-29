@@ -1,0 +1,34 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T12:04:20.824Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 1778,
+      "visibleMs": 1784,
+      "firstCodec": "JPEG",
+      "draws": 5,
+      "codecs": {
+        "JPEG": 4,
+        "H.264": 1
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": true
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+    "Native video unavailable; using JPEG compatibility capture"
+  ],
+  "previousSessionReplaced": true,
+  "normalExitClearedOwnership": true
+}

@@ -1,0 +1,12 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-29T11:47:04.450Z",
+  "rounds": [],
+  "passed": false,
+  "runtime": {
+    "version": "1.0.4-dev.1",
+    "packaged": true
+  },
+  "nativeDiagnostics": [],
+  "error": "Window observation timed out"
+}

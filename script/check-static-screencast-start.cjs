@@ -9,11 +9,26 @@ const { promisify } = require('node:util')
 const { createHash } = require('node:crypto')
 const { setTimeout: delay } = require('node:timers/promises')
 const root = path.resolve(__dirname, '..')
-const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-static-window-'))
+const orphanCrash = process.argv.includes('--orphan-crash')
+const orphanRecover = process.argv.includes('--orphan-recover')
+const recoveryProfile = process.env.SCRCPY_TEST_RECOVERY_PROFILE
+if ((orphanCrash || orphanRecover) && (!recoveryProfile || !path.isAbsolute(recoveryProfile))) {
+  throw new Error('Orphan verification requires an absolute SCRCPY_TEST_RECOVERY_PROFILE temporary directory')
+}
+const profile = recoveryProfile || fs.mkdtempSync(path.join(os.tmpdir(), 'scrcpy-static-window-'))
 const upgradeMode = process.argv.includes('--upgrade')
 const controlledMotion = process.argv.includes('--controlled-motion')
 const manualMotion = process.argv.includes('--manual-motion')
-const installed = process.argv[3] === '--upgrade' ? undefined : process.argv[3]
+const installed = process.argv[3]?.startsWith('--') ? undefined : process.argv[3]
+function ownershipRecords() {
+  const dir = path.join(profile, 'data/native-video/sessions')
+  if (!fs.existsSync(dir)) return []
+  return fs.readdirSync(dir, { recursive: true }).filter(file => file.endsWith('.json'))
+    .map(file => JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8')))
+}
+const previousOwners = orphanRecover ? ownershipRecords() : []
+if (orphanRecover) assert.equal(previousOwners.length, 1, 'one crashed session must be recorded')
+let deliberatelyCrashed = false
 const report = { scope: 'Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved',
   startedAt: new Date().toISOString(), rounds: [], passed: false }
 let app, ownedChild, ownedSocket, launchError
@@ -44,8 +59,11 @@ async function launch(executablePath, args, env) {
   child.on('error', error => { launchError = error })
   let diagnostics = ''
   child.stderr.on('data', chunk => { diagnostics += chunk })
+  child.stdout.on('data', chunk => { diagnostics += chunk })
   const until = Date.now() + 30000
-  while (!/Debugger listening on (ws:\/\/[^\s]+)/.test(diagnostics)) {
+  // The inspector can listen during Node bootstrap, before Electron's module
+  // exists. Also wait for the main document before injecting observations.
+  while (!diagnostics.includes('main ready and show') || !/Debugger listening on (ws:\/\/[^\s]+)/.test(diagnostics)) {
     if (launchError) throw launchError
     if (Date.now() > until || child.exitCode !== null) throw new Error('App debugging endpoints unavailable')
     await delay(100)
@@ -80,7 +98,10 @@ async function launch(executablePath, args, env) {
       expression: `(${fn.toString()})(${electron}, ${JSON.stringify(arg) || 'undefined'})`, returnByValue: true, awaitPromise: true,
     } })) } catch (error) { pending.get(requestId)?.reject(error) }
     const message = await reply
-    if (message.error || message.result.exceptionDetails) throw new Error('App inspector evaluation failed')
+    if (message.error || message.result.exceptionDetails) {
+      throw new Error('App inspector evaluation failed: ' + (message.error?.message ||
+        message.result.exceptionDetails.exception?.description || message.result.exceptionDetails.text))
+    }
     return message.result.result.value
   }
   return { evaluate, process: () => child,
@@ -242,6 +263,22 @@ async function run() {
       ...(upgradeMode ? { handoverGapMs: stats.handoverGapMs ?? null, promotion: stats.promotion ?? null,
         timeline: stats.timeline, controlledMotion: stats.controlledMotion ?? null } : {}) })
     console.log(JSON.stringify(report.rounds.at(-1)))
+    if (orphanCrash || orphanRecover) {
+      assert.ok(stats.codecs['H.264'] > 0, 'native frames must actually draw')
+      const owners = ownershipRecords()
+      assert.equal(owners.length, 1)
+      assert.equal(owners[0].hostPid, ownedChild.pid)
+      if (orphanRecover) {
+        assert.ok(owners.every(owner => owner.name !== previousOwners[0].name))
+        report.previousSessionReplaced = true
+      } else {
+        await terminateOwned()
+        deliberatelyCrashed = true
+        assert.equal(ownershipRecords().length, 1)
+        report.crashLeftOwnershipRecord = true
+        break
+      }
+    }
     // The device JPEG service may also suppress identical static frames.
     // Continued live capture requires a separate controlled display change.
     assert.ok(stats.draws >= 1, 'Capture must produce a real picture')
@@ -255,7 +292,13 @@ async function run() {
   report.passed = true
 }
 run().catch(error => { report.error = error.message; process.exitCode = 1 }).finally(async () => {
-  try { await app?.close() } catch (error) { report.closeError = error.message; report.passed = false; process.exitCode = 1 }
+  try {
+    if (!deliberatelyCrashed) await app?.close()
+    if (orphanRecover) {
+      assert.equal(ownershipRecords().length, 0, 'normal quit must clear the replacement ownership')
+      report.normalExitClearedOwnership = true
+    }
+  } catch (error) { report.closeError = error.message; report.passed = false; process.exitCode = 1 }
   ownedSocket?.close()
   try { await terminateOwned() } catch (error) { report.closeError = error.message; report.passed = false; process.exitCode = 1 }
   clearTimeout(deadline)
