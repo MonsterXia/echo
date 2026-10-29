@@ -15,6 +15,7 @@
     "verification-mac-x64.txt": "aaf8a7621452f3be17e24bca1b490ee1406fddb35e1801963a317948db54ccf0",
     "verification-win-x64.json": "ec9e9905fbf9d6c607c32d21766fa655a614d4fdd70d81cc572fdd54601365a9"
   },
+  "downloadVerifiedAt": "2026-10-29T13:34:18.543215+00:00",
   "downloadedAssetsVerified": 14,
   "identity": {
     "baseline_sha": "4f6e767b6b5b922df87c0015b3f93f070fda600b",
@@ -29,8 +30,21 @@
     "version": "1.0.4-dev.2"
   },
   "latest": "v1.0.3",
+  "postPublicationVerification": {
+    "assetCount": 14,
+    "assetSizesAndDigestsVerified": true,
+    "draft": false,
+    "latestDraft": false,
+    "latestPrerelease": false,
+    "latestReleaseId": 422009748,
+    "latestTag": "v1.0.3",
+    "prerelease": true,
+    "releaseId": 427865203,
+    "tag": "v1.0.4-dev.2",
+    "tagCommit": "dc03b25363f2b6f42e2feeff873b661982679eab"
+  },
   "published_at": "2026-10-29T13:34:23Z",
   "release_id": 427865203,
   "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.2",
-  "verifiedAt": "2026-10-29T13:34:18.543215+00:00"
+  "verifiedAt": "2026-10-29T13:46:00.679952+00:00"
 }
