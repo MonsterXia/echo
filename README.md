@@ -39,11 +39,13 @@ Installers include HDC and the required device resources; Node.js is not needed 
 
 If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
 
-The stable **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It remains the recovery version before dependency source migration. [**1.0.4-dev.1**](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.1) is available as a development pre-release with H.264 mirroring, keyboard/clipboard input, control recovery, opt-in Beta Update and English/Chinese language selection. Download the new installer to upgrade from dev.0; language changes take effect after restarting. See the [release report](docs/releases/1.0.4-dev.1.md) for checks and signing limitations. Include the version and commit SHA when reporting a problem.
+The stable **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It remains the recovery version before dependency source migration.
+
+[**1.0.4-dev.2**](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.2) is available as a development pre-release. It improves HAP drag installation and completion feedback, and adds limited recovery of recorded mirroring sessions left after an app exit. It also includes H.264 mirroring, keyboard/clipboard input, opt-in Beta Update and English/Chinese language selection. Download the new installer to upgrade; language changes take effect after restarting. See the [release report](docs/releases/1.0.4-dev.2.md) for three-platform installation/startup checks, signing limitations and pending device validation. Include the version and commit SHA when reporting a problem.
 
 ## Quick start
 
-The 1.0.4-dev.1 pre-release automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the stable 1.0.3 release.
+The 1.0.4-dev.2 pre-release automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the stable 1.0.3 release.
 
 The current pre-release retries video once when the picture changes after JPEG fallback. You can also click **Switch to video** (切换到视频) in the screencast toolbar. JPEG stays active until the first decoded video frame is displayed; a failed attempt keeps JPEG running.
 
@@ -54,7 +56,7 @@ The current pre-release retries video once when the picture changes after JPEG f
 
 The app uses its bundled HDC by default. To use another version, specify the executable path in **HDC location** (HDC 位置) in settings.
 
-The 1.0.4-dev.1 pre-release supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. Stable 1.0.3 does not include this language selection. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
+The 1.0.4-dev.2 pre-release supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. Stable 1.0.3 does not include this language selection. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
 
 ### Common questions
 

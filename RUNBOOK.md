@@ -1,8 +1,8 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
-## 1.0.4-dev.2 发布计划（2026-10-29）
+## 1.0.4-dev.2 开发预发布（2026-10-29）
 
-状态：**发布准备中**。接续 dev.1，包含已合入 PR #71/#72 的 HAP 安装反馈与投屏残留恢复修复；以 Pre-release 发布，稳定版保持 v1.0.3。先完成准备 PR 与同源三平台构建/安装启动，再验证元数据、摘要和公开附件。来源、限制及逐步验收见[发布记录](docs/releases/1.0.4-dev.2.md)，未验证事项不标记完成。
+状态：**已完成发布，跨平台真机与长期矩阵待验收**。2026-10-29 21:34:23（UTC+8）已发布 [1.0.4-dev.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.2)，包含 PR #71/#72 的 HAP 安装反馈与投屏残留受限恢复修复。发布准备 [PR #73](https://github.com/MonsterXia/scrcpy-harmony/pull/73) 已合入；tag/构建源 `dc03b253` 的五项 CI、同源三平台实际安装启动、14 个附件重新下载校验及公开后复查通过，Latest 保持 v1.0.3，旧预发布及附件保留。公开后生产更新逻辑六场景通过：稳定通道指向 1.0.3，Beta 指向 dev.2，并覆盖匿名 REST 403 的真实公共页面回退；范围见[在线报告](docs/releases/1.0.4-dev.2-online-provider.json)。签名限制、辅助 YAML 排除、artifact 下载 EOF 重试与审计见[发布记录](docs/releases/1.0.4-dev.2.md)。下方及专项记录的“未发布”“待合入”保留其历史语境；此前 macOS arm64 专项真机证据不是本版三个安装包的新真机矩阵。下一步仍为跨固件、长期运行、物理拔插和 Windows/macOS x64 真机验收，未验证事项不标记完成。
 
 
 ## 桌面残留会话导致投屏失败（2026-10-29）
