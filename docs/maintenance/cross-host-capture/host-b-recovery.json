@@ -1,0 +1,73 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-30T03:14:26.886Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 3906,
+      "visibleMs": 3921,
+      "firstCodec": "JPEG",
+      "draws": 542,
+      "codecs": {
+        "JPEG": 58,
+        "H.264": 484
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 2,
+      "firstDrawMs": 523,
+      "visibleMs": 570,
+      "firstCodec": "JPEG",
+      "draws": 613,
+      "codecs": {
+        "JPEG": 29,
+        "H.264": 584
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 3,
+      "firstDrawMs": 558,
+      "visibleMs": 595,
+      "firstCodec": "JPEG",
+      "draws": 610,
+      "codecs": {
+        "JPEG": 29,
+        "H.264": 581
+      },
+      "width": 1084,
+      "height": 2412,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": true,
+  "crossHostRecovery": {
+    "initialLocalRecords": 0,
+    "activeNativeProcessPreserved": true,
+    "videoContinuedAfterForeignInspection": true,
+    "recoveredWithoutLocalJournal": true
+  },
+  "runtime": {
+    "version": "1.0.4-dev.2",
+    "packaged": false
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening"
+  ],
+  "mainAssetSha256": "14897fdd9afdcca5c76774580eb383693d57c78aeeb31367bfbf9d6e25820741",
+  "normalExitClearedOwnership": true
+}

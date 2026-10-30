@@ -1,0 +1,17 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-30T03:08:26.778Z",
+  "rounds": [],
+  "passed": false,
+  "crossHostRecovery": {
+    "initialLocalRecords": 0
+  },
+  "runtime": {
+    "version": "1.0.4-dev.2",
+    "packaged": false
+  },
+  "nativeDiagnostics": [],
+  "mainAssetSha256": "081aca9289e566c065fe331689c65bd7ac58fe36fda18f67d6896dcc0ad22a6a",
+  "error": "Window observation timed out",
+  "normalExitClearedOwnership": true
+}

@@ -189,3 +189,13 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 `native-video-ownership.test.cjs` 覆盖持久记录、真实双进程争抢与认领者退出，`native-video-deployment.test.cjs` 覆盖恢复时设备 PID/starttime、转发归属和不完整 socket 清单；这些均不是设备验收。
 
 `check-static-screencast-start.cjs` 等待主窗口 ready and show 日志后连接 inspector，避免在 Node bootstrap 阶段误加载 Electron 模块。真实异常退出验收须先关闭其他实例、准备一台已解锁设备，再为两次命令设置相同的绝对临时目录 `SCRCPY_TEST_RECOVERY_PROFILE`（不要使用日常配置）：第一次追加 `--orphan-crash`，实际 H.264 绘制后强制结束本次测试进程并断言记录仍在；第二次追加 `--orphan-recover`，断言旧会话替换、新会话绘制以及正常退出后记录清空。两次均可在报告路径后指定同一安装程序路径。第二次必须执行；若中途失败，保留临时目录并按记录检查精确归属，不可按名称前缀批量清理手机进程。报告仅保存统计，不保存帧、设备标识或会话 PID。范围与限制见[专项记录](../../../../docs/maintenance/screencast-orphan-recovery.md)。
+
+## 跨电脑投屏残留验证
+
+`test/native-video-cross-host.test.cjs` 验证无本地 journal 的前台受限恢复和真实 sh/Git Bash 执行的终止前保护；`native-video-deployment` 同时覆盖 HarmonyOS socket 表头。完整 build 后，可先用独立绝对路径 `SCRCPY_TEST_RECOVERY_PROFILE` 运行 `check-static-screencast-start.cjs <A报告> --orphan-crash`，再不设置该变量运行 `check-static-screencast-start.cjs <B报告> --cross-host-recover`。B 必须无本机记录，检查真实恢复日志、H.264 绘制、独立进程恢复检查不终止活跃视频及正常退出记录清空。需要一台解锁且画面持续变化的手机；静止画面可能只有 JPEG，严格 H.264 断言应失败并保留报告。A 模式会强制结束自己启动的测试应用，须接着完成 B 恢复；不要同时运行其他投屏。该路径模拟缺失旧主机记录，不能代替两台物理主机/Windows 包验证。范围及失败证据见 `docs/maintenance/windows-cross-host-capture.md`。
+
+## 商店元数据网络失败验证
+
+`test/bundles.test.cjs` 验证真实元数据 IPC 的超时回退、冷却、请求合并、缓存和本地字段保持；`test/online-bundle-info.test.cjs` 通过真实 Axios/本地 HTTP 与 HTTPS CONNECT 验证底层取消。构建后运行 `node script/check-store-fallback-live.mjs <证据目录>`，需要单台已授权设备及 WPS/bilibili。探针只选择两包，真实 HDC/IPC/UI 保留，以本地代理模拟无响应，再允许固定真实商店 API；验证三秒请求截止、列表/刷新、连接释放和冷却后真实元数据恢复。等待约 31 秒冷却，不修改全局代理，不保存屏幕/原始请求；无响应阶段不读取真实图标，在线阶段图标 URL 成功不等于已验收图片解码。说明见 `docs/maintenance/app-store-fallback.md`。
+
+商店探针使用 `script/lib/live-probe-lifecycle.mjs` 管理验证截止和资源归属：超时后不再推进验证，等待晚到资源后逆序清理；应用关闭必须确认子进程退出，强杀或清理失败均不能报告通过。120 秒为验证阶段预算，总运行时间还包括有限的启动等待与清理。最终报告在清理后写入，`test/live-probe-lifecycle.test.cjs` 覆盖这些失败边界。

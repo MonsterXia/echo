@@ -1,0 +1,60 @@
+{
+  "verifiedAt": "2026-10-30T03:42:41.905098+00:00",
+  "baselineCommit": "431a2715fb6ae0729b9481f8b5373f54b604377b",
+  "branch": "codex/cross-host-capture-recovery",
+  "uncommittedChanges": true,
+  "sourceSha256": {
+    "src/main/lib/hdc/bundle.ts": "590cfdc16ce2743afc2c071ae08021f1866b65d1db127f03d00a6df04eee976a",
+    "src/main/lib/hdc/onlineBundleInfo.ts": "414ef08fc08f116abf8d5293514d6bf6ace249e9d09608866590a5c45d995937",
+    "test/bundles.test.cjs": "1b1b91d7f52c46445c59adb97f83075a61ea763758de01f2c5584697c14f5ae8",
+    "test/online-bundle-info.test.cjs": "cb4c67631fe744041694221ab50e4e573eb90af43ad8e8074d3206550d6144e4",
+    "script/check-store-fallback-live.mjs": "0980d3ab0bf406535ea47aae3c0a95bce5402ec237b3deb6d3a81c4a1ec9bf37"
+  },
+  "mainBuildSha256": "b13610dc56a5d6631e1c482654acb26f33699ce810838406b167c4097b29a2f3",
+  "validation": {
+    "targetedTests": 46,
+    "applicationTests": {
+      "passed": 774,
+      "failed": 0
+    },
+    "liciaProduction": {
+      "passed": 606,
+      "pending": 4
+    },
+    "liciaFallback": {
+      "passed": 606,
+      "pending": 4
+    },
+    "lint": "passed",
+    "i18n": "passed",
+    "mainBuild": "passed",
+    "probeSyntax": "passed",
+    "diffCheck": "passed"
+  },
+  "live": {
+    "report": "fixed-live/report.json",
+    "platform": "macOS arm64",
+    "realDevice": true,
+    "realIpcAndApplicationList": true,
+    "controlledSilentProxy": true,
+    "firstBatchMs": 3765,
+    "offlineRefreshMs": 1000,
+    "timedOutProxyConnectionsRemaining": 0,
+    "realStoreMetadataRecoveredWithoutRestart": true,
+    "warnings": 1,
+    "pageErrors": 0,
+    "offlineAppIconsVerified": false,
+    "onlineImageDecodeVerified": false,
+    "windowsIntranetVerified": false
+  },
+  "retainedFailedRuns": {
+    "live/report.json": "probe did not observe CONNECT traffic",
+    "live-second/report.json": "same probe CONNECT observation gap with extra diagnostics",
+    "live-connect/report.json": "CONNECT connection remained open after caller deadline",
+    "live-complete/report.json": "CONNECT cancellation defect remained after server half-close handling; fixed by per-request Agent signal"
+  },
+  "release": {
+    "published": false,
+    "installedApplicationReplaced": false
+  }
+}

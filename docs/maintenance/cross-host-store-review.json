@@ -1,0 +1,48 @@
+{
+  "verifiedAt": "2026-10-30T04:46:47.324348+00:00",
+  "baselineCommit": "431a2715fb6ae0729b9481f8b5373f54b604377b",
+  "branch": "codex/cross-host-capture-recovery",
+  "sourceSha256": {
+    "src/main/lib/hdc/nativeVideoRecovery.ts": "7f6199ea68cc992d73ef9083fef71960f66882f8ca96c465f6ec6467a8fddf32",
+    "src/main/lib/hdc/nativeVideo.ts": "3d69d0a33fa5f55339b289ef7b2ad2d01be6df487768fdbb2d4809678fb168b9",
+    "src/main/lib/hdc/captureDriver.ts": "ffb21380e0eee474211c640c3b3838162ed77084e503f7d3bc4fc415a16c75dd",
+    "src/main/lib/hdc/uitest.ts": "ae330f3a941e080d2fecad01d4dad40145c3bf5c88cb6f949e28c17d7e4e7c83",
+    "src/main/lib/hdc/onlineBundleInfo.ts": "414ef08fc08f116abf8d5293514d6bf6ace249e9d09608866590a5c45d995937",
+    "src/main/lib/hdc/bundle.ts": "590cfdc16ce2743afc2c071ae08021f1866b65d1db127f03d00a6df04eee976a",
+    "script/check-static-screencast-start.cjs": "ec31e237d2e7ff04a90086ac4f13a8e0380a7f9e6609ca976ff54b80f873c9e7",
+    "script/check-store-fallback-live.mjs": "e4b1a69634b7d5ff95bfb2a7dd06db5ac1b83d3a24079ad826e6d95a8993f8cc",
+    "script/lib/live-probe-lifecycle.mjs": "eba10b1572aa40dd043fda2e35e202d7d524536a14557fc01ade541e9c82bc70",
+    "test/native-video-cross-host.test.cjs": "cb52f4bd57662655873c3936b6a50c58cf3cc5581e1d994bc94c5221c6537100",
+    "test/live-probe-lifecycle.test.cjs": "4a8b3beed159ce63c7aebd3f3a37a1018f717d712756d56f7107f88842eaa862",
+    "test/online-bundle-info.test.cjs": "cb4c67631fe744041694221ab50e4e573eb90af43ad8e8074d3206550d6144e4",
+    "test/bundles.test.cjs": "1b1b91d7f52c46445c59adb97f83075a61ea763758de01f2c5584697c14f5ae8",
+    "test/capture-sessions.test.cjs": "96ece85dbcf042f451ed19483dbaaabf90f6d83a921855d22a4fd458a134f11d",
+    "test/native-video-deployment.test.cjs": "3f64316fd8ba4998e7e76348a7bf85878d47a89fc8e35cb0a716d1a5a84ae8e0"
+  },
+  "mainBuildSha256": "f71190477bd22b6d6e869c3f6a2334556e2a22d25a405439bdf6a8b312f01c22",
+  "validation": {
+    "application": {
+      "passed": 789,
+      "failed": 0
+    },
+    "liciaProduction": {
+      "passed": 606,
+      "pending": 4
+    },
+    "liciaFallback": {
+      "passed": 606,
+      "pending": 4
+    },
+    "lintAndI18n": "passed",
+    "completeBuild": "passed",
+    "crossHostReviewRegression": 77,
+    "probeLifecycleRegression": 8
+  },
+  "finalStoreLiveReport": "store-fallback/review-live/report.json",
+  "finalStoreLiveCleanupPassed": true,
+  "crossHostLiveMatrixRerunAfterReviewFix": false,
+  "windowsIntranetVerified": false,
+  "physicalHostSwapVerified": false,
+  "newReleasePublished": false,
+  "installedApplicationReplaced": false
+}

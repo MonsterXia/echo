@@ -1,0 +1,28 @@
+{
+  "startedAt": "2026-10-30T03:34:10.884Z",
+  "passed": false,
+  "scope": "Real macOS/Windows Electron, HDC and application UI; two selected apps; controlled silent store followed by real allowlisted upstream; no device mutations or pixels saved",
+  "sha256": {
+    "src/main/lib/hdc/bundle.ts": "590cfdc16ce2743afc2c071ae08021f1866b65d1db127f03d00a6df04eee976a",
+    "src/main/lib/hdc/onlineBundleInfo.ts": "66daa1d115738af6b6e64b136d78fbc54e3144c4a982804fb8405303a1c54ae5",
+    "dist/main/index.js": "5255ab8a10c40dd5c5dcb74e446b22da8fed5d0730143a55722eac696ceadb4c"
+  },
+  "runtime": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "electron": "45.0.0",
+    "packaged": false
+  },
+  "stage": "silent-store",
+  "firstBatchMs": 3745,
+  "firstBatchChecks": {
+    "count": 2,
+    "identitiesMatch": true,
+    "localFieldsPresent": true,
+    "iconsEmpty": true,
+    "requests": 1
+  },
+  "openProxySocketsAfterTimeout": 1,
+  "errorType": "AssertionError",
+  "assertion": "production timeout must close the silent proxy connection"
+}

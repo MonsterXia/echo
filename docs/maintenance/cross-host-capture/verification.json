@@ -1,0 +1,56 @@
+{
+  "verifiedAt": "2026-10-30T03:20:52.427971+00:00",
+  "baselineCommit": "431a2715fb6ae0729b9481f8b5373f54b604377b",
+  "branch": "codex/cross-host-capture-recovery",
+  "uncommittedChanges": true,
+  "sourceSha256": {
+    "src/main/lib/hdc/nativeVideoRecovery.ts": "19ee4068da83698a8e353c48faf2ea6b311f4faa02323e77b25d813f194169d4",
+    "src/main/lib/hdc/nativeVideo.ts": "3d69d0a33fa5f55339b289ef7b2ad2d01be6df487768fdbb2d4809678fb168b9",
+    "src/main/lib/hdc/captureDriver.ts": "ffb21380e0eee474211c640c3b3838162ed77084e503f7d3bc4fc415a16c75dd",
+    "src/main/lib/hdc/uitest.ts": "ae330f3a941e080d2fecad01d4dad40145c3bf5c88cb6f949e28c17d7e4e7c83",
+    "test/native-video-cross-host.test.cjs": "19f9ee4f1778a4ddbe521a6e405f4305486800fc3f2f3d30cf3ffc3c424af403",
+    "test/native-video-deployment.test.cjs": "3f64316fd8ba4998e7e76348a7bf85878d47a89fc8e35cb0a716d1a5a84ae8e0",
+    "test/capture-sessions.test.cjs": "96ece85dbcf042f451ed19483dbaaabf90f6d83a921855d22a4fd458a134f11d",
+    "script/check-static-screencast-start.cjs": "ec31e237d2e7ff04a90086ac4f13a8e0380a7f9e6609ca976ff54b80f873c9e7"
+  },
+  "finalMainAssetSha256": "f53124646a1c9350813a5523ee82a83b463dd214c8c1fd3d4a85930d5057193c",
+  "validation": {
+    "applicationTests": {
+      "passed": 763,
+      "failed": 0
+    },
+    "liciaProduction": {
+      "passed": 606,
+      "pending": 4
+    },
+    "liciaFallback": {
+      "passed": 606,
+      "pending": 4
+    },
+    "lint": "passed",
+    "i18n": "passed",
+    "fullBuild": "passed before final guard refinements",
+    "finalMainBuild": "passed",
+    "diffCheck": "passed"
+  },
+  "deviceValidation": {
+    "host": "macOS arm64",
+    "rebootedDuringValidation": false,
+    "initialUnjournaledSessionRecovered": true,
+    "freshProfileRecovery": "host-b-recovery.json",
+    "activeStreamPreserved": true,
+    "finalNativeProcessCount": 0,
+    "finalProfileOwnershipEmpty": true,
+    "physicalTwoHostSwapVerified": false,
+    "windowsPackageVerified": false,
+    "finalUnknownTcpStateGuard": "unit-tested after live matrix; live reports retain their original build hashes"
+  },
+  "retainedFailedRuns": {
+    "initial-foreign-session.json": "HarmonyOS Proto/State header rejected before compatibility fix",
+    "foreign-session-recovered.json": "cross-host recovery and JPEG drawing passed, static display did not produce H.264; strict video assertion failed"
+  },
+  "release": {
+    "published": false,
+    "installedApplicationReplaced": false
+  }
+}

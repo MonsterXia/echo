@@ -14,8 +14,7 @@ import { Client } from 'hdckit'
 import { handleEvent } from 'share/main/lib/util'
 import { shell } from './base'
 import trim from 'licia/trim'
-import axios from 'axios'
-import types from 'licia/types'
+import { getOnlineBundleInfo } from './onlineBundleInfo'
 import log from 'share/common/log'
 import map from 'licia/map'
 import startWith from 'licia/startWith'
@@ -178,10 +177,9 @@ const getBundleInfos: IpcGetBundleInfos = async (connectKey, bundleNames) => {
           }
         } catch (error) {
           logger.warn(
-            'Failed to read online bundle info',
-            connectKey,
+            'Online bundle info unavailable; using device metadata',
             bundleName,
-            error
+            (error as Error).message
           )
         }
       }
@@ -206,26 +204,6 @@ function displayableLabel(value: unknown): string {
     return ''
   }
   return label
-}
-
-const INFO_URL = 'https://web-drcn.hispace.dbankcloud.com/edge/webedge/appinfo'
-const onlineInfos: types.PlainObj<any> = {}
-async function getOnlineBundleInfo(bundleName: string) {
-  if (onlineInfos[bundleName]) {
-    return onlineInfos[bundleName]
-  }
-
-  logger.info('get online bundle info', bundleName)
-  const { data } = await axios.post(INFO_URL, {
-    pkgName: bundleName,
-    appId: bundleName,
-    locale: 'zh_CN',
-    countryCode: 'CN',
-    orderApp: 1,
-  })
-  onlineInfos[bundleName] = data
-
-  return data
 }
 
 const installBundle: IpcInstallBundle = async (connectKey, hap) => {
