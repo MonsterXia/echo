@@ -34,6 +34,9 @@ const config = {
     ],
   },
   mac: {
+    // Explicit development signing rebuilds the bundle seal after packaging.
+    // Omit the flag when using a configured Developer ID identity.
+    ...(process.argv.includes('--adhoc-sign') ? { identity: '-', notarize: false } : {}),
     electronLanguages: ['zh_CN', 'en'],
     target: [
       {

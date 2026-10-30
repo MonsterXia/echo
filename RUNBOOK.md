@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 1.0.4-dev.3 发布准备（2026-10-30）
+
+状态：**PR #75 已审查、CI 通过并合入，dev.3 准备中**。基线 `0ff05a0`，包含跨电脑恢复及商店回退；发布准备补 macOS 显式 ad-hoc 和安装后严格签名检查。独立复审已修正 PR 签名跳过、公证误用，当前尚未发布。完整来源、同源构建/附件验收计划与边界见[发布记录](docs/releases/1.0.4-dev.3.md)。
+
 ## 跨电脑投屏与商店加载独立审查（2026-10-30）
 
 状态：**独立审查、修正及最终本机验证完成，交付/CI 状态见[修复 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fcross-host-capture-recovery)**。修复可选跨电脑预检阻断健康控制/JPEG、商店探针关闭/超时与清理误报两项问题。应用 789/789、Licia 两模式各 606 passing / 4 pending、lint/i18n 和完整构建通过；最终商店真机探针连接取消、离线刷新、网络恢复及退出清理通过。历史投屏矩阵保留原版本范围，本轮兼容分支以集成测试验证；Windows 现场和物理跨电脑切换仍待验收。详见[独立审查记录](docs/maintenance/cross-host-store-review.md)。
