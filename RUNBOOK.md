@@ -1,8 +1,8 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
-## 1.0.4-dev.3 发布准备（2026-10-30）
+## 1.0.4-dev.3 开发预发布（2026-10-30）
 
-状态：**PR #75 已审查、CI 通过并合入，dev.3 准备中**。基线 `0ff05a0`，包含跨电脑恢复及商店回退；发布准备补 macOS 显式 ad-hoc 和安装后严格签名检查。独立复审已修正 PR 签名跳过、公证误用，当前尚未发布。完整来源、同源构建/附件验收计划与边界见[发布记录](docs/releases/1.0.4-dev.3.md)。
+状态：**已发布，跨平台真机矩阵待补齐**。PR #75/#76 经独立审查和五项 CI 后合入；固定源 `7cd2f952` 的三平台 Build、实际安装启动及双 Mac deep/strict 签名通过。Intel 首次 DMG 卸载占用失败，同源重跑通过；14 个附件重新下载校验后，于 13:24:32（UTC+8）公开 [dev.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3)，Latest 保持 v1.0.3。Mac 为有效 ad-hoc，仍无 Developer ID/公证；Windows 未签名。本轮未替换本机应用，物理跨电脑及内网 Windows 真机仍待验收。完整来源、审计、失败重试与范围见[发布记录](docs/releases/1.0.4-dev.3.md)。
 
 ## 跨电脑投屏与商店加载独立审查（2026-10-30）
 
