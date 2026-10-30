@@ -199,3 +199,5 @@ M0-3 的 `.github/workflows/update-acceptance.yml` 是固定版本的实际更�
 `test/bundles.test.cjs` 验证真实元数据 IPC 的超时回退、冷却、请求合并、缓存和本地字段保持；`test/online-bundle-info.test.cjs` 通过真实 Axios/本地 HTTP 与 HTTPS CONNECT 验证底层取消。构建后运行 `node script/check-store-fallback-live.mjs <证据目录>`，需要单台已授权设备及 WPS/bilibili。探针只选择两包，真实 HDC/IPC/UI 保留，以本地代理模拟无响应，再允许固定真实商店 API；验证三秒请求截止、列表/刷新、连接释放和冷却后真实元数据恢复。等待约 31 秒冷却，不修改全局代理，不保存屏幕/原始请求；无响应阶段不读取真实图标，在线阶段图标 URL 成功不等于已验收图片解码。说明见 `docs/maintenance/app-store-fallback.md`。
 
 商店探针使用 `script/lib/live-probe-lifecycle.mjs` 管理验证截止和资源归属：超时后不再推进验证，等待晚到资源后逆序清理；应用关闭必须确认子进程退出，强杀或清理失败均不能报告通过。120 秒为验证阶段预算，总运行时间还包括有限的启动等待与清理。最终报告在清理后写入，`test/live-probe-lifecycle.test.cjs` 覆盖这些失败边界。
+
+macOS 无证书开发包可运行 `npm run pack -- --no-publish --adhoc-sign`，显式重建包签名；CI 使用该参数，Build 仅在未配置 CSC_LINK 时使用。`check-macos-install.mjs` 对从 DMG 复制的应用执行 deep/strict codesign 验证，失败阻止打包验收。它仍不代表 Developer ID、公证或 Gatekeeper 放行。

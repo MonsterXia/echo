@@ -42,6 +42,9 @@ try {
   }
   await access(executable, constants.X_OK)
   await access(hdc, constants.X_OK)
+  // Verify the copied DMG payload, not just the staging bundle. Ad-hoc is
+  // acceptable here; Developer ID/Gatekeeper/notarization are separate checks.
+  run('codesign', ['--verify', '--deep', '--strict', '--verbose=2', application])
   run(process.execPath, ['script/smoke-app.mjs', executable], 120_000)
 } finally {
   try {

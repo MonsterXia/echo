@@ -52,7 +52,12 @@ jobs:
         for name in APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID CSC_LINK CSC_KEY_PASSWORD; do
           if [[ -z "${!name}" ]]; then unset "$name"; fi
         done
-        npm run pack -- --no-publish
+        pack_args=(--no-publish)
+        # Without a certificate, generate a valid ad-hoc bundle seal on both Macs.
+        if [[ "$RUNNER_OS" == "macOS" && -z "${CSC_LINK:-}" ]]; then
+          pack_args+=(--adhoc-sign)
+        fi
+        npm run pack -- "${pack_args[@]}"
       env:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}

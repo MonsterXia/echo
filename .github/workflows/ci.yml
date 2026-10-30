@@ -122,7 +122,10 @@ jobs:
       - name: Build distribution
         run: npm run build
       - name: Package macOS disk image
-        run: npm run pack -- --no-publish
+        # Only ad-hoc signing, no certificate or signing secrets in PR jobs.
+        env:
+          CSC_FOR_PULL_REQUEST: 'true'
+        run: npm run pack -- --no-publish --adhoc-sign
       - name: Install from DMG and smoke test application
         timeout-minutes: 5
         run: node script/check-macos-install.mjs
