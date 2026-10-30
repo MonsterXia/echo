@@ -1,0 +1,106 @@
+{
+  "artifactDigests": [
+    {
+      "digest": "sha256:d1a1a3ef509ac4a4772de3a5ecdda243393f76eb18deeb70b58af2d87febc8b9",
+      "id": 12955284806,
+      "name": "macos-15",
+      "size_in_bytes": 126378935
+    },
+    {
+      "digest": "sha256:f750103979dd8abeb55bfe19284c23b1f0a9fd94a378c28d21e48b3e4fcd90f5",
+      "id": 12956475800,
+      "name": "macos-15-intel",
+      "size_in_bytes": 132722724
+    },
+    {
+      "digest": "sha256:a789bdbbff57c738fd9977b3dad587dddd371d74c6b919c54d4fe0d4711dd1ea",
+      "id": 12955895816,
+      "name": "windows-latest",
+      "size_in_bytes": 119903435
+    }
+  ],
+  "assets": [
+    {
+      "name": "SHA256SUMS.txt",
+      "sha256": "d43f99acc336b81ca7d91796bb1c95589bbc17de376bf24aa2d14188b756f7ab",
+      "size": 1270
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-mac-arm64.dmg",
+      "sha256": "0656c19e879a836d00e1c93f12525f346c474783540a0b887a2344671522e668",
+      "size": 126523684
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-mac-arm64.dmg.blockmap",
+      "sha256": "0d48aee719ab55b3b220d0d76289bac18d850643e98ec0e77ae0fee75c2a6224",
+      "size": 132330
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-mac-x64.dmg",
+      "sha256": "1480d50950d7aaa883826e1cdbf07a6cbe5888616f7775776709193dc1e3358d",
+      "size": 132853940
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-mac-x64.dmg.blockmap",
+      "sha256": "3f44a329a7d7eccd08a85b87588af1304d96a4f59ec8ac72128447def9e563ba",
+      "size": 139318
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-win-x64.exe",
+      "sha256": "1a15d1b9fff8da852a75cf5b2fd6966ff8d373dc1b97a0d8e97d7a728d683721",
+      "size": 119767175
+    },
+    {
+      "name": "Scrcpy-Harmony-1.0.4-dev.3-win-x64.exe.blockmap",
+      "sha256": "6e323e9e689b1ff10c274aa27a4572cd74763da88158581bc6e266aedf910820",
+      "size": 126448
+    },
+    {
+      "name": "latest-mac.yml",
+      "sha256": "002001e40bf72b2ca392aab3ca8bf874b54d95c41ac3e330770aa01f8176f671",
+      "size": 383
+    },
+    {
+      "name": "latest-x64-mac.yml",
+      "sha256": "a92feef5419039c397ef9a0311e482be9cbfaed85fdc707173331e327f78e8be",
+      "size": 379
+    },
+    {
+      "name": "latest.yml",
+      "sha256": "824043657610ae9fac45ea6fb61aa55989138717f8e882cd569f89624f08858c",
+      "size": 379
+    },
+    {
+      "name": "release-validation.json",
+      "sha256": "900ddd23e0f8541e106a6be12d281cc86c2047db8054d9afb1ba35da5b02631d",
+      "size": 5995
+    },
+    {
+      "name": "verification-mac-arm64.txt",
+      "sha256": "1aa438b020690522935fb17b7c4228cbcf47c09a87f92d57340117fc524a187f",
+      "size": 4993
+    },
+    {
+      "name": "verification-mac-x64.txt",
+      "sha256": "e2ba4be621cbc4ab0da67e51faee84efd6b0a855f6f0ff183cb5bee00a6dd72e",
+      "size": 4992
+    },
+    {
+      "name": "verification-win-x64.json",
+      "sha256": "9bfcb5d0fe637a58898c235f3746baaf7b0b4521d70d87297cf46e481e0a5699",
+      "size": 389
+    }
+  ],
+  "identity": {
+    "baseline_sha": "0ff05a010ffba11749209e396c38c3677dba88a8",
+    "build_run": 41006325645,
+    "ci_run": 41006324383,
+    "preparation_pr": 76,
+    "release_name": "Scrcpy Harmony 1.0.4-dev.3",
+    "repo": "MonsterXia/scrcpy-harmony",
+    "source_sha": "7cd2f9528c481731a39b9a97f59fef07b2ee5771",
+    "stable_tag": "v1.0.3",
+    "tag": "v1.0.4-dev.3",
+    "version": "1.0.4-dev.3"
+  }
+}

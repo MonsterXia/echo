@@ -1,132 +1,94 @@
+# One-off branch-only replacement for .github/workflows/build.yml.
+# Do not merge this transport workflow or script/dev3-upload into master.
 name: Build
 
 on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: upload-dev3-assets-428678071
+  cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  upload-dev3-assets:
+    if: github.repository == 'MonsterXia/scrcpy-harmony' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/upload-dev3-assets'
+    runs-on: ubuntu-latest
     timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            arch: x64
-          - os: macos-15
-            arch: arm64
-          - os: macos-15-intel
-            arch: x64
-
-    env:
-      EXPECTED_ARCH: ${{ matrix.arch }}
-
+    defaults:
+      run:
+        shell: bash
     steps:
-    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      with:
-        persist-credentials: false
-    - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-      with:
-        node-version: '22'
-        cache: npm
-    - name: Verify runner architecture
-      run: node -e "require('node:assert/strict').equal(process.arch, process.env.EXPECTED_ARCH)"
-    - name: Install dependencies
-      run: npm ci --no-audit --no-fund
-    - name: Download Windows device resources
-      if: runner.os == 'Windows'
-      run: npx --no-install zx --shell "C:/Program Files/Git/bin/bash.exe" script/resources.mjs
-    - name: Download macOS device resources
-      if: runner.os == 'macOS'
-      run: npm run init
-    - name: Build distribution
-      run: npm run build
-    - name: Package installer
-      shell: bash
-      run: |
-        # GitHub expands absent secrets to empty strings. electron-builder treats
-        # an empty CSC_LINK as a certificate path, so omit unset credentials.
-        for name in APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID CSC_LINK CSC_KEY_PASSWORD; do
-          if [[ -z "${!name}" ]]; then unset "$name"; fi
-        done
-        pack_args=(--no-publish)
-        # Without a certificate, generate a valid ad-hoc bundle seal on both Macs.
-        if [[ "$RUNNER_OS" == "macOS" && -z "${CSC_LINK:-}" ]]; then
-          pack_args+=(--adhoc-sign)
-        fi
-        npm run pack -- "${pack_args[@]}"
-      env:
-        APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        CSC_LINK: ${{ secrets.CSC_LINK }}
-        CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-    - name: Install and smoke test Windows release artifact
-      if: runner.os == 'Windows'
-      timeout-minutes: 5
-      run: ./script/check-windows-install.ps1
-    - name: Install and smoke test macOS release artifact
-      if: runner.os == 'macOS'
-      timeout-minutes: 5
-      run: node script/check-macos-install.mjs
-    - name: Record Windows signature and hash
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        $pkg = Get-Content package.json -Raw | ConvertFrom-Json
-        $release = Join-Path release $pkg.version
-        $installer = Join-Path $release "$($pkg.productName)-$($pkg.version)-win-x64.exe"
-        $signature = Get-AuthenticodeSignature -LiteralPath $installer
-        @{
-          sourceCommit = $env:GITHUB_SHA
-          runUrl = "https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
-          installer = Split-Path $installer -Leaf
-          sha256 = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()
-          authenticodeStatus = [string]$signature.Status
-          signer = $signature.SignerCertificate.Subject
-          installationAndStartup = 'passed'
-        } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $release 'verification-win-x64.json')
-    - name: Record macOS signature, Gatekeeper and hash
-      if: runner.os == 'macOS'
-      shell: bash
-      run: |
-        version=$(node -p 'require("./package.json").version')
-        product=$(node -p 'require("./package.json").productName')
-        release="$PWD/release/$version"
-        dmg="$release/$product-$version-mac-$EXPECTED_ARCH.dmg"
-        mount=$(mktemp -d "$RUNNER_TEMP/release-inspection.XXXXXX")
-        hdiutil attach -readonly -nobrowse -mountpoint "$mount" "$dmg"
-        trap 'hdiutil detach "$mount"' EXIT
-        app="$mount/$product.app"
-        {
-          echo "sourceCommit=$GITHUB_SHA"
-          echo "runUrl=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          echo 'installationAndStartup=passed'
-          shasum -a 256 "$dmg"
-          # Trust-policy failures are reported, not mislabelled as smoke failures.
-          set +e
-          codesign -dvvv --entitlements :- "$app" 2>&1
-          echo "codesignDetailsExit=$?"
-          codesign --verify --deep --strict --verbose=2 "$app" 2>&1
-          echo "codesignVerifyExit=$?"
-          spctl --assess --type execute --verbose=4 "$app" 2>&1
-          echo "gatekeeperExit=$?"
-          xcrun stapler validate "$app" 2>&1
-          echo "staplerExit=$?"
-          set -e
-        } > "$release/verification-mac-$EXPECTED_ARCH.txt"
-    - uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.os }}
-        if-no-files-found: error
-        path: |
-          release/**/*.dmg
-          release/**/*.exe
-          release/**/*.yml
-          release/**/*.blockmap
-          release/**/verification-*.json
-          release/**/verification-*.txt
-          !release/**/win-unpacked/
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Install only the YAML parser outside the checkout
+        run: npm install --prefix "$RUNNER_TEMP/dev3-yaml" --no-save --package-lock=false --ignore-scripts --no-audit --no-fund js-yaml@4.3.2
+      - name: Verify reviewed inputs and configure local paths
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE']).resolve()
+          inputs = root / 'script/dev3-upload'
+          hashes = {
+              'publish-dev3.py': 'e7ff0696b02791ccaf97009185af99b33fc4b9cba802181af3ba766362b96e77',
+              'config.json': '8f4a227ea227ebc4ff0988fd1cc8bb2364ebf2665c38fdfc93c9f7bfb18efa87',
+              'release-notes.md': 'a03997cfb5d2a43fa174eb5af781436c7b0338d91538e3dad247e5a259d6e3a2',
+              'prepared.json': '7038511b260a026d82a206ca68fa08ac9f159d7db664f88c366d93d7dceea4be',
+              'release-state.json': '6a74651329e860d5e74beb0dd99aae6173640145be224e4f3d722d93361d67f3',
+          }
+          for name, expected_hash in hashes.items():
+              path = inputs / name
+              if path.is_symlink() or hashlib.sha256(path.read_bytes()).hexdigest() != expected_hash:
+                  raise SystemExit('Reviewed input differs: ' + name)
+          config = json.loads((inputs / 'config.json').read_text())
+          expected = json.loads((inputs / 'prepared.json').read_text())
+          state = json.loads((inputs / 'release-state.json').read_text())
+          identity = {k: v for k, v in config.items() if k not in ('repo_dir', 'work_dir', 'notes_file')}
+          if identity != expected['identity'] or identity != state['identity'] or state['release_id'] != 428678071:
+              raise SystemExit('Reviewed identity or fixed release ID differs')
+          config.update(repo_dir=str(root), work_dir=str(root / 'release/dev3-publication'),
+                        notes_file=str(inputs / 'release-notes.md'))
+          output = root / 'release/dev3-runner-config.json'
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps(config, indent=2) + '\n')
+          PY
+      - name: Re-download and verify the same-source Build artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NODE_PATH: ${{ runner.temp }}/dev3-yaml/node_modules
+        run: python3 script/dev3-upload/publish-dev3.py prepare --config release/dev3-runner-config.json
+      - name: Require the identical 14-asset manifest and fixed release state
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          inputs = Path('script/dev3-upload')
+          work = Path('release/dev3-publication')
+          expected = json.loads((inputs / 'prepared.json').read_text())
+          actual = json.loads((work / 'prepared.json').read_text())
+          if actual != expected or len(actual['assets']) != 14:
+              raise SystemExit('Runner preparation differs from the reviewed local manifest')
+          state = json.loads((inputs / 'release-state.json').read_text())
+          if state['release_id'] != 428678071 or state['identity'] != actual['identity']:
+              raise SystemExit('Fixed release state differs')
+          with (work / 'release-state.json').open('xb') as output:
+              output.write((inputs / 'release-state.json').read_bytes())
+          PY
+      - name: Upload only missing assets to existing draft 428678071
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NODE_PATH: ${{ runner.temp }}/dev3-yaml/node_modules
+        run: python3 script/dev3-upload/publish-dev3.py upload --config release/dev3-runner-config.json
+      - name: Record upload-only completion
+        run: |
+          echo 'All 14 assets match the reviewed manifest on existing release 428678071. This workflow does not publish; final download verification and publication remain local.' >> "$GITHUB_STEP_SUMMARY"
