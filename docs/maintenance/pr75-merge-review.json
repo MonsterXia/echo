@@ -1,0 +1,26 @@
+{
+  "verifiedAt": "2026-10-30T04:56:44.709896+00:00",
+  "reviewComment": 4420551382,
+  "sourceSha256": {
+    "src/main/lib/hdc/nativeVideoRecovery.ts": "42de612d9769b809c86d06d0735e22e2df3ef4a9c638f7c3c14d5f68d4a9939d",
+    "test/native-video-cross-host.test.cjs": "f9e583057eca13602a7a4d86725c56d697b92c5f2d20670bec4b0873f3e716e3"
+  },
+  "targetedTestsPassed": 129,
+  "independentReviewTestsPassed": 34,
+  "lintAndI18n": "passed",
+  "mainBuild": "passed",
+  "deviceLockProbe": {
+    "platform": "macOS arm64 with real HarmonyOS phone",
+    "fd9Attempt": "failed: Harmony shell closed nonstandard descriptor",
+    "fd0MutualExclusion": "passed",
+    "hereDocumentWhileHoldingLock": "passed",
+    "secondOwnerBlocked": "passed",
+    "lockReleasedAfterOwnerExit": "passed",
+    "deviceApplicationsMutated": false,
+    "phoneRebooted": false
+  },
+  "limits": [
+    "Native clients do not participate in the advisory lock; final connection-check/signal race remains",
+    "No new physical host-swap or full H264 matrix in this review pass"
+  ]
+}

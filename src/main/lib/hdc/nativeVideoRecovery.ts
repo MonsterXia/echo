@@ -112,9 +112,29 @@ $table
 RECOVERY_TCP
   [ "$first" = 0 ]
 }
+# All hosts using this recovery share a device-owned advisory lock. Keep the
+# inode in place: unlinking a lock file can create two independently held locks.
+# Harmony shell closes nonstandard fds on exec; stdin survives into flock.
+# This script reads only explicit here-documents, never its original stdin.
+command -v flock >/dev/null 2>&1 || { echo CROSS_HOST_SKIPPED; exit 0; }
+exec 0<>/data/local/tmp/scrcpy_harmony_recovery.lock || exit 1
+attempt=0
+until flock -xn 0; do
+  attempt=$((attempt + 1))
+  [ "$attempt" -lt 4 ] || { echo CROSS_HOST_SKIPPED; exit 0; }
+  sleep 1
+done
 processes=$(ps -ef) || exit 1
-found=0
+first=1; found=0
 while read -r user pid ppid cpu stime tty time command; do
+  if [ "$first" = 1 ]; then
+    case "$user" in UID|USER) ;; *) exit 1;; esac
+    [ "$pid $ppid" = 'PID PPID' ] || exit 1
+    first=0; continue
+  fi
+  [ -n "$user" ] || continue
+  case "$pid:$ppid" in *[!0-9:]*) exit 1;; esac
+  [ -n "$pid" ] && [ -n "$ppid" ] && [ -n "$command" ] || exit 1
   if [ "$pid" = '${owner.pid}' ]; then
     [ "$command" = '${owner.command}' ] || exit 1
     found=$((found + 1))
@@ -122,17 +142,19 @@ while read -r user pid ppid cpu stime tty time command; do
 done <<RECOVERY_PS
 $processes
 RECOVERY_PS
+[ "$first" = 0 ] || exit 1
+[ "$found" != 0 ] || { echo CROSS_HOST_ALREADY_GONE; exit 0; }
 [ "$found" = 1 ] || exit 1
 digest=$(sha256sum /data/local/tmp/${owner.name}) || exit 1
 set -- $digest
 [ "$1" = '${owner.hash}' ] || exit 1
-check_unix && check_tcp tcp 8 && check_tcp tcp6 32 || exit 1
 stat=$(cat /proc/${owner.pid}/stat) || exit 1
 case "$stat" in '${owner.pid} ('*) ;; *) exit 1;; esac
 rest=\${stat##*) }
 set -- $rest
 shift 19 || exit 1
 [ "$1" = '${owner.started}' ] || exit 1
+check_unix && check_tcp tcp 8 && check_tcp tcp6 32 || exit 1
 kill -9 ${owner.pid} && echo CROSS_HOST_STOPPED
 `.trim()
 }
@@ -155,7 +177,12 @@ export async function recoverDisconnectedNative(run: Run) {
   }
   // From this point a command may have changed the device. Keep every failure
   // visible until cleanup is confirmed; never treat it as an optional probe.
-  if ((await run(stopCommand(owner))).trim() !== 'CROSS_HOST_STOPPED') throw new Error('Cross-host native stop unconfirmed')
+  const stopped = (await run(stopCommand(owner))).trim()
+  if (stopped === 'CROSS_HOST_SKIPPED') return false
+  // A competing recovery finished before we acquired the device lock. It owns
+  // any remaining file cleanup; do not fail initialization or delete its file.
+  if (stopped === 'CROSS_HOST_ALREADY_GONE') return true
+  if (stopped !== 'CROSS_HOST_STOPPED') throw new Error('Cross-host native stop unconfirmed')
   const [header, ...processes] = await inventory(run, 'ps -ef')
   if (!/^\s*(UID|USER)\s+PID\s+PPID\b/.test(header) ||
     processes.filter(row => row.trim()).some(row => !/^\S+\s+\d+\s+\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+\S/.test(row.trim()))) {

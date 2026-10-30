@@ -35,7 +35,9 @@ function fixture(change = {}) {
       // Execute the real final guard. Only device files and the signal are fake.
       const current = { ...state, ...state.atKill }
       const prelude = `
-ps() { printf '%s\\n' ${quote('UID PID PPID C STIME TTY TIME CMD\nshell 123 1 0 00:00 ? 00:00 ' + current.command)}; }
+flock() { return ${current.lockBusy ? 1 : 0}; }
+sleep() { :; }
+ps() { printf '%s\\n' ${quote('UID PID PPID C STIME TTY TIME CMD\n' + (current.running ? 'shell 123 1 0 00:00 ? 00:00 ' + current.command : ''))}; }
 sha256sum() { printf '%s\\n' ${quote(current.hash + '  /data/local/tmp/' + name)}; }
 cat() { case "$1" in
 /proc/123/stat) printf '%s\\n' ${quote(stat(current.started))};;
@@ -46,7 +48,8 @@ cat() { case "$1" in
 kill() { printf 'WOULD_KILL:%s\\n' "$*"; }
 `
       const shell = process.platform === 'win32' ? path.join(process.env.ProgramFiles || 'C:/Program Files', 'Git/bin/bash.exe') : '/bin/sh'
-      const output = execFileSync(shell, ['-c', prelude + cmd], { encoding: 'utf8', timeout: 5000 })
+      const output = execFileSync(shell, ['-c', prelude + cmd.replace('/data/local/tmp/scrcpy_harmony_recovery.lock', '/dev/null')], { encoding: 'utf8', timeout: 5000 })
+      if (/CROSS_HOST_(ALREADY_GONE|SKIPPED)/.test(output)) return output.trim()
       assert.match(output, /WOULD_KILL:-9 123/)
       kills++; state.running = false
       return output.replace('WOULD_KILL:-9 123\n', '').trim()
@@ -184,6 +187,30 @@ for (const atKill of [
 ]) test(`final device shell refuses state changed after inspection: ${JSON.stringify(atKill)}`, async () => {
   const f = fixture({ atKill })
   await assert.rejects(f.native.recoverOrphans(true))
+  assert.equal(f.kills(), 0)
+  assert.equal(f.removed(), false)
+})
+
+// Separate NativeVideo instances represent hosts without a shared in-memory task.
+test('two independent hosts tolerate a candidate removed by the first recovery', async () => {
+  const f = fixture({ signalDelay: true })
+  const other = new mod.exports.NativeVideo({ port: 8711, connectKey: 'synthetic-other' })
+  other.run = f.native.run
+  await Promise.all([f.native.recoverOrphans(true), other.recoverOrphans(true)])
+  assert.equal(f.kills(), 1)
+  assert.equal(f.removed(), true)
+})
+
+test('a competing recovery removing the candidate before the final guard is successful', async () => {
+  const f = fixture({ atKill: { running: false } })
+  await f.native.recoverOrphans(true)
+  assert.equal(f.kills(), 0)
+  assert.equal(f.removed(), false, 'the other recovery owns cleanup')
+})
+
+test('a busy device recovery lock cannot signal or delete a candidate', async () => {
+  const f = fixture({ lockBusy: true })
+  await f.native.recoverOrphans(true)
   assert.equal(f.kills(), 0)
   assert.equal(f.removed(), false)
 })

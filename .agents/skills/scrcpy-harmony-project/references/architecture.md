@@ -199,3 +199,5 @@ Canvas pointer 事件
 `captureSessions.prepareCapture` 与前台 start/stop 共用设备队列，记录待用资源的 owner/ready 状态；点击在准备后原子转移到 capture lease，取消/过期不得停止已接管的流，清理未确认则阻止再启动。`NativeVideo.prepare` 只校验/上传/加载候选和建立转发，不发 onStart；每个候选部署前重新核对 socket 占用，监听就绪、准备完成和正式 start 均核对本会话扩展进程仍存在后取流，尺寸不匹配重建。监听成功只记内存提示，真实流成功才持久化兼容提示。控制初始化必须先于 UITest 版本探测。
 
 退出处理立即取消预热并调用 shutdownCaptures 撤销帧路由，等待两者全部结算后允许可选 HDC shutdown。共享 relaunch 使用 app.quit 参与清理，主窗口 before-quit 后不因投屏可见而隐藏阻断退出。控制 HDC 准备尚无统一总截止，因此退出最多等待 10 秒，超时记录清理未确认并 app.exit 真正终止进程，避免迟到任务继续部署；远端资源或外部 HDC 子进程可能遗留，不宣称清理成功。证据见 docs/maintenance/screencast-pr56-review.md。
+
+跨电脑终止前脚本使用设备 `flock` 串行化恢复，锁文件固定保留防止 inode 分裂；Harmony shell 以 stdin 继承锁（所有 read 使用 here-doc）。不支持 flock 或锁忙时跳过接管，已被其他恢复移除则不重复清理。原生客户端未参与该锁，连接与信号之间仍有短竞态。
