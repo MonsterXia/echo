@@ -11,6 +11,8 @@ const { setTimeout: delay } = require('node:timers/promises')
 const root = path.resolve(__dirname, '..')
 const orphanCrash = process.argv.includes('--orphan-crash')
 const orphanRecover = process.argv.includes('--orphan-recover')
+const crossHostRecover = process.argv.includes('--cross-host-recover')
+if (crossHostRecover && (orphanRecover || orphanCrash)) throw new Error('Cross-host recovery must use a separate fresh profile')
 const recoveryProfile = process.env.SCRCPY_TEST_RECOVERY_PROFILE
 if ((orphanCrash || orphanRecover) && (!recoveryProfile || !path.isAbsolute(recoveryProfile))) {
   throw new Error('Orphan verification requires an absolute SCRCPY_TEST_RECOVERY_PROFILE temporary directory')
@@ -28,6 +30,7 @@ function ownershipRecords() {
 }
 const previousOwners = orphanRecover ? ownershipRecords() : []
 if (orphanRecover) assert.equal(previousOwners.length, 1, 'one crashed session must be recorded')
+if (crossHostRecover) assert.equal(ownershipRecords().length, 0, 'cross-host profile must have no local journal')
 let deliberatelyCrashed = false
 const report = { scope: 'Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved',
   startedAt: new Date().toISOString(), rounds: [], passed: false }
@@ -104,7 +107,7 @@ async function launch(executablePath, args, env) {
     }
     return message.result.result.value
   }
-  return { evaluate, process: () => child,
+  return { evaluate, process: () => child, diagnostics: () => diagnostics,
     close: async () => {
       await evaluate(({ app }) => { setTimeout(() => app.quit(), 0) })
       socket.close()
@@ -132,9 +135,32 @@ async function waitFor(check, timeout = 60000) {
     await delay(100)
   }
 }
+async function verifyActiveCrossHostProtection() {
+  const { buildSync } = require('esbuild')
+  const Module = require('node:module')
+  const file = path.join(root, 'src/main/lib/hdc/nativeVideo.ts')
+  const mod = new Module(file, module)
+  mod._compile(buildSync({ entryPoints: [file], bundle: true, platform: 'node', format: 'cjs', write: false }).outputFiles[0].text, file)
+  const bin = path.join(root, 'resources/hdc', process.platform === 'win32' ? 'hdc.exe' : 'hdc')
+  const { stdout } = await promisify(execFile)(bin, ['list', 'targets'], { timeout: 10000, windowsHide: true })
+  const keys = stdout.trim().split(/\s+/)
+  assert.equal(keys.length, 1)
+  assert.notEqual(keys[0], '[Empty]')
+  const owners = ownershipRecords()
+  assert.equal(owners.length, 1, 'active H.264 must own a recorded native process')
+  // A separate process with no cache directory uses real HDC, just as a new
+  // host would. Its recovery must leave the current stream's process alive.
+  const native = new mod.exports.NativeVideo({ bin, port: 8710, connectKey: keys[0] })
+  await native.recoverOrphans(true)
+  const stat = await native.run(['shell', `cat /proc/${owners[0].devicePid}/stat`])
+  assert.ok(stat.startsWith(`${owners[0].devicePid} (`))
+  assert.equal(stat.slice(stat.lastIndexOf(')') + 2).trim().split(/\s+/)[19], owners[0].started)
+  report.crossHostRecovery.activeNativeProcessPreserved = true
+}
 async function run() {
   const env = { ...process.env }
   delete env.ELECTRON_RUN_AS_NODE
+  if (crossHostRecover) report.crossHostRecovery = { initialLocalRecords: 0 }
   app = await launch(installed || require('electron'),
     [...(installed ? [] : [path.join(root, 'dist')]), `--user-data-dir=${profile}`], env)
   report.runtime = await app.evaluate(({ app }) => ({ version: app.getVersion(), packaged: app.isPackaged }))
@@ -263,6 +289,12 @@ async function run() {
       ...(upgradeMode ? { handoverGapMs: stats.handoverGapMs ?? null, promotion: stats.promotion ?? null,
         timeline: stats.timeline, controlledMotion: stats.controlledMotion ?? null } : {}) })
     console.log(JSON.stringify(report.rounds.at(-1)))
+    if (crossHostRecover && round === 0 && stats.codecs['H.264'] > 0) {
+      await verifyActiveCrossHostProtection()
+      const before = await renderer(() => window.captureTiming.codecs['H.264'], true)
+      await waitFor(() => renderer(() => window.captureTiming.codecs['H.264'], true).then(count => count > before), 15000)
+      report.crossHostRecovery.videoContinuedAfterForeignInspection = true
+    }
     if (orphanCrash || orphanRecover) {
       assert.ok(stats.codecs['H.264'] > 0, 'native frames must actually draw')
       const owners = ownershipRecords()
@@ -289,12 +321,18 @@ async function run() {
     })
     await delay(2500)
   }
+  if (crossHostRecover) {
+    report.crossHostRecovery.recoveredWithoutLocalJournal = app.diagnostics().includes('Recovered disconnected native capture from another desktop session')
+    assert.ok(report.crossHostRecovery.recoveredWithoutLocalJournal, 'must exercise cross-host recovery, not just a normal startup')
+    assert.ok(report.rounds.some(round => round.codecs?.['H.264'] > 0), 'must decode native video after recovery')
+    assert.ok(report.crossHostRecovery.videoContinuedAfterForeignInspection, 'must preserve active video during a foreign host check')
+  }
   report.passed = true
 }
 run().catch(error => { report.error = error.message; process.exitCode = 1 }).finally(async () => {
   try {
     if (!deliberatelyCrashed) await app?.close()
-    if (orphanRecover) {
+    if (orphanRecover || crossHostRecover) {
       assert.equal(ownershipRecords().length, 0, 'normal quit must clear the replacement ownership')
       report.normalExitClearedOwnership = true
     }

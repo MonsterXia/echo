@@ -1,0 +1,33 @@
+{
+  "startedAt": "2026-10-30T03:38:15.303Z",
+  "passed": true,
+  "scope": "Real macOS/Windows Electron, HDC and application UI; two selected apps; controlled silent store followed by real allowlisted upstream; no device mutations or pixels saved",
+  "sha256": {
+    "src/main/lib/hdc/bundle.ts": "590cfdc16ce2743afc2c071ae08021f1866b65d1db127f03d00a6df04eee976a",
+    "src/main/lib/hdc/onlineBundleInfo.ts": "414ef08fc08f116abf8d5293514d6bf6ace249e9d09608866590a5c45d995937",
+    "dist/main/index.js": "b13610dc56a5d6631e1c482654acb26f33699ce810838406b167c4097b29a2f3"
+  },
+  "runtime": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "electron": "45.0.0",
+    "packaged": false
+  },
+  "stage": "network-recovery",
+  "firstBatchMs": 3765,
+  "firstBatchChecks": {
+    "count": 2,
+    "identitiesMatch": true,
+    "localFieldsPresent": true,
+    "iconsEmpty": true,
+    "requests": 1
+  },
+  "openProxySocketsAfterTimeout": 0,
+  "silentRequestCancelled": true,
+  "offlineRefreshMs": 1000,
+  "localListAndRefreshPassed": true,
+  "realStoreRecoveredWithoutRestart": true,
+  "storeRequestCount": 3,
+  "onlineFailureWarningCount": 1,
+  "pageErrorCount": 0
+}

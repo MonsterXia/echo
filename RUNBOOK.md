@@ -1,5 +1,17 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## 跨电脑投屏与商店加载独立审查（2026-10-30）
+
+状态：**独立审查、修正及最终本机验证完成，交付/CI 状态见[修复 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Fcross-host-capture-recovery)**。修复可选跨电脑预检阻断健康控制/JPEG、商店探针关闭/超时与清理误报两项问题。应用 789/789、Licia 两模式各 606 passing / 4 pending、lint/i18n 和完整构建通过；最终商店真机探针连接取消、离线刷新、网络恢复及退出清理通过。历史投屏矩阵保留原版本范围，本轮兼容分支以集成测试验证；Windows 现场和物理跨电脑切换仍待验收。详见[独立审查记录](docs/maintenance/cross-host-store-review.md)。
+
+## 内网商店元数据失败回退（2026-10-30）
+
+状态：**源码及 macOS 真机受控网络验证通过，Windows 包待现场验证**。为商店查询增加三秒总截止、真实取消、跨包/批次共享的三十秒失败冷却、请求合并与有限缓存，失败只保留简短诊断并继续返回本地应用信息。真机验证暴露的 HTTPS CONNECT 未取消问题补独立 Agent 信号后解决；两包首次 3.765 秒返回，离线刷新约一秒，恢复网络后同进程获得真实商店图标地址。未实现离线真实图标，未修改网络策略或发布新包；失败探针、最终回归统计与边界见[修复记录](docs/maintenance/app-store-fallback.md)。
+
+## 跨电脑投屏残留恢复（2026-10-30）
+
+状态：**源码修复与 macOS arm64 真机独立配置恢复通过，Windows 安装包待验收**。前台增加不依赖本机 journal 的受限回收，校验完整命令、已知库哈希、进程身份和无活动连接，重复检查并在设备上临杀前复核；后台与活跃会话保留。兼容真机 `Proto / State` 表头。实际外来残留已恢复，另完成配置 A 异常退出 → 无 A 记录的配置 B 自动恢复、三轮 H.264 绘制及活跃视频不被另一恢复检查终止。首轮表头失败、静止画面仅 JPEG 的失败断言均保留。全程不重启手机；交付见上方独立审查，尚未发布或在内网 Windows 包上复测。证据、最终回归统计与竞态限制见[修复记录](docs/maintenance/windows-cross-host-capture.md)。
+
 ## 1.0.4-dev.2 开发预发布（2026-10-29）
 
 状态：**已完成发布，跨平台真机与长期矩阵待验收**。2026-10-29 21:34:23（UTC+8）已发布 [1.0.4-dev.2](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.2)，包含 PR #71/#72 的 HAP 安装反馈与投屏残留受限恢复修复。发布准备 [PR #73](https://github.com/MonsterXia/scrcpy-harmony/pull/73) 已合入；tag/构建源 `dc03b253` 的五项 CI、同源三平台实际安装启动、14 个附件重新下载校验及公开后复查通过，Latest 保持 v1.0.3，旧预发布及附件保留。公开后生产更新逻辑六场景通过：稳定通道指向 1.0.3，Beta 指向 dev.2，并覆盖匿名 REST 403 的真实公共页面回退；范围见[在线报告](docs/releases/1.0.4-dev.2-online-provider.json)。签名限制、辅助 YAML 排除、artifact 下载 EOF 重试与审计见[发布记录](docs/releases/1.0.4-dev.2.md)。下方及专项记录的“未发布”“待合入”保留其历史语境；此前 macOS arm64 专项真机证据不是本版三个安装包的新真机矩阵。下一步仍为跨固件、长期运行、物理拔插和 Windows/macOS x64 真机验收，未验证事项不标记完成。

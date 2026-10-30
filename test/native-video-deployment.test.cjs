@@ -273,7 +273,7 @@ for (const scenario of ['same', 'replaced', 'unknown']) {
   })
 }
 
-for (const occupied of [false, true, 'empty', 'partial', 'malformed']) {
+for (const occupied of [false, true, 'empty', 'partial', 'malformed', 'harmony-empty']) {
   test(`orphan forward cleanup refuses another active capture (occupied=${occupied})`, async () => {
     const f = await fixture({ firstFails: false })
     const name = 'scrcpy_harmony_0123456789abcdef.so'
@@ -284,6 +284,7 @@ for (const occupied of [false, true, 'empty', 'partial', 'malformed']) {
       if (args[0] === 'fport' && args[1] === 'rm') { removed = true; return '' }
       if (args[1] === 'ps -ef && echo NATIVE_READ_COMPLETE') return 'UID PID PPID C STIME TTY TIME CMD\nNATIVE_READ_COMPLETE'
       if (args[1] === 'cat /proc/net/unix && echo NATIVE_SOCKET_READ_COMPLETE') {
+        if (occupied === 'harmony-empty') return 'Num RefCount Proto Flags Type State Inode Path\nNATIVE_SOCKET_READ_COMPLETE'
         if (occupied === 'empty') return ''
         if (occupied === 'partial') return 'Num RefCount Protocol Flags Type St Inode Path'
         if (occupied === 'malformed') return 'Num RefCount Protocol Flags Type St Inode Path\nerror\nNATIVE_SOCKET_READ_COMPLETE'
@@ -293,9 +294,9 @@ for (const occupied of [false, true, 'empty', 'partial', 'malformed']) {
       if (args[1].startsWith('test ! -e')) return 'removed'
       throw Error('Unexpected command: '+args.join(' '))
     }
-    if (occupied) await assert.rejects(f.native.recoverOrphans(), /possibly reused forward|socket inventory unconfirmed/)
+    if (occupied && occupied !== 'harmony-empty') await assert.rejects(f.native.recoverOrphans(), /possibly reused forward|socket inventory unconfirmed/)
     else await f.native.recoverOrphans()
-    assert.equal(removed, !occupied)
+    assert.equal(removed, !occupied || occupied === 'harmony-empty')
   })
 }
 

@@ -9,6 +9,7 @@ import { GrpcMessages, NativeVideoFrame, parseVideoReply } from './nativeVideoPr
 import { loadNativeLibraries, supportsNativeVideo } from './nativeVideoResources'
 import { NativeVideoPreference } from './nativeVideoPreference'
 import { NativeOwner, NativeVideoOwnership } from './nativeVideoOwnership'
+import { recoverDisconnectedNative } from './nativeVideoRecovery'
 
 const execute = promisify(execFile)
 const REMOTE_SOCKET = 'localabstract:scrcpy_grpc_socket'
@@ -130,6 +131,7 @@ export class NativeVideo {
   private ownership?: NativeVideoOwnership
   private recorded?: Omit<NativeOwner, 'hostPid'>
   private recoveredOwner?: NativeOwner
+  private crossHostRecovery?: Promise<boolean>
   constructor(private options: Options) {
     if (options.cacheDir) {
       const key = createHash('sha256').update(JSON.stringify([
@@ -138,7 +140,7 @@ export class NativeVideo {
       this.ownership = new NativeVideoOwnership(path.join(options.cacheDir, 'sessions', key))
     }
   }
-  async recoverOrphans() {
+  async recoverOrphans(crossHost = false) {
     await this.ownership?.recover(async owner => {
       const stale = new NativeVideo({ ...this.options, cacheDir: undefined })
       stale.run = args => this.run(args)
@@ -159,6 +161,13 @@ export class NativeVideo {
       }
       await stale.stop()
     })
+    // Only foreground callers may reclaim a disconnected session without a
+    // local journal. Never reclaim our own standby or another live local owner.
+    if (crossHost && !this.name && !await this.ownership?.hasForeignRecords()) {
+      this.crossHostRecovery ||= recoverDisconnectedNative(command => this.shell(command))
+        .finally(() => { this.crossHostRecovery = undefined })
+      await this.crossHostRecovery
+    }
   }
   private async readStartTime(pid: string) {
     const stat = await this.shell(`cat /proc/${pid}/stat`)
@@ -172,7 +181,7 @@ export class NativeVideo {
     const inventory = await this.shell('cat /proc/net/unix && echo NATIVE_SOCKET_READ_COMPLETE')
     if (!inventory.endsWith('\nNATIVE_SOCKET_READ_COMPLETE')) throw new Error('Native socket inventory unconfirmed')
     const rows = inventory.slice(0, -'\nNATIVE_SOCKET_READ_COMPLETE'.length).split(/\r?\n/)
-    if (!/^\s*Num\s+RefCount\s+Protocol\s+Flags\s+Type\s+St\s+Inode\s+Path\s*$/.test(rows.shift() || '') ||
+    if (!/^\s*Num\s+RefCount\s+(?:Protocol|Proto)\s+Flags\s+Type\s+(?:St|State)\s+Inode\s+Path\s*$/.test(rows.shift() || '') ||
       rows.filter(row => row.trim()).some(row => !/^\s*[a-f0-9]+:\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+[a-f0-9]+\s+\d+(?:\s+.*)?$/i.test(row))) {
       throw new Error('Native socket inventory unconfirmed')
     }

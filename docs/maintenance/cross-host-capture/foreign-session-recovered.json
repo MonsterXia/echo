@@ -1,0 +1,77 @@
+{
+  "scope": "Real app IPC, device capture and Chromium Canvas; unlocked static screen; no pixels saved",
+  "startedAt": "2026-10-30T03:11:08.135Z",
+  "rounds": [
+    {
+      "round": 1,
+      "firstDrawMs": 4077,
+      "visibleMs": 4151,
+      "firstCodec": "JPEG",
+      "draws": 2,
+      "codecs": {
+        "JPEG": 2
+      },
+      "width": 542,
+      "height": 1206,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 2,
+      "firstDrawMs": 542,
+      "visibleMs": 589,
+      "firstCodec": "JPEG",
+      "draws": 1,
+      "codecs": {
+        "JPEG": 1
+      },
+      "width": 542,
+      "height": 1206,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    },
+    {
+      "round": 3,
+      "firstDrawMs": 516,
+      "visibleMs": 559,
+      "firstCodec": "JPEG",
+      "draws": 1,
+      "codecs": {
+        "JPEG": 1
+      },
+      "width": 542,
+      "height": 1206,
+      "capabilities": {
+        "videoDecoder": "function",
+        "secure": true
+      }
+    }
+  ],
+  "passed": false,
+  "crossHostRecovery": {
+    "initialLocalRecords": 0,
+    "recoveredWithoutLocalJournal": true
+  },
+  "runtime": {
+    "version": "1.0.4-dev.2",
+    "packaged": false
+  },
+  "nativeDiagnostics": [
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+    "Native video unavailable; using JPEG compatibility capture",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+    "Native video unavailable; using JPEG compatibility capture",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260629.z.so Error: Native video extension exited before listening",
+    "Native video candidate failed: libscrcpy_server_unix_6.6-20260418.z.so NativeVideoFirstFrameTimeout: Native video first frame timeout (the display may be idle)",
+    "Native video unavailable; using JPEG compatibility capture"
+  ],
+  "mainAssetSha256": "5f45a6ca2a56be3bec305b74fa96707bd4f57e441a24d2c15b399a22ee27c119",
+  "error": "must decode native video after recovery",
+  "normalExitClearedOwnership": true
+}

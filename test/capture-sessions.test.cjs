@@ -155,6 +155,29 @@ test('control initialization reuses a responsive daemon without stopping it', as
   assert.deepEqual(h.calls, ['getDisplaySize'])
 })
 
+test('foreground initialization enables cross-host recovery before opening control', async () => {
+  const h = screencastMain()
+  const order = []
+  h.driver.nativeVideo = { async recoverOrphans(crossHost) { order.push(crossHost) } }
+  h.driver.getDisplaySize = async () => { order.push('control') }
+  await h.driver.initializeControl()
+  assert.deepEqual(order, [true, 'control'])
+  order.length = 0
+  await h.driver.initializeControl(true)
+  assert.deepEqual(order, ['control'], 'background cannot reclaim another host')
+})
+
+test('control recovery closes its own failed channel before cross-host peer inspection', async () => {
+  const h = screencastMain()
+  const order = []
+  h.driver.connection = { end() { order.push('closed') } }
+  h.driver.nativeVideo = { async stop() {}, async available() { return true },
+    async recoverOrphans(crossHost) { assert.equal(crossHost, true); order.push('inspect') } }
+  h.driver.controlRecovery = { async remember() {}, async reset() { order.push('reset') } }
+  await h.driver.recoverControl()
+  assert.deepEqual(order, ['closed', 'inspect', 'reset'])
+})
+
 test('foreground retry recovers a failed control channel before replacing an unconfirmed capture', async () => {
   let failed = false, starts = 0, recoveries = 0
   const h = screencastMain(async (_method, api) => {

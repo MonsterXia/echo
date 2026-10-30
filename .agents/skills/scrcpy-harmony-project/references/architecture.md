@@ -113,7 +113,7 @@ HAP 拖入由主窗口和投屏根组件各注册一次 `src/renderer/lib/useHap
 
 并发设备刷新按发起顺序分配序号，只有最新请求可以发布列表、选择、错误状态及持久化写入。已被后续请求取代的调用返回 `undefined`，工具栏不显示这次调用的通知；有效调用继续返回成功/失败布尔值。此保护不取消已发送 IPC，也不限制 HDC 等待时间。
 
-`hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批。Application.tsx 用面板生命周期内的同步引用串行处理刷新，将在途期间的安装/卸载刷新请求合并为后续一轮，重新读取系统应用选项；卸载或设备切换后忽略旧结果并停止后续批次，查询失败释放加载状态。此处不取消已发送 IPC，也不设置 HDC 命令超时。
+`hdc/bundle.ts` 的 `getBundleInfos` 逐应用执行单条 `bm dump -n`，将命令、解析、结果与 bundleName 绑定；不再使用共享 shell 的字符串分隔符拆分批量结果。失败项带 connectKey / bundleName / 原因日志并跳过，其余结果保持请求顺序。缺失主模块或启动能力时保留应用并省略 mainAbility；在线名称/图标失败保留本地字段。可选商店查询由 `hdc/onlineBundleInfo.ts` 管理：3 秒总截止并取消包括 HTTPS CONNECT 的底层连接、请求级独立 Agent、同包请求合并、跨包串行和 30 秒网络失败冷却。有效字段缓存 1 小时、缺失条目缓存 5 分钟，上限 500 项，均为进程内缓存；HTTP 404 不触发全局冷却。失败只日志包名和白名单错误码，不输出 Axios 对象。无网络时保留本地名称/版本并使用默认图标，不代表实现离线真实图标。IPC 仍返回 `IBundleInfo[]`，renderer 仍每五个包刷新一批。Application.tsx 用面板生命周期内的同步引用串行处理刷新，将在途期间的安装/卸载刷新请求合并为后续一轮，重新读取系统应用选项；卸载或设备切换后忽略旧结果并停止后续批次，查询失败释放加载状态。此处不取消已发送 IPC，也不设置 HDC 命令超时。
 
 应用名称优先取本地有效明文 label；否则在设备 `bm dump -h` 声明 `-l, --label` 时使用 `bm dump -n <bundle> -l` 解析资源名称。能力探测限定在单批请求，名称也不跨请求缓存；不支持或失败时保留原在线/包名回退。不能将应用的 apiTargetVersion 当设备版本。图标仍使用原在线策略，`$media:` 资源引用不能直接作为图片路径；当前未实现 HAP 资源解析。Application.tsx 列表插入名称与图片 URL 时做 HTML 转义。
 
@@ -162,6 +162,8 @@ Canvas pointer 事件
 
 `vendor/native-video/manifest.json` 固定官方 SDK 归档和六个 ARM64 候选库的版本、大小及哈希；`script/native-video-resources.mjs` 使用 Node 解压指定条目，`script/build.mjs` 只复制清单内原生库和来源/许可文件。构建和运行均不执行 Java，归档 JAR 不进入应用包。兼容范围与验收见 `docs/maintenance/native-video-deployment.md`。
 
+`nativeVideoRecovery.ts` 补充跨电脑受限恢复：仅前台调用 `recoverOrphans(true)`，在本机 journal 清理后、无自身 standby/其他活跃本机记录时检查完整启动命令、清单内库哈希、PID/starttime、单个空闲视频 listener 与 IPv4/IPv6 控制连接。一秒后确认相同身份，设备端 shell 再核对后精确终止；不依赖旧电脑 journal、awk 或 `/proc/<pid>/fd` 权限，不清理其他主机转发。后台不触发，当前实例并发检查合并。只读预检异常仅跳过跨电脑接管，让健康控制/JPEG 仍可使用；终止命令及后续清理失败继续阻断。socket 表头同时接受 Linux 与 HarmonyOS 的 Protocol/Proto、St/State；未知状态拒绝。控制恢复先关闭自己的失效连接，避免把它误判为另一个客户端。shell 检查到 kill 仍有极短竞态，无 pidfd 原子保证；范围见 `docs/maintenance/windows-cross-host-capture.md`。
+
 定位投屏问题时：
 
 - 帧解码入口：`ScreencastClient.ts` 的 `videoFrame()` / `draw()`，共同进入 `paint()`；JPEG 只保留一张待解码最新帧。图像加载辅助在同目录 `util.ts`，视频解码在 `H264Decoder.ts`。性能与部署边界见 `docs/maintenance/screencast-video-design.md`。
@@ -197,3 +199,5 @@ Canvas pointer 事件
 `captureSessions.prepareCapture` 与前台 start/stop 共用设备队列，记录待用资源的 owner/ready 状态；点击在准备后原子转移到 capture lease，取消/过期不得停止已接管的流，清理未确认则阻止再启动。`NativeVideo.prepare` 只校验/上传/加载候选和建立转发，不发 onStart；每个候选部署前重新核对 socket 占用，监听就绪、准备完成和正式 start 均核对本会话扩展进程仍存在后取流，尺寸不匹配重建。监听成功只记内存提示，真实流成功才持久化兼容提示。控制初始化必须先于 UITest 版本探测。
 
 退出处理立即取消预热并调用 shutdownCaptures 撤销帧路由，等待两者全部结算后允许可选 HDC shutdown。共享 relaunch 使用 app.quit 参与清理，主窗口 before-quit 后不因投屏可见而隐藏阻断退出。控制 HDC 准备尚无统一总截止，因此退出最多等待 10 秒，超时记录清理未确认并 app.exit 真正终止进程，避免迟到任务继续部署；远端资源或外部 HDC 子进程可能遗留，不宣称清理成功。证据见 docs/maintenance/screencast-pr56-review.md。
+
+跨电脑终止前脚本使用设备 `flock` 串行化恢复，锁文件固定保留防止 inode 分裂；Harmony shell 以 stdin 继承锁（所有 read 使用 here-doc）。不支持 flock 或锁忙时跳过接管，已被其他恢复移除则不重复清理。原生客户端未参与该锁，连接与信号之间仍有短竞态。
