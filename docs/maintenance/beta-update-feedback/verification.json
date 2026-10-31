@@ -1,0 +1,361 @@
+{
+  "kind": "Windows local dist; real titlebar clicks and settings IPC",
+  "scenarios": [
+    {
+      "language": "en-US",
+      "theme": "light",
+      "phase": "restart-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "light",
+      "phase": "clicked-true",
+      "text": "Beta Update: On",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "light",
+      "phase": "restart-true",
+      "text": "Beta Update: On",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "light",
+      "phase": "clicked-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "light",
+      "phase": "restart-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "dark",
+      "phase": "restart-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "dark",
+      "phase": "clicked-true",
+      "text": "Beta Update: On",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "dark",
+      "phase": "restart-true",
+      "text": "Beta Update: On",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "dark",
+      "phase": "clicked-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "en-US",
+      "theme": "dark",
+      "phase": "restart-false",
+      "text": "Beta Update: Off",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "light",
+      "phase": "restart-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "light",
+      "phase": "clicked-true",
+      "text": "接收预发布更新：已开启",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "light",
+      "phase": "restart-true",
+      "text": "接收预发布更新：已开启",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "light",
+      "phase": "clicked-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "light",
+      "phase": "restart-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "dark",
+      "phase": "restart-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "dark",
+      "phase": "clicked-true",
+      "text": "接收预发布更新：已开启",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "dark",
+      "phase": "restart-true",
+      "text": "接收预发布更新：已开启",
+      "checked": "true",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "visible",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "dark",
+      "phase": "clicked-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    {
+      "language": "zh-CN",
+      "theme": "dark",
+      "phase": "restart-false",
+      "text": "接收预发布更新：已关闭",
+      "checked": "false",
+      "iconWidth": 14,
+      "iconHeight": 14,
+      "visibility": "hidden",
+      "labelPositions": [
+        26,
+        26,
+        26,
+        26
+      ]
+    }
+  ],
+  "passed": true,
+  "mainSha256": "bfabe7a5c6079fdf7776b82439612a95859147e5fcb269fd8307f1e0d534b2f2",
+  "stylesheets": [
+    {
+      "file": "App-BI75HyoZ.css",
+      "sha256": "87421ae4ba720ec9d65f27be014b7cb53f369b4bcd81aa287a0a6ed9e60e7a48"
+    },
+    {
+      "file": "App-BSrh4QD_.css",
+      "sha256": "5de268b7056bb5d6ef5e4d2fabfcaf846f8cbc813139c852fd6e450103a46fc7"
+    },
+    {
+      "file": "App-DMlEgHFO.css",
+      "sha256": "66603e7d2347c1a53919476186fe6d5bd7b1684917306a0867b55836715ac6d0"
+    },
+    {
+      "file": "App-Dd9tQDqf.css",
+      "sha256": "489c21550a1ecd8b025163454a32a80ec05f05d4a2ac194f0c7a7cecafe26be3"
+    },
+    {
+      "file": "App-DplwvdpB.css",
+      "sha256": "b33f86390076f3dbe676232b1e02f2a838503e75c33575e038027fbacc039aa1"
+    },
+    {
+      "file": "App-o3hzah0p.css",
+      "sha256": "e125074fa6ae983a172c6e56fdad688725e74d7c996cfcaf18b7dcf885b76cf9"
+    },
+    {
+      "file": "app-A-OW0ILR.css",
+      "sha256": "e99066bb79fc4a8dcd54688b1d4f5a1896bbb249c8237da6124f296576557225"
+    },
+    {
+      "file": "xterm-DYP7pi_n.css",
+      "sha256": "7c5a01f382f76539fc9b4db6b18e18a7035741845fd14968c5cdc0a7e373d817"
+    }
+  ]
+}

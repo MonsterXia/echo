@@ -4,7 +4,7 @@ const { transformSync } = require('esbuild')
 const fs = require('node:fs')
 const vm = require('node:vm')
 
-function fixture(saved = {}) {
+function fixture(saved = {}, translations) {
   const snapshots = []
   let menu, finish, fail
   const pending = new Promise((resolve, reject) => { finish = resolve; fail = reject })
@@ -27,7 +27,7 @@ function fixture(saved = {}) {
       if (id === 'share/main/lib/updater') return { checkUpdate: () => pending }
       if (id === 'licia/isMac') return false
       if (id === 'licia/isWindows') return true
-      if (id === 'common/util') return { t: key => key }
+      if (id === 'common/util') return { t: key => translations?.[key] || key }
       if (id === 'share/common/util') return { isDev: () => false }
       if (id === 'share/main/lib/util') return { handleEvent() {} }
       if (id === './screencastEdit' || id.startsWith('share/main/window/')) return {}
@@ -72,3 +72,25 @@ test('Beta Update defaults off and persists its checkbox choice across menu rebu
   f.rebuild()
   assert.equal(f.beta().checked, false)
 })
+
+for (const [locale, off, on] of [
+  ['en-US', 'Beta Update: Off', 'Beta Update: On'],
+  ['zh-CN', '接收预发布更新：已关闭', '接收预发布更新：已开启'],
+]) {
+  test(`Beta Update visibly follows the saved checkbox state after clicks and rebuilds (${locale})`, () => {
+    const translations = JSON.parse(fs.readFileSync(`src/common/langs/${locale}.json`, 'utf8'))
+    const f = fixture({}, translations)
+    assert.equal(f.beta().label, off)
+    for (const [checked, label] of [[true, on], [false, off]]) {
+      // Electron toggles the MenuItem before invoking our callback.
+      const item = f.beta()
+      item.checked = checked
+      item.click(item)
+      assert.equal(f.saved.betaUpdate, checked)
+      assert.equal(f.beta().label, label, 'the next menu snapshot must show the new state')
+      f.rebuild()
+      assert.equal(f.beta().checked, checked)
+      assert.equal(f.beta().label, label)
+    }
+  })
+}
