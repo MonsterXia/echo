@@ -1,12 +1,12 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
-## 1.0.4 正式版规划（2026-10-31）
+## 1.0.4 正式发行（2026-10-31）
 
-状态：**已获正式发布授权，准备候选中**。用户选择沿用 Windows 未签名、macOS 有效 ad-hoc；并确认沿用开发版已有真机证据，列出未补测范围，完成本轮构建、安装和更新验证后发布。以 master `09fd66a` 为功能基线，包含 dev 系列和 PR #78 的菜单状态/对齐修复。执行[正式版计划](docs/superpowers/plans/2026-10-31-release-1.0.4.md)，进度见[发行记录](docs/releases/1.0.4.md)。双主机物理换线及 2 小时活动/8 小时空闲未补测，不标为通过；公开前 Latest 仍为 v1.0.3。
+状态：**2026-10-31 20:06:57（UTC+8）已正式发布**。[v1.0.4](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4) 已设为 Latest，PR #79 合入后以固定源 `2cce9e1` 完成五项 CI、三平台安装启动、两条直接升级路径及公开前后各 63 场景的实际更新检查；14 附件重新下载核验通过。Windows 未签名、双 Mac 有效 ad-hoc，仍无 Developer ID/公证。用户确认沿用开发版已有真机证据，未补测物理换线及 2 小时活动/8 小时空闲，后续观察也未标记完成。完整证据与失败重试见[发行记录](docs/releases/1.0.4.md)。
 
 ## Beta Update 状态可见性（2026-10-31）
 
-状态：**已合入，待安装包交付**。用户反馈菜单无法直观看出是否开启。基线 `ef387af`、分支 `codex/fix-beta-update-feedback`；Windows 实际点击确认配置切换正常，但共享样式将复选图标宽度设为 0，勾号不可见。修复保留所有菜单行统一图标栏、文字左对齐，并增加中英文开启/关闭状态。应用 793 passing / 1 平台跳过、Licia 两模式各 606 passing / 4 pending、lint、构建和双语深浅色 20 个实际菜单/重启状态检查通过；[PR #78](https://github.com/MonsterXia/scrcpy-harmony/pull/78) 经独立审查和五项必需 CI 后合入 `09fd66a`。证据见[专项记录](docs/maintenance/beta-update-feedback.md)。下一步纳入 1.0.4 正式版候选，并补 macOS 原生菜单及最终安装包人工验收；本轮未发布或替换安装应用。
+状态：**已随 1.0.4 正式版交付**。用户反馈菜单无法直观看出是否开启。基线 `ef387af`、分支 `codex/fix-beta-update-feedback`；Windows 实际点击确认配置切换正常，但共享样式将复选图标宽度设为 0，勾号不可见。修复保留所有菜单行统一图标栏、文字左对齐，并增加中英文开启/关闭状态。应用 793 passing / 1 平台跳过、Licia 两模式各 606 passing / 4 pending、lint、构建和双语深浅色 20 个实际菜单/重启状态检查通过；[PR #78](https://github.com/MonsterXia/scrcpy-harmony/pull/78) 经独立审查和五项必需 CI 后合入 `09fd66a`。证据见[专项记录](docs/maintenance/beta-update-feedback.md)。已纳入 1.0.4 正式安装包；三平台实际安装与更新窗口检查通过，完整 macOS 双语/主题原生菜单人工验收仍待补齐。本机日常安装未替换。
 
 ## 1.0.4-dev.3 开发预发布（2026-10-30）
 
