@@ -1,108 +1,62 @@
-name: Packaged update acceptance
-
+name: Stable 1.0.4 release operations
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [master]
-    paths:
-      - .github/workflows/update-acceptance.yml
-      - script/check-packaged-update.mjs
-      - script/install-update-check.mjs
-
+    inputs:
+      mode:
+        type: choice
+        options: [preflight, upload, postrelease]
+        required: true
+        default: preflight
 permissions:
   contents: read
-
+  actions: read
 jobs:
-  update:
-    name: update-${{ matrix.platform }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 25
+  acceptance:
+    if: inputs.mode != 'upload'
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            platform: win
-            arch: x64
-            extension: exe
-            sha256: f9f2bac1bf6731c55851d4e22bd62f242b1145061fef2570ee603d34f97be4e8
-          - os: macos-15
-            platform: mac
-            arch: arm64
-            extension: dmg
-            sha256: 5e9a04cad17fdd827bb4ab52b9679022ae6fae83f6e9b15f75690c49af1aefb2
-          - os: macos-15-intel
-            platform: mac
-            arch: x64
-            extension: dmg
-            sha256: 57a1fa3ea0de284aeb103afeff49a0c37127131101ac287ebd98692c1da32ab4
+          - {os: windows-latest, platform: win, arch: x64}
+          - {os: macos-15, platform: mac, arch: arm64}
+          - {os: macos-15-intel, platform: mac, arch: x64}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_PLATFORM: ${{ matrix.platform }}
       EXPECTED_ARCH: ${{ matrix.arch }}
-      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-    defaults:
-      run:
-        shell: bash
+      RELEASE_MODE: ${{ inputs.mode }}
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '22'
-          cache: npm
-      - name: Verify native architecture
-        run: node -e "require('node:assert/strict').equal(process.arch, process.env.EXPECTED_ARCH)"
-      - name: Install acceptance driver dependencies
-        run: npm ci --no-audit --no-fund
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          ref: b81c6563e7502819142d651aad15a6b4d45f33bf
-          path: previous
-          submodules: recursive
-          persist-credentials: false
-      - name: Install fixed 1.0.1 source dependencies
-        working-directory: previous
-        run: npm ci --no-audit --no-fund
-      - name: Prepare Windows resources
-        if: runner.os == 'Windows'
-        working-directory: previous
-        run: npx --no-install zx --shell "C:/Program Files/Git/bin/bash.exe" script/resources.mjs
-      - name: Prepare macOS resources
-        if: runner.os == 'macOS'
-        working-directory: previous
-        run: npm run init
-      - name: Build genuine 1.0.1 distribution
-        working-directory: previous
-        run: npm run build
-      - name: Package genuine 1.0.1 installer
-        working-directory: previous
-        run: npm run pack -- --no-publish
-      - name: Download published 1.0.2 installer
-        env:
-          ASSET: Scrcpy-Harmony-1.0.2-${{ matrix.platform }}-${{ matrix.arch }}.${{ matrix.extension }}
-        run: |
-          mkdir -p release/update-acceptance
-          curl --fail --location --retry 3 --output "release/update-acceptance/$ASSET" "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.2/$ASSET"
-      - name: Check available update, network error and recovery in 1.0.1
-        env:
-          INSTALLER: previous/release/1.0.1/Scrcpy Harmony-1.0.1-${{ matrix.platform }}-${{ matrix.arch }}.${{ matrix.extension }}
-        run: node script/install-update-check.mjs "$INSTALLER" 1.0.1 release/update-acceptance/1.0.1
-      - name: Check no update, network error and recovery in published 1.0.2
-        # Retain the second version's evidence even when the first version fails.
-        if: ${{ !cancelled() && hashFiles('release/update-acceptance/Scrcpy-Harmony-1.0.2-*') != '' }}
-        env:
-          INSTALLER: release/update-acceptance/Scrcpy-Harmony-1.0.2-${{ matrix.platform }}-${{ matrix.arch }}.${{ matrix.extension }}
-          EXPECTED_HASH: ${{ matrix.sha256 }}
-        run: node script/install-update-check.mjs "$INSTALLER" 1.0.2 release/update-acceptance/1.0.2 "$EXPECTED_HASH"
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '22', cache: npm}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: npm ci --no-audit --no-fund
+      - run: python script/stable-release/run-matrix.py
       - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+        if: always()
         with:
-          name: update-${{ matrix.platform }}-${{ matrix.arch }}
+          name: stable-${{ inputs.mode }}-${{ matrix.platform }}-${{ matrix.arch }}
           if-no-files-found: error
           path: |
-            release/update-acceptance/**/report.json
-            release/update-acceptance/**/installer.json
-            release/update-acceptance/**/*.log
-            release/update-acceptance/**/*.png
-            previous/release/1.0.1/*.exe
-            previous/release/1.0.1/*.dmg
+            release/stable-acceptance/**/evidence/**
+            release/stable-acceptance/summary.json
+  upload:
+    if: inputs.mode == 'upload'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version: '22', cache: npm}
+      - run: npm ci --no-audit --no-fund
+      - run: python script/stable-release/prepare-upload.py
