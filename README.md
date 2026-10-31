@@ -35,28 +35,28 @@ macOS requires **version 13 or later**. Linux installers are not currently avail
 
 Installers include HDC and the required device resources; Node.js is not needed for normal use. See the [user guide](docs/user-guide.md) for detailed installation and connection steps.
 
-**The 1.0.3 installers have no publisher signing or macOS notarization, and the macOS Gatekeeper checks did not pass.** See the [1.0.3 release report](docs/releases/1.0.3.md) for installation and launch results, signing status, and checksum files.
+**Windows packages are unsigned. macOS packages use ad-hoc signing, without Developer ID or notarization.** System installation warnings may still appear. Verify the download source and checksums; see the [1.0.4 release report](docs/releases/1.0.4.md) for publication status and actual validation results.
 
-If you are switching from ECHO, configure your settings again. Scrcpy Harmony uses a separate application ID and user configuration directory. Your ECHO settings remain in their original location and are not migrated automatically.
+**Publication status:** 1.0.4 is being prepared. Until its release report confirms publication, the Latest download still provides 1.0.3 and does not include the 1.0.4 features below.
 
-The stable **1.0.3** release includes the device, application and screencast fixes merged through baseline `8087ac8`. It remains the recovery version before dependency source migration.
+Current source targets **1.0.4**: H.264 mirroring with JPEG fallback, keyboard/IME and clipboard input, HAP drag-and-drop installation, guarded recovery of idle mirroring sessions, bounded app-store requests, English/Chinese language selection, and visible **Beta Update: On/Off** state with aligned menu labels. Download the installer from [Releases](https://github.com/MonsterXia/scrcpy-harmony/releases/latest) to upgrade; settings use the same application directory. Beta Update is in the application menu, defaults to off and is not needed for stable releases.
 
-[**1.0.4-dev.3**](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3) is available as a development pre-release. It adds guarded recovery of idle mirroring sessions left on another computer, keeps the app list responsive when the app store is unreachable, and repairs macOS development bundle signatures. Mac packages use verified ad-hoc signing, without Developer ID or notarization. It also includes H.264 mirroring, keyboard/clipboard input, opt-in Beta Update and English/Chinese language selection. Download the new installer to upgrade; language changes take effect after restarting. See the [release report](docs/releases/1.0.4-dev.3.md) for three-platform installation/startup checks, signing limitations and pending device validation. Include the version and commit SHA when reporting a problem.
+Version **1.0.3** remains available as the recovery version before dependency source migration. If switching from ECHO, configure settings again: its separate configuration directory is not migrated automatically. Device compatibility and pending validation are listed in the release report; include your version and commit when reporting a problem.
 
 ## Quick start
 
-The 1.0.4-dev.3 pre-release automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG. This capability is not included in the stable 1.0.3 release.
+Version 1.0.4 automatically deploys bundled native capture libraries to compatible phones for H.264 mirroring; no preinstalled phone library or Java runtime is required. Unsupported devices fall back to JPEG.
 
-The current pre-release retries video once when the picture changes after JPEG fallback. You can also click **Switch to video** (切换到视频) in the screencast toolbar. JPEG stays active until the first decoded video frame is displayed; a failed attempt keeps JPEG running.
+Version 1.0.4 retries video once when the picture changes after JPEG fallback. You can also click **Switch to video** (切换到视频) in the screencast toolbar. JPEG stays active until the first decoded video frame is displayed; a failed attempt keeps JPEG running.
 
 1. Enable developer options and USB debugging on your HarmonyOS device. Connect it to your computer with a USB data cable and authorize the debugging connection on the device. The settings location varies by system version.
 2. Launch Scrcpy Harmony and select your device from the list at the top. If it does not appear, click **Refresh** (刷新) beside the list.
-3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. In the development pre-release, focus a phone text field and type or paste from your keyboard; stable 1.0.3 uses **Input text** (输入文本) in the toolbar.
+3. Click **Screencast** (投屏) to open the device screen, then click or drag with your mouse. Focus a phone text field and type or paste from your keyboard.
 4. Switch between the **Apps** (应用), **Terminal** (终端), and **Logs** (日志) panels in the main window. To export HiLog output, click **Save** (保存) in the Logs toolbar.
 
 The app uses its bundled HDC by default. To use another version, specify the executable path in **HDC location** (HDC 位置) in settings.
 
-The 1.0.4-dev.3 pre-release supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. Stable 1.0.3 does not include this language selection. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
+Version 1.0.4 supports English and Simplified Chinese throughout the app. In **Settings → Language** (设置 → 语言), choose **System Preference**, **English**, or **简体中文**, then restart the app to apply the choice to all windows and menus. Regional English and Chinese system locales use English and Simplified Chinese respectively; other system languages fall back to English. When developing UI, follow the [internationalization workflow](.agents/skills/scrcpy-harmony-project/references/internationalization.md) and run `npm run check:i18n`.
 
 ### Common questions
 
