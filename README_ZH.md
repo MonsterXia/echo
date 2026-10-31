@@ -37,7 +37,7 @@ macOS 需要 **13 或更新版本**。当前未提供 Linux 安装包。
 
 **Windows 安装包未做发行者签名；macOS 使用 ad-hoc 签名，无 Developer ID 或公证。** 系统仍可能提示安装限制，请核对下载来源和校验值；公开状态与实际验证结果见 [1.0.4 发布记录](docs/releases/1.0.4.md)。
 
-**发布状态：** 1.0.4 正在准备。在发布记录确认公开前，Latest 下载仍为 1.0.3，不包含下文的 1.0.4 新功能。
+**[1.0.4 已作为正式 Latest 发布](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4)。** 三平台安装与直接升级/更新检查通过；签名限制和未补测真机范围继续在发布记录中明确列出。
 
 当前源码版本为 **1.0.4**，包含 H.264 投屏与 JPEG 回退、键盘/IME 和文本粘贴、HAP 拖入安装、空闲投屏残留的受限恢复、商店请求有限等待、中英文选择，以及清楚显示开启/关闭、文字对齐的 **Beta Update／接收预发布更新** 菜单。升级请从 [Releases](https://github.com/MonsterXia/scrcpy-harmony/releases/latest) 下载安装包；应用配置目录保持不变。Beta Update 位于应用菜单，默认关闭，接收正式版无需开启。
 

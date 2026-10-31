@@ -37,7 +37,7 @@ Installers include HDC and the required device resources; Node.js is not needed 
 
 **Windows packages are unsigned. macOS packages use ad-hoc signing, without Developer ID or notarization.** System installation warnings may still appear. Verify the download source and checksums; see the [1.0.4 release report](docs/releases/1.0.4.md) for publication status and actual validation results.
 
-**Publication status:** 1.0.4 is being prepared. Until its release report confirms publication, the Latest download still provides 1.0.3 and does not include the 1.0.4 features below.
+**[1.0.4 is now available as the stable Latest release](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4).** Three-platform installation and direct upgrade/update checks passed; signing and device-validation limitations remain documented in the release report.
 
 Current source targets **1.0.4**: H.264 mirroring with JPEG fallback, keyboard/IME and clipboard input, HAP drag-and-drop installation, guarded recovery of idle mirroring sessions, bounded app-store requests, English/Chinese language selection, and visible **Beta Update: On/Off** state with aligned menu labels. Download the installer from [Releases](https://github.com/MonsterXia/scrcpy-harmony/releases/latest) to upgrade; settings use the same application directory. Beta Update is in the application menu, defaults to off and is not needed for stable releases.
 

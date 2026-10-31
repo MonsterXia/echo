@@ -2,7 +2,7 @@
 
 [仓库结构](../docs/repository-guide.md) · [构建指南](../docs/build-guide.md) · [迁移验证记录](../docs/maintenance/dependency-sources.md)
 
-本次迁移以已发布的 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3) 为恢复节点。当前源码开发版为 1.0.4-dev.0，不是另一个已发布 Release。
+依赖源码迁移以 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3) 为迁移前恢复节点，当时源码版本为 1.0.4-dev.0。迁移已包含在当前正式版 [v1.0.4](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4) 中，发行验证及未补测范围见 [1.0.4 发行记录](../docs/releases/1.0.4.md)。
 
 ## 修改与编译
 

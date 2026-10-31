@@ -1,0 +1,3702 @@
+{
+  "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+  "preflight": {
+    "run": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962",
+    "summaries": [
+      {
+        "mode": "preflight",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "mac",
+        "arch": "arm64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      },
+      {
+        "mode": "preflight",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "mac",
+        "arch": "x64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      },
+      {
+        "mode": "preflight",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "win",
+        "arch": "x64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      }
+    ],
+    "reports": [
+      {
+        "path": "mac-arm64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "arm64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-mac-arm64.dmg",
+          "version": "1.0.4",
+          "bytes": 126527764,
+          "sha256": "aa06227502c6cf5c8ae4e3456b70d92e84438fe4c95ddfb933d410989c1462c5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "arm64",
+          "sha256": "d114fa37da44ffb066257e09e94f4f2fd105311565a473cc2550e78465d4df16"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-mac-arm64.dmg",
+          "version": "1.0.4-dev.3",
+          "bytes": 126523684,
+          "sha256": "0656c19e879a836d00e1c93f12525f346c474783540a0b887a2344671522e668",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "arm64",
+          "sha256": "2055a0699d7545619da523b274902372c0258a7afc7da98d0c69dc55e832e94c"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-mac-arm64.dmg",
+          "version": "1.0.3",
+          "bytes": 125779541,
+          "sha256": "e5281ce25cd34dffa81a7e0f7f5eaf3ab63672d332b0f65f98b6a3d936e258f5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "arm64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-mac-arm64.dmg",
+          "version": "1.0.4",
+          "bytes": 126527764,
+          "sha256": "aa06227502c6cf5c8ae4e3456b70d92e84438fe4c95ddfb933d410989c1462c5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-mac-x64.dmg",
+          "version": "1.0.4",
+          "bytes": 132854783,
+          "sha256": "dfa4ec43b875c001b2f204a03b2a4c876c918fa4cbcdfbc161be7ad0c3e355bd",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "x64",
+          "sha256": "d114fa37da44ffb066257e09e94f4f2fd105311565a473cc2550e78465d4df16"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-mac-x64.dmg",
+          "version": "1.0.4-dev.3",
+          "bytes": 132853940,
+          "sha256": "1480d50950d7aaa883826e1cdbf07a6cbe5888616f7775776709193dc1e3358d",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "x64",
+          "sha256": "2055a0699d7545619da523b274902372c0258a7afc7da98d0c69dc55e832e94c"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-mac-x64.dmg",
+          "version": "1.0.3",
+          "bytes": 130273356,
+          "sha256": "7f92ddce10e4ca9c5626388257e6a36baf723b6ff247591ae0a3bbcb1b4e184f",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-mac-x64.dmg",
+          "version": "1.0.4",
+          "bytes": 132854783,
+          "sha256": "dfa4ec43b875c001b2f204a03b2a4c876c918fa4cbcdfbc161be7ad0c3e355bd",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "28a52adc27609b38cfffa2e59f515f8ddb9422a9f9744f5f2c682d4130fe44b6"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-win-x64.exe",
+          "version": "1.0.4",
+          "bytes": 119767399,
+          "sha256": "fda285b290b8dac07fe008b5f0e4341b117768a826a90b26b8a1abfe054d8b06",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "x64",
+          "sha256": "e79973a56d0add449ba12d250aa696d16a34f42d1813300bc373fbc2f5754284"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-win-x64.exe",
+          "version": "1.0.4-dev.3",
+          "bytes": 119767175,
+          "sha256": "1a15d1b9fff8da852a75cf5b2fd6966ff8d373dc1b97a0d8e97d7a728d683721",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "x64",
+          "sha256": "64eccf16830af117411026722d685340bfa0e628988dfe251ad11fa1441338e6"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-win-x64.exe",
+          "version": "1.0.3",
+          "bytes": 119188125,
+          "sha256": "dfa052e2a5e61724ea3e764686a92afce05902a1a19a3f07fc9c62e3b14f30ee",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "28a52adc27609b38cfffa2e59f515f8ddb9422a9f9744f5f2c682d4130fe44b6"
+        },
+        "installer": {
+          "filename": "Scrcpy Harmony-1.0.4-win-x64.exe",
+          "version": "1.0.4",
+          "bytes": 119767399,
+          "sha256": "fda285b290b8dac07fe008b5f0e4341b117768a826a90b26b8a1abfe054d8b06",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "cba51ed01a7bf8c7253c7b050372a77b0caaa171",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41198430962"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.3",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4-dev.3",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4-dev.3/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      }
+    ],
+    "note": "Real installed binaries and production IPC/updater; updater network fault/cancellation is scoped to the test app session. Menu item callbacks trigger checks; actual dialog buttons are clicked. No phone attached on hosted runners."
+  },
+  "postrelease": {
+    "run": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736",
+    "summaries": [
+      {
+        "mode": "postrelease",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "mac",
+        "arch": "arm64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      },
+      {
+        "mode": "postrelease",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "mac",
+        "arch": "x64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      },
+      {
+        "mode": "postrelease",
+        "source": "2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca",
+        "build": 41197974717,
+        "platform": "win",
+        "arch": "x64",
+        "passed": true,
+        "versions": [
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.3",
+            "scenarios": 3,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-stable",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4-dev.3",
+            "scenarios": 6,
+            "settingsPreserved": false
+          },
+          {
+            "upgradePath": "from-dev",
+            "version": "1.0.4",
+            "scenarios": 6,
+            "settingsPreserved": true
+          }
+        ]
+      }
+    ],
+    "reports": [
+      {
+        "path": "mac-arm64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "arm64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-mac-arm64.dmg",
+          "version": "1.0.4",
+          "bytes": 126527764,
+          "sha256": "aa06227502c6cf5c8ae4e3456b70d92e84438fe4c95ddfb933d410989c1462c5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "arm64",
+          "sha256": "d114fa37da44ffb066257e09e94f4f2fd105311565a473cc2550e78465d4df16"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-mac-arm64.dmg",
+          "version": "1.0.4-dev.3",
+          "bytes": 126523684,
+          "sha256": "0656c19e879a836d00e1c93f12525f346c474783540a0b887a2344671522e668",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "arm64",
+          "sha256": "2055a0699d7545619da523b274902372c0258a7afc7da98d0c69dc55e832e94c"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-mac-arm64.dmg",
+          "version": "1.0.3",
+          "bytes": 125779541,
+          "sha256": "e5281ce25cd34dffa81a7e0f7f5eaf3ab63672d332b0f65f98b6a3d936e258f5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "mac-arm64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "arm64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "arm64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-mac-arm64.dmg",
+          "version": "1.0.4",
+          "bytes": 126527764,
+          "sha256": "aa06227502c6cf5c8ae4e3456b70d92e84438fe4c95ddfb933d410989c1462c5",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-mac-x64.dmg",
+          "version": "1.0.4",
+          "bytes": 132854783,
+          "sha256": "dfa4ec43b875c001b2f204a03b2a4c876c918fa4cbcdfbc161be7ad0c3e355bd",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "x64",
+          "sha256": "d114fa37da44ffb066257e09e94f4f2fd105311565a473cc2550e78465d4df16"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-mac-x64.dmg",
+          "version": "1.0.4-dev.3",
+          "bytes": 132853940,
+          "sha256": "1480d50950d7aaa883826e1cdbf07a6cbe5888616f7775776709193dc1e3358d",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "x64",
+          "sha256": "2055a0699d7545619da523b274902372c0258a7afc7da98d0c69dc55e832e94c"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-mac-x64.dmg",
+          "version": "1.0.3",
+          "bytes": 130273356,
+          "sha256": "7f92ddce10e4ca9c5626388257e6a36baf723b6ff247591ae0a3bbcb1b4e184f",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "mac-x64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "darwin",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "032d9d40782818a1b84e66a4cfd7a17dd18429a3fafd7374bf628ac79434a635"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-mac-x64.dmg",
+          "version": "1.0.4",
+          "bytes": 132854783,
+          "sha256": "dfa4ec43b875c001b2f204a03b2a4c876c918fa4cbcdfbc161be7ad0c3e355bd",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest-x64-mac.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-dev/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "28a52adc27609b38cfffa2e59f515f8ddb9422a9f9744f5f2c682d4130fe44b6"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-win-x64.exe",
+          "version": "1.0.4",
+          "bytes": 119767399,
+          "sha256": "fda285b290b8dac07fe008b5f0e4341b117768a826a90b26b8a1abfe054d8b06",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": true,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-dev/1.0.4-dev.3/evidence/report.json",
+        "version": "1.0.4-dev.3",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4-dev.3",
+          "arch": "x64",
+          "sha256": "e79973a56d0add449ba12d250aa696d16a34f42d1813300bc373fbc2f5754284"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-dev.3-win-x64.exe",
+          "version": "1.0.4-dev.3",
+          "bytes": 119767175,
+          "sha256": "1a15d1b9fff8da852a75cf5b2fd6966ff8d373dc1b97a0d8e97d7a728d683721",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "state": {
+              "status": "available",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4-dev.3",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-stable/1.0.3/evidence/report.json",
+        "version": "1.0.3",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.3",
+          "arch": "x64",
+          "sha256": "64eccf16830af117411026722d685340bfa0e628988dfe251ad11fa1441338e6"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.3-win-x64.exe",
+          "version": "1.0.3",
+          "bytes": 119188125,
+          "sha256": "dfa052e2a5e61724ea3e764686a92afce05902a1a19a3f07fc9c62e3b14f30ee",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": false,
+        "preservedBeta": null,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "available",
+            "target": "1.0.4",
+            "betaMenu": null,
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 3,
+            "blockedRequests": 0,
+            "downloadHandoff": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases",
+                "finished": true,
+                "error": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": "win-x64/from-stable/1.0.4/evidence/report.json",
+        "version": "1.0.4",
+        "platform": "win32",
+        "arch": "x64",
+        "runtime": {
+          "packaged": true,
+          "version": "1.0.4",
+          "arch": "x64",
+          "sha256": "28a52adc27609b38cfffa2e59f515f8ddb9422a9f9744f5f2c682d4130fe44b6"
+        },
+        "installer": {
+          "filename": "Scrcpy-Harmony-1.0.4-win-x64.exe",
+          "version": "1.0.4",
+          "bytes": 119767399,
+          "sha256": "fda285b290b8dac07fe008b5f0e4341b117768a826a90b26b8a1abfe054d8b06",
+          "source": "https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4",
+          "validationCommit": "9bc8701a9d33acb8274d065f82c915eeebc2395f",
+          "runUrl": "https://github.com/MonsterXia/scrcpy-harmony/actions/runs/41199705736"
+        },
+        "passed": true,
+        "settingsPreserved": true,
+        "preservedBeta": false,
+        "scenarios": [
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": true,
+            "expected": "error",
+            "target": "1.0.4",
+            "state": {
+              "status": "error",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [],
+            "successfulResponses": 0,
+            "blockedRequests": 1,
+            "downloadHandoff": []
+          },
+          {
+            "beta": false,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: Off",
+              "checked": false
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          },
+          {
+            "beta": true,
+            "cancelled": true,
+            "noLateWindow": true,
+            "held": 1,
+            "released": 1
+          },
+          {
+            "beta": true,
+            "offline": false,
+            "expected": "upToDate",
+            "target": "1.0.4",
+            "state": {
+              "status": "upToDate",
+              "productName": "Scrcpy Harmony",
+              "currentVersion": "1.0.4",
+              "latestVersion": "1.0.4"
+            },
+            "betaMenu": {
+              "label": "Beta Update: On",
+              "checked": true
+            },
+            "held": 0,
+            "released": 0,
+            "metadataRequests": [
+              {
+                "url": "https://github.com/MonsterXia/scrcpy-harmony/releases/download/v1.0.4/latest.yml",
+                "cancelled": false
+              }
+            ],
+            "successfulResponses": 2,
+            "blockedRequests": 0,
+            "downloadHandoff": []
+          }
+        ]
+      }
+    ],
+    "note": "Real installed binaries and production IPC/updater; updater network fault/cancellation is scoped to the test app session. Menu item callbacks trigger checks; actual dialog buttons are clicked. No phone attached on hosted runners."
+  },
+  "limitations": [
+    "No new physical cross-host/endurance/device matrix (explicitly deferred by user).",
+    "Preflight used actual published1.0.3/dev.3 metadata, not fixtures pretending1.0.4 was public. Postrelease tests used real published1.0.4.",
+    "No complete bilingual/light-dark native macOS menu visual walkthrough or uninstall-entry audit. Windows local Beta menu20states separately passed."
+  ]
+}
