@@ -2,7 +2,7 @@
 
 [中文 README](../README_ZH.md) · [English README](../README.md) · [构建指南](build-guide.md) · [本地依赖维护](../vendor/README.md)
 
-本指南对应依赖迁移后的 1.0.4-dev.0 开发布局。公开 v1.0.3 是迁移前恢复版本，使用该 tag 时按它自己的文档初始化子模块。运行功能与 IPC 的详细导航见[架构参考](../.agents/skills/scrcpy-harmony-project/references/architecture.md)。
+本指南对应 1.0.4 的依赖迁移后布局。公开状态见[发行记录](releases/1.0.4.md)；v1.0.3 是迁移前恢复版本，使用该 tag 时按它自己的文档初始化子模块。运行功能与 IPC 的详细导航见[架构参考](../.agents/skills/scrcpy-harmony-project/references/architecture.md)。
 
 ## 目录职责
 

@@ -4,7 +4,7 @@
 
 ## 范围与准备
 
-当前源码为依赖迁移后的 1.0.4-dev.0；公开恢复版为 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3)，实际构建提交 `417e78ff9a4f99bc0d3a68080b9ceb11810d1d09`。迁移源码与公开恢复版的依赖布局不同，构建时应记录提交号。
+当前源码版本为 1.0.4；公开状态见[发行记录](releases/1.0.4.md)。迁移前恢复版为 [v1.0.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.3)，其构建提交为 `417e78ff9a4f99bc0d3a68080b9ceb11810d1d09`。当前源码与迁移前恢复版的依赖布局不同，构建时应记录提交号。
 
 当前布局的干净检出、完整测试、本地 Windows 打包启动和三平台 CI 证据见[依赖源码迁移记录](maintenance/dependency-sources.md)。macOS 由原生 arm64/x64 runner 验证构建、DMG 安装与启动；没有新增 macOS 本机人工走读或真机验收。迁移前的 [M3-3](maintenance/M3-3.md)及[复核记录](maintenance/M3-3-release-guide.md)保留为历史记录，不作为当前目录和命令的操作入口。
 
