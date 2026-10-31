@@ -22,6 +22,7 @@ import time
 from datetime import datetime, timezone
 from urllib.parse import quote
 import zipfile
+from release_policy import verify_windows_signature, verify_mac_signature
 
 
 CI_JOBS = {'test', 'lint', 'windows-package', 'macos-package-arm64', 'macos-package-x64'}
@@ -346,9 +347,8 @@ class Publisher:
                     require(report['sourceCommit'] == self.c['source_sha'] and report['runUrl'] == run_url
                             and report['installationAndStartup'] == 'passed' and report['installer'] == original
                             and report['sha256'] == item['sha256'], 'Windows source report differs')
-                    require(report['authenticodeStatus'] in {'Valid', 'UnknownError', 'NotSigned', 'HashMismatch',
-                            'NotTrusted', 'NotSupportedFileFormat', 'Incompatible'}, 'Unknown Authenticode status')
                     require('signer' in report, 'Missing Windows signer evidence')
+                    verify_windows_signature(report)
                     signatures['windows-x64'] = {k: report[k] for k in ('authenticodeStatus', 'signer')}
                 else:
                     lines = text.splitlines()
@@ -365,6 +365,7 @@ class Publisher:
                         require(len(values) == 1 and values[0].isdigit(), f'Missing or duplicate {key}')
                         exits[key] = int(values[0])
                     require(exits['codesignDetailsExit'] == 0 and exits['codesignVerifyExit'] == 0, 'macOS signature must pass strict verification before publication')
+                    verify_mac_signature(text, exits)
                     signatures[suffix.removesuffix('.dmg')] = {
                         **exits, 'details': [line for line in lines if any(marker in line for marker in
                             ('Signature=', 'not signed', 'TeamIdentifier=', 'source='))]}

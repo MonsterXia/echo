@@ -20,12 +20,13 @@ let app, timer
 async function startCheck(beta, offline) {
   await app.evaluate(({Menu}, {beta,offline}) => {
     const e = globalThis.releaseEvidence
-    e.offline = offline; e.requests=[]; e.external=[]
+    e.offline = offline; e.requests=[]; e.external=[]; e.held=0; e.released=0
     const all = menu => menu.items.flatMap(i=>[i,...(i.submenu?all(i.submenu):[])])
     const items = all(Menu.getApplicationMenu())
     const item = items.find(i=>/Check for Updates|检查更新/i.test(i.label))
     if (!item) throw Error('Missing update menu')
     const b = items.find(i=>/Beta Update|接收预发布更新/.test(i.label))
+    if (!b && globalThis.requireBetaMenu) throw Error('Missing Beta menu')
     if (b && b.checked !== beta) b.click()
     if (b && b.checked !== beta) throw Error('Beta menu click did not change state')
     e.betaMenu = b ? {label:b.label, checked:b.checked}:null
@@ -41,10 +42,32 @@ async function check(beta, offline=false, cancel=false) {
   const win = legacy ? await app.firstWindow() : await newWindow
   let state, text
   if (cancel) {
+    await app.evaluate(async()=>{
+      const until=Date.now()+15000
+      while(!globalThis.releaseEvidence.held){
+        if(Date.now()>until)throw Error('Cancellation did not reach a held request')
+        await new Promise(r=>setTimeout(r,50))
+      }
+    })
+    const late=[]
+    const record=window=>late.push(window)
+    app.on('window',record)
     const closed=win.waitForEvent('close')
     await win.getByRole('button', {name:/Cancel|取消/}).click()
     await closed
-    report.scenarios.push({beta,cancelled:true})
+    await app.evaluate(async()=>{
+      const until=Date.now()+10000
+      while(globalThis.releaseEvidence.released<globalThis.releaseEvidence.held){
+        if(Date.now()>until)throw Error('Held request callback never completed')
+        await new Promise(r=>setTimeout(r,50))
+      }
+      await new Promise(r=>setTimeout(r,500))
+    })
+    app.off('window',record)
+    assert.equal(late.length,0,'Late update window after cancellation')
+    assert.equal(app.windows().length,1,'Unexpected window after cancellation')
+    const fault=await app.evaluate(()=>({held:globalThis.releaseEvidence.held,released:globalThis.releaseEvidence.released}))
+    report.scenarios.push({beta,cancelled:true,noLateWindow:true,...fault})
     return
   }
   if (legacy) {
@@ -111,7 +134,10 @@ try {
     const net=session.fromPartition('electron-updater',{cache:false})
     net.webRequest.onBeforeRequest((d,cb)=>{
       e.requests.push({url:safe(d.url),cancelled:Boolean(e.offline)})
-      if(e.offline==='hold')setTimeout(()=>cb({cancel:true}),3000)
+      if(e.offline==='hold'){
+        e.held++
+        setTimeout(()=>{cb({cancel:true});e.released++},3000)
+      }
       else cb({cancel:e.offline})
     })
     net.webRequest.onCompleted(d=>e.requests.push({url:safe(d.url),status:d.statusCode}))
@@ -128,10 +154,21 @@ try {
   assert.equal(await fs.realpath(runtime.profile),await fs.realpath(profile))
   report.runtime={packaged:runtime.packaged,version:runtime.version,arch:runtime.arch,
     sha256:createHash('sha256').update(await fs.readFile(local?'dist/main/index.js':runtime.appPath)).digest('hex')}
+  await app.evaluate((_electron, required)=>{globalThis.requireBetaMenu=required},!legacy)
   // Reuse an explicitly provided disposable profile across installer replacements.
   if(process.env.RELEASE_PROFILE_EXPECT==='preserved'){
     assert.equal(await page.evaluate(()=>window.main.getSettingsStore('language')),'en-US')
     assert.equal(await page.evaluate(()=>window.main.getSettingsStore('theme')),'dark')
+    const savedBeta=await page.evaluate(()=>window.main.getSettingsStore('betaUpdate'))
+    assert.equal(savedBeta,process.env.RELEASE_BETA_EXPECT==='true','Beta setting did not survive upgrade')
+    const menu=await app.evaluate(({Menu})=>{
+      const all=m=>m.items.flatMap(i=>[i,...(i.submenu?all(i.submenu):[])])
+      const item=all(Menu.getApplicationMenu()).find(i=>/Beta Update|接收预发布更新/.test(i.label))
+      return item?{checked:item.checked,label:item.label}:null
+    })
+    assert.ok(menu,'Missing persisted Beta menu')
+    assert.equal(menu.checked,savedBeta,'Menu differs from saved Beta setting')
+    report.preservedBeta=savedBeta
     report.settingsPreserved=true
   }
   await page.evaluate(async()=>{await window.main.setSettingsStore('language','en-US');await window.main.setSettingsStore('theme','dark')})

@@ -1,5 +1,6 @@
 import hashlib,json,os,subprocess
 from pathlib import Path
+from release_policy import upgrade_paths
 
 repo='MonsterXia/scrcpy-harmony'
 source='2cce9e1d1034f1f16bbc47e86a5ce661d13e3aca'
@@ -22,12 +23,10 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 runinfo=api(f'actions/runs/{build}')
 assert runinfo['head_sha']==source and runinfo['conclusion']=='success' and runinfo['name']=='Build'
 env=os.environ.copy()
-env['RELEASE_INSTALL_ROOT']=str(Path(env['RUNNER_TEMP'])/'stable-install')
-env['RELEASE_PROFILE']=str(Path(env['RUNNER_TEMP'])/'stable-profile')
-Path(env['RELEASE_PROFILE']).mkdir(parents=True,exist_ok=True)
 env['RELEASE_EXPECT_STABLE']='1.0.3' if mode=='preflight' else '1.0.4'
 env['RELEASE_EXPECT_BETA']='1.0.4-dev.3' if mode=='preflight' else '1.0.4'
 summaries=[]
+installers={}
 for version in ['1.0.3','1.0.4-dev.3','1.0.4']:
     destination=output/version
     destination.mkdir()
@@ -56,8 +55,22 @@ for version in ['1.0.3','1.0.4-dev.3','1.0.4']:
             assert f'sourceCommit={source}' in text
             expected=next(line.split()[0] for line in text.splitlines() if line.endswith(installer.name))
     assert sha(installer)==expected
-    if version!='1.0.3':env['RELEASE_PROFILE_EXPECT']='preserved'
-    run(['node',str(tools/'install-check.mjs'),str(installer),version,str(destination/'evidence'),expected],env=env)
-    summaries.append(json.loads((destination/'evidence'/'report.json').read_text()))
+    installers[version]=(installer,expected)
+for upgrade in upgrade_paths():
+    key=upgrade['profile']
+    env['RELEASE_INSTALL_ROOT']=str(Path(env['RUNNER_TEMP'])/('stable-install-'+key))
+    env['RELEASE_PROFILE']=str(Path(env['RUNNER_TEMP'])/('stable-profile-'+key))
+    Path(env['RELEASE_PROFILE']).mkdir(parents=True,exist_ok=True)
+    env.pop('RELEASE_PROFILE_EXPECT',None)
+    for index,version in enumerate(upgrade['versions']):
+        installer,expected=installers[version]
+        evidence=output/key/version/'evidence'
+        if index:
+            env['RELEASE_PROFILE_EXPECT']='preserved'
+            env['RELEASE_BETA_EXPECT']='false' if upgrade['versions'][0]=='1.0.3' else 'true'
+        run(['node',str(tools/'install-check.mjs'),str(installer),version,str(evidence),expected],env=env)
+        report=json.loads((evidence/'report.json').read_text())
+        report['upgradePath']=key
+        summaries.append(report)
 assert all(s['passed'] and not s['local'] for s in summaries)
-(output/'summary.json').write_text(json.dumps(dict(mode=mode,source=source,build=build,platform=platform,arch=arch,passed=True,versions=[dict(version=s['version'],scenarios=len(s['scenarios']),settingsPreserved=s.get('settingsPreserved',False)) for s in summaries]),indent=2)+'\n')
+(output/'summary.json').write_text(json.dumps(dict(mode=mode,source=source,build=build,platform=platform,arch=arch,passed=True,versions=[dict(upgradePath=s['upgradePath'],version=s['version'],scenarios=len(s['scenarios']),settingsPreserved=s.get('settingsPreserved',False)) for s in summaries]),indent=2)+'\n')
