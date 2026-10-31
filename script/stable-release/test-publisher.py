@@ -71,4 +71,16 @@ class StableTests(unittest.TestCase):
             with self.assertRaises(m.VerificationError):p.check_tag()
             self.assertEqual(api.call_count,1)
 
+    def test_inventory_uses_same_case_sensitive_order_on_windows_and_linux(self):
+        p=self.publisher()
+        p.assets_dir.mkdir()
+        for name in ['latest.yml','Scrcpy-Harmony-1.0.4-win-x64.exe','SHA256SUMS.txt']:
+            (p.assets_dir/name).write_bytes(b'fixture')
+        self.assertEqual([a['name'] for a in p.inventory()],
+            ['SHA256SUMS.txt','Scrcpy-Harmony-1.0.4-win-x64.exe','latest.yml'])
+
+    def test_release_notes_are_utf8_on_every_platform(self):
+        (self.repo/'notes.md').write_text('1.0.4 '+ 'a'*40 + ' 正式版',encoding='utf-8')
+        self.assertIn('正式版',self.publisher().notes())
+
 if __name__ == '__main__': unittest.main()

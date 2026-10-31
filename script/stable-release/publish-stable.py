@@ -141,7 +141,7 @@ def classify_artifact_files(files, required, artifact_root, optional_paths):
 class Publisher:
     def __init__(self, config_path):
         self.config_path = Path(config_path).resolve()
-        self.c = json.loads(self.config_path.read_text())
+        self.c = json.loads(self.config_path.read_text(encoding='utf-8'))
         required = {'repo', 'version', 'tag', 'source_sha', 'baseline_sha', 'ci_run', 'build_run',
                     'preparation_pr', 'stable_tag', 'repo_dir', 'work_dir', 'notes_file', 'release_name'}
         require(set(self.c) == required, f'Config keys must be exactly: {sorted(required)}')
@@ -393,21 +393,21 @@ class Publisher:
 
     def inventory(self, exclude=frozenset()):
         result = []
-        for path in sorted(self.assets_dir.iterdir()):
+        for path in sorted(self.assets_dir.iterdir(), key=lambda p: p.name):
             require(path.is_file() and not path.is_symlink(), f'Unexpected non-file asset: {path.name}')
             if path.name not in exclude:
                 result.append({'name': path.name, 'size': path.stat().st_size, 'sha256': digest(path)})
         return result
 
     def prepared(self):
-        data = json.loads(self.prepared_path.read_text())
+        data = json.loads(self.prepared_path.read_text(encoding='utf-8'))
         require(data['identity'] == self.identity, 'Config differs from prepared identity')
         require(data['assets'] == self.inventory(), 'Local assets changed after preparation')
         require({a['name'] for a in data['assets']} == self.expected_names(), 'Prepared asset set differs')
         return {a['name']: a for a in data['assets']}
 
     def notes(self):
-        body = Path(self.c['notes_file']).read_text()
+        body = Path(self.c['notes_file']).read_text(encoding='utf-8')
         require(body.strip() and self.c['version'] in body and self.c['source_sha'] in body, 'Release notes must include version and full source SHA')
         return body
 
@@ -448,7 +448,7 @@ class Publisher:
         write_identical(self.state_path, json_bytes(state))
 
     def from_state(self):
-        state = json.loads(self.state_path.read_text())
+        state = json.loads(self.state_path.read_text(encoding='utf-8'))
         require(state['identity'] == self.identity and state['notes_sha256'] == hashlib.sha256(self.notes().encode()).hexdigest(),
                 'Config or release notes differ from saved release state')
         release = self.read_release(state['release_id'])
