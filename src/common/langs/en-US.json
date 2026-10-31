@@ -128,6 +128,8 @@
   "appSwitch": "Recent apps",
   "hapFile": "HarmonyOS application (*.hap)",
   "betaUpdate": "Beta Update",
+  "betaUpdateOn": "Beta Update: On",
+  "betaUpdateOff": "Beta Update: Off",
   "languageRestartHint": "Restart Scrcpy Harmony to apply the language to all windows and menus.",
   "settingsSaveFailed": "Could not save settings. Check that the application data folder is writable and try again."
 }

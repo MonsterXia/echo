@@ -14,6 +14,7 @@ import { editWindow } from './screencastEdit'
 import { getSettingsStore } from './store'
 
 function getTemplate(): MenuItemConstructorOptions[] {
+  const betaUpdate = getSettingsStore().get('betaUpdate') === true
   const hideMenu = isMac
     ? [
         {
@@ -61,11 +62,12 @@ function getTemplate(): MenuItemConstructorOptions[] {
       },
       {
         id: 'beta-update',
-        label: t('betaUpdate'),
+        label: t(betaUpdate ? 'betaUpdateOn' : 'betaUpdateOff'),
         type: 'checkbox' as const,
-        checked: getSettingsStore().get('betaUpdate') === true,
+        checked: betaUpdate,
         click(item: MenuItem) {
           getSettingsStore().set('betaUpdate', item.checked)
+          item.label = t(item.checked ? 'betaUpdateOn' : 'betaUpdateOff')
           refreshMenu()
         },
       },

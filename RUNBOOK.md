@@ -1,5 +1,9 @@
 # Scrcpy Harmony 分阶段维护 RUNBOOK
 
+## Beta Update 状态可见性（2026-10-31）
+
+状态：**本地修复与 Windows 验证完成，交付状态以 PR 为准**。用户反馈菜单无法直观看出是否开启。基线 `ef387af`、分支 `codex/fix-beta-update-feedback`；Windows 实际点击确认配置切换正常，但共享样式将复选图标宽度设为 0，勾号不可见。修复保留所有菜单行统一图标栏、文字左对齐，并增加中英文开启/关闭状态。应用 793 passing / 1 平台跳过、Licia 两模式各 606 passing / 4 pending、lint、构建和双语深浅色 20 个实际菜单/重启状态检查通过；[交付 PR](https://github.com/MonsterXia/scrcpy-harmony/pulls?q=is%3Apr+head%3Acodex%2Ffix-beta-update-feedback) 的最终独立审查与必需 CI 为合入前提。证据见[专项记录](docs/maintenance/beta-update-feedback.md)。下一步后续开发版交付及 macOS 原生菜单人工验收；本轮未发布或替换安装应用。
+
 ## 1.0.4-dev.3 开发预发布（2026-10-30）
 
 状态：**已发布，跨平台真机矩阵待补齐**。PR #75/#76 经独立审查和五项 CI 后合入；固定源 `7cd2f952` 的三平台 Build、实际安装启动及双 Mac deep/strict 签名通过。Intel 首次 DMG 卸载占用失败，同源重跑通过；14 个附件重新下载校验后，于 13:24:32（UTC+8）公开 [dev.3](https://github.com/MonsterXia/scrcpy-harmony/releases/tag/v1.0.4-dev.3)，Latest 保持 v1.0.3。Mac 为有效 ad-hoc，仍无 Developer ID/公证；Windows 未签名。本轮未替换本机应用，物理跨电脑及内网 Windows 真机仍待验收。完整来源、审计、失败重试与范围见[发布记录](docs/releases/1.0.4-dev.3.md)。

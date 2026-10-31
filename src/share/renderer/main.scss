@@ -198,9 +198,8 @@ body {
     transform: translateX(-50%);
   }
   .cet-menubar {
-    .cet-menu-item-icon {
-      width: 0;
-    }
+    // Keep the titlebar's icon gutter on every row so checkbox marks remain
+    // visible and all menu labels share the same left edge.
     .cet-menubar-menu-button {
       padding: 0;
       .cet-menubar-menu-title {

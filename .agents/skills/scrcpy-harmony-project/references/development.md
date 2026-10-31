@@ -127,6 +127,8 @@ npm start
 
 ## 投屏键盘验证
 
+Windows 菜单状态回归：完整 build 后运行 `node script/check-beta-menu-live.cjs <证据目录>`，使用隔离用户配置、实际标题栏点击与生产 IPC，检查中英文/深浅色 Beta Update 的勾号尺寸、状态文字、所有非空菜单标签左对齐，以及两方向切换和重启持久化。输出仅菜单局部截图、布尔状态和构建摘要；不操作设备、不替换已安装应用。macOS 原生菜单需单独验收，不能以本探针代替。
+
 定向回归：`node --test test/screencast-input.test.cjs test/screencast-input-main.test.cjs test/screencast-fit.test.cjs`。覆盖 IME 提交、局部焦点、纯文本粘贴、快捷键、自动粘贴来源切换、异步快照取消、会话与排队取消、文本安全编码和全屏尺寸；属于 JSDOM/模拟 HDC 检查。真机验收使用无提交副作用的输入框及合成文本，另验证普通 Ctrl+C/X→Ctrl+V、电脑复制新文本、电脑空剪贴板和右键显式来源。Electron 45 剪贴板备份若用于测试，需读取各 MIME 的内容并构造新的 ClipboardItem 才能 write；不能将 read 返回的对象直接交回 write。验收边界见 `docs/maintenance/screencast-input.md`。
 
 ## 打包与 CI
